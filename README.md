@@ -1,98 +1,43 @@
-# Welcome to React Router!
+*******************
+*FRONT-END-STARTER*
+*******************
 
-A modern, production-ready template for building full-stack React applications using React Router.
+This file provides the directives on how to use this starter and includes the files hierarchy
 
-## Features
+Technologies:
+ReactJS, Vite, Tailwindcss
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
 
-## Getting Started
 
-### Installation
-
-Install the dependencies:
-
-```bash
-npm install
-```
-
-### Development
-
-Start the development server with HMR:
-
-```bash
-npm run dev
-```
-
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-## Deployment
-
-### Docker Deployment
-
-This template includes three Dockerfiles optimized for different package managers:
-
-- `Dockerfile` - for npm
-- `Dockerfile.pnpm` - for pnpm
-- `Dockerfile.bun` - for bun
-
-To build and run using Docker:
-
-```bash
-# For npm
-docker build -t my-app .
-
-# For pnpm
-docker build -f Dockerfile.pnpm -t my-app .
-
-# For bun
-docker build -f Dockerfile.bun -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+├──node_modules/ #List of all the installed modules
+|
+├── public/
+│ ├── assets/
+│ │ └── images/ # Static images or assets
+│ └── favicon.ico # Favicon or static resources
+├── src/
+│ ├── assets/ # Static assets (fonts, images, etc.) imported by components
+│ ├── components/ # Reusable UI components
+│ │ ├── layout/ # Layout components (Header, Footer, Sidebar, etc.)
+│ │ ├── forms/ # Form components (Input, Button)
+│ │ ├── modals/ # Modal components
+│ │ └── ... # Other reusable components
+│ ├── config/ # Configuration files for environment variables, routes, etc.
+│ ├── contexts/ # React Context for global state management
+│ ├── hooks/ # Custom hooks for logic reuse
+│ ├── pages/ # Pages or views in the app (could include containers for large views)
+│ │ ├── Home.jsx # Example page
+│ │ ├── About.jsx # Example page
+│ │ └── ... # Other page views
+│ ├── index.css
+│ ├── utils/ # Utility functions (helpers, formatters, constants, etc.)
+│ ├── App.jsx # Main app component
+│ └── main.jsx # Entry point of the application
+├── .env # Environment variables
+├── .gitignore # Files to ignore in version control
+├── package.json # Project dependencies and scripts
+├── package-lock.json
+├── postcss.config.js # Files to ignore in version control
+├── tailwind.config.js # Project dependencies and scripts
+├── vite.config.js # Vite configuration
+└── README.md
