@@ -2,11 +2,10 @@
 *FRONT-END-STARTER*
 *******************
 
-This file provides the directives on how to use this starter and includes the files hierarchy
+This file provides the directives on how to use this starter and includes the files hierarchy.
 
 Technologies:
-ReactJS, Vite, Tailwindcss
-
+ReactJS, Vite, Tailwindcss and shadcn UI. 
 
 
 ├──node_modules/ #List of all the installed modules
@@ -21,6 +20,7 @@ ReactJS, Vite, Tailwindcss
 │ │ ├── layout/ # Layout components (Header, Footer, Sidebar, etc.)
 │ │ ├── forms/ # Form components (Input, Button)
 │ │ ├── modals/ # Modal components
+│ │ ├── ui/ # Contains all the Shadcn components
 │ │ └── ... # Other reusable components
 │ ├── config/ # Configuration files for environment variables, routes, etc.
 │ ├── schemas/ # Contains all the schemas for the forms.
