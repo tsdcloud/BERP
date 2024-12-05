@@ -23,6 +23,7 @@ ReactJS, Vite, Tailwindcss
 │ │ ├── modals/ # Modal components
 │ │ └── ... # Other reusable components
 │ ├── config/ # Configuration files for environment variables, routes, etc.
+│ ├── schemas/ # Contains all the schemas for the forms.
 │ ├── contexts/ # React Context for global state management
 │ ├── hooks/ # Custom hooks for logic reuse
 │ ├── pages/ # Pages or views in the app (could include containers for large views)
