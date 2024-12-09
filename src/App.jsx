@@ -1,9 +1,9 @@
-import './index.css'
-import {Button} from './components/ui/button'
-import logo from './assets/bfclogo.png'
-import { useState } from 'react'
+import './index.css';
+import {Button} from './components/ui/button';
+import logo from './assets/bfclogo.png';
+import { useState } from 'react';
 function App() {
-  const [clicked, setClicked] = useState(0)
+  const [clicked, setClicked] = useState(0);
   return (
     <div className="flex flex-row h-screen w-full justify-center items-center">
       <div>
@@ -16,11 +16,11 @@ function App() {
           <a href="https://ui.shadcn.com/docs/installation/vite" target='_blank'>ShadCN UI</a>
         </p>
         <div className='flex justify-center my-4'>
-          <Button className="bg-green-500" onClick={()=>setClicked(clicked + 1)}>Button cliked {clicked}</Button>
+          <Button className="bg-primary hover:bg-slate-500" onClick={()=>setClicked(clicked + 1)}>Button cliked {clicked}</Button>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
