@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+import tailwindcssAnimate from "tailwindcss-animate";
+
 export default {
     darkMode: ["class"],
     content: [
@@ -15,6 +17,9 @@ export default {
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
+			"primary" : "28489B",
+			"secondary" : "008000",
+			"cancel" : "6C757D",
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
@@ -22,11 +27,6 @@ export default {
   			popover: {
   				DEFAULT: 'hsl(var(--popover))',
   				foreground: 'hsl(var(--popover-foreground))'
-  			},
-  			primary: "#f4f4f4",
-  			secondary: {
-  				DEFAULT: 'hsl(var(--secondary))',
-  				foreground: 'hsl(var(--secondary-foreground))'
   			},
   			muted: {
   				DEFAULT: 'hsl(var(--muted))',
@@ -61,6 +61,10 @@ export default {
   				ring: 'hsl(var(--sidebar-ring))'
   			}
   		},
+		//   fontFamily: {
+		// 	sans: ['Outfit']
+		//   },
+
   		keyframes: {
   			'accordion-down': {
   				from: {
@@ -85,5 +89,5 @@ export default {
   		}
   	}
   },
-  plugins: [("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 };

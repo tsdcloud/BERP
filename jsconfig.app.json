@@ -2,8 +2,15 @@
     "compilerOptions": {
       "baseUrl": ".",
       "paths": {
-        
+        // Ajoutez ici des chemins si nécessaire
       }
-    }
+    },
+    "include": [
+        "**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
 }
   
