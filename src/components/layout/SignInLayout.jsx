@@ -13,7 +13,7 @@ export default function SignInLayout({children}) {
         <div className='sm:bg-blue-200 md:bg-transparent flex flex-col justify-around ml-9'>
             <div className='sm:bg-pink-600 md:bg-transparent flex-col mt-9 space-y-1'>
                   <h3 className='font-medium mb-10'>BERP.</h3>
-                  <h1 className='text-3xl font-bold'>Rapprochez-vous <br/>de l&apos;essentiel</h1>
+                  <h1 className='text-3xl font-bold'>Rapprochez-vous <br/>de l&apos;essentiel.</h1>
                   <h4 className='text-xs'>Accéder à vos applications métiers dans un même endroit.</h4>   
             </div>
                 <img src={illustrationHuman} className="mt-9 sm:bg-purple-400 md:bg-transparent w-[400px] h-[350px]" alt='Mascotte'/>
@@ -29,7 +29,7 @@ export default function SignInLayout({children}) {
                   <h3 className='font-semibold text-xs'>Connectez-vous à votre compte</h3>
                   <p className='text-xs'>Renseignez correctement vos identifiants.</p>
               </div>
-              <div className='text-center'>
+              <div className=' sm:bg-blue-400 md:bg-transparent p-5 m-0'>
                   {children}
               </div>
             </div>
