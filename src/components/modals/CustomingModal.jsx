@@ -1,27 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Modal } from 'antd';
 
-export default function CustomingModal({ children, title, buttonText }) {
-    const [open, setOpen] = useState(false);
+export default function CustomingModal({ children, title, buttonText, isOpen }) {
+    const [open, setOpen] = useState(isOpen || false);
     const [confirmLoading, setConfirmLoading] = useState(false);
-
+ 
     const showModal = () => {
         setOpen(true);
     };
 
-    const handleOk = () => {
-        setConfirmLoading(true);
-        setTimeout(() => {
-            console.log("object");
-            setOpen(false);
-            setConfirmLoading(false);
-        }, 2000);
-    };
-
     const handleCancel = () => {
-        console.log('Bouton annuler cliqué');
+        console.log('Bouton x annuler cliqué');
         setOpen(false);
     };
+
+    useEffect(()=>{
+        setOpen(isOpen);
+        console.log(isOpen);
+    },[isOpen]);
 
     return (
         <div>
@@ -31,8 +27,8 @@ export default function CustomingModal({ children, title, buttonText }) {
             <Modal
                 title={title}
                 open={open}
-                onOk={handleOk}
-                confirmLoading={confirmLoading}
+                // onOk={handleOk}
+                // confirmLoading={confirmLoading}
                 onCancel={handleCancel}
                 footer={()=>{}}
             >
