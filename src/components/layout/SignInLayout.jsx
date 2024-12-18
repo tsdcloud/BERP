@@ -36,7 +36,7 @@ export default function SignInLayout({children}) {
                       </div>
                     </div>
                     <div className='sm:bg-pink-500 md:bg-transparent relative'>
-                      <Footer/>
+                      <Footer className="text-center"/>
                     </div>
               </div>
         </div>

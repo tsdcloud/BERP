@@ -1,9 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Button, Modal } from 'antd';
+import PropTypes from 'prop-types';
 
-export default function CustomingModal({ children, title, buttonText, isOpen }) {
-    const [open, setOpen] = useState(isOpen || false);
-    const [confirmLoading, setConfirmLoading] = useState(false);
+export default function CustomingModal({ children, title, buttonText }) {
+
+    // Ajout de la validation des props
+    CustomingModal.propTypes = {
+        children: PropTypes.func.isRequired,
+        title: PropTypes.string.isRequired,
+        buttonText: PropTypes.string.isRequired,
+    };
+
+    const [open, setOpen] = useState(false);
+    // const [confirmLoading, setConfirmLoading] = useState(false);
  
     const showModal = () => {
         setOpen(true);
@@ -14,10 +23,10 @@ export default function CustomingModal({ children, title, buttonText, isOpen }) 
         setOpen(false);
     };
 
-    useEffect(()=>{
-        setOpen(isOpen);
-        console.log(isOpen);
-    },[isOpen]);
+    // useEffect(()=>{
+    //     setOpen(isOpen);
+    //     console.log(isOpen);
+    // },[isOpen]);
 
     return (
         <div>
@@ -32,7 +41,7 @@ export default function CustomingModal({ children, title, buttonText, isOpen }) 
                 onCancel={handleCancel}
                 footer={()=>{}}
             >
-                {children}
+                {children({ setOpen })}
             </Modal>
         </div>
     );

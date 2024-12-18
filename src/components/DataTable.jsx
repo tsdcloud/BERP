@@ -11,8 +11,6 @@ import {
 
   import {
     flexRender,
-
-
     getCoreRowModel,
     getPaginationRowModel,
     getSortedRowModel,
@@ -21,6 +19,8 @@ import {
   } from "@tanstack/react-table";
 
   import { Input } from "./ui/input";
+  import { Button } from "./ui/button";
+//   import { Checkbox } from "./ui/checkbox";
 
 
 
@@ -62,11 +62,11 @@ import {
 // }
 
 
-export default function DataTable({columns, data, Action, className}) {
+export default function DataTable({columns, data, className}) {
 
     const [globalFilter, setGlobalFilter] = useState([]);
 
-    // Ajout de la validation des props
+    // Adding props validation
     DataTable.propTypes = {
         columns: PropTypes.array.isRequired,
         data: PropTypes.array.isRequired,
@@ -100,14 +100,15 @@ export default function DataTable({columns, data, Action, className}) {
           placeholder="Effectuer une recherche..."
           value={globalFilter}
           onChange={e => tableModel.setGlobalFilter(String(e.target.value))}
-          className="max-w-md m-2 text-xs"
+          className="w-[250px] m-2 text-xs"
         />
 
         <Table className="text-xs">
 
             <TableHeader>
                     <TableRow>
-                        { columns?.map((item, index)=> 
+                        { 
+                            columns?.map((item, index)=> 
                                 <TableHead key={index} className="text-bold bg-blue-900 text-white">
                                     {flexRender(item?.header)}
                                 </TableHead>
@@ -120,31 +121,57 @@ export default function DataTable({columns, data, Action, className}) {
                         {
                             tableModel.getRowModel().rows?.length ? (
                                 tableModel.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
-                                    ))}
-                                </TableRow>
+                                    <TableRow
+                                        key={row.id}
+                                        data-state={row.getIsSelected() && "selected"}
+                                    >
+                                        {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                        ))}
+                                        {/* <>{Action}</> */}
+                                    </TableRow>
                                 ))
                             ) : (
                                 <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    Pas de résultats.
-                                </TableCell>
+                                        <TableCell colSpan={columns.length} className="h-24 text-center">
+                                            Pas de résultats.
+                                        </TableCell>
                                 </TableRow>
                             )
                         }
                    </TableBody>
-            
-
-
 
         </Table>
+
+        <div className="flex items-center justify-end space-x-2 m-2 pb-1">
+
+            {/* show selected rowa */}
+            {/* <div className="flex-1 text-xs text-muted-foreground">
+            {tableModel.getFilteredSelectedRowModel().rows.length} de{" "}
+            {tableModel.getFilteredRowModel().rows.length} ligne(s) sélectionné(s).
+            </div> */}
+
+            <div className="space-x-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => tableModel.previousPage()}
+                        disabled={!tableModel.getCanPreviousPage()}
+                    >
+                        Précédent
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => tableModel.nextPage()}
+                        disabled={!tableModel.getCanNextPage()}
+                    >
+                        Suivant
+                    </Button>
+            </div>
+      </div>
     </div>
   );
 }

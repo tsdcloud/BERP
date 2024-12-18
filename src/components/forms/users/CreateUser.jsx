@@ -6,6 +6,8 @@ import { EyeSlashIcon, EyeIcon } from "@heroicons/react/24/outline";
 import CustomingModal from '../../modals/CustomingModal';
 import { Button } from "../../ui/button";
 
+import PropTypes from 'prop-types';
+
 // Définition du schéma avec Zod
 const userSchema = z.object({
     last_name: z.string()
@@ -45,13 +47,20 @@ const userSchema = z.object({
       "Le mot de passe saisie doit avoir au moins une lettre majuscule, une minuscule, un caractère spécial (@), un chiffre et doit contenir au moins 8 caractères."),
 });
 
-export default function CreateUser() {
+export default function CreateUser({setOpen}) {
+
+  // Ajout de la validation des props
+  CreateUser.propTypes = {
+    setOpen: PropTypes.func.isRequired, // Validation de la prop setOpen
+  };
+
+
   const [showPassword, setShowPassword] = useState(false);
 
   // const [modalOpen, setModalOpen] = useState(true);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [open, setOpen] = useState(false);
+  // const [confirmLoading, setConfirmLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [open, setOpen] = useState(false);
 
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(userSchema),
@@ -63,20 +72,21 @@ export default function CreateUser() {
         setOpen(false);
     };
 
-     const handleCancel = (e) => {
-        e.preventDefault();
-        console.log('Bouton annuler cliqué dans le user');
-        setOpen(false);
-    };
+    //  const handleCancel = () => {
+    //     // e.preventDefault();
+    //     console.log('Bouton annuler cliqué dans le user');
+    //     setOpen(false);
+    // };
 
     return (
       <CustomingModal
         title="Ajouter un utilisateur"
         buttonText="Créer un utilisateur"
-        onOk={handleSubmit(handleSubmitDataFormUser)}
-        onCancel={handleCancel}
-        isOpen={open}
+        // onOk={handleSubmit(handleSubmitDataFormUser)}
+        // onCancel={handleCancel}
+        // isOpen={open}
       >
+        {({ setOpen }) => (
 
           <div className='space-y-0'>
                 <p className='text-[10px] mb-5'>Veuillez correctement renseigner les informations de l'utilisateur.</p>
@@ -231,12 +241,13 @@ export default function CreateUser() {
                     className='px-2 py-2 w-30 text-white rounded-sm text-[10px] bg-green-600' 
                     type="submit"
                     disabled={isSubmitting}
+                   
                     >
                       {isSubmitting ? "Création en cours..." : "Créer un utilisateur"}
                     </Button>
                     <Button 
                     className='px-2 py-2 w-30 text-white outline rounded-sm text-[10px] bg-gray-700' 
-                    onClick={handleCancel}
+                    onClick={() => setOpen(false)}
                     >
                       Annuler
                     </Button>
@@ -244,6 +255,7 @@ export default function CreateUser() {
                   </div>
                 </form>
           </div>
+        )}
       </CustomingModal>
     );
 }

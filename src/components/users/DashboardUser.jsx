@@ -2,8 +2,8 @@ import {useState, useEffect } from 'react';
 import CreateUser from '../forms/users/CreateUser';
 import mockUserData from '../../helpers/mock_userData.json';
 import DataTable from '../DataTable';
-import { columnsUsers } from './columnsUsers';
-import { Button } from '../ui/button';
+import { columnsUsers } from './ColumnsUsers';
+import { ArrowLongLeftIcon } from "@heroicons/react/24/outline";
 
 
 export default function DashboardUser() {
@@ -25,19 +25,23 @@ export default function DashboardUser() {
     }, [users]);
 
   return (
-    <div className='space-y-3'>
-        {/* form for creating users */}
-        <CreateUser/>
+    <div className='m-1 space-y-3'>
+          <h1 className='text-sm mb-2'>Gestion des utilisateurs</h1>
 
-        {/* Users Data Table */}
-        <DataTable
-        className="rounded-md border w-[900px]"
-        columns={columnsUsers}
-        data={users}
-        Action={<Button>Action</Button>}
-       
-        />
 
+          {/* <ArrowLongLeftIcon className="h-6 w-6 text-gray-500" /> */}
+            <div className='space-y-2'>
+
+                        {/* form for creating users */}
+                        <CreateUser/>
+
+                        {/* Users Data Table */}
+                        <DataTable
+                            className="rounded-md border w-[850px]"
+                            columns={columnsUsers}
+                            data={users}
+                        />
+            </div>
     </div>
   );
 }

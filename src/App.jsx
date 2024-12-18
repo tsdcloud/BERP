@@ -11,9 +11,9 @@ function App() {
   return (
       <Router>
         <Routes>
-           <Route path='/' element={<SignIn/>}/>
+           <Route path='/' element={<Dashboard/>} exact/>
            <Route path='/chooseEntity' element={<ChooseEntity/>} exact/>
-           <Route path='/dashboard' element={<Dashboard/>} exact/>
+           <Route path='/signIn' element={<SignIn/>}/>
         </Routes>
       </Router>
   );
