@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import { useForm } from "react-hook-form";
+import { Link } from 'react-router-dom';
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeSlashIcon, EyeIcon } from "@heroicons/react/24/outline";
@@ -15,7 +16,10 @@ const formSignInSchema = z.object({
       (value) => /\S+@\S+\.\S+/.test(value) || /^[a-zA-Z0-9_]{6,}$/.test(value),
       "ce champ doit être un email valide ou un nom d'utilisateur valide. (minimum 6 caractères)"
     ),
-  password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères."),
+    password: z.string()
+    .nonempty("Ce champs 'Mot de passe' est réquis.")
+    .regex(/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@]).{8,}/, 
+    "Le mot de passe saisie doit avoir au moins une lettre majuscule, une minuscule, un caractère spécial (@), un chiffre et doit contenir au moins 8 caractères."),
 });
 
 export default function SignIn() {
@@ -38,6 +42,11 @@ export default function SignIn() {
 
   return (
    <SignInLayout>
+    <div className='text-center py-3'>
+        <h3 className='font-semibold text-xs'>Connectez-vous à votre compte</h3>
+        <p className='text-xs'>Renseignez correctement vos identifiants.</p>
+     </div>
+
       <form onSubmit={handleSubmit(submitDataSignIn)} 
         className='text-xs'>
 
@@ -61,7 +70,7 @@ export default function SignIn() {
           </div>
 
           {/* Champ Mot de passe */}
-          <div className="relative mb-5"> {/* Ajout d'un conteneur relatif */}
+          <div className="relative mb-5">
             <label htmlFor="password" className="block text-gray-700 font-medium mb-1">
               Mot de passe<sup className='text-red-500'>*</sup>
             </label>
@@ -86,7 +95,12 @@ export default function SignIn() {
             {errors.password && (
               <p className="text-red-500 text-[9px] mt-1">{errors.password.message}</p>
             )}
-            <div className='text-right flex justify-end mt-2 text-[9px]'>Information incorrecte ou mot de passe oublié ?<p className='text-green-900 underline cursor-pointer'>Cliquez ici.</p></div>
+            <div className='text-right flex justify-end mt-2 text-[9px]'>
+              Information incorrecte ou mot de passe oublié ?
+              <Link to={"/forgetPassword"} className='text-green-900 underline cursor-pointer'>
+                Cliquez ici.
+              </Link>
+            </div>
           </div>
           {/* <Button className="w-full bg-blue-900 text-white py-2 px-4 rounded-3xl shadow-md hover:bg-blue-700 transition">Something</Button> */}
 
@@ -98,7 +112,12 @@ export default function SignIn() {
           >
             {isSubmitting ? "Connexion en cours..." : "Je me connecte"}
           </Button>
-          <div className=' flex justify-center mt-2 text-[8px]'>En vous connectant, vous acceptez nos <p className='text-green-900 underline cursor-pointer'>Conditions de confidentialités.</p></div>
+          <div className=' flex justify-center mt-2 text-[8px]'>
+                En vous connectant, vous acceptez nos 
+                <p className='text-green-900 underline cursor-pointer'>
+                  Conditions de confidentialités.
+                </p>
+          </div>
           
       </form>
    </SignInLayout>

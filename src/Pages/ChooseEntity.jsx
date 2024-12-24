@@ -16,7 +16,7 @@ export default function ChooseEntity() {
   
     return (
         <>
-        <div className="bg-gradient-to-t from-blue-200 to-white-100 min-h-screen py-12 px-4 text-center">
+        <div className="bg-gradient-to-b from-green-100 to-transparent min-h-screen py-12 px-4 text-center">
           <div className="max-w-4xl mx-auto">
             {/* Top Section */}
             <div className="mb-6">
@@ -40,12 +40,12 @@ export default function ChooseEntity() {
             {/* Buttons */}
             <div className="mt-8 flex justify-center items-center space-x-4">
               <button
-                className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-700"
+                className="px-9 py-3 border outline outline-blue-900 font-semibold rounded-lg shadow-sm hover:bg-blue-600 hover:text-white"
               >
                 Bfc
               </button>
               <button
-                className="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg shadow-lg hover:bg-gray-300"
+                className="px-9 py-3 border outline outline-green-700 text-green-900 font-semibold rounded-lg shadow-sm hover:bg-green-700 hover:text-white"
                 >
                 DPWS
               </button>

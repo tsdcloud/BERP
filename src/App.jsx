@@ -3,8 +3,11 @@ import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import SignIn from './components/forms/SignIn';
+import ForgetPassword from './components/forms/ForgetPassword';
 import ChooseEntity from './Pages/ChooseEntity';
 import Dashboard from './Pages/Dashboard';
+import ConfirmPassword from './components/forms/ConfirmPassword';
+import NotFoundPage from './components/NotFoundPage';
 
 function App() {
   // const [clicked, setClicked] = useState(0);
@@ -14,6 +17,9 @@ function App() {
            <Route path='/' element={<Dashboard/>} exact/>
            <Route path='/chooseEntity' element={<ChooseEntity/>} exact/>
            <Route path='/signIn' element={<SignIn/>}/>
+           <Route path='/forgetPassword' element={<ForgetPassword/>} exact/>
+           <Route path='/confirmPassword' element={<ConfirmPassword/>} exact/>
+           <Route path='/notFoundPage' element={<NotFoundPage/>} exact/>
         </Routes>
       </Router>
   );

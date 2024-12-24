@@ -26,11 +26,7 @@ export default function SignInLayout({children}) {
               <div className='md:w-1/2 h-full flex flex-col space-y-8 items-center mt-[100px]'>
                     <div className=' w-[360px] h-[370px] bg-white shadow-2xl relative rounded-sm '>
                     
-                      <div className='text-center py-3'>
-
-                          <h3 className='font-semibold text-xs'>Connectez-vous à votre compte</h3>
-                          <p className='text-xs'>Renseignez correctement vos identifiants.</p>
-                      </div>
+                      
                       <div className=' sm:bg-blue-400 md:bg-transparent p-5 m-0'>
                           {children}
                       </div>

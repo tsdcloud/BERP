@@ -23,45 +23,6 @@ import {
 //   import { Checkbox } from "./ui/checkbox";
 
 
-
-
-// export default function DataTable({columns, data, Action, className}) {
-//   return (
-//     <div className={className}>
-//         <Table>
-//             <TableHeader>
-//                 <TableRow>
-//                        { columns?.map((item, index)=> 
-//                             <TableHead key={index}>
-//                                 {item?.header}
-//                             </TableHead>
-//                             )
-//                         }
-                   
-//                 </TableRow>
-//             </TableHeader>
-//             <TableBody>
-//                     { 
-//                         data?.map((item, index)=>
-//                             <TableRow key={index}>
-//                                 {
-//                                     Object.values(item).map((cell, index)=>
-//                                         <TableCell key={index}>
-//                                             {cell.toString()}
-//                                         </TableCell>
-//                                     )
-//                                 }
-//                                 <>{Action}</>
-//                             </TableRow>
-//                         )
-//                     }
-//             </TableBody>
-//         </Table>
-//     </div>
-//   );
-// }
-
-
 export default function DataTable({columns, data, className}) {
 
     const [globalFilter, setGlobalFilter] = useState([]);
@@ -120,14 +81,19 @@ export default function DataTable({columns, data, className}) {
                     <TableBody>
                         {
                             tableModel.getRowModel().rows?.length ? (
-                                tableModel.getRowModel().rows.map((row) => (
+                                tableModel.getRowModel()?.rows?.map((row) => (
                                     <TableRow
                                         key={row.id}
                                         data-state={row.getIsSelected() && "selected"}
                                     >
-                                        {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        {row.getVisibleCells()?.map((cell) => (
+                                        <TableCell key={cell.id} >
+                                            {
+                                                cell.column.columnDef.accessorKey === "isActive" ?
+                                                cell.row.original.isActive === true ? "Activé" : "Desactivé"
+                                                :
+                                                flexRender(cell.column.columnDef.cell, cell.getContext())
+                                            }
                                         </TableCell>
                                         ))}
                                         {/* <>{Action}</> */}
@@ -135,7 +101,7 @@ export default function DataTable({columns, data, className}) {
                                 ))
                             ) : (
                                 <TableRow>
-                                        <TableCell colSpan={columns.length} className="h-24 text-center">
+                                        <TableCell colSpan={columns?.length} className="h-24 text-center">
                                             Pas de résultats.
                                         </TableCell>
                                 </TableRow>
