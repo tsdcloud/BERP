@@ -12,8 +12,15 @@ import { AlertDialog,
          AlertDialogHeader, 
          AlertDialogTitle } from "../ui/alert-dialog";
 
-import {Input} from "../ui/input";
+import { Input } from "../ui/input";
 import { Button } from "../../components/ui/button";
+import { useFetch } from '../../hooks/useFetch';
+import toast, { Toaster } from 'react-hot-toast';
+
+
+
+
+
 
 // Schéma de validation avec Zod
 const userSchema = z.object({
@@ -53,22 +60,38 @@ const userSchema = z.object({
 export const UserAction = () => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedUser, setSelectedUser] = useState({});
 
     const { register, handleSubmit, reset, formState:{errors, isSubmitting} } = useForm({
         resolver: zodResolver(userSchema),
     });
 
-   
+   const { handlePatch } = useFetch();
 
     const onSubmit = async (data) => {
-        await new Promise(resolve =>setTimeout(resolve, 2000));
-        if (isEdited) {
-            console.log("Mise à jour de l'utilisateur :", data);
-        } else {
-            console.log("Détails de l'utilisateur :", data);
-        }
-        setDialogOpen(false);
+        const urlToUpdate = `http://127.0.0.1:8000/api_gateway/api/user/${selectedUser?.id}`;
+        console.log("url", urlToUpdate);
+        console.log("url", data);
+        // api_gateway/api/user/33ba726a-61cc-404f-9fda-d518c05c4636/
+      
+        // try {
+        //     const response = await handlePatch(urlToUpdate);
+        //     console.log("response update", response);
+        //     if (response && response?.success) {
+  
+        //       console.log("User updated", response?.success);
+                
+  
+        //         setDialogOpen(false);
+        //     }
+        //     else {
+        //       toast.error(response.error, { duration: 5000});
+        //     }
+            
+        //   } catch (error) {
+        //     console.error("Error during updated",error);
+        //     toast.error("Erreur lors de la modification de l'utilisateur", { duration: 5000 });
+        //   }
     };
 
     const handleShowUser = (user) => {
@@ -84,13 +107,78 @@ export const UserAction = () => {
         setDialogOpen(true);
     };
 
-    const disabledUser = (id) => {
-        console.log("User is disabled", id);
+
+
+    const disabledUser = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cet utilisateur ?");
+
+        if (confirmation) {
+              try{
+                setDialogOpen(false);
+                //   await handlePatch(url)
+                //   navigateToMyEvent(`/events/${eventId}`)
+              }
+              catch(error){
+                  console.error("Erreur lors de la désactivation de cet utilisateur:", error);
+              }
+              finally{
+                // setIsLoading(false);
+                console.log("okay");
+                }
+
+                console.log("L'utilisateur a été désactivé.", id);
+                } else {
+                console.log("La désactivation a été annulée.");
+                }
     };
 
-    const deletedUser = (id) => {
-        console.log("deleted User", id);
+    const activedUser = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cet utilisateur ?");
+
+        if (confirmation) {
+              try{
+                setDialogOpen(false);
+                //   await handlePatch(url)
+                //   navigateToMyEvent(`/events/${eventId}`)
+              }
+              catch(error){
+                  console.error("Erreur lors de la désactivation de cet utilisateur:", error);
+              }
+              finally{
+                // setIsLoading(false);
+                console.log("okay");
+                }
+
+                console.log("L'utilisateur a été désactivé.", id);
+                } else {
+                console.log("La désactivation a été annulée.");
+                }
     };
+
+
+    const deletedUser = (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?");
+
+        if (confirmation) {
+              try{
+                setDialogOpen(false);
+                //   await handlePatch(url)
+                //   navigateToMyEvent(`/events/${eventId}`)
+              }
+              catch(error){
+                  console.error("Erreur lors de la suppression de cet utilisateur:", error);
+              }
+              finally{
+                // setIsLoading(false);
+                console.log("okay");
+                }
+
+                console.log("L'utilisateur a été supprimé.", id);
+                } else {
+                console.log("La suppression a été annulée.");
+                }
+    };
+
 
     const showDialogUser = () => {
         return (
@@ -98,13 +186,13 @@ export const UserAction = () => {
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            {isEdited ? "Modifier les informations" : "Détails de l'utilisateur"}
+                            { isEdited ? "Modifier les informations" : "Détails de l'utilisateur" }
                         </AlertDialogTitle>
                         <AlertDialogDescription>
-                            {isEdited ? (
+                            { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
-                                    onSubmit={handleSubmit(onSubmit)}>
+                                     onSubmit={handleSubmit(onSubmit)}>
                                     <div>
                                             <label htmlFor='last_name' className="text-xs mt-2">
                                                 Nom <sup className='text-red-500'>*</sup>
@@ -120,7 +208,7 @@ export const UserAction = () => {
                                                 />
                                     </div>
                                     <div>
-                                            <label htmlFor='first_name' className="text-xs">
+                                                <label htmlFor='first_name' className="text-xs">
                                                     Prénom <sup className='text-red-500'>*</sup>
                                                 </label>
                                                 <Input
@@ -134,7 +222,7 @@ export const UserAction = () => {
                                                 />
                                     </div>
                                     <div>
-                                            <label htmlFor='email' className="text-xs">
+                                                <label htmlFor='email' className="text-xs">
                                                     Adresse mail <sup className='text-red-500'>*</sup>
                                                 </label>
                                                 <Input
@@ -148,7 +236,7 @@ export const UserAction = () => {
                                                 />
                                     </div>
                                     <div>
-                                        <label htmlFor='phone' className="text-xs">
+                                            <label htmlFor='phone' className="text-xs">
                                                 Téléphone <sup className='text-red-500'>*</sup>
                                             </label>
                                             <Input
@@ -175,10 +263,31 @@ export const UserAction = () => {
                                                 }`}
                                             />
                                     </div>
+                                    <div className='flex space-x-2 justify-end'>
+                                        <Button 
+                                            type="submit"
+                                            disabled={isSubmitting}
+                                        
+                                            className="border-2 px-4 py-3 border-green-900 outline-green-900 text-green-900 text-xs shadow-md hover:bg-green-700 hover:text-white transition"
+                                            >
+                                            {isSubmitting ? "validation en cours..." : "valider"}
+                                        </Button>
+                                        
+                                        <AlertDialogCancel 
+                                            className="border-2 border-black outline-black text-black text-xs shadow-md hover:bg-black hover:text-white transition"
+                                            onClick={() => setDialogOpen(false)}>
+                                                Retour
+                                        </AlertDialogCancel>
+                                    </div>
+                                <Toaster/>
                                 </form>
                             ) : (
                                 selectedUser && (
                                     <div className='flex flex-col text-black space-y-3'>
+                                        <div>
+                                            <p className="text-xs">Identifiant Unique</p>
+                                            <h3 className="font-bold text-sm">{selectedUser?.id}</h3>
+                                        </div>
                                         <div>
                                             <p className="text-xs">Nom</p>
                                             <h3 className="font-bold text-sm">{selectedUser?.last_name}</h3>
@@ -202,20 +311,22 @@ export const UserAction = () => {
                                         <div>
                                             <p className="text-xs">Statut</p>
                                             <h3 className="font-bold text-sm">
-                                                {selectedUser?.isActive ? "Actif" : "Désactivé"}
+                                                {selectedUser?.is_active ? "Actif" : "Désactivé"}
                                             </h3>
                                         </div>
                                     </div>
                                 )
                             )}
                         </AlertDialogDescription>
+
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
+                    {/* <AlertDialogFooter>
                         {isEdited ? (
                             <div className='flex space-x-2'>
                                 <Button 
                                     type="submit"
                                     disabled={isSubmitting}
+                                   
                                     className="border-2 px-4 py-3 border-green-900 outline-green-900 text-green-900 text-xs shadow-md hover:bg-green-700 hover:text-white transition"
                                     >
                                        {isSubmitting ? "validation en cours..." : "valider"}
@@ -230,11 +341,11 @@ export const UserAction = () => {
                         ) : (
                             <div className='flex space-x-2'>
                                 { 
-                                    selectedUser?.isActive == false ? 
+                                    selectedUser?.is_active == false ? 
                                         (
                                                 <AlertDialogAction 
                                                     className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md hover:bg-blue-600 hover:text-white transition"
-                                                    onClick={() => disabledUser(selectedUser.id)}>
+                                                    onClick={() => activedUser(selectedUser.id)}>
                                                         Activer
                                                 </AlertDialogAction>
 
@@ -260,7 +371,7 @@ export const UserAction = () => {
                                 </AlertDialogCancel>
                             </div>
                         )}
-                    </AlertDialogFooter>
+                    </AlertDialogFooter> */}
                 </AlertDialogContent>
             </AlertDialog>
         );
@@ -272,8 +383,10 @@ export const UserAction = () => {
         { accessorKey: 'first_name', header: 'Prénom' },
         { accessorKey: 'email', header: 'Email' },
         { accessorKey: 'phone', header: 'Téléphone' },
+        // { accessorKey: 'is_staff', header: 'Administrateur' },
+        // { accessorKey: 'is_superuser', header: 'Super administrateur' },
         { accessorKey: 'username', header: 'Nom d\'utilisateur' },
-        { accessorKey: 'isActive', header: 'Statut' },
+        { accessorKey: 'is_active', header: 'Statut' },
         {
             accessorKey: "action",
             header: "Actions",
@@ -287,6 +400,7 @@ export const UserAction = () => {
             )
         },
     ], []);
+
 
     return {
         showDialogUser,

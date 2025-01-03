@@ -1,20 +1,27 @@
-import {useState} from 'react';
+import {useState, useContext} from 'react';
 import { useForm } from "react-hook-form";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeSlashIcon, EyeIcon } from "@heroicons/react/24/outline";
 import { Button } from "../ui/button";
+import {jwtDecode} from 'jwt-decode'; 
+
+
+import toast, { Toaster } from 'react-hot-toast';
 
 import SignInLayout from '../layout/SignInLayout';
+
+import { useFetch } from '../../hooks/useFetch';
+import { AUTHCONTEXT } from '../../contexts/AuthProvider';
 
 
 // Définir un schéma Zod
 const formSignInSchema = z.object({
-  identifier: z.string().nonempty("Ce champ est requis")
+  login: z.string().nonempty("Ce champ est requis")
     .refine(
-      (value) => /\S+@\S+\.\S+/.test(value) || /^[a-zA-Z0-9_]{6,}$/.test(value),
-      "ce champ doit être un email valide ou un nom d'utilisateur valide. (minimum 6 caractères)"
+      (value) => /\S+@\S+\.\S+/.test(value) || /^[a-zA-Z0-9_]{3,}$/.test(value),
+      "ce champ doit être un email valide ou un nom d'utilisateur valide. (minimum 3 caractères)"
     ),
     password: z.string()
     .nonempty("Ce champs 'Mot de passe' est réquis.")
@@ -23,7 +30,13 @@ const formSignInSchema = z.object({
 });
 
 export default function SignIn() {
+  const navigateToDashboard = useNavigate();
+  const { handlePost, err } = useFetch();
+
+ const { setIsAuth, setUserData, setToken } = useContext(AUTHCONTEXT);
+
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
       const {
         register,
@@ -34,10 +47,31 @@ export default function SignIn() {
       });
 
 
+  
       const submitDataSignIn = async(data) => {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        console.log("Données soumises : ", data);
-        // C'est ici que je mettrai l'API ou effectuer une action avec les données
+        // console.log("data", data);
+        const urlToLogin = "http://127.0.0.1:8000/api_gateway/token/";
+        try {
+              const response = await handlePost(urlToLogin, data, false);
+             
+
+              if (response && response?.data && response?.data?.access) {
+                  const token = response?.data?.access;
+                  setToken(token);
+                  const decoded = jwtDecode(token);
+                  setIsAuth(true);
+                  setUserData(decoded);
+                  // console.log("userData", hop);
+                  navigateToDashboard("/");
+              }
+              else {
+                toast.error(response.message, { duration: 5000});
+              }
+              
+            } catch (error) {
+              console.error("Error during sign-in",error);
+              toast.error("Erreur lors de la connexion", { duration: 5000 });
+            }
       };
 
   return (
@@ -52,20 +86,20 @@ export default function SignIn() {
 
               {/* Champ Identifier (Email ou Username) */}
           <div className="mb-5">
-            <label htmlFor="identifier" className="block text-xs font-medium mb-1">
+            <label htmlFor="login" className="block text-xs font-medium mb-1">
               Email ou Nom d'utilisateur<sup className='text-red-500'>*</sup>
             </label>
             <input
-              id="identifier"
+              id="login"
               type="text"
               placeholder=''
-              {...register("identifier")}
+              {...register("login")}
               className={`w-full px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                errors.identifier ? "border-red-500" : "border-gray-300"
+                errors.login ? "border-red-500" : "border-gray-300"
               }`}
             />
-            {errors.identifier && (
-              <p className="text-red-500 text-[9px] mt-1">{errors.identifier.message}</p>
+            {errors.login && (
+              <p className="text-red-500 text-[9px] mt-1">{errors.login.message}</p>
             )}
           </div>
 
@@ -110,7 +144,7 @@ export default function SignIn() {
             disabled={isSubmitting}
             className="w-full bg-blue-900 text-white py-2 px-4 text-xs rounded-3xl shadow-md hover:bg-blue-700 transition"
           >
-            {isSubmitting ? "Connexion en cours..." : "Je me connecte"}
+            { isSubmitting ? "Connexion en cours..." : "Je me connecte" }
           </Button>
           <div className=' flex justify-center mt-2 text-[8px]'>
                 En vous connectant, vous acceptez nos 
@@ -120,6 +154,7 @@ export default function SignIn() {
           </div>
           
       </form>
+      <Toaster/>
    </SignInLayout>
   );
 }

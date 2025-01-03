@@ -101,12 +101,12 @@ export default function ConfirmPassword() {
                             type={showPassword ? "text" : "password"}
                             placeholder='Entrer votre nouveau mot de passe'
                             {...register("password")}
-                            className={`w-full px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                            className={`w-full px-2 py-3 text-[9px] border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                 errors.password ? "border-red-500" : "border-gray-300"
                             }`}
                             />
                             <span 
-                            className="absolute top-[50px] right-3 transform -translate-y-[20px] cursor-pointer" // Positionnement absolu
+                            className="absolute top-[50px] right-3 transform -translate-y-[20px] cursor-pointer"
                             onClick={() => setShowPassword((prev) => !prev)}
                             >
                             {showPassword ? 
@@ -128,7 +128,7 @@ export default function ConfirmPassword() {
                             type={showConfirmPassword ? "text" : "password"}
                             placeholder='confirmer votre nouveau mot de passe'
                             {...register("confirmPassword")}
-                            className={`w-full px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                            className={`w-full px-2 py-3 text-[9px] border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                 errors.confirmPassword ? "border-red-500" : "border-gray-300"
                             }`}
                             />

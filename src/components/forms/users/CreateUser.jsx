@@ -7,6 +7,9 @@ import CustomingModal from '../../modals/CustomingModal';
 import { Button } from "../../ui/button";
 
 import PropTypes from 'prop-types';
+import { useFetch } from '../../../hooks/useFetch';
+
+import toast, { Toaster } from 'react-hot-toast';
 
 // Définition du schéma avec Zod
 const userSchema = z.object({
@@ -41,10 +44,10 @@ const userSchema = z.object({
     .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom d utilisateur' Conforme.")
     ,
 
-    password: z.string()
-    .nonempty("Ce champs 'Mot de passe' est réquis.")
-    .regex(/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@]).{8,}/, 
-      "Le mot de passe saisie doit avoir au moins une lettre majuscule, une minuscule, un caractère spécial (@), un chiffre et doit contenir au moins 8 caractères."),
+    // password: z.string()
+    // .nonempty("Ce champs 'Mot de passe' est réquis.")
+    // .regex(/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@]).{8,}/, 
+    //   "Le mot de passe saisie doit avoir au moins une lettre majuscule, une minuscule, un caractère spécial (@), un chiffre et doit contenir au moins 8 caractères."),
 });
 
 export default function CreateUser({setOpen}) {
@@ -62,14 +65,42 @@ export default function CreateUser({setOpen}) {
   // const [isLoading, setIsLoading] = useState(false);
   // const [open, setOpen] = useState(false);
 
-    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+
+  const { handlePost, err } = useFetch();
+
+    const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm({
         resolver: zodResolver(userSchema),
     });
 
+
+
     const handleSubmitDataFormUser = async(data) => {
-        console.log(data);
-        await new Promise(resolve =>setTimeout(resolve, 2000));
-        setOpen(false);
+      const urlToCreateUser = "http://127.0.0.1:8000/api_gateway/api/user/";
+        // console.log(data);
+        try {
+          const response = await handlePost(urlToCreateUser, data, true);
+          console.log("response crea", response);
+          if (response && response?.success) {
+
+            console.log("User created", response?.success);
+              // const token = response?.data?.access;
+              // setToken(token);
+              // const decoded = jwtDecode(token);
+              // setIsAuth(true);
+              // setUserData(decoded);
+              // // console.log("userData", hop);
+              // navigateToDashboard("/");
+
+              setOpen(false);
+          }
+          else {
+            toast.error(response.error, { duration: 5000});
+          }
+          
+        } catch (error) {
+          console.error("Error during creating",error);
+          toast.error("Erreur lors de la création de l'utilisateur", { duration: 5000 });
+        }
     };
 
     //  const handleCancel = () => {
@@ -192,7 +223,7 @@ export default function CreateUser({setOpen}) {
                                 type="text"
                                 placeholder="Définir son nom d'utilisateur"
                                 {...register('username')}
-                                className={`w-2/3 px-2 py-3 text-[10px] border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                                className={`w-2/3 px-2 py-3 text-[13px] border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
                                   ${
                                     errors.username ? "border-red-500" : "border-gray-300"
                                   }`}
@@ -205,7 +236,7 @@ export default function CreateUser({setOpen}) {
                             }
                   </div>
 
-                  <div className='mb-0 relative'>
+                  {/* <div className='mb-0 relative'>
                       <label htmlFor="password" className="block text-xs font-medium mb-0">
                                 Mot de passe<sup className='text-red-500'>*</sup>
                             </label>
@@ -214,7 +245,7 @@ export default function CreateUser({setOpen}) {
                                 placeholder="Définir son mot de passe"
                                 type={showPassword ? "text" : "password"}
                                 {...register('password')}
-                                className={`w-2/3 px-2 py-3 text-[10px] border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                                className={`w-2/3 px-2 py-3 text-[13px] border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
                                   ${
                                     errors.password ? "border-red-500" : "border-gray-300"
                                   }`}
@@ -234,11 +265,11 @@ export default function CreateUser({setOpen}) {
                                 <p className="text-red-500 text-[9px] mt-1">{errors.password.message}</p>
                               )
                             }
-                  </div>
+                  </div> */}
 
                   <div className='flex justify-end space-x-2 mt-2'>
                     <Button 
-                    className='px-2 py-2 w-30 text-white rounded-sm text-[10px] bg-green-600' 
+                    className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md hover:bg-blue-600 hover:text-white transition" 
                     type="submit"
                     disabled={isSubmitting}
                    
@@ -246,7 +277,7 @@ export default function CreateUser({setOpen}) {
                       {isSubmitting ? "Création en cours..." : "Créer un utilisateur"}
                     </Button>
                     <Button 
-                    className='px-2 py-2 w-30 text-white outline rounded-sm text-[10px] bg-gray-700' 
+                    className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md hover:bg-gray-600 hover:text-white transition" 
                     onClick={() => setOpen(false)}
                     >
                       Annuler
@@ -254,6 +285,7 @@ export default function CreateUser({setOpen}) {
 
                   </div>
                 </form>
+                <Toaster/>
           </div>
         )}
       </CustomingModal>

@@ -89,14 +89,13 @@ export default function DataTable({columns, data, className}) {
                                         {row.getVisibleCells()?.map((cell) => (
                                         <TableCell key={cell.id} >
                                             {
-                                                cell.column.columnDef.accessorKey === "isActive" ?
-                                                cell.row.original.isActive === true ? "Activé" : "Desactivé"
+                                                cell.column.columnDef.accessorKey === "is_active" ?
+                                                cell.row.original.is_active === true ? "Activé" : "Desactivé"
                                                 :
                                                 flexRender(cell.column.columnDef.cell, cell.getContext())
                                             }
                                         </TableCell>
                                         ))}
-                                        {/* <>{Action}</> */}
                                     </TableRow>
                                 ))
                             ) : (
