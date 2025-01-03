@@ -50,7 +50,7 @@ const userSchema = z.object({
 
     username: z.string()
     .nonempty('Ce champs "Nom d utilisateur" est réquis')
-    .min(5, "La valeur de ce champs doit contenir au moins 5 caractères.")
+    // .min(5, "La valeur de ce champs doit contenir au moins 5 caractères.")
     .max(100)
     .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom d utilisateur' Conforme.")
 
@@ -70,28 +70,27 @@ export const UserAction = () => {
 
     const onSubmit = async (data) => {
         const urlToUpdate = `http://127.0.0.1:8000/api_gateway/api/user/${selectedUser?.id}`;
-        console.log("url", urlToUpdate);
-        console.log("url", data);
+        // console.log("url", urlToUpdate);
+        // console.log("url", data);
         // api_gateway/api/user/33ba726a-61cc-404f-9fda-d518c05c4636/
       
-        // try {
-        //     const response = await handlePatch(urlToUpdate);
-        //     console.log("response update", response);
-        //     if (response && response?.success) {
+        try {
+            const response = await handlePatch(urlToUpdate, data);
+            console.log("response update", response);
+            if (response ) {
   
-        //       console.log("User updated", response?.success);
-                
-  
-        //         setDialogOpen(false);
-        //     }
-        //     else {
-        //       toast.error(response.error, { duration: 5000});
-        //     }
+              console.log("User updated", response);
+                setDialogOpen(false);
+                window.location.reload();
+            }
+            else {
+              toast.error(response.error, { duration: 5000});
+            }
             
-        //   } catch (error) {
-        //     console.error("Error during updated",error);
-        //     toast.error("Erreur lors de la modification de l'utilisateur", { duration: 5000 });
-        //   }
+          } catch (error) {
+            console.error("Error during updated",error);
+            toast.error("Erreur lors de la modification de l'utilisateur", { duration: 5000 });
+          }
     };
 
     const handleShowUser = (user) => {
@@ -206,6 +205,9 @@ export const UserAction = () => {
                                                     errors.last_name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
+                                                {errors.last_name && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.last_name.message}</p>
+                                                )}
                                     </div>
                                     <div>
                                                 <label htmlFor='first_name' className="text-xs">
@@ -220,6 +222,9 @@ export const UserAction = () => {
                                                         errors.first_name ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 />
+                                                {errors.first_name && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.first_name.message}</p>
+                                                )}
                                     </div>
                                     <div>
                                                 <label htmlFor='email' className="text-xs">
@@ -234,6 +239,10 @@ export const UserAction = () => {
                                                         errors.email ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 />
+                                                 {errors.email && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.email.message}</p>
+                                                )}
+
                                     </div>
                                     <div>
                                             <label htmlFor='phone' className="text-xs">
@@ -248,6 +257,9 @@ export const UserAction = () => {
                                                     errors.phone ? "border-red-500" : "border-gray-300"
                                                 }`}
                                             />
+                                           {errors.phone && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.phone.message}</p>
+                                            )}
                                     </div>
                                     <div>
                                              <label htmlFor='username' className="text-xs">
@@ -257,11 +269,15 @@ export const UserAction = () => {
                                                 id="username"
                                                 type="text"
                                                 defaultValue={selectedUser?.username}
+                                                disabled
                                                 {...register("username")}
                                                 className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.username ? "border-red-500" : "border-gray-300"
                                                 }`}
                                             />
+                                            {errors.username && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.username.message}</p>
+                                            )}
                                     </div>
                                     <div className='flex space-x-2 justify-end'>
                                         <Button 

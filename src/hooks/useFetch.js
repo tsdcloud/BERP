@@ -61,28 +61,30 @@ export const useFetch = () => {
 
 
 
-    const handlePatch = async (url) => {
+    const handlePatch = async (url, data) => {
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${token}`);
         myHeaders.append("Content-Type", "application/json");
-       
+    
         const requestOptions = {
             method: "PATCH",
             headers: myHeaders,
+            body: JSON.stringify(data), // Ajout des données à envoyer
             redirect: "follow"
-          };
+        };
+    
         try {
             let response = await fetch(url, requestOptions);
-            let result = await response.text();
-            console.log("result",result);
-            console.log("response",response);
-            if(response.ok){
-                return result;
+            let result = await response.json(); // Utiliser json() pour obtenir un objet JSON
+            console.log("result", result);
+            console.log("response", response);
+            if (response.ok) {
+                return result; // Retourner l'objet JSON complet
             }
-            setErr(result?.error);
+            setErr(result?.error || "Une erreur est survenue"); // Gestion des erreurs
             return result;
         } catch (error) {
-            setErr(error);
+            setErr(error.message || "Erreur du serveur");
             return error;
         }
     };

@@ -66,7 +66,7 @@ export default function DashboardUser() {
                             <CreateUser setOpen={setOpen} />
                             {columns && users.length > 0 && (
                                 <DataTable
-                                    className="rounded-md border w-[770px] text-xs"
+                                    className="rounded-md border w-[790px] text-xs"
                                     columns={columns}
                                     data={users} 
                                 />

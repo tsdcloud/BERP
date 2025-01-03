@@ -74,7 +74,7 @@ export default function ForgetPassword() {
           setDialogOpen(true);
         }
         else {
-          toast.error(response?.error, { duration: 5000});
+          toast.error(response?.error, { duration: 5000 });
         }
         
       } catch (error) {
