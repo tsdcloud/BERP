@@ -1,11 +1,13 @@
 import {useState} from 'react';
 import {Input} from "../ui/input";
 import { useForm } from "react-hook-form";
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeSlashIcon, EyeIcon } from "@heroicons/react/24/outline";
 import { Button } from "../ui/button";
+import toast, { Toaster } from 'react-hot-toast';
+import { useFetch } from '../../hooks/useFetch';
 import {  AlertDialog,
           AlertDialogAction,
           // AlertDialogCancel,
@@ -26,13 +28,13 @@ const confirmPasswordSchema = z.object({
     .nonempty("Ce champs 'Mot de passe' est réquis.")
     .regex(/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@]).{8,}/, 
       "Le mot de passe saisie doit avoir au moins une lettre majuscule, une minuscule, un caractère spécial (@), un chiffre et doit contenir au moins 8 caractères."),
-    confirmPassword: z.string()
+    confirm_password: z.string()
     .nonempty("Ce champs 'Confirmation de mot de passe' est réquis.")
     .regex(/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@]).{8,}/, 
       "La confirmation du mot de passe saisie doit avoir au moins une lettre majuscule, une minuscule, un caractère spécial (@), un chiffre et doit contenir au moins 8 caractères."),
-}).refine(data => data.password === data.confirmPassword, {
+}).refine(data => data.password === data.confirm_password, {
     message: "Les mots de passe doivent correspondre.",
-    path: ["confirmPassword"], // Indiquez le champ où l'erreur doit apparaître
+    path: ["confirm_password"], 
 });
 
 
@@ -43,6 +45,13 @@ export default function ConfirmPassword() {
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const token = queryParams.get('token');
+
+
+  const { handlePost } = useFetch();
 
   const returnDialog = () =>{
 
@@ -73,9 +82,21 @@ export default function ConfirmPassword() {
     });
 
   const handleSubmitConfirmPassword = async(data) => {
-      console.log(data);
-      await new Promise(resolve =>setTimeout(resolve, 2000));
-      setDialogOpen(true);
+      const urlToSetPassword = `http://127.0.0.1:8000/api_gateway/api/set_password/?token=${token}`;
+      try {
+        const response = await handlePost(urlToSetPassword, data, false);
+        // console.log("rio",response);
+        if (response && response?.message ) {
+          setDialogOpen(true);
+        }
+        else {
+          toast.error(response?.error, { duration: 5000});
+        }
+        
+      } catch (error) {
+        console.error("Error during sign-in",error);
+        toast.error("Erreur lors de la connexion", { duration: 5000 });
+      }
   };
 
 
@@ -120,16 +141,16 @@ export default function ConfirmPassword() {
                             
                 </div>
                 <div className="relative mb-3">
-                            <label htmlFor="confirmPassword" className="block text-gray-700 font-medium mb-1">
+                            <label htmlFor="confirm_password" className="block text-gray-700 font-medium mb-1">
                                  confirmer votre nouveau mot de passe<sup className='text-red-500'>*</sup>
                             </label>
                             <Input
-                            id="confirmPassword"
+                            id="confirm_password"
                             type={showConfirmPassword ? "text" : "password"}
                             placeholder='confirmer votre nouveau mot de passe'
-                            {...register("confirmPassword")}
+                            {...register("confirm_password")}
                             className={`w-full px-2 py-3 text-[9px] border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                errors.confirmPassword ? "border-red-500" : "border-gray-300"
+                                errors.confirm_password ? "border-red-500" : "border-gray-300"
                             }`}
                             />
                             <span 
@@ -141,8 +162,8 @@ export default function ConfirmPassword() {
                                 (<EyeIcon className="h-4 w-4 text-gray-500" />) 
                             }
                             </span>
-                            {errors.confirmPassword && (
-                            <p className="text-red-500 text-[9px] mt-1">{errors.confirmPassword.message}</p>
+                            {errors.confirm_password && (
+                            <p className="text-red-500 text-[9px] mt-1">{errors.confirm_password.message}</p>
                             )}
                             
                 </div>
@@ -162,6 +183,7 @@ export default function ConfirmPassword() {
 
           </form>
           {returnDialog()}
+          <Toaster/>
      </SignInLayout>
   );
 }

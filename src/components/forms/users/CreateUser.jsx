@@ -2,9 +2,9 @@ import {useState} from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { EyeSlashIcon, EyeIcon } from "@heroicons/react/24/outline";
 import CustomingModal from '../../modals/CustomingModal';
 import { Button } from "../../ui/button";
+import { useNavigate } from 'react-router-dom';
 
 import PropTypes from 'prop-types';
 import { useFetch } from '../../../hooks/useFetch';
@@ -15,13 +15,13 @@ import toast, { Toaster } from 'react-hot-toast';
 const userSchema = z.object({
     last_name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
-    .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
+    .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
     .max(100)
     .regex(/^[a-zA-Z]+$/, "Ce champ doit être un 'nom' conforme."),
 
     first_name: z.string()
     .nonempty("Ce champs 'Pénom' est réquis")
-    .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
+    .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
     .max(100)
     .regex(/^[a-zA-Z]+$/, "Ce champs doit être un 'prénom' conforme"),
 
@@ -39,7 +39,7 @@ const userSchema = z.object({
 
     username: z.string()
     .nonempty('Ce champs "Nom d utilisateur" est réquis')
-    .min(5, "La valeur de ce champs doit contenir au moins 5 caractères.")
+    .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
     .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom d utilisateur' Conforme.")
     ,
@@ -52,27 +52,19 @@ const userSchema = z.object({
 
 export default function CreateUser({setOpen}) {
 
-  // Ajout de la validation des props
-  CreateUser.propTypes = {
-    setOpen: PropTypes.func.isRequired, // Validation de la prop setOpen
-  };
-
-
-  const [showPassword, setShowPassword] = useState(false);
-
-  // const [modalOpen, setModalOpen] = useState(true);
-  // const [confirmLoading, setConfirmLoading] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [open, setOpen] = useState(false);
-
-
-  const { handlePost, err } = useFetch();
+  // const navigateToDashboard = useNavigate();
+  const { handlePost } = useFetch();
 
     const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm({
         resolver: zodResolver(userSchema),
     });
 
 
+    const handleCancel = (e) =>{
+      e.preventDefault();
+      setOpen(false);
+      console.log("Children modal is false");
+    };
 
     const handleSubmitDataFormUser = async(data) => {
       const urlToCreateUser = "http://127.0.0.1:8000/api_gateway/api/user/";
@@ -81,17 +73,12 @@ export default function CreateUser({setOpen}) {
           const response = await handlePost(urlToCreateUser, data, true);
           console.log("response crea", response);
           if (response && response?.success) {
-
+            toast.success("Utilisateur crée avec succès", {duration:2000});
             console.log("User created", response?.success);
-              // const token = response?.data?.access;
-              // setToken(token);
-              // const decoded = jwtDecode(token);
-              // setIsAuth(true);
-              // setUserData(decoded);
-              // // console.log("userData", hop);
-              // navigateToDashboard("/");
+            setOpen(false);
+            // navigateToDashboard("/");
+            window.location.reload();
 
-              setOpen(false);
           }
           else {
             toast.error(response.error, { duration: 5000});
@@ -113,14 +100,11 @@ export default function CreateUser({setOpen}) {
       <CustomingModal
         title="Ajouter un utilisateur"
         buttonText="Créer un utilisateur"
-        // onOk={handleSubmit(handleSubmitDataFormUser)}
-        // onCancel={handleCancel}
-        // isOpen={open}
       >
-        {({ setOpen }) => (
+        
 
           <div className='space-y-0'>
-                <p className='text-[10px] mb-5'>Veuillez correctement renseigner les informations de l'utilisateur.</p>
+                <p className='text-[12px] mb-2'>Veuillez correctement renseigner les informations de l'utilisateur.</p>
                 <form onSubmit={handleSubmit(handleSubmitDataFormUser)} className='sm:bg-blue-200 md:bg-transparent'>
 
                   <div className='mb-1'>
@@ -278,7 +262,7 @@ export default function CreateUser({setOpen}) {
                     </Button>
                     <Button 
                     className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md hover:bg-gray-600 hover:text-white transition" 
-                    onClick={() => setOpen(false)}
+                    onClick={ handleCancel }
                     >
                       Annuler
                     </Button>
@@ -287,7 +271,10 @@ export default function CreateUser({setOpen}) {
                 </form>
                 <Toaster/>
           </div>
-        )}
       </CustomingModal>
     );
 }
+ // Ajout de la validation des props
+ CreateUser.propTypes = {
+  setOpen: PropTypes.func.isRequired, // Validation de la prop setOpen
+};

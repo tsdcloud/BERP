@@ -320,58 +320,49 @@ export const UserAction = () => {
                         </AlertDialogDescription>
 
                     </AlertDialogHeader>
-                    {/* <AlertDialogFooter>
-                        {isEdited ? (
+                    <AlertDialogFooter>
+                        {
+                        isEdited === false ? (
                             <div className='flex space-x-2'>
-                                <Button 
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                   
-                                    className="border-2 px-4 py-3 border-green-900 outline-green-900 text-green-900 text-xs shadow-md hover:bg-green-700 hover:text-white transition"
-                                    >
-                                       {isSubmitting ? "validation en cours..." : "valider"}
-                                </Button>
-                                
-                                <AlertDialogCancel 
-                                    className="border-2 border-black outline-black text-black text-xs shadow-md hover:bg-black hover:text-white transition"
-                                    onClick={() => setDialogOpen(false)}>
-                                        Retour
-                                </AlertDialogCancel>
+                                            <div className='flex space-x-2'>
+                                            { 
+                                                selectedUser?.is_active == false ? 
+                                                    (
+                                                            <AlertDialogAction 
+                                                                className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md hover:bg-blue-600 hover:text-white transition"
+                                                                onClick={() => activedUser(selectedUser.id)}>
+                                                                    Activer
+                                                            </AlertDialogAction>
+
+                                                    ):(
+
+                                                            <AlertDialogAction 
+                                                                className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md hover:bg-gray-600 hover:text-white transition"
+                                                                onClick={() => disabledUser(selectedUser.id)}>
+                                                                    Désactiver
+                                                            </AlertDialogAction>
+                                                    )
+                                            
+                                            }
+                                            
+                                           </div>
+                                            <AlertDialogAction 
+                                                className="border-2 border-red-900 outline-red-700 text-red-900 text-xs shadow-md hover:bg-red-600 hover:text-white transition"
+                                                onClick={() => deletedUser(selectedUser.id)}>
+                                                    Supprimer
+                                            </AlertDialogAction>
+                                            <AlertDialogCancel 
+                                                className="border-2 border-black outline-black text-black text-xs shadow-md hover:bg-black hover:text-white transition"
+                                                onClick={() => setDialogOpen(false)}>
+                                                    Retour
+                                            </AlertDialogCancel>
+                                            
                             </div>
                         ) : (
-                            <div className='flex space-x-2'>
-                                { 
-                                    selectedUser?.is_active == false ? 
-                                        (
-                                                <AlertDialogAction 
-                                                    className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md hover:bg-blue-600 hover:text-white transition"
-                                                    onClick={() => activedUser(selectedUser.id)}>
-                                                        Activer
-                                                </AlertDialogAction>
-
-                                        ):(
-
-                                                <AlertDialogAction 
-                                                    className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md hover:bg-gray-600 hover:text-white transition"
-                                                    onClick={() => disabledUser(selectedUser.id)}>
-                                                        Désactiver
-                                                </AlertDialogAction>
-                                        )
-                                
-                                }
-                                <AlertDialogAction 
-                                    className="border-2 border-red-900 outline-red-700 text-red-900 text-xs shadow-md hover:bg-red-600 hover:text-white transition"
-                                    onClick={() => deletedUser(selectedUser.id)}>
-                                        Supprimer
-                                </AlertDialogAction>
-                                <AlertDialogCancel 
-                                    className="border-2 border-black outline-black text-black text-xs shadow-md hover:bg-black hover:text-white transition"
-                                    onClick={() => setDialogOpen(false)}>
-                                        Retour
-                                </AlertDialogCancel>
-                            </div>
-                        )}
-                    </AlertDialogFooter> */}
+                           null
+                        )
+                        }
+                    </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
         );
