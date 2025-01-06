@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState} from 'react'
 import {Button} from '../ui/button';
 import {
     Dialog,
@@ -10,16 +10,22 @@ import {
     DialogTrigger,
 } from "../ui/dialog"
 
-const Dialogue = ({header, content, footer, buttonText}) => {
+const Dialogue = ({header, content, footer, buttonText, isOpenned}) => {
+  const [isOpen, setIsOpen] = useState(isOpenned);
+
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-            <Button variant="outline" className="bg-primary text-white font-normal">{buttonText}</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>{header}</DialogHeader>
-        {content}
-        <DialogFooter>{footer}</DialogFooter>
+            <Button className="bg-primary text-white font-normal outline-none text-xs" onClick={() => setIsOpen(!isOpenned)} id="close-consommable">{buttonText}</Button>
+        </DialogTrigger>
+        <DialogContent>
+            <DialogHeader>{header}</DialogHeader>
+            {React.cloneElement(content, { onClose: handleClose })}
+            <DialogFooter>{footer}</DialogFooter>
         </DialogContent>
     </Dialog>
   )

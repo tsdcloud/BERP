@@ -20,8 +20,9 @@ TableHeader.displayName = "TableHeader"
 const TableBody = React.forwardRef(({ className, ...props }, ref) => (
   <tbody
     ref={ref}
-    className={cn("[&_tr:last-child]:border-0", className)}
-    {...props} />
+    className={cn("[&_tr:last-child]:border-0 max-h-[10vh]", className)}
+    {...props} 
+    />
 ))
 TableBody.displayName = "TableBody"
 
