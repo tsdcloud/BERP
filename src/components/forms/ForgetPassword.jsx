@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../ui/button";
+import toast, { Toaster } from 'react-hot-toast';
+import { useFetch } from '../../hooks/useFetch';
 import {  AlertDialog,
           AlertDialogAction,
           // AlertDialogCancel,
@@ -32,6 +34,8 @@ const resetPasswordSchema = z.object({
 export default function ForgetPassword() {
 
   const [isDialogOpen, setDialogOpen] = useState(false);
+
+  const { handlePost } = useFetch();
 
   
   const returnDialog = () =>{
@@ -62,9 +66,21 @@ export default function ForgetPassword() {
     });
 
   const handleSubmitEmailForReseting = async(data) => {
-      console.log(data);
-      await new Promise(resolve =>setTimeout(resolve, 2000));
-      setDialogOpen(true);
+      const urlToResetPassword = "http://127.0.0.1:8000/api_gateway/api/email_reset_password/";
+      try {
+        const response = await handlePost(urlToResetPassword, data, false);
+        console.log("reset",response);
+        if (response && response?.success ) {
+          setDialogOpen(true);
+        }
+        else {
+          toast.error(response?.error, { duration: 5000 });
+        }
+        
+      } catch (error) {
+        console.error("Error during sign-in",error);
+        toast.error("Erreur lors de l'envoi", { duration: 5000 });
+      }
   };
 
 
@@ -117,6 +133,7 @@ export default function ForgetPassword() {
 
           </form>
           {returnDialog()}
+          <Toaster/>
      </SignInLayout>
   );
 }

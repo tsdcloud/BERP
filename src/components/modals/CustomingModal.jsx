@@ -1,20 +1,12 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button, Modal } from 'antd';
 import PropTypes from 'prop-types';
 
 export default function CustomingModal({ children, title, buttonText }) {
-
-    // Ajout de la validation des props
-    CustomingModal.propTypes = {
-        children: PropTypes.func.isRequired,
-        title: PropTypes.string.isRequired,
-        buttonText: PropTypes.string.isRequired,
-    };
-
     const [open, setOpen] = useState(false);
-    // const [confirmLoading, setConfirmLoading] = useState(false);
  
     const showModal = () => {
+        console.log("open modal is true");
         setOpen(true);
     };
 
@@ -22,11 +14,6 @@ export default function CustomingModal({ children, title, buttonText }) {
         console.log('Bouton x annuler cliqué');
         setOpen(false);
     };
-
-    // useEffect(()=>{
-    //     setOpen(isOpen);
-    //     console.log(isOpen);
-    // },[isOpen]);
 
     return (
         <div>
@@ -36,13 +23,18 @@ export default function CustomingModal({ children, title, buttonText }) {
             <Modal
                 title={title}
                 open={open}
-                // onOk={handleOk}
-                // confirmLoading={confirmLoading}
                 onCancel={handleCancel}
-                footer={()=>{}}
+                footer={null}
             >
-                {children({ setOpen })}
+                {/* {children} */}
+                {React.cloneElement(children, { setOpen })}
             </Modal>
         </div>
     );
 }
+   // Ajout de la validation des props
+   CustomingModal.propTypes = {
+    children: PropTypes.func.isRequired,
+    title: PropTypes.string.isRequired,
+    buttonText: PropTypes.string.isRequired,
+};

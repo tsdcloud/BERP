@@ -50,7 +50,7 @@ const userSchema = z.object({
 
     username: z.string()
     .nonempty('Ce champs "Nom d utilisateur" est réquis')
-    .min(5, "La valeur de ce champs doit contenir au moins 5 caractères.")
+    // .min(5, "La valeur de ce champs doit contenir au moins 5 caractères.")
     .max(100)
     .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom d utilisateur' Conforme.")
 
@@ -70,28 +70,27 @@ export const UserAction = () => {
 
     const onSubmit = async (data) => {
         const urlToUpdate = `http://127.0.0.1:8000/api_gateway/api/user/${selectedUser?.id}`;
-        console.log("url", urlToUpdate);
-        console.log("url", data);
+        // console.log("url", urlToUpdate);
+        // console.log("url", data);
         // api_gateway/api/user/33ba726a-61cc-404f-9fda-d518c05c4636/
       
-        // try {
-        //     const response = await handlePatch(urlToUpdate);
-        //     console.log("response update", response);
-        //     if (response && response?.success) {
+        try {
+            const response = await handlePatch(urlToUpdate, data);
+            console.log("response update", response);
+            if (response ) {
   
-        //       console.log("User updated", response?.success);
-                
-  
-        //         setDialogOpen(false);
-        //     }
-        //     else {
-        //       toast.error(response.error, { duration: 5000});
-        //     }
+              console.log("User updated", response);
+                setDialogOpen(false);
+                window.location.reload();
+            }
+            else {
+              toast.error(response.error, { duration: 5000});
+            }
             
-        //   } catch (error) {
-        //     console.error("Error during updated",error);
-        //     toast.error("Erreur lors de la modification de l'utilisateur", { duration: 5000 });
-        //   }
+          } catch (error) {
+            console.error("Error during updated",error);
+            toast.error("Erreur lors de la modification de l'utilisateur", { duration: 5000 });
+          }
     };
 
     const handleShowUser = (user) => {
@@ -206,6 +205,9 @@ export const UserAction = () => {
                                                     errors.last_name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
+                                                {errors.last_name && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.last_name.message}</p>
+                                                )}
                                     </div>
                                     <div>
                                                 <label htmlFor='first_name' className="text-xs">
@@ -220,6 +222,9 @@ export const UserAction = () => {
                                                         errors.first_name ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 />
+                                                {errors.first_name && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.first_name.message}</p>
+                                                )}
                                     </div>
                                     <div>
                                                 <label htmlFor='email' className="text-xs">
@@ -234,6 +239,10 @@ export const UserAction = () => {
                                                         errors.email ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 />
+                                                 {errors.email && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.email.message}</p>
+                                                )}
+
                                     </div>
                                     <div>
                                             <label htmlFor='phone' className="text-xs">
@@ -248,6 +257,9 @@ export const UserAction = () => {
                                                     errors.phone ? "border-red-500" : "border-gray-300"
                                                 }`}
                                             />
+                                           {errors.phone && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.phone.message}</p>
+                                            )}
                                     </div>
                                     <div>
                                              <label htmlFor='username' className="text-xs">
@@ -257,11 +269,15 @@ export const UserAction = () => {
                                                 id="username"
                                                 type="text"
                                                 defaultValue={selectedUser?.username}
+                                                disabled
                                                 {...register("username")}
                                                 className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.username ? "border-red-500" : "border-gray-300"
                                                 }`}
                                             />
+                                            {errors.username && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.username.message}</p>
+                                            )}
                                     </div>
                                     <div className='flex space-x-2 justify-end'>
                                         <Button 
@@ -320,58 +336,49 @@ export const UserAction = () => {
                         </AlertDialogDescription>
 
                     </AlertDialogHeader>
-                    {/* <AlertDialogFooter>
-                        {isEdited ? (
+                    <AlertDialogFooter>
+                        {
+                        isEdited === false ? (
                             <div className='flex space-x-2'>
-                                <Button 
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                   
-                                    className="border-2 px-4 py-3 border-green-900 outline-green-900 text-green-900 text-xs shadow-md hover:bg-green-700 hover:text-white transition"
-                                    >
-                                       {isSubmitting ? "validation en cours..." : "valider"}
-                                </Button>
-                                
-                                <AlertDialogCancel 
-                                    className="border-2 border-black outline-black text-black text-xs shadow-md hover:bg-black hover:text-white transition"
-                                    onClick={() => setDialogOpen(false)}>
-                                        Retour
-                                </AlertDialogCancel>
+                                            <div className='flex space-x-2'>
+                                            { 
+                                                selectedUser?.is_active == false ? 
+                                                    (
+                                                            <AlertDialogAction 
+                                                                className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md hover:bg-blue-600 hover:text-white transition"
+                                                                onClick={() => activedUser(selectedUser.id)}>
+                                                                    Activer
+                                                            </AlertDialogAction>
+
+                                                    ):(
+
+                                                            <AlertDialogAction 
+                                                                className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md hover:bg-gray-600 hover:text-white transition"
+                                                                onClick={() => disabledUser(selectedUser.id)}>
+                                                                    Désactiver
+                                                            </AlertDialogAction>
+                                                    )
+                                            
+                                            }
+                                            
+                                           </div>
+                                            <AlertDialogAction 
+                                                className="border-2 border-red-900 outline-red-700 text-red-900 text-xs shadow-md hover:bg-red-600 hover:text-white transition"
+                                                onClick={() => deletedUser(selectedUser.id)}>
+                                                    Supprimer
+                                            </AlertDialogAction>
+                                            <AlertDialogCancel 
+                                                className="border-2 border-black outline-black text-black text-xs shadow-md hover:bg-black hover:text-white transition"
+                                                onClick={() => setDialogOpen(false)}>
+                                                    Retour
+                                            </AlertDialogCancel>
+                                            
                             </div>
                         ) : (
-                            <div className='flex space-x-2'>
-                                { 
-                                    selectedUser?.is_active == false ? 
-                                        (
-                                                <AlertDialogAction 
-                                                    className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md hover:bg-blue-600 hover:text-white transition"
-                                                    onClick={() => activedUser(selectedUser.id)}>
-                                                        Activer
-                                                </AlertDialogAction>
-
-                                        ):(
-
-                                                <AlertDialogAction 
-                                                    className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md hover:bg-gray-600 hover:text-white transition"
-                                                    onClick={() => disabledUser(selectedUser.id)}>
-                                                        Désactiver
-                                                </AlertDialogAction>
-                                        )
-                                
-                                }
-                                <AlertDialogAction 
-                                    className="border-2 border-red-900 outline-red-700 text-red-900 text-xs shadow-md hover:bg-red-600 hover:text-white transition"
-                                    onClick={() => deletedUser(selectedUser.id)}>
-                                        Supprimer
-                                </AlertDialogAction>
-                                <AlertDialogCancel 
-                                    className="border-2 border-black outline-black text-black text-xs shadow-md hover:bg-black hover:text-white transition"
-                                    onClick={() => setDialogOpen(false)}>
-                                        Retour
-                                </AlertDialogCancel>
-                            </div>
-                        )}
-                    </AlertDialogFooter> */}
+                           null
+                        )
+                        }
+                    </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
         );
