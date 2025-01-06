@@ -31,7 +31,7 @@ const Tabs = () => {
   return (
     <div className='flex gap-2 items-center'>
         {
-            links.map((link, index) => <div key={index} className={`px-2 p-1 ${link?.isActive ? "bg-gray-200" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm`}onClick={()=>navigate(link?.link)}>{link?.name}</div>)
+            links.map((link, index) => <div key={index} className={`px-2 p-1 ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm`}onClick={()=>navigate(link?.link)}>{link?.name}</div>)
         }
     </div>
   )

@@ -8,14 +8,16 @@ import InitiateForm from '../../components/incidents/Consommable/InitiateForm';
 import Tabs from '../../components/incidents/Tabs';
 import Datalist from '../../components/incidents/Consommable/Datalist';
 import { useFetch } from '../../hooks/useFetch';
+import { URLS } from '../../../configUrl';
 
 const Consommable = () =>{
     const {handleFetch} = useFetch();
     const [consommables, setConsommables] = useState([]);
     const fetchConsommable= async () => {
-        let url;
+        let url = `${URLS.INCIDENT_API}/consommables`;
         try {
-           const response = handleFetch(url); 
+           const response = await handleFetch(url); 
+           console.log(response);
         } catch (error) {
             console.log(error)
         }
