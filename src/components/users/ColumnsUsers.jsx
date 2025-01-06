@@ -59,6 +59,7 @@ const userSchema = z.object({
 // Fonction principale pour gérer les actions utilisateur
 export const UserAction = () => {
     const [isDialogOpen, setDialogOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
     const [selectedUser, setSelectedUser] = useState({});
 
@@ -66,13 +67,10 @@ export const UserAction = () => {
         resolver: zodResolver(userSchema),
     });
 
-   const { handlePatch } = useFetch();
+   const { handlePatch, handleDelete } = useFetch();
 
     const onSubmit = async (data) => {
         const urlToUpdate = `http://127.0.0.1:8000/api_gateway/api/user/${selectedUser?.id}`;
-        // console.log("url", urlToUpdate);
-        // console.log("url", data);
-        // api_gateway/api/user/33ba726a-61cc-404f-9fda-d518c05c4636/
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -106,30 +104,43 @@ export const UserAction = () => {
         setDialogOpen(true);
     };
 
-
-
     const disabledUser = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cet utilisateur ?");
+            if (confirmation) {
+                const urlToDisabledUser = `http://127.0.0.1:8000/api_gateway/api/user/${id}`;
 
-        if (confirmation) {
-              try{
-                setDialogOpen(false);
-                //   await handlePatch(url)
-                //   navigateToMyEvent(`/events/${eventId}`)
-              }
-              catch(error){
-                  console.error("Erreur lors de la désactivation de cet utilisateur:", error);
-              }
-              finally{
-                // setIsLoading(false);
-                console.log("okay");
-                }
+                        try {
+                                const response = await handleDelete(urlToDisabledUser);
+                                console.log("response for disabled", response);
+                                if (response && response?.message) {
+                                    console.log("User diabled", response);
+                                    console.log("L'utilisateur a été désactivé.", id);
+                                    toast.success(response?.message, { duration: 5000});
+                                    isDialogOpen && setDialogOpen(false);
+                                    window.location.reload();
+                                }
+                                else {
+                                toast.error(response.error, { duration: 5000});
+                                }
+                                isDialogOpen && setDialogOpen(false);
+                        }
+                        catch(error){
+                            console.error("Erreur lors de la désactivation de cet utilisateur:", error);
+                            toast.error("Erreur lors de la désactivation de l'utilisateur", { duration: 5000 });
+                        }
 
-                console.log("L'utilisateur a été désactivé.", id);
-                } else {
-                console.log("La désactivation a été annulée.");
+                        finally{
+                            setIsLoading(false);
+                            
+                            }
+
+                } 
+                else {
+                    console.log("La désactivation a été annulée.");
                 }
     };
+
+
 
     const activedUser = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cet utilisateur ?");
@@ -155,27 +166,41 @@ export const UserAction = () => {
     };
 
 
-    const deletedUser = (id) => {
+    const deletedUser = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?");
 
         if (confirmation) {
-              try{
-                setDialogOpen(false);
-                //   await handlePatch(url)
-                //   navigateToMyEvent(`/events/${eventId}`)
-              }
-              catch(error){
-                  console.error("Erreur lors de la suppression de cet utilisateur:", error);
-              }
-              finally{
-                // setIsLoading(false);
-                console.log("okay");
-                }
+            const urlToDeleteUser = `http://127.0.0.1:8000/api_gateway/api/user/${id}/?delete=true`;
 
-                console.log("L'utilisateur a été supprimé.", id);
-                } else {
+                    try {
+                            const response = await handleDelete(urlToDeleteUser);
+                            // console.log("response for deleting", response);
+                            if (response && response?.message) {
+                                // console.log("User deleted", response);
+                                // console.log("L'utilisateur a été supprimé.", id);
+                                toast.success(response?.message, { duration: 5000});
+                                isDialogOpen && setDialogOpen(false);
+                                window.location.reload();
+                            }
+                            else {
+                            toast.error(response.error, { duration: 5000});
+                            }
+                            setDialogOpen(false);
+                    }
+                    catch(error){
+                        console.error("Erreur lors de la suppression de cet utilisateur:", error);
+                        toast.error("Erreur lors de la suppression de l'utilisateur", { duration: 5000 });
+                    }
+
+                    finally{
+                        setIsLoading(false);
+                        
+                        }
+
+            } 
+            else {
                 console.log("La suppression a été annulée.");
-                }
+            }
     };
 
 
@@ -410,9 +435,11 @@ export const UserAction = () => {
 
 
     return {
-        showDialogUser,
-        columns, // Exporter les colonnes pour utilisation ailleurs
-        handleShowUser,
-        handleEditUser,
+
+                showDialogUser,
+                columns, // Exporter les colonnes pour utilisation ailleurs
+                handleShowUser,
+                handleEditUser,
+             
     };
 };

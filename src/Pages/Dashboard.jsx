@@ -9,27 +9,20 @@ import Preloader from '../components/Preloader';
 export default function Dashboard() {
   // const [isLoading, setIsLoading] =useState(false);
   return (
-        <>
-         
-                {/* <div className='flex justify-center'>
-                  <Preloader className="w-[200px] h-[200px]"/>
-                  <h6>Chargement...</h6>
-                </div> */}
+          
+                <div className='m-4 space-y-8 items-center'>
+                   <Header/>
+                   
+                     <Input className=" w-[300px] m-5 my-1"  placeholder="Rechercher..." />
 
-              
-                <>
-                  <Header/>
-                    <div className='m-6 flex justify-end'>
-                        <Input className=" w-[300px]" 
-                          placeholder="Rechercher..." />
-                      
-                    </div>
-                    <div className='m-6'>
+                    <div className=' m-4'>
                       <DashboardUser/>
                     </div>
-                    <Footer className="flex space-x-2 justify-center p-2"/>
-                </>
-             
-        </>
+
+                    <Footer className=" m-4  mt-7 flex space-x-2 justify-center p-4"/>
+                </div>
+
+              
+               
   );
-}
+};

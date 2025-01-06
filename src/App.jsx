@@ -1,5 +1,6 @@
 import './index.css';
 import { useContext } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import ProtectedRoutes from './hooks/ProtectedRoutes';
@@ -19,6 +20,7 @@ function App() {
 
 
   return (
+    <>
       <Router>
 
         <Routes>
@@ -26,6 +28,7 @@ function App() {
             <Route path='/' element={<Dashboard/>} exact/>
             <Route path='/chooseEntity' element={<ChooseEntity/>} exact/>
           </Route>
+          
           <Route path='/signIn' element={<SignIn/>}/>
           <Route path='/forgetPassword' element={<ForgetPassword/>} exact/>
           <Route path='/confirmPassword' element={<ConfirmPassword/>} exact/>
@@ -36,6 +39,8 @@ function App() {
 
          
       </Router>
+      <Toaster/>
+    </>
   );
 }
 
