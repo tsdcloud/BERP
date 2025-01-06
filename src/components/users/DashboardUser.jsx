@@ -51,28 +51,46 @@ export default function DashboardUser() {
     }, []);
 
     return (
-        <div className=''>
+        <div className='flex sm:justify-normal justify-center sm:items-start items-center m-0 lg:m-4 mb-7'>
             {
 
                 isLoading ? (
                     <div className='flex flex-col justify-center items-center'>
-                        <Preloader className="w-[200px] h-[200px]"/>
+                        <Preloader className="w-[100px] h-[100px]"/>
                         <h6>Chargement...</h6>
                     </div>
                 ) : (
-                    <div className='m-1 space-y-3'>
-                        <h1 className='text-sm mb-2'>Gestion des utilisateurs</h1>
-                        <div className='space-y-2'>
-                            <CreateUser setOpen={setOpen} />
-                            {columns && users.length > 0 && (
-                                <DataTable
-                                    className="rounded-md border w-[790px] text-xs"
-                                    columns={columns}
-                                    data={users} 
-                                />
-                            )}
+                    <div className='flex sm:flex-col lg:flex-row'>
+
+                        <div className='m-1 space-y-3 '>
+                            <h1 className='text-sm mb-2'>Gestion des utilisateurs</h1>
+                            <div className='space-y-2'>
+                                <CreateUser setOpen={setOpen} />
+                                {columns && users.length > 0 && (
+                                    <DataTable
+                                        className="rounded-md border w-[670px] text-xs"
+                                        columns={columns}
+                                        data={users} 
+                                    />
+                                )}
+                            </div>
+                            {showDialogUser()}
                         </div>
-                        {showDialogUser()}
+                        <div className='m-1 space-y-3 '>
+                            <h1 className='text-sm mb-2'>Gestion des persmissions</h1>
+                            <div className='space-y-2'>
+                                <CreateUser setOpen={setOpen} />
+                                {columns && users.length > 0 && (
+                                    <DataTable
+                                        className="rounded-md border w-[670px] text-xs"
+                                        columns={columns}
+                                        data={users} 
+                                    />
+                                )}
+                            </div>
+                            {/* {showDialogUser()} */}
+                        </div>
+
                     </div>
                 )
             }

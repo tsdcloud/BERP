@@ -61,7 +61,6 @@ export default function SignIn() {
                   const decoded = jwtDecode(token);
                   setIsAuth(true);
                   setUserData(decoded);
-                  // console.log("userData", hop);
                   navigateToDashboard("/");
               }
               else {

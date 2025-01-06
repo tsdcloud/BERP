@@ -54,14 +54,14 @@ export const useFetch = () => {
             let result = await response.json();
             return result;
         } catch (error) {
-            throw new Error("Erreur du serveur");
+            throw new Error("Erreur du serveur", error);
         }
     };
 
 
 
 
-    const handlePatch = async (url, data) => {
+    const handlePatch = async (url, data = null) => {
         const myHeaders = new Headers();
         myHeaders.append("Authorization", `Bearer ${token}`);
         myHeaders.append("Content-Type", "application/json");
@@ -69,9 +69,13 @@ export const useFetch = () => {
         const requestOptions = {
             method: "PATCH",
             headers: myHeaders,
-            body: JSON.stringify(data), // Ajout des données à envoyer
             redirect: "follow"
         };
+    
+        // Ajouter le corps uniquement si des données sont fournies
+        if (data) {
+            requestOptions.body = JSON.stringify(data);
+        }
     
         try {
             let response = await fetch(url, requestOptions);
@@ -117,5 +121,31 @@ export const useFetch = () => {
         }
     };
 
-  return { handleFetch, handlePost, err, setErr, handlePostFile, handlePatch };
+    const handleDelete = async (url) => {
+        const myHeaders = new Headers();
+        myHeaders.append("Authorization", `Bearer ${token}`);
+        myHeaders.append("Content-Type", "application/json");
+
+        const requestOptions = {
+            method: 'DELETE',
+            headers: myHeaders,
+            redirect: 'follow'
+          };
+          
+          try {
+            let response = await fetch(url, requestOptions);
+            let result = await response.json(); 
+            if(response.ok){
+                return result;
+            }
+            setErr(result);
+            return result;
+        } catch (error) {
+            setErr(error);
+            return error;
+        }
+       
+    };
+
+  return { handleFetch, handlePost, err, setErr, handlePostFile, handlePatch, handleDelete };
 };
