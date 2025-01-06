@@ -63,7 +63,7 @@ export default function DataTable({columns, data, className}) {
     <div className={className}>
        
         <Input
-          placeholder="Rechercher un utilisateur..."
+          placeholder="Effectuer une recherche..."
           value={globalFilter}
           onChange={e => tableModel.setGlobalFilter(String(e.target.value))}
           className="w-[250px] m-2 text-xs"

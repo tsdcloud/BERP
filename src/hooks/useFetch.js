@@ -23,6 +23,7 @@ export const useFetch = () => {
             let response = await fetch(url, requestOptions);
             let result = await response.json(); 
             if(response.ok){
+                result.status = response.status;
                 return result;
             }
             setErr(result);
@@ -52,6 +53,7 @@ export const useFetch = () => {
         try {
             let response = await fetch(url, requestOptions);
             let result = await response.json();
+            result.status = response.status;
             return result;
         } catch (error) {
             throw new Error("Erreur du serveur", error);

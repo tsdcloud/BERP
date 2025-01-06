@@ -19,6 +19,7 @@ export default {
   			foreground: 'hsl(var(--foreground))',
 			primary : "#1e3a8a",
 			secondary : "#008000",
+			// outline : "outline-blue-700",
 			cancel : "6C757D",
   			card: {
   				DEFAULT: 'hsl(var(--card))',

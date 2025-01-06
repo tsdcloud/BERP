@@ -1,39 +1,31 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Button } from "../ui/button";
-import { 
-        DropdownMenu,
-        DropdownMenuContent,
-        DropdownMenuGroup,
-        DropdownMenuItem,
-        DropdownMenuLabel,
-        DropdownMenuPortal,
-        DropdownMenuSeparator,
-        DropdownMenuShortcut,
-        DropdownMenuSub,
-        DropdownMenuSubContent,
-        DropdownMenuSubTrigger,
-        DropdownMenuTrigger,
-
-        } from "../ui/dropdown-menu";
 import { AUTHCONTEXT } from '../../contexts/AuthProvider';
 import { jwtDecode } from 'jwt-decode';
 import { Link } from 'react-router-dom';
 
 export default function Header() {
-        const [userDataDecoded, setUserData] = useState();
+        const { userData } = useContext(AUTHCONTEXT);
+        const [userDataDecoded, setUserDataDecoded] = useState();
         const [dropdownOpen, setDropdownOpen] = useState(false);
+
+        useEffect(()=>{
+
+                console.log("header userdata", userData);
+                const decoded = jwtDecode(userData);
+                console.log("decoded", decoded);
+                // const { last_name, first_name, ...rest } = decoded;
+                setUserDataDecoded(decoded);
+
+
+        }, [userData]);
+
 
 
         const toggleDropdown = () => {
                 setDropdownOpen(!dropdownOpen);
                 console.log("Je clique");
         };
-
-        // const { userData } = useContext(AUTHCONTEXT);
-        // console.log("header userdata", userData);
-        // const decoded = jwtDecode(userData);
-        // console.log("decoded", decoded);
 
   return (
     <div className='m-6'>
@@ -54,21 +46,22 @@ export default function Header() {
                                 CN
                         </AvatarFallback>
                         </Avatar>
+
                         {dropdownOpen && (
 
-                        <div className={`transition-transform transform ${dropdownOpen ? 'scale-100 translate-y-0' : 'scale-95 -translate-y-2'} absolute right-0 mt-2 w-48 bg-white text-black rounded-md shadow-lg z-10`}>
+                        <div className={`transition-transform transform ${dropdownOpen ? 'scale-100 translate-y-0' : 'scale-95 -translate-y-2'} absolute right-0 mt-2 w-60 bg-white text-black rounded-md shadow-lg z-10`}>
 
-                                <div className='m-2 text-sm cursor-pointer space-y-2'>
-                                        <p className=''>Vous interéagissez en tant que {}</p>
+                                <div className='p-1 m-1 text-sm cursor-pointer space-y-2'>
+                                        <p> Vous interéagissez en tant que <span className='text-secondary'>{ userDataDecoded?.user?.first_name + " " + userDataDecoded?.user?.last_name }</span></p>
                                         <hr />
                                                 <ul className='px-1 w-full'>
                                                         <li className='hover:bg-gray-200'>
                                                                 Profil
                                                         </li>
-                                                        <li className=''>
+                                                        <li className='hover:bg-gray-200'>
                                                                 Paramètres
                                                         </li>
-                                                        <li className=''>
+                                                        <li className='hover:bg-red-200 w-full'>
                                                                 Se déconnecter
                                                         </li>
                                                 </ul>
