@@ -11,16 +11,11 @@ export default defineConfig({
         changeOrigin:true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
-
-      // "/login": {
-      //   target: "http://127.0.0.1:8000/api_gateway/token", 
-      //   changeOrigin: true, 
-      // },
     },
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'), // Ajoutez cette ligne pour définir l'alias
+      '@': resolve(__dirname, 'src'),
     },
   },
 });

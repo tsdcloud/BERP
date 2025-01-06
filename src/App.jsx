@@ -14,6 +14,10 @@ import ChooseEntity from './Pages/ChooseEntity';
 import ConfirmPassword from './components/forms/ConfirmPassword';
 import NotFoundPage from './components/NotFoundPage';
 
+// Incident
+import Incident from './Pages/incidents/index';
+import Consommable from './Pages/incidents/Consommable';
+
 function App() {
   const { token } = useContext(AUTHCONTEXT);
 
@@ -28,6 +32,15 @@ function App() {
            <Route path='/forgetPassword' element={<ForgetPassword/>} exact/>
            <Route path='/confirmPassword' element={<ConfirmPassword/>} exact/>
            <Route path='*' element={<NotFoundPage/>} exact/>
+
+
+           {/* Incident */}
+           <Route path="/incidents">
+              <Route path="" element={<Incident />} />
+              <Route path="maintenance" element={<Consommable />} />
+              <Route path="consommable" element={<Consommable />} />
+              <Route path="equipement" element={<Consommable />} />
+           </Route>
         </Routes>
 
         {/* <div className="h-screen w-full bg-slate-100 font-poppins">
