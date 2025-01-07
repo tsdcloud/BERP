@@ -13,8 +13,13 @@ const Tabs = () => {
         },
         {
             name:"Maintenances",
-            isActive:pathname.includes("maintenance") ? true : false,
+            isActive:(pathname.includes("maintenance") && !pathname.includes("type")) ? true : false,
             link: "/incidents/maintenance"
+        },
+        {
+            name:"Type de Maintenances",
+            isActive:pathname.includes("maintenance-type") ? true : false,
+            link: "/incidents/maintenance-type"
         },
         {
             name:"Consumables",

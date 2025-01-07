@@ -50,9 +50,9 @@ import { URLS } from '../../../../configUrl';
 const Datalist = ({dataList, fetchData}) => {
 
   const handleDelete = async (id) =>{
-    if (window.confirm("Voulez vous supprimer le consomable ?")) {
+    if (window.confirm("Voulez vous supprimer la maintenance ?")) {
       try {
-        let url = `${URLS.INCIDENT_API}/consommables/${id}`;
+        let url = `${URLS.INCIDENT_API}/maintenances/${id}`;
         let response = await fetch(url, {
           method:"DELETE"
         });

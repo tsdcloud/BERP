@@ -20,7 +20,7 @@ const Dialogue = ({header, content, footer, buttonText, isOpenned}) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-            <Button className="bg-primary text-white font-normal outline-none text-xs" onClick={() => setIsOpen(!isOpenned)} id="close-consommable">{buttonText}</Button>
+            <Button className="bg-primary text-white font-normal outline-none text-xs" onClick={() => setIsOpen(!isOpenned)} id="close-equipement">{buttonText}</Button>
         </DialogTrigger>
         <DialogContent>
             <DialogHeader>{header}</DialogHeader>
