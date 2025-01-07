@@ -226,12 +226,12 @@ export default function CreateUser({setOpen, onSubmit}) {
                     >
                       {isSubmitting ? "Création en cours..." : "Créer un utilisateur"}
                     </Button>
-                    <Button 
+                    {/* <Button 
                     className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md bg-transparent hover:bg-gray-600 hover:text-white transition" 
                     onClick={setOpen()} 
                     >
                       Annuler
-                    </Button>
+                    </Button> */}
 
                   </div>
                 </form>

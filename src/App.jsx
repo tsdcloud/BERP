@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import ProtectedRoutes from './hooks/ProtectedRoutes';
 import SignIn from './components/forms/SignIn';
-import Dashboard from './Pages/LuncherApp';
+import LuncherApp from './Pages/LuncherApp';
 
 
 import { AUTHCONTEXT } from './contexts/AuthProvider';
@@ -35,8 +35,17 @@ function App() {
 
         <Routes>
           <Route element={<ProtectedRoutes />}>
-            <Route path='/' element={<Dashboard/>} exact/>
+            <Route path='/' element={<LuncherApp/>} exact/>
             <Route path='/chooseEntity' element={<ChooseEntity/>} exact/>
+
+              {/* User */}
+            <Route path="/utilisateurs">
+                <Route path="" element={<User />} />
+                <Route path="permission" element={<Permission />} />
+                <Route path="role" element={<Role />} />
+                <Route path="application" element={<Application />} />
+            </Route>
+            
           </Route>
           
           <Route path='/signIn' element={<SignIn/>}/>
@@ -45,13 +54,7 @@ function App() {
           <Route path='*' element={<NotFoundPage/>} exact/>
 
 
-           {/* User */}
-           <Route path="/utilisateurs">
-              <Route path="" element={<User />} />
-              <Route path="permission" element={<Permission />} />
-              <Route path="role" element={<Role />} />
-              <Route path="application" element={<Application />} />
-           </Route>
+          
 
 
            {/* Incident */}

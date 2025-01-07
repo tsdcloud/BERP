@@ -14,6 +14,8 @@ export default function Permission() {
 
     const [isLoading, setIsLoading] = useState(false);
 
+    const { handleFetch } = useFetch();
+
     const fetchPermissions = async () => {
         // const urlToShowAllUsers = "http://127.0.0.1:8000/api_gateway/api/user/";
         const urlToShowAllPermissions = URLS.API_PERMISSION;

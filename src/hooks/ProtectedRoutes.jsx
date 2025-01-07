@@ -16,14 +16,21 @@ export default function ProtectedRoutes() {
 
   }, []);
 
-  return (
-    <>
-    {
-      token != null ?
-      <Outlet />:
-      <Navigate to='/signIn' />
-    }
-    </>
-  );
+  // return (
+  //   <>
+  //   {
+  //     token != null ?
+  //     <Outlet />:
+  //     <Navigate to='/signIn' />
+  //   }
+  //   </>
+  // );
+
+
+  if (!token) {
+    return <Navigate to="/signIn" />;
+  }
+
+  return <Outlet />;
 };
 
