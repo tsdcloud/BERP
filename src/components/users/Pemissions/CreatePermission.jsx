@@ -49,11 +49,11 @@ export default function CreatePermission({setOpen, onSubmit}) {
       try {
         const response = await handlePost(urlToCreatePermission, data, true);
         console.log("response crea", response);
-        if (response.status === 201) {
+        if (response && response.status === 201) {
           toast.success("Permission crée avec succès", {duration:2000});
           console.log("Permission created", response?.success);
-          onSubmit();
           setOpen(false);
+          onSubmit();
           // navigateToDashboard("/");
           // window.location.reload();
           return;
@@ -69,7 +69,7 @@ export default function CreatePermission({setOpen, onSubmit}) {
   };
   return (
     <CustomingModal
-        title="Ajouter une permission"
+        title="Ajouter une nouvelle permission"
         buttonText="Créer une permission"
       >
         
@@ -132,7 +132,7 @@ export default function CreatePermission({setOpen, onSubmit}) {
                     </Button>
                     <Button 
                     className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md bg-transparent hover:bg-gray-600 hover:text-white transition" 
-                    onClick={ handleCancel }
+                    onClick={ setOpen() }
                     >
                       Annuler
                     </Button>

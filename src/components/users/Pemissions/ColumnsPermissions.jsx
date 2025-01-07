@@ -10,13 +10,13 @@ import { AlertDialog,
          AlertDialogDescription, 
          AlertDialogFooter, 
          AlertDialogHeader, 
-         AlertDialogTitle } from "../ui/alert-dialog";
+         AlertDialogTitle } from "../../ui/alert-dialog";
 
-import { Input } from "../ui/input";
-import { Button } from "../../components/ui/button";
-import { useFetch } from '../../hooks/useFetch';
+import { Input } from "../../ui/input";
+import { Button } from "../../ui/button";
+import { useFetch } from '../../../hooks/useFetch';
 import toast, { Toaster } from 'react-hot-toast';
-import { URLS } from '../../../configUrl';
+import { URLS } from '../../../../configUrl';
 
 
 
@@ -327,11 +327,6 @@ export const PermissionAction = () => {
     const columnsPermission = useMemo(() => [
         { accessorKey: 'permission_name', header: 'Nom' },
         { accessorKey: 'description', header: 'Description' },
-        // { accessorKey: 'email', header: 'Email' },
-        // { accessorKey: 'phone', header: 'Téléphone' },
-        // { accessorKey: 'is_staff', header: 'Administrateur' },
-        // { accessorKey: 'is_superuser', header: 'Super administrateur' },
-        // { accessorKey: 'username', header: 'Nom d\'utilisateur' },
         { accessorKey: 'is_active', header: 'Statut' },
         {
             accessorKey: "action",

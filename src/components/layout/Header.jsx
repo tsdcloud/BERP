@@ -9,16 +9,24 @@ export default function Header() {
         const [userDataDecoded, setUserDataDecoded] = useState();
         const [dropdownOpen, setDropdownOpen] = useState(false);
 
-        useEffect(()=>{
-
+        useEffect(() => {
+                
                 console.log("header userdata", userData);
-                const decoded = jwtDecode(userData);
-                console.log("decoded", decoded);
-                // const { last_name, first_name, ...rest } = decoded;
-                setUserDataDecoded(decoded);
-
-
-        }, [userData]);
+        
+                if (typeof userData === 'string') {
+                    try {
+                        const decoded = jwtDecode(userData);
+                        console.log("decoded", decoded);
+                        setUserDataDecoded(decoded);
+                    } catch (error) {
+                        console.error("Failed to decode token:", error);
+                        // Gérer l'erreur, par exemple, en réinitialisant l'état ou en affichant un message d'erreur
+                    }
+                } else {
+                    console.error("Invalid token: must be a string", userData);
+                    // Gérer l'erreur, par exemple, en réinitialisant l'état ou en affichant un message d'erreur
+                }
+            }, [userData]);
 
 
 

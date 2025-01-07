@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { EyeIcon, NoSymbolIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { AlertDialog, 
          AlertDialogAction, 
          AlertDialogCancel, 
@@ -17,11 +17,6 @@ import { Button } from "../../components/ui/button";
 import { useFetch } from '../../hooks/useFetch';
 import toast, { Toaster } from 'react-hot-toast';
 import { URLS } from '../../../configUrl';
-
-
-
-
-
 
 // Schéma de validation avec Zod
 const userSchema = z.object({
@@ -57,6 +52,7 @@ const userSchema = z.object({
 
     });
 
+
 // Fonction principale pour gérer les actions utilisateur
 export const UserAction = () => {
     const [isDialogOpen, setDialogOpen] = useState(false);
@@ -69,7 +65,6 @@ export const UserAction = () => {
     });
 
    const { handlePatch, handleDelete } = useFetch();
-   
 
     const onSubmit = async (data) => {
         const urlToUpdate = `${URLS.API_USER}${selectedUser?.id}`;
@@ -164,6 +159,7 @@ export const UserAction = () => {
                 console.log("La désactivation a été annulée.");
                 }
     };
+    
     const deletedUser = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?");
 
@@ -172,10 +168,8 @@ export const UserAction = () => {
 
                     try {
                             const response = await handleDelete(urlToDeleteUser);
-                            // console.log("response for deleting", response);
                             if (response && response?.message) {
                                 // console.log("User deleted", response);
-                                // console.log("L'utilisateur a été supprimé.", id);
                                 toast.success(response?.message, { duration: 5000});
                                 isDialogOpen && setDialogOpen(false);
                                 window.location.reload();

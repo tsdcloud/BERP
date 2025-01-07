@@ -53,7 +53,7 @@ export default function SignIn() {
         // console.log("data", data);
         // const urlToLogin = "http://127.0.0.1:8000/api_gateway/token/";
         const urlToLogin = URLS.LOGIN;
-        console.log(urlToLogin);
+        // console.log(urlToLogin);
         try {
               const response = await handlePost(urlToLogin, data, false);
              
