@@ -24,7 +24,7 @@ import { URLS } from '../../../../configUrl';
 
 
 // Schéma de validation avec Zod
-const asignPermUserSchema = z.object({
+const asignRoleUserSchema = z.object({
     user_name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 5 caractères au moins.")
@@ -39,21 +39,21 @@ const asignPermUserSchema = z.object({
     });
 
 // Fonction principale pour gérer les actions utilisateur
-export const AsignPermUserAction = () => {
+export const AsignRoleUserAction = () => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
-    const [selectedAsignPermUser, setSelectedAsignPermUser] = useState(null);
+    const [selectedAsignRoleUser, setSelectedAsignRoleUser] = useState(null);
 
     const { register, handleSubmit, reset, formState:{errors, isSubmitting} } = useForm({
-        resolver: zodResolver(asignPermUserSchema),
+        resolver: zodResolver(asignRoleUserSchema),
     });
 
    const { handlePatch, handleDelete } = useFetch();
    
 
     const onSubmit = async (data) => {
-        const urlToUpdate = `${URLS.API_ASIGN_PERM_USER}${selectedAsignPermUser?.id}`;
+        const urlToUpdate = `${URLS.API_ASIGN_ROLE_USER}${selectedAsignRoleUser?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -69,31 +69,31 @@ export const AsignPermUserAction = () => {
             
           } catch (error) {
             console.error("Error during updated",error);
-            toast.error("Erreur lors de la modification de l'asignation perm & role", { duration: 5000 });
+            toast.error("Erreur lors de la modification de l'asignation role & user", { duration: 5000 });
           }
     };
 
-    const handleShowAsignPermUser = (asignPermUser) => {
-        setSelectedAsignPermUser(asignPermUser);
+    const handleShowAsignRoleUser = (asignRoleUser) => {
+        setSelectedAsignRoleUser(asignRoleUser);
         setIsEdited(false);
         setDialogOpen(true);
-        // console.log("item selected", asignPermUser);
+        // console.log("item selected", asignRoleUser);
     };
 
-    const handleEditAsignPermUser = (asignPermUser) => {
-        setSelectedAsignPermUser(asignPermUser);
-        reset(asignPermUser);
+    const handleEditAsignRoleUser = (asignRoleUser) => {
+        setSelectedAsignRoleUser(asignRoleUser);
+        reset(asignRoleUser);
         setIsEdited(true);
         setDialogOpen(true);
     };
 
-    const disabledAsignPermUser = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette asignation permission - utilisateur ?");
+    const disabledAsignRoleUser = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette asignation Rôle - Utilisateur ?");
             if (confirmation) {
-                const urlToDisabledAsignPermUser = `${URLS.API_ASIGN_PERM_USER}${id}/`;
+                const urlToDisabledAsignRoleUser = `${URLS.API_ASIGN_ROLE_USER}${id}/`;
 
                         try {
-                                const response = await handlePatch(urlToDisabledAsignPermUser, {is_active:false});
+                                const response = await handlePatch(urlToDisabledAsignRoleUser, {is_active:false});
                                 console.log("response for disabled", response);
                                 if (response && response?.message) {
                                     // console.log("ROLE disabled", response);
@@ -108,8 +108,8 @@ export const AsignPermUserAction = () => {
                                 isDialogOpen && setDialogOpen(false);
                         }
                         catch(error){
-                            console.error("Erreur lors de la désactivation de l'asignation permission - user :", error);
-                            toast.error("Erreur lors de la désactivation de l'asignation permission - user ", { duration: 5000 });
+                            console.error("Erreur lors de la désactivation de l'asignation rôle - utilisateur :", error);
+                            toast.error("Erreur lors de la désactivation de l'asignation rôle - utilisateur ", { duration: 5000 });
                         }
 
                         finally{
@@ -123,8 +123,8 @@ export const AsignPermUserAction = () => {
                 }
     };
 
-    const activedAsignPermUser = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette asignation permission - user ?");
+    const activedAsignRoleUser = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette asignation rôle - utilisateur ?");
 
         if (confirmation) {
               try{
@@ -133,7 +133,7 @@ export const AsignPermUserAction = () => {
                 //   navigateToMyEvent(`/events/${eventId}`)
               }
               catch(error){
-                  console.error("Erreur lors de la désactivation de cette asignation permission - user :", error);
+                  console.error("Erreur lors de la désactivation de cette asignation rôle - utilisateur :", error);
               }
               finally{
                 // setIsLoading(false);
@@ -146,16 +146,16 @@ export const AsignPermUserAction = () => {
                 }
     };
     
-    const deletedAsignPermUser = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette asignation permission - user ?");
+    const deletedAsignRoleUser = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette asignation rôle - utilisateur ?");
 
         if (confirmation) {
-            const urlToDeleteAsignPermUser = `${URLS.API_ASIGN_PERM_USER}${id}/`;
-            console.log("url delete user ",urlToDeleteAsignPermUser);
-            // const urlToDeleteAsignPermUser = URLS.API_ASIGN_PERM_ROLE`${id}/?delete=true`;
+            const urlToDeleteAsignRoleUser = `${URLS.API_ASIGN_ROLE_USER}${id}/`;
+            console.log("url delete user ",urlToDeleteAsignRoleUser);
+            // const urlToDeleteAsignRoleUser = URLS.API_ASIGN_PERM_ROLE`${id}/?delete=true`;
 
                     try {
-                            const response = await handleDelete(urlToDeleteAsignPermUser);
+                            const response = await handleDelete(urlToDeleteAsignRoleUser);
                             console.log("response for deleting", response);
                             if (response && response?.message) {
                                 toast.success(response?.message, { duration: 5000});
@@ -168,8 +168,8 @@ export const AsignPermUserAction = () => {
                             setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la suppression de cette asignation permission - user:", error);
-                        toast.error("Erreur lors de la suppression de l'asignation permission - user ", { duration: 5000 });
+                        console.error("Erreur lors de la suppression de cette asignation rôle - utilisateur:", error);
+                        toast.error("Erreur lors de la suppression de l'asignation rôle - utilisateur ", { duration: 5000 });
                     }
 
                     finally{
@@ -184,13 +184,13 @@ export const AsignPermUserAction = () => {
     };
 
 
-    const showDialogAsignPermUser = () => {
+    const showDialogAsignRoleUser = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? "Modifier les informations" : "Détails de l'asignation permission - rôle " }
+                            { isEdited ? "Modifier les informations" : "Détails de l'asignation rôle - utilisateur " }
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
@@ -204,7 +204,7 @@ export const AsignPermUserAction = () => {
                                             <Input
                                                 id="role_name"
                                                 type="text"
-                                                defaultValue={selectedAsignPermUser?.role_name}
+                                                defaultValue={selectedAsignRoleUser?.role_name}
                                                 {...register("role_name")}
                                                 className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.role_name ? "border-red-500" : "border-gray-300"
@@ -221,7 +221,7 @@ export const AsignPermUserAction = () => {
                                                 <Input
                                                     id="description"
                                                     type="text"
-                                                    defaultValue={selectedAsignPermUser?.description}
+                                                    defaultValue={selectedAsignRoleUser?.description}
                                                     {...register("description")}
                                                     className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.description ? "border-red-500" : "border-gray-300"
@@ -250,32 +250,32 @@ export const AsignPermUserAction = () => {
                                 <Toaster/>
                                 </form>
                             ) : (
-                                selectedAsignPermUser && (
+                                selectedAsignRoleUser && (
                                     <div className='flex flex-col text-black space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
-                                            <h3 className="font-bold text-sm">{selectedAsignPermUser?.id}</h3>
+                                            <h3 className="font-bold text-sm">{selectedAsignRoleUser?.id}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Nom de la permission</p>
-                                            <h3 className="font-bold text-sm">{selectedAsignPermUser?.permission_name}</h3>
+                                            <h3 className="font-bold text-sm">{selectedAsignRoleUser?.role_name}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Description de la permission</p>
-                                            <h3 className="font-bold text-sm">{selectedAsignPermUser?.description}</h3>
+                                            <h3 className="font-bold text-sm">{selectedAsignRoleUser?.description}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Nom de famille</p>
-                                            <h3 className="font-bold text-sm">{selectedAsignPermUser?.first_name}</h3>
+                                            <h3 className="font-bold text-sm">{selectedAsignRoleUser?.first_name}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Nom d'utilisateur</p>
-                                            <h3 className="font-bold text-sm">{selectedAsignPermUser?.username}</h3>
+                                            <h3 className="font-bold text-sm">{selectedAsignRoleUser?.username}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Statut</p>
                                             <h3 className="font-bold text-sm">
-                                                {selectedAsignPermUser?.is_active ? "Actif" : "Désactivé"}
+                                                {selectedAsignRoleUser?.is_active ? "Actif" : "Désactivé"}
                                             </h3>
                                         </div>
                                     </div>
@@ -290,11 +290,11 @@ export const AsignPermUserAction = () => {
                             <div className='flex space-x-2'>
                                             <div className='flex space-x-2'>
                                             { 
-                                                selectedAsignPermUser?.is_active == false ? 
+                                                selectedAsignRoleUser?.is_active == false ? 
                                                     (
                                                             <AlertDialogAction
                                                                 className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md bg-transparent hover:bg-blue-600 hover:text-white transition"
-                                                                onClick={() => activedAsignPermUser(selectedAsignPermUser.id)}>
+                                                                onClick={() => activedAsignRoleUser(selectedAsignRoleUser.id)}>
                                                                     Activer
                                                             </AlertDialogAction>
 
@@ -302,7 +302,7 @@ export const AsignPermUserAction = () => {
 
                                                             <AlertDialogAction 
                                                                 className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md bg-transparent hover:bg-gray-600 hover:text-white transition"
-                                                                onClick={() => disabledAsignPermUser(selectedAsignPermUser.id)}>
+                                                                onClick={() => disabledAsignRoleUser(selectedAsignRoleUser.id)}>
                                                                     Désactiver
                                                             </AlertDialogAction>
                                                     )
@@ -312,7 +312,7 @@ export const AsignPermUserAction = () => {
                                            </div>
                                             <AlertDialogAction 
                                                 className="border-2 border-red-900 outline-red-700 text-red-900 text-xs shadow-md bg-transparent hover:bg-red-600 hover:text-white transition"
-                                                onClick={() => deletedAsignPermUser(selectedAsignPermUser.id)}>
+                                                onClick={() => deletedAsignRoleUser(selectedAsignRoleUser.id)}>
                                                     Supprimer
                                             </AlertDialogAction>
                                             <AlertDialogCancel 
@@ -333,9 +333,9 @@ export const AsignPermUserAction = () => {
     };
 
 
-    const columnsAsignPermUser = useMemo(() => [
-        { accessorKey: 'permission_name', header: 'Nom de la permission' },
-        { accessorKey: 'description', header: 'Description de la permission' },
+    const columnsAsignRoleUser = useMemo(() => [
+        { accessorKey: 'role_name', header: 'Nom du rôle' },
+        { accessorKey: 'description', header: 'Description du rôle' },
         { accessorKey: 'first_name', header: 'Nom de famille' },
         { accessorKey: 'username', header: 'Nom d utilisateur' },
         // { accessorKey: 'is_active', header: 'Statut' },
@@ -344,10 +344,10 @@ export const AsignPermUserAction = () => {
             header: "Actions",
             cell: ({ row }) => (
                 <div className="flex justify-center">
-                    <EyeIcon className="h-4 w-4 text-green-500" onClick={() => handleShowAsignPermUser(row.original)} />
-                    {/* <PencilSquareIcon className="h-4 w-4 text-blue-500" onClick={() => handleEditAsignPermUser(row.original)} /> */}
-                    {/* <NoSymbolIcon className="h-4 w-4 text-gray-500" onClick={() => disabledAsignPermUser(row.original.id)} /> */}
-                    <TrashIcon className="h-4 w-4 text-red-500" onClick={() => deletedAsignPermUser(row.original.id)} />
+                    <EyeIcon className="h-4 w-4 text-green-500" onClick={() => handleShowAsignRoleUser(row.original)} />
+                    {/* <PencilSquareIcon className="h-4 w-4 text-blue-500" onClick={() => handleEditAsignRoleUser(row.original)} /> */}
+                    {/* <NoSymbolIcon className="h-4 w-4 text-gray-500" onClick={() => disabledAsignRoleUser(row.original.id)} /> */}
+                    <TrashIcon className="h-4 w-4 text-red-500" onClick={() => deletedAsignRoleUser(row.original.id)} />
                 </div>
             )
         },
@@ -356,10 +356,10 @@ export const AsignPermUserAction = () => {
 
     return {
 
-                showDialogAsignPermUser,
-                columnsAsignPermUser, // Exporter les colonnes pour role ailleurs
-                handleShowAsignPermUser,
-                handleEditAsignPermUser,
+                showDialogAsignRoleUser,
+                columnsAsignRoleUser,
+                handleShowAsignRoleUser,
+                handleEditAsignRoleUser,
              
     };
 };

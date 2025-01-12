@@ -29,7 +29,7 @@ export const links = [
         link: "/utilisateurs/asign_perm_user"
     },
     {
-        name:"Assignation Utilisateur & Rôle",
-        link: "/utilisateurs/asign_user_role"
+        name:"Assignation Rôle & Utilisateurs",
+        link: "/utilisateurs/asign_role_user"
     }
 ];

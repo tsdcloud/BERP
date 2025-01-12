@@ -26,7 +26,7 @@ export default function AsignPermUser() {
                         const results = response?.results;
                         console.log("rest asign perm user", results);
                         const filteredAsignPermUser = results?.map(item => {
-                            const { perm_assigned_by, ...rest } = item;
+                            const { perm_assigned_by, date_assigned,  ...rest } = item;
                             return {
                                 id:rest.id,
                                 id_permission:rest.permission.id,

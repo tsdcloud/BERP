@@ -7,5 +7,6 @@ export const URLS = {
   API_ASIGN_PERM_ROLE: import.meta.env.VITE_API_ASIGN_PERM_ROLE,
   API_ASIGN_PERM_APP: import.meta.env.VITE_API_ASIGN_PERM_APP,
   API_ASIGN_PERM_USER: import.meta.env.VITE_API_ASIGN_PERM_USER,
+  API_ASIGN_ROLE_USER: import.meta.env.VITE_API_ASIGN_ROLE_USER,
   INCIDENT_API: import.meta.env.VITE_INCIDENT_API
 };
