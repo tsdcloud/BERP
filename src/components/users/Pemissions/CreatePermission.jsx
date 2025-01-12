@@ -51,7 +51,7 @@ export default function CreatePermission({setOpen, onSubmit}) {
         console.log("response crea", response);
         if (response && response.status === 201) {
           toast.success("Permission crée avec succès", {duration:2000});
-          console.log("Permission created", response?.success);
+          // console.log("Permission created", response?.success);
           setOpen(false);
           onSubmit();
           // navigateToDashboard("/");
@@ -130,12 +130,12 @@ export default function CreatePermission({setOpen, onSubmit}) {
                     >
                       {isSubmitting ? "Création en cours..." : "Créer une permission"}
                     </Button>
-                    <Button 
+                    {/* <Button 
                     className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md bg-transparent hover:bg-gray-600 hover:text-white transition" 
                     onClick={ setOpen() }
                     >
                       Annuler
-                    </Button>
+                    </Button> */}
 
                   </div>
                 </form>

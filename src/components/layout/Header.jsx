@@ -2,12 +2,14 @@ import { useState, useContext, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { AUTHCONTEXT } from '../../contexts/AuthProvider';
 import { jwtDecode } from 'jwt-decode';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Header() {
-        const { userData } = useContext(AUTHCONTEXT);
+        const { userData, disconnect } = useContext(AUTHCONTEXT);
         const [userDataDecoded, setUserDataDecoded] = useState();
         const [dropdownOpen, setDropdownOpen] = useState(false);
+
+        const navigateToLogin = useNavigate();
 
         useEffect(() => {
                 
@@ -63,13 +65,13 @@ export default function Header() {
                                         <p> Vous interéagissez en tant que <span className='text-secondary'>{ userDataDecoded?.user?.first_name + " " + userDataDecoded?.user?.last_name }</span></p>
                                         <hr />
                                                 <ul className='px-1 w-full'>
-                                                        <li className='hover:bg-gray-200'>
+                                                        <li className='hover:bg-gray-200 rounded-md p-1'>
                                                                 Profil
                                                         </li>
-                                                        <li className='hover:bg-gray-200'>
+                                                        <li className='hover:bg-gray-200 rounded-md p-1'>
                                                                 Paramètres
                                                         </li>
-                                                        <li className='hover:bg-red-200 w-full'>
+                                                        <li className='hover:bg-red-200 w-full rounded-md p-1' onClick={() => {disconnect(); navigateToLogin("/signIn")}}>
                                                                 Se déconnecter
                                                         </li>
                                                 </ul>

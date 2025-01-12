@@ -4,12 +4,18 @@ import {Input} from "../components/ui/input";
 import Footer from '../components/layout/Footer';
 import { useState } from "react";
 import Preloader from '../components/Preloader';
+import { Link, useNavigate } from 'react-router-dom';
 
-import React from 'react';
+import {React, useContext} from 'react';
 import '../App.css'; 
+import { Button } from 'antd';
+import { AUTHCONTEXT } from '../contexts/AuthProvider';
 
 
 export default function LuncherApp() {
+  const { disconnect } = useContext(AUTHCONTEXT);
+  const navigateToLogin = useNavigate();
+
   // const [isLoading, setIsLoading] = useState(false);
 
   //Cette page va representer la page présentante toutes les app de l'erp.
@@ -34,6 +40,13 @@ export default function LuncherApp() {
                 {/* Contenu principal */}
                 <div className="flex-grow relative z-10 p-8">
                   <h1 className="text-white text-3xl font-bold">Vos applications</h1>
+                  <Button
+                      type="submit"
+                      className="absolute top-0 right-0 my-8 mx-4 w-auto bg-red-500 text-white py-2 px-4 text-xs rounded-3xl shadow-md hover:bg-blue-700 transition "
+                      onClick={() => {disconnect(); navigateToLogin("/signIn")}}
+                  >
+                    Se déconnecté
+                  </Button>
                   {/* Ajoutez ici le reste de votre contenu */}
                   <UserEntryPoint/>
                 </div>

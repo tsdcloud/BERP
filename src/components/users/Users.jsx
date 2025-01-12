@@ -22,8 +22,8 @@ export default function Users() {
             const response = await handleFetch(urlToShowAllUsers);
             console.log("respo",response);
             
-                if (response && response?.results) {
-                        const results = response?.results;
+                if (response && response?.data?.results) {
+                        const results = response?.data?.results;
                         const filteredUsers = results?.map(item => {
                         const { user_created_by, user_updated_by, is_staff, is_superuser, ...rest } = item;
                         return rest;

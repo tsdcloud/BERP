@@ -23,13 +23,12 @@ export default function Permission() {
                     <div>
                         <Tabs links={links} />
                     </div>
-                    {/* users */}
+                    {/* Permission */}
                     <div className='flex gap-2 items-center'>
                     <PermissionComponent/>
                     </div>
                 </div>
                 <Footer className="flex py-1 my-[22px] space-x-2 justify-center"/>
-            
             </>
         )
     }
