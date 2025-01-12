@@ -24,6 +24,9 @@ import User from './Pages/users/index';
 import Permission from './Pages/users/Permission';
 import Role from './Pages/users/Role';
 import Application from './Pages/users/Application';
+import AsignPermRole from './Pages/users/AsignPermRole';
+import AsignPermApp from './Pages/users/AsignPermApp';
+import AsignPermUser from './Pages/users/AsignPermUser';
 
 function App() {
   const { token } = useContext(AUTHCONTEXT);
@@ -44,8 +47,11 @@ function App() {
                 <Route path="permission" element={<Permission />} />
                 <Route path="role" element={<Role />} />
                 <Route path="application" element={<Application />} />
+                <Route path="asign_perm_role" element={<AsignPermRole />} />
+                <Route path="asign_perm_app" element={<AsignPermApp />} />
+                <Route path="asign_perm_user" element={<AsignPermUser />} />
             </Route>
-            
+
           </Route>
           
           <Route path='/signIn' element={<SignIn/>}/>

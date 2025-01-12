@@ -25,8 +25,8 @@ export const links = [
         link: "/utilisateurs/asign_perm_app"
     },
     {
-        name:"Assignation Utilisateur & Permission",
-        link: "/utilisateurs/asign_user_perm"
+        name:"Assignation Permission & Utilisateur",
+        link: "/utilisateurs/asign_perm_user"
     },
     {
         name:"Assignation Utilisateur & Rôle",

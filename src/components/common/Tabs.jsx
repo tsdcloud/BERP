@@ -25,7 +25,7 @@ const Tabs = ({ links }) => {
             entryLink.map((link, index) => (
               <div 
                 key={index} 
-                className={`text-xs px-2 p-1 ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold`} 
+                className={`text-xs px-2 p-1 ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-xs font-semibold`} 
                 onClick={() => handleTabClick(link.link)}
                 >
                   {link?.name}

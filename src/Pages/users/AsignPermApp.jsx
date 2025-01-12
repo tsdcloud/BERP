@@ -4,9 +4,10 @@ import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
 import Tabs from '../../components/common/Tabs'; 
 import { links } from '../../utils/user.path';
-import ApplicationComponent from "../../components/users/Applications/Application";
+import AsignPermAppComponent from '../../components/users/asign_perm_app/AsignPermApp';
 
-export default function Application() {
+
+export default function AsignPermApp() {
     const [isLoading, setIsLoading] = useState(false);
   return (
     <>
@@ -23,9 +24,9 @@ export default function Application() {
                     <div>
                         <Tabs links={links} />
                     </div>
-                    {/* Application */}
+                    {/* Asign Permission - Role */}
                     <div className='flex gap-2 items-center'>
-                    <ApplicationComponent/>
+                    <AsignPermAppComponent/>
                     </div>
                 </div>
                 <Footer className="flex py-1 my-[22px] space-x-2 justify-center"/>
@@ -36,3 +37,4 @@ export default function Application() {
 </>
   );
 };
+

@@ -31,7 +31,7 @@ export default function Permission() {
                         return rest;
                         });
                         setPermissions(filteredPermissions);
-                        console.log("filtered Permissions", filteredPermissions);
+                        // console.log("filtered Permissions", filteredPermissions);
                 }
                 else{
                     throw new Error('Erreur lors de la récupération des permissions');
@@ -50,13 +50,13 @@ export default function Permission() {
     }, []);
 
   return (
-    <div className='m-1 space-y-3 '>
+    <div className='m-1 space-y-3 my-10 '>
     <h1 className='text-sm mb-2'>Gestion des persmissions</h1>
     <div className='space-y-2'>
         <CreatePermission setOpen={setOpen} onSubmit={fetchPermissions}/>
-        {columnsPermission && permissions.length > 0 && (
+        {columnsPermission && permissions?.length > 0 && (
             <DataTable
-                className="rounded-md border w-[670px] text-xs"
+                className="rounded-md border w-[750px] text-xs"
                 columns={columnsPermission}
                 data={permissions} 
             />
