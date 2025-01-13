@@ -7,10 +7,13 @@ export const AUTHCONTEXT = createContext();
 export default function AuthProvider({children}) {
     const [isAuth, setIsAuth] = useState(() => localStorage.getItem("isAuth"));
     const [token, setToken] = useState(() => localStorage.getItem("token"));
+    const [refresh, setRefresh] = useState(() => localStorage.getItem("refresh"));
     const [userData, setUserData] = useState(JSON.stringify(token));
 
     const disconnect = () => {
-      localStorage.clear()
+      localStorage.removeItem("isAuth")
+      localStorage.removeItem("refresh")
+      localStorage.removeItem("token")
       setIsAuth(false);
       setToken(null);
       setUserData(null);
@@ -19,10 +22,11 @@ export default function AuthProvider({children}) {
     useEffect(()=> {
       localStorage.setItem("isAuth", isAuth);
       localStorage.setItem("token", (token));
-    }, [isAuth, token]);
+      localStorage.setItem("refresh", (refresh));
+    }, [isAuth, token, refresh]);
     
   return (
-    <AUTHCONTEXT.Provider value={{isAuth, setIsAuth, userData, setUserData, token, setToken, disconnect}}>
+    <AUTHCONTEXT.Provider value={{isAuth, setIsAuth, userData, setUserData, token, setToken, refresh, setRefresh, disconnect}}>
         {children}
     </AUTHCONTEXT.Provider>
   );

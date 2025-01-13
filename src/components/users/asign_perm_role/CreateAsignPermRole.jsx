@@ -45,8 +45,8 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
             const response = await handleFetch(urlToGetPermission);
             console.log("response show permission", response);
 
-                if (response && response.results) {
-                    const filteredPermission = response.results.map(item => {
+                if (response && response?.data?.results) {
+                    const filteredPermission = response?.data?.results.map(item => {
                     const { perm_created_by, perm_updated_by, description, ...rest } = item;
                     return rest;
                     });
@@ -69,8 +69,8 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
             const response = await handleFetch(urlToGetRole);
             console.log("response show role", response);
 
-                if (response && response.results) {
-                        const results = response?.results;
+                if (response && response?.data?.results) {
+                        const results = response?.data?.results;
                         const filteredRole = results?.map(item => {
                         const { role_created_by, role_updated_by, description, ...rest } = item;
                         return rest;
@@ -99,18 +99,6 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
         role_id: z.string()
           .nonempty("Vous devez sélectionner un rôle."),
       
-        description_role: z.string()
-          .nonempty("Ce champ 'description du rôle' est requis.")
-          .min(5, "Le champ doit avoir une valeur de 5 caractères au moins.")
-          .max(100)
-          .regex(/^[a-zA-Z0-9\sàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]+$/, "Ce champ doit être une 'description' conforme."),
-      
-        description: z.string()
-          .nonempty("Ce champ 'description' est requis.")
-          .min(5, "Le champ doit avoir une valeur de 5 caractères au moins.")
-          .max(100)
-          .regex(/^[a-zA-Z0-9\sàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]+$/, "Ce champ doit être une 'description' conforme."),
-      
         permission_id: z.array(z.string()
             .nonempty("vous devez ajouter"))
           .nonempty("Vous devez sélectionner au moins une permission."),
@@ -128,29 +116,71 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
         // console.log("Données du formulaire :", data);
         const urlToCreateAsignPermRole = URLS.API_ASIGN_PERM_ROLE;
       
-        try {
-          const { role_id, permission_id } = data;
-        //   console.log("Role ID:", role_id, "Permission IDs:", permission_id);
-        //   console.log(" checked Permission IDs:", checkedPermissions);
+    //     try {
+    //       const { role_id, permission_id } = data;
+    //     //   console.log("Role ID:", role_id, "Permission IDs:", permission_id);
+    //     //   console.log(" checked Permission IDs:", checkedPermissions);
       
-          for (const permId of permission_id) {
-            // console.log(`Envoi de la requête pour permission_id: ${permId}`);
+    //       for (const permId of permission_id) {
+    //         // console.log(`Envoi de la requête pour permission_id: ${permId}`);
+    //         const response = await handlePost(urlToCreateAsignPermRole, { role_id, permission_id: permId }, true);
+    //         if (response && response.status === 201) {
+    //           toast.success("Assignation créée avec succès", { duration: 2000 });
+    //         } else {
+    //           toast.error(response.error || "Erreur lors de la création de l'assignation", { duration: 5000 });
+    //         }
+    //       }
+      
+    //     //   setOpen(false);
+    //       onSubmit();
+    //       if(errors){
+    //           window.location.reload();
+    //       }
+    //     } catch (error) {
+    //       console.error("Erreur lors de la création", error);
+    //       toast.error("Erreur lors de la création de l'assignation", { duration: 5000 });
+    //     }
+    //   };
+
+    
+
+    try {
+        const { role_id, permission_id } = data;
+        let allSuccess = true;
+
+        console.log("this is the permissions :", [permission_id])
+      
+        for (const permId of permission_id) {
+          try {
+            // Envoyer la requête pour chaque `permission_id`
             const response = await handlePost(urlToCreateAsignPermRole, { role_id, permission_id: permId }, true);
-            if (response && response.status === 201) {
-              toast.success("Assignation créée avec succès", { duration: 2000 });
-            } else {
-              toast.error(response.error || "Erreur lors de la création de l'assignation", { duration: 5000 });
-            }
-          }
       
-        //   setOpen(false);
-          onSubmit();
-          window.location.reload();
-        } catch (error) {
-          console.error("Erreur lors de la création", error);
-          toast.error("Erreur lors de la création de l'assignation", { duration: 5000 });
+            if (!response || response.status !== 201) {
+              toast.error(`${response.errors.non_field_errors}`, { duration: 3000 });
+              allSuccess = false;
+              break; // Stop the loop
+            }
+          } catch (error) {
+            toast.error(`Erreur pour permission ID ${permId}: ${error.message}`, { duration: 5000 });
+            allSuccess = false;
+            break; // Stop the loop
+          }
         }
-      };
+      
+        // Si toutes les requêtes réussissent, afficher un seul message de succès
+        if (allSuccess) {
+          toast.success("Assignations faites avec succès !", { duration: 2000 });
+          setTimeout(() => {
+            window.location.reload(); 
+          }, 2000);
+        }
+      } catch (globalError) {
+        // Gestion des erreurs globales
+        console.error("Erreur globale:", globalError.message);
+        toast.error("Une erreur inattendue s'est produite", { duration: 5000 });
+      }
+      }
+      
 
 
 
@@ -169,7 +199,6 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
                             <label htmlFor="role_id" className="block text-xs font-medium mb-1">
                                 Nom du rôle<sup className='text-red-500'>*</sup>
                             </label>
-
                         
                             <select
                                         // value={fetchRole}
@@ -197,28 +226,6 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
                             }
                     
                         </div>
-
-                        <div className='mb-4'>
-                                <label htmlFor="description_role" className="block text-xs font-medium mb-1">
-                                    Description du rôle<sup className='text-red-500'>*</sup>
-                                </label>
-                                <input 
-                                    id='description_role'
-                                    type="text"
-                                    {...register('description_role')}
-                                    className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
-                                    ${
-                                        errors.description_role ? "border-red-500" : "border-gray-300"
-                                    }`}
-                                />
-
-                                {
-                                    errors.description_role && (
-                                        <p className="text-red-500 text-[9px] mt-1">{errors.description_role.message}</p>
-                                    )
-                                }
-
-                        </div>
                         
                         <div className='my-3'>
                             <h6 className='text-xs'>Attribuer une ou plusieurs permissions</h6>
@@ -243,28 +250,6 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
                             {errors.permission_id && (
                                 <p className="text-red-500 text-[9px] mt-1">{errors.permission_id.message}</p>
                             )}
-                        </div>
-
-                        <div className='mb-4'>
-                                <label htmlFor="description" className="block text-xs font-medium mb-1">
-                                    Description de la permission<sup className='text-red-500'>*</sup>
-                                </label>
-                                <input 
-                                    id='description'
-                                    type="text"
-                                    {...register('description')}
-                                    className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
-                                    ${
-                                        errors.description ? "border-red-500" : "border-gray-300"
-                                    }`}
-                                />
-
-                                {
-                                errors.description && (
-                                    <p className="text-red-500 text-[9px] mt-1">{errors.description.message}</p>
-                                )
-                                }
-
                         </div>
 
                         <div className='flex justify-end space-x-2 mt-2'>

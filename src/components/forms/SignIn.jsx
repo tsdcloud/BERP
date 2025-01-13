@@ -34,7 +34,7 @@ export default function SignIn() {
   const navigateToDashboard = useNavigate();
   const { handlePost } = useFetch();
 
- const { setIsAuth, setUserData, setToken } = useContext(AUTHCONTEXT);
+ const { setIsAuth, setUserData, setToken, setRefresh } = useContext(AUTHCONTEXT);
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -56,11 +56,12 @@ export default function SignIn() {
         // console.log(urlToLogin);
         try {
               const response = await handlePost(urlToLogin, data, false);
-             
 
               if (response && response?.data && response?.data?.access) {
                   const token = response?.data?.access;
+                  const refresh = response?.data?.refresh;
                   setToken(token);
+                  setRefresh(refresh)
                   const decoded = jwtDecode(token);
                   setIsAuth(true);
                   setUserData(decoded);

@@ -71,7 +71,7 @@ export default function Header() {
                                                         <li className='hover:bg-gray-200 rounded-md p-1'>
                                                                 Paramètres
                                                         </li>
-                                                        <li className='hover:bg-red-200 w-full rounded-md p-1' onClick={() => {disconnect(); navigateToLogin("/signIn")}}>
+                                                        <li className='hover:bg-red-200 w-full rounded-md p-1' onClick={() => {window.close()}}>
                                                                 Se déconnecter
                                                         </li>
                                                 </ul>
@@ -85,3 +85,6 @@ export default function Header() {
     </div>
   );
 };
+
+
+// disconnect(); navigateToLogin("/signIn")

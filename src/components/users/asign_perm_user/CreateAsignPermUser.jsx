@@ -45,8 +45,8 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
             const response = await handleFetch(urlToGetPermission);
             console.log("response show permission", response);
 
-                if (response && response.results) {
-                    const filteredPermission = response.results.map(item => {
+                if (response && response?.data?.results) {
+                    const filteredPermission = response?.data?.results.map(item => {
                     const { perm_created_by, perm_updated_by, description, ...rest } = item;
                     return rest;
                     });
@@ -69,8 +69,8 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
             const response = await handleFetch(urlToGetRole);
             console.log("response show role", response);
 
-                if (response && response.results) {
-                        const results = response?.results;
+                if (response && response?.data?.results) {
+                        const results = response?.data?.results;
                         const filteredRole = results?.map(item => {
                         const { role_created_by, role_updated_by, description, ...rest } = item;
                         return rest;

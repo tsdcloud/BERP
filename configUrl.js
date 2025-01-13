@@ -1,5 +1,6 @@
 export const URLS = {
   LOGIN: import.meta.env.VITE_API_LOGIN,
+  LOGOUT: import.meta.env.VITE_API_LOGOUT,
   API_USER: import.meta.env.VITE_API_USER,
   API_PERMISSION: import.meta.env.VITE_API_PERMISSION,
   API_ROLE: import.meta.env.VITE_API_ROLE,
