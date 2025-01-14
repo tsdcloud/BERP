@@ -18,17 +18,17 @@ import toast, { Toaster } from 'react-hot-toast';
 export default function CreatePermission({setOpen, onSubmit}) {
 
   const permissionSchema = z.object({
-    permission_name: z.string()
+    display_name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
+    .max(100),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
   
     description: z.string()
     .nonempty("Ce champs 'description' est réquis")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champs doit être un 'description' conforme"),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champs doit être un 'description' conforme"),
   });
   
   const { handlePost } = useFetch();
@@ -59,12 +59,12 @@ export default function CreatePermission({setOpen, onSubmit}) {
           return;
         }
         else {
-          toast.error(response.error, { duration: 5000});
+          toast.error(response.errors.display_name, { duration: 5000});
         }
         
       } catch (error) {
         console.error("Error during creating",error);
-        toast.error("Erreur lors de la création de l'utilisateur", { duration: 5000 });
+        toast.error("Erreur lors de la création de la permission", { duration: 5000 });
       }
   };
   return (
@@ -79,22 +79,22 @@ export default function CreatePermission({setOpen, onSubmit}) {
                 <form onSubmit={handleSubmit(handleSubmitDataFormPermission)} className='sm:bg-blue-200 md:bg-transparent'>
 
                   <div className='mb-1'>
-                      <label htmlFor="permission_name" className="block text-xs font-medium mb-0">
+                      <label htmlFor="display_name" className="block text-xs font-medium mb-0">
                           Nom<sup className='text-red-500'>*</sup>
                       </label>
 
                       <input 
-                        id='permission_name'
+                        id='display_name'
                         type="text"
-                        {...register('permission_name')} 
+                        {...register('display_name')} 
                         className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
                         ${
-                            errors.permission_name ? "border-red-500" : "border-gray-300"
+                            errors.display_name ? "border-red-500" : "border-gray-300"
                           }`}
                       />
                       {
-                        errors.permission_name && (
-                          <p className="text-red-500 text-[9px] mt-1">{errors.permission_name.message}</p>
+                        errors.display_name && (
+                          <p className="text-red-500 text-[9px] mt-1">{errors.display_name.message}</p>
                         )
                       }
                   </div>

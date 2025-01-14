@@ -54,7 +54,7 @@ export default function Application() {
         <CreateApplication setOpen={setOpen} onSubmit={fetchApplication}/>
         {columnsApplication && applications?.length > 0 && (
             <DataTable
-                className="rounded-md border w-[800px] text-xs"
+                className="rounded-md border w-[900px] text-xs"
                 columns={columnsApplication}
                 data={applications} 
             />

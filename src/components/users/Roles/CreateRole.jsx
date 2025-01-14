@@ -18,17 +18,17 @@ import toast, { Toaster } from 'react-hot-toast';
 export default function CreateRole({setOpen, onSubmit}) {
 
   const roleSchema = z.object({
-    role_name: z.string()
+    display_name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 5 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
+    .max(100),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
   
     description: z.string()
     .nonempty("Ce champs 'description' est réquis")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champs doit être un 'description' conforme"),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champs doit être un 'description' conforme"),
   });
   
   const { handlePost } = useFetch();
@@ -61,7 +61,7 @@ export default function CreateRole({setOpen, onSubmit}) {
           return;
         }
         else {
-          toast.error(response.error, { duration: 5000});
+          toast.error(response.errors.display_name, { duration: 5000});
         }
         
       } catch (error) {
@@ -81,22 +81,22 @@ export default function CreateRole({setOpen, onSubmit}) {
                 <form onSubmit={handleSubmit(handleSubmitDataFormRole)} className='sm:bg-blue-200 md:bg-transparent'>
 
                   <div className='mb-1'>
-                      <label htmlFor="role_name" className="block text-xs font-medium mb-0">
+                      <label htmlFor="display_name" className="block text-xs font-medium mb-0">
                           Nom<sup className='text-red-500'>*</sup>
                       </label>
 
                       <input 
-                        id='role_name'
+                        id='display_name'
                         type="text"
-                        {...register('role_name')} 
+                        {...register('display_name')} 
                         className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
                         ${
-                            errors.role_name ? "border-red-500" : "border-gray-300"
+                            errors.display_name ? "border-red-500" : "border-gray-300"
                           }`}
                       />
                       {
-                        errors.role_name && (
-                          <p className="text-red-500 text-[9px] mt-1">{errors?.role_name?.message}</p>
+                        errors.display_name && (
+                          <p className="text-red-500 text-[9px] mt-1">{errors?.display_name?.message}</p>
                         )
                       }
                   </div>

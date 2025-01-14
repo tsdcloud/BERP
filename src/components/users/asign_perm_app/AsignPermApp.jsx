@@ -31,7 +31,7 @@ export default function AsignPermApp() {
                                 id:rest.id,
                                 id_permission:rest.permission.id,
                                 id_app:rest.app.id,
-                                permission_name: rest.permission.permission_name,
+                                permission_name: rest.permission.display_name,
                                 description: rest.permission.description,
                                 application_name: rest.app.application_name,
                                 description_app: rest.app.description

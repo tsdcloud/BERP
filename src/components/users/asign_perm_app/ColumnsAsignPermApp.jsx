@@ -93,19 +93,19 @@ export const AsignPermAppAction = () => {
                 const urlToDisabledAsignPermApp = `${URLS.API_ASIGN_PERM_APP}${id}/`;
 
                         try {
-                                const response = await handlePatch(urlToDisabledAsignPermApp, {is_active:false});
-                                console.log("response for disabled", response);
-                                if (response && response?.message) {
-                                    // console.log("app disabled", response);
-                                    // console.log("La app a été désactivé.", id);
-                                    toast.success(response?.message, { duration: 5000});
-                                    isDialogOpen && setDialogOpen(false);
-                                    window.location.reload();
-                                }
-                                else {
-                                toast.error(response.error, { duration: 5000});
-                                }
+                            const response = await handlePatch(urlToDisabledAsignPermApp, {is_active:false});
+                            console.log("response for disabled", response);
+                            if (response && response?.message) {
+                                // console.log("app disabled", response);
+                                // console.log("La app a été désactivé.", id);
+                                toast.success(response?.message, { duration: 5000});
                                 isDialogOpen && setDialogOpen(false);
+                                window.location.reload();
+                            }
+                            else {
+                            toast.error(response.error, { duration: 5000});
+                            }
+                            isDialogOpen && setDialogOpen(false);
                         }
                         catch(error){
                             console.error("Erreur lors de la désactivation de l'asignation permission - rôle :", error);
@@ -288,7 +288,7 @@ export const AsignPermAppAction = () => {
                         {
                         isEdited === false ? (
                             <div className='flex space-x-2'>
-                                            <div className='flex space-x-2'>
+                                            {/* <div className='flex space-x-2'>
                                             { 
                                                 selectedAsignPermApp?.is_active == false ? 
                                                     (
@@ -309,7 +309,7 @@ export const AsignPermAppAction = () => {
                                             
                                             }
                                             
-                                           </div>
+                                           </div> */}
                                             <AlertDialogAction 
                                                 className="border-2 border-red-900 outline-red-700 text-red-900 text-xs shadow-md bg-transparent hover:bg-red-600 hover:text-white transition"
                                                 onClick={() => deletedAsignPermApp(selectedAsignPermApp.id)}>

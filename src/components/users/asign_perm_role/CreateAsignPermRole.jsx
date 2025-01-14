@@ -114,7 +114,7 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
 
       const onSubmitDataFormAsignPermRole = async (data) => {
         // console.log("Données du formulaire :", data);
-        const urlToCreateAsignPermRole = URLS.API_ASIGN_PERM_ROLE;
+        const urlToCreateAsignPermRole = URLS.API_GRANT_PERMISSIONS_ROLE;
       
     //     try {
     //       const { role_id, permission_id } = data;
@@ -150,36 +150,47 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
 
         console.log("this is the permissions :", [permission_id])
       
-        for (const permId of permission_id) {
-          try {
-            // Envoyer la requête pour chaque `permission_id`
-            const response = await handlePost(urlToCreateAsignPermRole, { role_id, permission_id: permId }, true);
+        // for (const permId of permission_id) {
+        //   try {
+        //     // Envoyer la requête pour chaque `permission_id`
+        //     const response = await handlePost(urlToCreateAsignPermRole, { role_id, permission_id: permId }, true);
       
-            if (!response || response.status !== 201) {
-              toast.error(`${response.errors.non_field_errors}`, { duration: 3000 });
-              allSuccess = false;
-              break; // Stop the loop
+        //     if (!response || response.status !== 201) {
+        //       toast.error(`${response.errors.non_field_errors}`, { duration: 3000 });
+        //       allSuccess = false;
+        //       break; // Stop the loop
+        //     }
+        //   } catch (error) {
+        //     toast.error(`Erreur pour permission ID ${permId}: ${error.message}`, { duration: 5000 });
+        //     allSuccess = false;
+        //     break; // Stop the loop
+        //   }
+        // }
+
+        try {
+            // Envoyer la requête pour chaque `permission_id`
+            const response = await handlePost(urlToCreateAsignPermRole, { role_id, permission_ids: permission_id }, true);
+      
+            if (response.success) {
+              toast.success( "assigntion fais avec succès" , { duration: 2000 });
+
+              setTimeout(() => {
+                window.location.reload(); 
+              }, 2000);
+
+            }else{
+                toast.error(response.errors.non_field_errors, { duration: 3000 });
             }
           } catch (error) {
-            toast.error(`Erreur pour permission ID ${permId}: ${error.message}`, { duration: 5000 });
-            allSuccess = false;
-            break; // Stop the loop
+            toast.error(`Erreur d'assignation`, { duration: 3000 });
           }
-        }
-      
-        // Si toutes les requêtes réussissent, afficher un seul message de succès
-        if (allSuccess) {
-          toast.success("Assignations faites avec succès !", { duration: 2000 });
-          setTimeout(() => {
-            window.location.reload(); 
-          }, 2000);
-        }
+
       } catch (globalError) {
         // Gestion des erreurs globales
         console.error("Erreur globale:", globalError.message);
         toast.error("Une erreur inattendue s'est produite", { duration: 5000 });
       }
-      }
+    }
       
 
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { FaUser } from 'react-icons/fa';
 import Preloader from '../../components/Preloader';
+import { Link } from 'react-router-dom';
 export default function UserEntryPoint() {
     
     const [isLoading, setIsLoading] = useState(false);
@@ -15,14 +16,17 @@ export default function UserEntryPoint() {
                     </div>
                 ) : (
                     <div className='flex flex-col items-center m-7 space-y-2'>
-                        <a
-                            href="/utilisateurs" // Remplacez par le chemin réel de votre page
+                        {/* <a
+                            href="/utilisateurs"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center justify-center w-[90px] h-[90px] bg-secondary text-white rounded-full shadow-lg hover:bg-orange-600 transition duration-300"
                         >
                             <FaUser size={40} />
-                        </a>
+                        </a> */}
+                        <Link to={"/utilisateurs"} className='flex items-center justify-center w-[90px] h-[90px] bg-secondary text-white rounded-full shadow-lg hover:bg-orange-600 transition duration-300'>
+                            <FaUser size={40} />
+                        </Link>
                         <p className='text-white text-xs'>Gestion des utilisateurs</p>
                     </div>
                 )

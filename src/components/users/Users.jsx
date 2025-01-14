@@ -23,13 +23,13 @@ export default function Users() {
             console.log("respo",response);
             
                 if (response && response?.data?.results) {
-                        const results = response?.data?.results;
-                        const filteredUsers = results?.map(item => {
-                        const { user_created_by, user_updated_by, is_staff, is_superuser, ...rest } = item;
-                        return rest;
-                        });
-                        // console.log("Users", filteredUsers);
-                        setUsers(filteredUsers);
+                    const results = response?.data?.results;
+                    const filteredUsers = results?.map(item => {
+                    const { user_created_by, user_updated_by, is_staff, is_superuser, ...rest } = item;
+                    return rest;
+                    });
+                    // console.log("Users", filteredUsers);
+                    setUsers(filteredUsers);
                 }
                 else{
                     throw new Error('Erreur lors de la récupération des utilisateurs');

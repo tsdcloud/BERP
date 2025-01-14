@@ -288,7 +288,7 @@ export const AsignPermRoleAction = () => {
                         {
                         isEdited === false ? (
                             <div className='flex space-x-2'>
-                                            <div className='flex space-x-2'>
+                                            {/* <div className='flex space-x-2'>
                                             { 
                                                 selectedAsignPermRole?.is_active == false ? 
                                                     (
@@ -309,7 +309,7 @@ export const AsignPermRoleAction = () => {
                                             
                                             }
                                             
-                                           </div>
+                                           </div> */}
                                             <AlertDialogAction 
                                                 className="border-2 border-red-900 outline-red-700 text-red-900 text-xs shadow-md bg-transparent hover:bg-red-600 hover:text-white transition"
                                                 onClick={() => deletedAsignPermRole(selectedAsignPermRole.id)}>

@@ -64,18 +64,18 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
         }
     };
     const showUser = async () => {
-        const urlToGetRole = `${URLS.API_ROLE}`;
+        const urlToGetUser = `${URLS.API_USER}`;
         try {
-            const response = await handleFetch(urlToGetRole);
-            console.log("response show role", response);
+            const response = await handleFetch(urlToGetUser);
+            console.log("response show user", response);
 
                 if (response && response?.data?.results) {
                         const results = response?.data?.results;
-                        const filteredRole = results?.map(item => {
-                        const { role_created_by, role_updated_by, description, ...rest } = item;
+                        const filteredUsers = results?.map(item => {
+                        const { user_created_by, user_updated_by, is_staff, is_superuser, ...rest } = item;
                         return rest;
                     });
-                        setFetchUser(filteredRole);
+                        setFetchUser(filteredUsers);
                         console.log("fetchUser", fetchUser);
                 
                     }
@@ -85,7 +85,7 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
                 
         } catch (error) {
             console.error("Error during creating", error);
-            toast.error("Erreur lors de la récupération des rôles", { duration: 5000 });
+            toast.error("Erreur lors de la récupération des users", { duration: 5000 });
         }
     };
 
@@ -99,17 +99,17 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
         user_id: z.string()
           .nonempty("Vous devez sélectionner un nom."),
       
-        description_user: z.string()
-          .nonempty("Ce champ 'description du rôle' est requis.")
-          .min(5, "Le champ doit avoir une valeur de 5 caractères au moins.")
-          .max(100)
-          .regex(/^[a-zA-Z0-9\sàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]+$/, "Ce champ doit être une 'description' conforme."),
+        // description_user: z.string()
+        //   .nonempty("Ce champ 'description du rôle' est requis.")
+        //   .min(5, "Le champ doit avoir une valeur de 5 caractères au moins.")
+        //   .max(100)
+        //   .regex(/^[a-zA-Z0-9\sàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]+$/, "Ce champ doit être une 'description' conforme."),
       
-        description: z.string()
-          .nonempty("Ce champ 'description' est requis.")
-          .min(5, "Le champ doit avoir une valeur de 5 caractères au moins.")
-          .max(100)
-          .regex(/^[a-zA-Z0-9\sàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]+$/, "Ce champ doit être une 'description' conforme."),
+        // description: z.string()
+        //   .nonempty("Ce champ 'description' est requis.")
+        //   .min(5, "Le champ doit avoir une valeur de 5 caractères au moins.")
+        //   .max(100)
+        //   .regex(/^[a-zA-Z0-9\sàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]+$/, "Ce champ doit être une 'description' conforme."),
       
         permission_id: z.array(z.string()
             .nonempty("vous devez ajouter"))
@@ -130,25 +130,38 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
       
         try {
           const { user_id, permission_id } = data;
-        //   console.log("Role ID:", user_id, "Permission IDs:", permission_id);
-        //   console.log(" checked Permission IDs:", checkedPermissions);
-      
+          let allSuccess = true;
+  
+          console.log("this is the permissions :", [permission_id])
+        
           for (const permId of permission_id) {
-            // console.log(`Envoi de la requête pour permission_id: ${permId}`);
-            const response = await handlePost(urlToCreateAsignPermUser, { user_id, permission_id: permId }, true);
-            if (response && response.status === 201) {
-              toast.success("Assignation créée avec succès", { duration: 2000 });
-            } else {
-              toast.error(response.error || "Erreur lors de la création de l'assignation", { duration: 5000 });
+            try {
+              // Envoyer la requête pour chaque `permission_id`
+              const response = await handlePost(urlToCreateAsignPermUser, { user_id, permission_id: permId }, true);
+        
+              if (!response || response.status !== 201) {
+                toast.error(`${response.errors.non_field_errors}`, { duration: 3000 });
+                allSuccess = false;
+                break; // Stop the loop
+              }
+            } catch (error) {
+              toast.error(`Erreur pour permission ID ${permId}`, { duration: 5000 });
+              allSuccess = false;
+              break; // Stop the loop
             }
           }
-      
-        //   setOpen(false);
-          onSubmit();
-          window.location.reload();
-        } catch (error) {
-          console.error("Erreur lors de la création", error);
-          toast.error("Erreur lors de la création de l'assignation", { duration: 5000 });
+
+          if (allSuccess) {
+            toast.success("Permissions assigned successfully to the user!", { duration: 2000 });
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          }
+  
+        } catch (globalError) {
+          // Gestion des erreurs globales
+          console.error("Erreur globale:", globalError.message);
+          toast.error("Une erreur inattendue s'est produite", { duration: 5000 });
         }
       };
 
@@ -183,10 +196,10 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
                                             errors.user_id ? "border-red-500" : "border-gray-300"
                                         }`}
                                     >
-                                        <option value="">Selectionner un rôle</option>
+                                        <option value="">Selectionner un utilisateur</option>
                                             {fetchUser.map((item) => (
                                                 <option key={item.id} value={item.id}>
-                                                        {item.user_name}
+                                                        {item.first_name}
                                                 </option>
                                             ))}
                             </select>
@@ -196,28 +209,6 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
                                 )
                             }
                     
-                        </div>
-
-                        <div className='mb-4'>
-                                <label htmlFor="description_user" className="block text-xs font-medium mb-1">
-                                    Description du rôle<sup className='text-red-500'>*</sup>
-                                </label>
-                                <input 
-                                    id='description_user'
-                                    type="text"
-                                    {...register('description_user')}
-                                    className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
-                                    ${
-                                        errors.description_user ? "border-red-500" : "border-gray-300"
-                                    }`}
-                                />
-
-                                {
-                                    errors.description_user && (
-                                        <p className="text-red-500 text-[9px] mt-1">{errors.description_user.message}</p>
-                                    )
-                                }
-
                         </div>
                         
                         <div className='my-3'>
@@ -243,28 +234,6 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
                             {errors.permission_id && (
                                 <p className="text-red-500 text-[9px] mt-1">{errors.permission_id.message}</p>
                             )}
-                        </div>
-
-                        <div className='mb-4'>
-                                <label htmlFor="description" className="block text-xs font-medium mb-1">
-                                    Description de la permission<sup className='text-red-500'>*</sup>
-                                </label>
-                                <input 
-                                    id='description'
-                                    type="text"
-                                    {...register('description')}
-                                    className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
-                                    ${
-                                        errors.description ? "border-red-500" : "border-gray-300"
-                                    }`}
-                                />
-
-                                {
-                                errors.description && (
-                                    <p className="text-red-500 text-[9px] mt-1">{errors.description.message}</p>
-                                )
-                                }
-
                         </div>
 
                         <div className='flex justify-end space-x-2 mt-2'>

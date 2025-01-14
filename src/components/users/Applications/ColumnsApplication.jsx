@@ -62,13 +62,15 @@ export const ApplicationAction = () => {
         try {
             const response = await handlePatch(urlToUpdate, data);
             // console.log("response update", response);
-            if (response ) {
+            if (response.success ) {
                 // console.log("User updated", response);
                 setDialogOpen(false);
+                toast.success("application modified successfully", { duration: 2000});
                 window.location.reload();
             }
             else {
-              toast.error(response.error, { duration: 5000});
+                setDialogOpen(false);
+                toast.error(response.errors.application_name || response.errors.url, { duration: 5000});
             }
             
           } catch (error) {
@@ -101,7 +103,7 @@ export const ApplicationAction = () => {
                                 if (response && response?.message) {
                                     // console.log("ROLE disabled", response);
                                     // console.log("La ROLE a été désactivé.", id);
-                                    toast.success(response?.message, { duration: 5000});
+                                    toast.success("application desactivated successfully", { duration: 5000});
                                     isDialogOpen && setDialogOpen(false);
                                     window.location.reload();
                                 }
@@ -129,11 +131,21 @@ export const ApplicationAction = () => {
     const activedApplication = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette application ?");
 
+        const urlToEnabledApplication = `${URLS.API_APPLICATION}${id}/`;
+
         if (confirmation) {
               try{
                 setDialogOpen(false);
-                //   await handlePatch(url)
-                //   navigateToMyEvent(`/events/${eventId}`)
+                    const response = await handlePatch(urlToEnabledApplication, {is_active: true});
+
+                    if (response.success) {
+                        isDialogOpen && setDialogOpen(false);
+                        toast.success("application activated successfully", { duration: 2000});
+                        window.location.reload();
+                    }
+                    else {
+                    toast.error("error while enabling", { duration: 5000});
+                    }
               }
               catch(error){
                   console.error("Erreur lors de la désactivation de cette application :", error);
@@ -306,7 +318,7 @@ export const ApplicationAction = () => {
                             <div className='flex space-x-2'>
                                             <div className='flex space-x-2'>
                                             { 
-                                                selectedApplication?.is_active == false ? 
+                                                !selectedApplication?.is_active ? 
                                                     (
                                                             <AlertDialogAction
                                                                 className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md bg-transparent hover:bg-blue-600 hover:text-white transition"

@@ -31,11 +31,11 @@ const asignPermUserSchema = z.object({
     .max(100)
     .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
 
-    description: z.string()
-    .nonempty("Ce champs 'description' est réquis")
-    .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z\s,]+$/, "Ce champs doit être un 'description' conforme"),
+    // description: z.string()
+    // .nonempty("Ce champs 'description' est réquis")
+    // .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
+    // .max(100)
+    // .regex(/^[a-zA-Z\s,]+$/, "Ce champs doit être un 'description' conforme"),
     });
 
 // Fonction principale pour gérer les actions utilisateur
@@ -288,7 +288,7 @@ export const AsignPermUserAction = () => {
                         {
                         isEdited === false ? (
                             <div className='flex space-x-2'>
-                                            <div className='flex space-x-2'>
+                                            {/* <div className='flex space-x-2'>
                                             { 
                                                 selectedAsignPermUser?.is_active == false ? 
                                                     (
@@ -309,7 +309,7 @@ export const AsignPermUserAction = () => {
                                             
                                             }
                                             
-                                           </div>
+                                           </div> */}
                                             <AlertDialogAction 
                                                 className="border-2 border-red-900 outline-red-700 text-red-900 text-xs shadow-md bg-transparent hover:bg-red-600 hover:text-white transition"
                                                 onClick={() => deletedAsignPermUser(selectedAsignPermUser.id)}>
@@ -337,7 +337,7 @@ export const AsignPermUserAction = () => {
         { accessorKey: 'permission_name', header: 'Nom de la permission' },
         { accessorKey: 'description', header: 'Description de la permission' },
         { accessorKey: 'first_name', header: 'Nom de famille' },
-        { accessorKey: 'username', header: 'Nom de l utilisateur' },
+        { accessorKey: 'username', header: 'Nom d utilisateur' },
         // { accessorKey: 'is_active', header: 'Statut' },
         {
             accessorKey: "action",

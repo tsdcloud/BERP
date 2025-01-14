@@ -72,14 +72,18 @@ export const UserAction = () => {
         try {
             const response = await handlePatch(urlToUpdate, data);
             console.log("response update", response);
-            if (response ) {
+            if (response.success) {
   
-              console.log("User updated", response);
+                console.log("User updated", response);
                 setDialogOpen(false);
+
                 window.location.reload();
+
+                toast.success("user modified successfully", { duration: 5000});
             }
             else {
-              toast.error(response.error, { duration: 5000});
+                setDialogOpen(false);
+                toast.error(response.errors.email || response.errors.username, { duration: 5000});
             }
             
           } catch (error) {
@@ -139,11 +143,25 @@ export const UserAction = () => {
 
     const activedUser = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cet utilisateur ?");
-
+        const urlToDisabledUser = `${URLS.API_USER}${id}`;
         if (confirmation) {
               try{
-                setDialogOpen(false);
-                //   await handlePatch(url)
+                    const response = await handlePatch(urlToDisabledUser, {is_active: true})
+
+                    if (response.success){
+                        setDialogOpen(false);
+
+                        setTimeout(()=>{
+                            toast.success("user activated successfully", { duration: 2000});
+                        },[100])
+                        
+                        setTimeout(()=>{
+                            window.location.reload();
+                        },[900])
+                    }else{
+                        toast.error("error occured", { duration: 2000});
+                    }
+
                 //   navigateToMyEvent(`/events/${eventId}`)
               }
               catch(error){
@@ -286,7 +304,7 @@ export const UserAction = () => {
                                                 id="username"
                                                 type="text"
                                                 defaultValue={selectedUser?.username}
-                                                disabled
+                                                // disabled
                                                 {...register("username")}
                                                 className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.username ? "border-red-500" : "border-gray-300"

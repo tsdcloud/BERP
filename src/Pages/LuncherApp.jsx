@@ -35,7 +35,7 @@ export default function LuncherApp() {
 
           if (response.status === 200) {
             disconnect();
-            navigateToDashboard("/signIn");
+            navigateToLogin("/signIn");
           }
           else {
             toast.error(response.detail, { duration: 5000});

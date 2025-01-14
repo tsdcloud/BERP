@@ -22,16 +22,16 @@ export default function AsignPermUser() {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllAsignPermUser);
             console.log("respoasignPermUser",response);
-                if (response && response?.data?.results) {
+                if (response.success && response?.data?.results) {
                         const results = response?.data?.results;
                         console.log("rest asign perm user", results);
                         const filteredAsignPermUser = results?.map(item => {
-                            const { perm_assigned_by, ...rest } = item;
+                            const { perm_assigned_by, date_assigned,  ...rest } = item;
                             return {
                                 id:rest.id,
                                 id_permission:rest.permission.id,
                                 id_user:rest.user.id,
-                                permission_name: rest.permission.permission_name,
+                                permission_name: rest.permission.display_name,
                                 description: rest.permission.description,
                                 first_name: rest.user.first_name,
                                 username: rest.user.username

@@ -25,17 +25,17 @@ import { URLS } from '../../../../configUrl';
 
 // Schéma de validation avec Zod
 const roleSchema = z.object({
-    role_name: z.string()
+    display_name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 5 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
+    .max(100),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
 
     description: z.string()
     .nonempty("Ce champs 'description' est réquis")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z\s,]+$/, "Ce champs doit être un 'description' conforme"),
+    // .regex(/^[a-zA-Z\s,]+$/, "Ce champs doit être un 'description' conforme"),
     });
 
 // Fonction principale pour gérer les actions utilisateur
@@ -58,13 +58,21 @@ export const RoleAction = () => {
         try {
             const response = await handlePatch(urlToUpdate, data);
             // console.log("response update", response);
-            if (response ) {
+            if (response.success) {
                 // console.log("User updated", response);
                 setDialogOpen(false);
-                window.location.reload();
+
+                setTimeout(()=>{
+                    toast.success("role modified successfully", { duration: 900 });
+                },[100])
+                
+                setTimeout(()=>{
+                    window.location.reload();
+                },[900])
             }
             else {
-              toast.error(response.error, { duration: 5000});
+                setDialogOpen(false);
+                toast.error(response.errors.display_name, { duration: 5000});
             }
             
           } catch (error) {
@@ -94,10 +102,10 @@ export const RoleAction = () => {
                         try {
                                 const response = await handlePatch(urlToDisabledRole, {is_active:false});
                                 console.log("response for disabled", response);
-                                if (response && response?.message) {
+                                if (response.success) {
                                     // console.log("ROLE disabled", response);
                                     // console.log("La ROLE a été désactivé.", id);
-                                    toast.success(response?.message, { duration: 5000});
+                                    toast.success("role disabled successfully", { duration: 5000});
                                     isDialogOpen && setDialogOpen(false);
                                     window.location.reload();
                                 }
@@ -122,13 +130,16 @@ export const RoleAction = () => {
                 }
     };
 
-    const activedRole = async (id) => {
+    const enableRole = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver ce rôle ?");
+
+        const urlToDisabledRole = `${URLS.API_ROLE}${id}/`
 
         if (confirmation) {
               try{
-                setDialogOpen(false);
-                //   await handlePatch(url)
+                    setDialogOpen(false);
+                    await handlePatch(urlToDisabledRole, {is_active: true})
+                    window.location.reload();
                 //   navigateToMyEvent(`/events/${eventId}`)
               }
               catch(error){
@@ -156,14 +167,12 @@ export const RoleAction = () => {
                     try {
                             const response = await handleDelete(urlToDeleteRole);
                             console.log("response for deleting", response);
-                            if (response && response?.message) {
-                                toast.success(response?.message, { duration: 5000});
+                            if (response.success) {
+                                toast.success("role disabled successfully", { duration: 5000});
                                 isDialogOpen && setDialogOpen(false);
                                 window.location.reload();
                             }
-                            else {
-                            toast.error(response.error, { duration: 5000});
-                            }
+
                             setDialogOpen(false);
                     }
                     catch(error){
@@ -201,16 +210,16 @@ export const RoleAction = () => {
                                                 Nom du rôle <sup className='text-red-500'>*</sup>
                                             </label>
                                             <Input
-                                                id="role_name"
+                                                id="display_name"
                                                 type="text"
-                                                defaultValue={selectedRole?.role_name}
-                                                {...register("role_name")}
+                                                defaultValue={selectedRole?.display_name}
+                                                {...register("display_name")}
                                                 className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                                    errors.role_name ? "border-red-500" : "border-gray-300"
+                                                    errors.display_name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
-                                                {errors.role_name && (
-                                                <p className="text-red-500 text-[9px] mt-1">{errors.role_name.message}</p>
+                                                {errors.display_name && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.display_name.message}</p>
                                                 )}
                                     </div>
                                     <div>
@@ -285,7 +294,7 @@ export const RoleAction = () => {
                                                     (
                                                             <AlertDialogAction
                                                                 className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md bg-transparent hover:bg-blue-600 hover:text-white transition"
-                                                                onClick={() => activedRole(selectedRole.id)}>
+                                                                onClick={() => enableRole(selectedRole.id)}>
                                                                     Activer
                                                             </AlertDialogAction>
 
@@ -325,7 +334,7 @@ export const RoleAction = () => {
 
 
     const columnsRole = useMemo(() => [
-        { accessorKey: 'role_name', header: 'Nom' },
+        { accessorKey: 'display_name', header: 'Nom' },
         { accessorKey: 'description', header: 'Description' },
         { accessorKey: 'is_active', header: 'Statut' },
         {

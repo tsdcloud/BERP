@@ -31,9 +31,9 @@ export default function AsignPermRole() {
                                 id:rest.id,
                                 id_permission:rest.permission.id,
                                 id_role:rest.role.id,
-                                permission_name: rest.permission.permission_name,
+                                permission_name: rest.permission.display_name,
                                 description: rest.permission.description,
-                                role_name: rest.role.role_name,
+                                role_name: rest.role.display_name,
                                 description_role: rest.role.description
                             };
                         });
