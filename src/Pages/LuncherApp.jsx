@@ -9,12 +9,16 @@ import toast, { Toaster } from 'react-hot-toast';
 
 import {React, useContext} from 'react';
 import '../App.css'; 
+<<<<<<< HEAD
 import { Button } from 'antd';
 import { AUTHCONTEXT } from '../contexts/AuthProvider';
 
 // import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../configUrl';
 import { useFetch } from '../hooks/useFetch';
+=======
+import EntityEntryPoint from './entity/EntityEntryPoint';
+>>>>>>> bb34614 (last commit for main branch - we)
 
 
 export default function LuncherApp() {
@@ -69,6 +73,7 @@ export default function LuncherApp() {
               
                 {/* Contenu principal */}
                 <div className="flex-grow relative z-10 p-8">
+<<<<<<< HEAD
                   <h1 className="text-white text-3xl font-bold">Vos applications</h1>
                   <Button
                       type="submit"
@@ -79,6 +84,17 @@ export default function LuncherApp() {
                   </Button>
                   {/* Ajoutez ici le reste de votre contenu */}
                   <UserEntryPoint/>
+=======
+                    <h1 className="text-white text-3xl font-bold">Vos applications</h1>
+
+                    <div className='flex flex-row space-x-1'>
+                        {/* Ajoutez ici le reste de votre contenu */}
+                        <UserEntryPoint/>
+                        <EntityEntryPoint/>
+
+                    </div>
+
+>>>>>>> bb34614 (last commit for main branch - we)
                 </div>
               
                 {/* Footer */}

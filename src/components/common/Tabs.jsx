@@ -29,11 +29,11 @@ const Tabs = ({ links }) => {
     <div className='flex gap-2 items-center'>
       {
         links.map((link, index) => (
-          <div 
+          <div
             key={index} 
             className={`px-2 p-1 rounded-full cursor-pointer text-xs font-semibold ${
               activeTab === link.link ? "bg-secondary text-white" : "border-[1px] border-gray-300"
-            }`} 
+            }`}
             onClick={() => handleTabClick(link.link)}
           >
             {link.name}

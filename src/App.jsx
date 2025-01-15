@@ -30,6 +30,17 @@ import AsignPermUser from './Pages/users/AsignPermUser';
 import AsignRoleUser from './Pages/users/AsignRoleUser';
 
 
+//entités
+import Entity from './Pages/entity/index';
+// import Permission from './Pages/users/Permission';
+// import Role from './Pages/users/Role';
+// import Application from './Pages/users/Application';
+// import AsignPermRole from './Pages/users/AsignPermRole';
+// import AsignPermApp from './Pages/users/AsignPermApp';
+// import AsignPermUser from './Pages/users/AsignPermUser';
+// import AsignRoleUser from './Pages/users/AsignRoleUser';
+
+
 
 
 function App() {
@@ -55,6 +66,18 @@ function App() {
                 <Route path="asign_perm_app" element={<AsignPermApp />} />
                 <Route path="asign_perm_user" element={<AsignPermUser />} />
                 <Route path="asign_role_user" element={<AsignRoleUser />} />
+            </Route>
+
+              {/* Entités */}
+            <Route path="/entités">
+                <Route path="" element={<Entity />} />
+                {/* <Route path="permission" element={<Permission />} />
+                <Route path="role" element={<Role />} />
+                <Route path="application" element={<Application />} />
+                <Route path="asign_perm_role" element={<AsignPermRole />} />
+                <Route path="asign_perm_app" element={<AsignPermApp />} />
+                <Route path="asign_perm_user" element={<AsignPermUser />} />
+                <Route path="asign_role_user" element={<AsignRoleUser />} /> */}
             </Route>
 
           </Route>
