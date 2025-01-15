@@ -49,6 +49,8 @@ export const ApplicationAction = () => {
     const [isEdited, setIsEdited] = useState(true);
     const [selectedApplication, setSelectedApplication] = useState({});
 
+    const [selectedPermission, setSelectedPermission] = useState(null);
+
     const { register, handleSubmit, reset, formState:{errors, isSubmitting} } = useForm({
         resolver: zodResolver(applicationSchema),
     });
@@ -202,7 +204,7 @@ export const ApplicationAction = () => {
     const showDialogApplication = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent className="max-h-[80vh] overflow-y-auto">
                     <AlertDialogHeader>
                         <AlertDialogTitle>
                             { isEdited ? "Modifier les informations" : "Détails de l'application" }
@@ -306,6 +308,33 @@ export const ApplicationAction = () => {
                                                 {selectedApplication?.is_active ? "Actif" : "Désactivé"}
                                             </h3>
                                         </div>
+                                        <div className="grid gap-1">
+
+                                            {/* Dropdown pour les permissions */}
+                                            <div className="bg-white shadow-md p-4 rounded-lg">
+                                            <h2 className="text-lg font-semibold mb-2">Permissions :</h2>
+                                            <div className="space-y-2">
+                                                {selectedApplication.permissions.length === 0 ? "This application does'nt have permissions" : selectedApplication.permissions.map((permission) => (
+                                                <div key={permission.id}>
+                                                    <button
+                                                    onClick={() => setSelectedPermission(permission)}
+                                                    className="w-full text-left px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                                                    >
+                                                    {permission.display_name}
+                                                    </button>
+                                                </div>
+                                                ))}
+                                            </div>
+                                            {selectedPermission && (
+                                                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                                                <h3 className="font-bold text-lg">Détails de la permission</h3>
+                                                <p><strong>Nom :</strong> {selectedPermission.display_name}</p>
+                                                <p><strong>Description :</strong> {selectedPermission.description}</p>
+                                                <p><strong>Statut :</strong> {selectedPermission.is_active ? "Actif" : "Inactif"}</p>
+                                                </div>
+                                            )}
+                                            </div>
+                                        </div>
                                     </div>
                                 )
                             )}
@@ -345,7 +374,7 @@ export const ApplicationAction = () => {
                                             </AlertDialogAction>
                                             <AlertDialogCancel 
                                                 className="border-2 border-black outline-black text-black text-xs shadow-md hover:bg-black hover:text-white transition"
-                                                onClick={() => setDialogOpen(false)}>
+                                                onClick={() => {setDialogOpen(false); setSelectedPermission(null)}}>
                                                     Retour
                                             </AlertDialogCancel>
                                             

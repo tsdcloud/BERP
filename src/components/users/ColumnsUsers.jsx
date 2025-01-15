@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { EyeIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 import { AlertDialog, 
          AlertDialogAction, 
          AlertDialogCancel, 
@@ -60,11 +61,31 @@ export const UserAction = () => {
     const [isEdited, setIsEdited] = useState(true);
     const [selectedUser, setSelectedUser] = useState({});
 
+    const [selectedRole, setSelectedRole] = useState(null);
+    const [selectedPermission, setSelectedPermission] = useState(null);
+    const [activeDropdown, setActiveDropdown] = useState(null);
+
     const { register, handleSubmit, reset, formState:{errors, isSubmitting} } = useForm({
         resolver: zodResolver(userSchema),
     });
 
-   const { handlePatch, handleDelete } = useFetch();
+    const { handlePatch, handleDelete } = useFetch();
+
+
+    const handleRoleClick = (role) => {
+        setSelectedRole(role);
+        setSelectedPermission(null)
+    };
+
+    const handlePermissionClick = (permission) => {
+        setSelectedPermission(permission);
+        setSelectedRole(null)
+    };
+
+    const toggleDropdown = (id) => {
+        setActiveDropdown((prev) => (prev === id ? null : id));
+      };
+
 
     const onSubmit = async (data) => {
         const urlToUpdate = `${URLS.API_USER}${selectedUser?.id}`;
@@ -217,7 +238,7 @@ export const UserAction = () => {
     const showDialogUser = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent className="max-h-[80vh] overflow-y-auto">
                     <AlertDialogHeader>
                         <AlertDialogTitle>
                             { isEdited ? "Modifier les informations" : "Détails de l'utilisateur" }
@@ -365,6 +386,62 @@ export const UserAction = () => {
                                                 {selectedUser?.is_active ? "Actif" : "Désactivé"}
                                             </h3>
                                         </div>
+                                        <div className="grid gap-1">
+                                            {/* Dropdown pour les rôles */}
+                                            <div className="bg-white shadow-md p-4 rounded-lg">
+                                            <h2 className="text-lg font-semibold mb-2">Rôles :</h2>
+                                            <div className="space-y-2">
+                                                {selectedUser.roles.length === 0 ? "This user does'nt have roles" : selectedUser.roles.map((role) => (
+                                                <div key={role.id}>
+                                                    <button
+                                                    onClick={() => {handleRoleClick(role)}}
+                                                    className="w-full text-left px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                                                    >
+                                                        <span>{role.display_name}</span>
+                                                    </button>
+                                                </div>
+                                                ))}
+                                            </div>
+                                            {selectedRole && (
+                                                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                                                <h3 className="font-bold text-lg">Détails du rôle</h3>
+                                                <p><strong>Nom :</strong> {selectedRole.display_name}</p>
+                                                <p><strong>Description :</strong> {selectedRole.description}</p>
+                                                <h4 className="font-semibold mt-3">Permissions associées :</h4>
+                                                <ul className="list-disc ml-5">
+                                                    {selectedRole.permissions.map((perm) => (
+                                                    <li key={perm.id}>{perm.display_name}</li>
+                                                    ))}
+                                                </ul>
+                                                </div>
+                                            )}
+                                            </div>
+
+                                            {/* Dropdown pour les permissions */}
+                                            <div className="bg-white shadow-md p-4 rounded-lg">
+                                            <h2 className="text-lg font-semibold mb-2">Permissions :</h2>
+                                            <div className="space-y-2">
+                                                {selectedUser.permissions.length === 0 ? "This user does'nt have permissions" : selectedUser.permissions.map((permission) => (
+                                                <div key={permission.id}>
+                                                    <button
+                                                    onClick={() => handlePermissionClick(permission)}
+                                                    className="w-full text-left px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                                                    >
+                                                    {permission.display_name}
+                                                    </button>
+                                                </div>
+                                                ))}
+                                            </div>
+                                            {selectedPermission && (
+                                                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                                                <h3 className="font-bold text-lg">Détails de la permission</h3>
+                                                <p><strong>Nom :</strong> {selectedPermission.display_name}</p>
+                                                <p><strong>Description :</strong> {selectedPermission.description}</p>
+                                                <p><strong>Statut :</strong> {selectedPermission.is_active ? "Actif" : "Inactif"}</p>
+                                                </div>
+                                            )}
+                                            </div>
+                                        </div>
                                     </div>
                                 )
                             )}
@@ -404,7 +481,7 @@ export const UserAction = () => {
                                             </AlertDialogAction>
                                             <AlertDialogCancel 
                                                 className="border-2 border-black outline-black text-black text-xs shadow-md hover:bg-black hover:text-white transition"
-                                                onClick={() => setDialogOpen(false)}>
+                                                onClick={() => {setDialogOpen(false); setSelectedRole(null); setSelectedPermission(null)}}>
                                                     Retour
                                             </AlertDialogCancel>
                                             

@@ -146,15 +146,18 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
             // console.log(`Envoi de la requête pour user_id: ${userId}`);
             const response = await handlePost(urlToCreateAsignRoleUser, { role_id, user_id: userId }, true);
             if (response && response.status === 201) {
-              toast.success("Assignation créée avec succès", { duration: 2000 });
+              toast.success(`Assignation créée avec succès`, { duration: 1000 });
+              setTimeout(()=>{
+                window.location.reload();
+              }, [1000])
             } else {
-              toast.error(response.error || "Erreur lors de la création de l'assignation", { duration: 5000 });
+              toast.error(response.errors.non_field_errors || "Erreur lors de la création de l'assignation", { duration: 1000 });
             }
           }
       
         //   setOpen(false);
-          onSubmit();
-          window.location.reload();
+        //   onSubmit();
+        //   window.location.reload();
         } catch (error) {
           console.error("Erreur lors de la création", error);
           toast.error("Erreur lors de la création de l'assignation", { duration: 5000 });
