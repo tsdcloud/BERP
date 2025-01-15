@@ -33,7 +33,7 @@ const Consommable = () =>{
 
     const handleSubmit=()=>{
         fetchConsommable();
-        document.getElementById("close-consommable").click();
+        document.getElementById("close-dialog").click();
     }
 
     useEffect(()=>{

@@ -36,10 +36,18 @@ const Pagination = ({handleNext, handlePrev, totalPages, link, setList}) => {
             )
         )
     }
+
+    const pagesArray = Array(totalPages).fill().map((_, index)=>index+1);
   return (
     <div className='flex items-center gap-2 justify-end px-3'>
         <Button className='bg-primary text-white font-bold text-xs'>Prev</Button>
-        <ul className='flex items-center gap-2'>{handlePages()}</ul>
+        <ul className='flex items-center gap-2'>
+            {pagesArray.map((item, index)=><li 
+                    key={index} 
+                    className='p-2 rounded-lg border text-sm cursor-pointer' 
+                    onClick={()=>onPageClicked(item)}>{item}
+                </li>)}
+        </ul>
         <Button className='bg-primary text-white font-bold text-xs'>Next</Button>
     </div>
   )

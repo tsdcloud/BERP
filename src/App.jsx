@@ -20,6 +20,9 @@ import Incident from './Pages/incidents/index';
 import Consommable from './Pages/incidents/Consommable';
 import Maintenance from './Pages/incidents/Maintenance';
 import Equipement from './Pages/incidents/Equipement';
+import TypeMaintenance from './Pages/incidents/MaintenanceType';
+import IncidentCauses from './Pages/incidents/IncidentCauses';
+import IncidentType from './Pages/incidents/IncidentType';
 
 function App() {
   const { token } = useContext(AUTHCONTEXT);
@@ -44,8 +47,11 @@ function App() {
            {/* Incident */}
            <Route path="/incidents">
               <Route path="" element={<Incident />} />
+              <Route path="dashboard" element={<Incident />} />
+              <Route path="incident-cause" element={<IncidentCauses />} />
+              <Route path="incident-type" element={<IncidentType />} />
               <Route path="maintenance" element={<Maintenance />} />
-              <Route path="maintenance-type" element={<Maintenance />} />
+              <Route path="maintenance-type" element={<TypeMaintenance />} />
               <Route path="consommable" element={<Consommable />} />
               <Route path="equipement" element={<Equipement />} />
            </Route>

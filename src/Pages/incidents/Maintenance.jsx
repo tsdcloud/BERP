@@ -33,7 +33,7 @@ const Maintenance = () => {
 
     const handleSubmit=()=>{
         fetchMaintenance();
-        document.getElementById("close-maintenance").click();
+        document.getElementById("close-dialog").click();
     }
 
     useEffect(()=>{

@@ -1,29 +1,28 @@
 import React, {useEffect, useState} from 'react';
 import Header from '../../components/layout/Header';
 import Dialogue from '../../components/incidents/Dialogue';
-import InitiateForm from '../../components/incidents/Equipement/InitiateForm';
+import InitiateForm from '../../components/incidents/IncidentCauses/InitiateForm';
 import Tabs from '../../components/incidents/Tabs';
-import Datalist from '../../components/incidents/Equipement/Datalist';
+import Datalist from '../../components/incidents/IncidentCauses/Datalist';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
 import Pagination from '../../components/common/Pagination';
 
+const IncidentCauses = () => {
 
-const Equipement = () => {
     const {handleFetch} = useFetch();
-    const [equipements, setEquipements] = useState([]);
+    const [incidentCauses, setIncidentCauses] = useState([]);
     const [isOpenned, setIsOpenned] = useState(false);
     const [totalPages, setTotalPages] = useState(0);
     const [page, setPage] = useState(0);
     const [pageList, setPageList] = useState([]);
 
-
-    const fetchEquipement= async () => {
-        let url = `${URLS.INCIDENT_API}/equipements`;
+    const fetchIncidentCauses= async () => {
+        let url = `${URLS.INCIDENT_API}/incident-causes`;
         try {
            const response = await handleFetch(url);
            if(response.data){
-            setEquipements(response.data);
+            setIncidentCauses(response.data);
             setTotalPages(response.totalPages);
             setPage(response.page);
            }
@@ -33,12 +32,12 @@ const Equipement = () => {
     }
 
     const handleSubmit=()=>{
-        fetchEquipement();
+        fetchIncidentCauses();
         document.getElementById("close-dialog").click();
     }
 
     useEffect(()=>{
-        fetchEquipement();
+        fetchIncidentCauses();
     }, []);
 
   return (
@@ -54,8 +53,8 @@ const Equipement = () => {
                 <div className='flex gap-2 items-center'>
                     {/* <Input placeholder="Recherche..." className="outline-primary"/> */}
                     <Dialogue 
-                        buttonText={"Créer equipement"}
-                        header={<h2 className='text-xl font-semibold'>Créer equipement</h2>}
+                        buttonText={"Créer une cause d'incident"}
+                        header={<h2 className='text-xl font-semibold'>Créer une cause d'incident</h2>}
                         content={
                         <InitiateForm 
                             onSucess={handleSubmit}
@@ -67,16 +66,16 @@ const Equipement = () => {
             {/* Table */}
             <div className='w-full bg-white rounded-lg p-2'>
                 <Datalist 
-                    dataList={equipements}
-                    fetchData={fetchEquipement}
+                    dataList={incidentCauses}
+                    fetchData={fetchIncidentCauses}
                 />
                 {/* Pagination */}
                 <Pagination 
                     totalPages={totalPages}
-                    setList={setEquipements}
+                    setList={setIncidentCauses}
                     handleNext={()=>{}}
                     handlePrev={()=>{}}
-                    link={`${URLS.INCIDENT_API}/equipements`}
+                    link={`${URLS.INCIDENT_API}/incident-causes`}
                 />
             </div>
 
@@ -86,4 +85,4 @@ const Equipement = () => {
   )
 }
 
-export default Equipement
+export default IncidentCauses
