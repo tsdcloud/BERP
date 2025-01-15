@@ -15,7 +15,6 @@ export default function Users() {
     const { handleFetch } = useFetch();
 
     const fetchUsers = async () => {
-        // const urlToShowAllUsers = "http://127.0.0.1:8000/api_gateway/api/user/";
         const urlToShowAllUsers = URLS.API_USER;
         try {
             setIsLoading(true);
