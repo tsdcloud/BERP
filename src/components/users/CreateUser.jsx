@@ -2,12 +2,13 @@ import {useState} from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import CustomingModal from '../../modals/CustomingModal';
-import { Button } from "../../ui/button";
+import CustomingModal from '../modals/CustomingModal';
+import { Button } from "../ui/button";
 import { useNavigate } from 'react-router-dom';
+import { URLS } from '../../../configUrl';
 
 import PropTypes from 'prop-types';
-import { useFetch } from '../../../hooks/useFetch';
+import { useFetch } from '../../hooks/useFetch';
 
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -50,7 +51,7 @@ const userSchema = z.object({
     //   "Le mot de passe saisie doit avoir au moins une lettre majuscule, une minuscule, un caractère spécial (@), un chiffre et doit contenir au moins 8 caractères."),
 });
 
-export default function CreateUser({setOpen}) {
+export default function CreateUser({setOpen, onSubmit}) {
 
   // const navigateToDashboard = useNavigate();
   const { handlePost } = useFetch();
@@ -60,24 +61,20 @@ export default function CreateUser({setOpen}) {
     });
 
 
-    const handleCancel = (e) =>{
-      e.preventDefault();
-      setOpen(false);
-      console.log("Children modal is false");
-    };
-
     const handleSubmitDataFormUser = async(data) => {
-      const urlToCreateUser = "http://127.0.0.1:8000/api_gateway/api/user/";
+      // const urlToCreateUser = "http://127.0.0.1:8000/api_gateway/api/user/";
+      const urlToCreateUser = URLS.API_USER;
         // console.log(data);
         try {
           const response = await handlePost(urlToCreateUser, data, true);
-          console.log("response crea", response);
-          if (response && response?.success) {
+          // console.log("response crea", response);
+          if (response && response?.success && response.status === 201) {
             toast.success("Utilisateur crée avec succès", {duration:2000});
             console.log("User created", response?.success);
             setOpen(false);
+            onSubmit();
             // navigateToDashboard("/");
-            window.location.reload();
+            // window.location.reload();
 
           }
           else {
@@ -98,7 +95,7 @@ export default function CreateUser({setOpen}) {
 
     return (
       <CustomingModal
-        title="Ajouter un utilisateur"
+        title="Ajouter un nouvel utilisateur"
         buttonText="Créer un utilisateur"
       >
         
@@ -220,52 +217,21 @@ export default function CreateUser({setOpen}) {
                             }
                   </div>
 
-                  {/* <div className='mb-0 relative'>
-                      <label htmlFor="password" className="block text-xs font-medium mb-0">
-                                Mot de passe<sup className='text-red-500'>*</sup>
-                            </label>
-                            <input 
-                                id='password'
-                                placeholder="Définir son mot de passe"
-                                type={showPassword ? "text" : "password"}
-                                {...register('password')}
-                                className={`w-2/3 px-2 py-3 text-[13px] border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
-                                  ${
-                                    errors.password ? "border-red-500" : "border-gray-300"
-                                  }`}
-                            />
-                            <span 
-                                className="absolute top-[50px] right-[175px] transform -translate-y-[20px] cursor-pointer" // Positionnement absolu
-                                onClick={() => setShowPassword((prev) => !prev)}
-                              >
-                                {showPassword ? 
-                                  (<EyeSlashIcon className="h-4 w-4 text-gray-500" />) : 
-                                  (<EyeIcon className="h-4 w-4 text-gray-500" />) 
-                                }
-                            </span>
-
-                            {
-                              errors.password && (
-                                <p className="text-red-500 text-[9px] mt-1">{errors.password.message}</p>
-                              )
-                            }
-                  </div> */}
-
                   <div className='flex justify-end space-x-2 mt-2'>
                     <Button 
-                    className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md hover:bg-blue-600 hover:text-white transition" 
+                    className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md bg-transparent hover:bg-primary hover:text-white transition" 
                     type="submit"
                     disabled={isSubmitting}
                    
                     >
                       {isSubmitting ? "Création en cours..." : "Créer un utilisateur"}
                     </Button>
-                    <Button 
-                    className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md hover:bg-gray-600 hover:text-white transition" 
-                    onClick={ handleCancel }
+                    {/* <Button 
+                    className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md bg-transparent hover:bg-gray-600 hover:text-white transition" 
+                    onClick={setOpen()} 
                     >
                       Annuler
-                    </Button>
+                    </Button> */}
 
                   </div>
                 </form>

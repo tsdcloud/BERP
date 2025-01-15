@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeSlashIcon, EyeIcon } from "@heroicons/react/24/outline";
 import { Button } from "../ui/button";
 import {jwtDecode} from 'jwt-decode'; 
+import { URLS } from '../../../configUrl';
 
 
 import toast, { Toaster } from 'react-hot-toast';
@@ -31,7 +32,7 @@ const formSignInSchema = z.object({
 
 export default function SignIn() {
   const navigateToDashboard = useNavigate();
-  const { handlePost, err } = useFetch();
+  const { handlePost } = useFetch();
 
  const { setIsAuth, setUserData, setToken } = useContext(AUTHCONTEXT);
 
@@ -50,7 +51,9 @@ export default function SignIn() {
   
       const submitDataSignIn = async(data) => {
         // console.log("data", data);
-        const urlToLogin = "http://127.0.0.1:8000/api_gateway/token/";
+        // const urlToLogin = "http://127.0.0.1:8000/api_gateway/token/";
+        const urlToLogin = URLS.LOGIN;
+        // console.log(urlToLogin);
         try {
               const response = await handlePost(urlToLogin, data, false);
              
