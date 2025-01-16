@@ -61,6 +61,36 @@ export const useFetch = () => {
     };
 
 
+    const handlePatchPassword = async (url, data = null) => {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+    
+        const requestOptions = {
+            method: "PATCH",
+            headers: myHeaders,
+            redirect: "follow"
+        };
+    
+        // Ajouter le corps uniquement si des données sont fournies
+        if (data) {
+            requestOptions.body = JSON.stringify(data);
+        }
+    
+        try {
+            let response = await fetch(url, requestOptions);
+            let result = await response.json(); // Utiliser json() pour obtenir un objet JSON
+            console.log("result", result);
+            console.log("response", response);
+            if (response.ok) {
+                return result; // Retourner l'objet JSON complet
+            }
+            setErr(result?.error || "Une erreur est survenue"); // Gestion des erreurs
+            return result;
+        } catch (error) {
+            setErr(error.message || "Erreur du serveur");
+            return error;
+        }
+    };
 
 
     const handlePatch = async (url, data = null) => {
@@ -149,5 +179,5 @@ export const useFetch = () => {
        
     };
 
-  return { handleFetch, handlePost, err, setErr, handlePostFile, handlePatch, handleDelete };
+  return { handleFetch, handlePost, err, setErr, handlePostFile, handlePatch, handleDelete, handlePatchPassword };
 };

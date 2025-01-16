@@ -102,7 +102,7 @@ export const ApplicationAction = () => {
                         try {
                                 const response = await handlePatch(urlToDisabledApplication, {is_active:false});
                                 console.log("response for disabled", response);
-                                if (response && response?.message) {
+                                if (response && response?.success) {
                                     // console.log("ROLE disabled", response);
                                     // console.log("La ROLE a été désactivé.", id);
                                     toast.success("application desactivated successfully", { duration: 5000});
@@ -308,32 +308,28 @@ export const ApplicationAction = () => {
                                                 {selectedApplication?.is_active ? "Actif" : "Désactivé"}
                                             </h3>
                                         </div>
-                                        <div className="grid gap-1">
-
-                                            {/* Dropdown pour les permissions */}
-                                            <div className="bg-white shadow-md p-4 rounded-lg">
-                                            <h2 className="text-lg font-semibold mb-2">Permissions :</h2>
-                                            <div className="space-y-2">
-                                                {selectedApplication.permissions.length === 0 ? "This application does'nt have permissions" : selectedApplication.permissions.map((permission) => (
+                                        <div className=''>
+                                            <p className="text-xs mb-2">Permissions</p>
+                                            <div className="flex flex-wrap">
+                                                {selectedApplication.permissions.length === 0 ? <h3 className="font-bold text-sm">This application does'nt have permissions</h3> : selectedApplication.permissions.map((permission) => (
                                                 <div key={permission.id}>
                                                     <button
                                                     onClick={() => setSelectedPermission(permission)}
-                                                    className="w-full text-left px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                                                    className={`w-auto text-left mt-1 ml-1 px-4 py-2 ${selectedPermission && selectedPermission.id === permission.id ? "bg-green-600" : "bg-green-500"} text-white rounded-lg hover:bg-green-600`}
                                                     >
-                                                    {permission.display_name}
+                                                        {permission.display_name}
                                                     </button>
                                                 </div>
                                                 ))}
                                             </div>
                                             {selectedPermission && (
-                                                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                                                <h3 className="font-bold text-lg">Détails de la permission</h3>
-                                                <p><strong>Nom :</strong> {selectedPermission.display_name}</p>
-                                                <p><strong>Description :</strong> {selectedPermission.description}</p>
-                                                <p><strong>Statut :</strong> {selectedPermission.is_active ? "Actif" : "Inactif"}</p>
+                                                <div className="ml-1 mt-2 p-4 bg-gray-50 rounded-lg">
+                                                    <h3 className="font-bold text-lg">Détails de la permission</h3>
+                                                    <p><strong>Nom :</strong> {selectedPermission.display_name}</p>
+                                                    <p><strong>Description :</strong> {selectedPermission.description}</p>
+                                                    <p><strong>Statut :</strong> {selectedPermission.is_active ? "Actif" : "Inactif"}</p>
                                                 </div>
                                             )}
-                                            </div>
                                         </div>
                                     </div>
                                 )

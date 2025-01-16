@@ -78,7 +78,7 @@ export default function CreateUser({setOpen, onSubmit}) {
 
           }
           else {
-            toast.error(response.error, { duration: 5000});
+            toast.error(response.errors.email || response.errors.username, { duration: 5000});
           }
           
         } catch (error) {
