@@ -22,7 +22,7 @@ const Incident = () =>{
                 <div className='flex gap-2 items-center'>
                     <Dialogue 
                         buttonText={"Declarer un incident"}
-                        header={<h2 className='text-xl font-semibold'>Initier un incident</h2>}
+                        header={<h2 className='text-xl font-semibold'>Déclarer un incident</h2>}
                         content={<InitiateForm />}
                     />
                 </div>

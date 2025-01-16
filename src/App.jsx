@@ -70,9 +70,6 @@ function App() {
           <Route path='*' element={<NotFoundPage/>} exact/>
 
 
-          
-
-
            {/* Incident */}
            <Route path="/incidents">
               <Route path="" element={<Incident />} />
