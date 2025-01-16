@@ -244,10 +244,10 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
                         
                         <div className='my-3'>
                             <h6 className='text-xs'>Ajouter un ou plusieurs utilisateurs</h6>
-                            <div className='flex flex-wrap space-x-2 my-2'>
+                            <div className='flex flex-wrap  my-2'>
                                 {fetchUser.map(item => (
                                     <div key={item?.id} 
-                                    className={`flex font-mono items-center mb-2 px-2 py-2 border bg-secondary text-white rounded-sm
+                                    className={`flex font-mono items-center ml-2 mb-2 px-2 py-2 border bg-secondary text-white rounded-sm
                                     ${errors.user_id ? "border-red-500" : "border-gray-300"}`}>
                                     <input
                                       type="checkbox"

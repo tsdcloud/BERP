@@ -314,7 +314,7 @@ export const ApplicationAction = () => {
                                                 {selectedApplication.permissions.length === 0 ? <h3 className="font-bold text-sm">This application does'nt have permissions</h3> : selectedApplication.permissions.map((permission) => (
                                                 <div key={permission.id}>
                                                     <button
-                                                    onClick={() => setSelectedPermission(permission)}
+                                                    onClick={() => setSelectedPermission((prev) => (prev?.id === permission.id ? null : permission))}
                                                     className={`w-auto text-left mt-1 ml-1 px-4 py-2 ${selectedPermission && selectedPermission.id === permission.id ? "bg-green-600" : "bg-green-500"} text-white rounded-lg hover:bg-green-600`}
                                                     >
                                                         {permission.display_name}

@@ -72,12 +72,12 @@ export const UserAction = () => {
 
 
     const handleRoleClick = (role) => {
-        setSelectedRole(role);
+        setSelectedRole((prev) => (prev?.id === role.id ? null : role));
         setSelectedPermission(null)
     };
 
     const handlePermissionClick = (permission) => {
-        setSelectedPermission(permission);
+        setSelectedPermission((prev) => (prev?.id === permission.id ? null : permission));
         setSelectedRole(null)
     };
 
