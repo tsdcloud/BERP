@@ -28,18 +28,19 @@ const Consommable = () =>{
             setTotal(response.total);
            }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
     const handleSubmit=()=>{
         fetchConsommable();
         document.getElementById("close-consommable").click();
-    }
+    };
 
     useEffect(()=>{
         fetchConsommable();
     }, []);
 
+    
     return(
         <>
             <Header />

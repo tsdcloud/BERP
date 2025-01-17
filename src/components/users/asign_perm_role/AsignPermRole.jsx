@@ -62,7 +62,7 @@ export default function AsignPermRole() {
     <h1 className='text-sm mb-2'>Gestion des asignations Permissions - Rôles</h1>
     <div className='space-y-2'>
         <CreateAsignPermRole setOpen={setOpen} onSubmit={fetchAsignPermRole}/>
-        {columnsAsignPermRole && asignPermRole?.length > 0 && (
+        {columnsAsignPermRole && asignPermRole?.length >= 0 && (
             <DataTable
                 className="rounded-md border w-[850px] text-xs"
                 columns={columnsAsignPermRole}

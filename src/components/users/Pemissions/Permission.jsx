@@ -54,7 +54,7 @@ export default function Permission() {
     <h1 className='text-sm mb-2'>Gestion des persmissions</h1>
     <div className='space-y-2'>
         <CreatePermission setOpen={setOpen} onSubmit={fetchPermissions}/>
-        {columnsPermission && permissions?.length > 0 && (
+        {columnsPermission && permissions?.length >= 0 && (
             <DataTable
                 className="rounded-md border w-[750px] text-xs"
                 columns={columnsPermission}

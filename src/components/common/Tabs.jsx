@@ -19,11 +19,6 @@ const Tabs = ({ links }) => {
       navigate(link);
     }
   };
-
-  // const entryLink = links.map(link => ({
-  //   ...link,
-  //   isActive: activeTab.includes(link.link) ? true : false,
-  // }));
     
   return (
     <div className='flex gap-2 items-center'>

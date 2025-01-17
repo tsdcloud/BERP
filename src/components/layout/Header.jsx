@@ -5,6 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function Header() {
         const { userData, disconnect, refresh } = useContext(AUTHCONTEXT);
@@ -20,7 +21,7 @@ export default function Header() {
             
                 const data = {
                     refresh : refresh
-                }
+                };
             
                 try {
                       const response = await handlePost(urlToLogout, data, false);
@@ -36,17 +37,19 @@ export default function Header() {
                     } catch (error) {
                       // toast.error("Erreur lors de la déconnexion", { duration: 5000 });
                     }
-                  }
+                  };
 
+
+                //   console.log("header userdata", userData);
         useEffect(() => {
                 
-                console.log("header userdata", userData);
         
                 if (typeof userData === 'string') {
                     try {
                         const decoded = jwtDecode(userData);
-                        console.log("decoded", decoded);
+                        // console.log("decoded", decoded);
                         setUserDataDecoded(decoded);
+                        // console.log("user",userDataDecoded);
                     } catch (error) {
                         console.error("Failed to decode token:", error);
                         // Gérer l'erreur, par exemple, en réinitialisant l'état ou en affichant un message d'erreur
@@ -55,7 +58,7 @@ export default function Header() {
                     console.error("Invalid token: must be a string", userData);
                     // Gérer l'erreur, par exemple, en réinitialisant l'état ou en affichant un message d'erreur
                 }
-            }, [userData]);
+            }, []);
 
 
 

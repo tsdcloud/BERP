@@ -1,14 +1,14 @@
-import {useState} from 'react';
+import React, {useState} from 'react';
+import Preloader from '../../components/Preloader';
 import Header from '../../components/layout/Header';
 import Footer from '../../components/layout/Footer';
-import Tabs from '../../components/common/Tabs';
+import Tabs from '../../components/common/Tabs'; 
 import { links } from '../../utils/entity.path';
-import Entity from '../../components/entity/Entity';
-import Preloader from '../../components/Preloader';
+import DepartmentComponent from '../../components/entity/department/Department';
 
-
-export default function Index () {
+export default function Department() {
     const [isLoading, setIsLoading] = useState(false);
+    
   return (
     <>
     {
@@ -24,9 +24,9 @@ export default function Index () {
                     <div>
                         <Tabs links={links} />
                     </div>
-                    {/* users */}
+                    {/* Department */}
                     <div className='flex gap-2 items-center'>
-                     <Entity/>
+                    <DepartmentComponent/>
                     </div>
                 </div>
                 <Footer className="flex py-1 my-[22px] space-x-2 justify-center"/>

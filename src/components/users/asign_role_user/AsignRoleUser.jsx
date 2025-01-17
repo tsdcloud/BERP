@@ -62,7 +62,7 @@ export default function AsignRoleUser() {
     <h1 className='text-sm mb-2'>Gestion des asignations Rôles - utilisateurs</h1>
     <div className='space-y-2'>
         <CreateAsignRoleUser setOpen={setOpen} onSubmit={fetchAsignRoleUser}/>
-        {columnsAsignRoleUser && asignRoleUser?.length > 0 && (
+        {columnsAsignRoleUser && asignRoleUser?.length >= 0 && (
             <DataTable
                 className="rounded-md border w-[850px] text-xs"
                 columns={columnsAsignRoleUser}

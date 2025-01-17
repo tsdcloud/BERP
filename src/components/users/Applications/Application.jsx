@@ -52,7 +52,7 @@ export default function Application() {
     <h1 className='text-sm mb-2'>Gestion des applications</h1>
     <div className='space-y-2'>
         <CreateApplication setOpen={setOpen} onSubmit={fetchApplication}/>
-        {columnsApplication && applications?.length > 0 && (
+        {columnsApplication && applications?.length >= 0 && (
             <DataTable
                 className="rounded-md border w-[900px] text-xs"
                 columns={columnsApplication}

@@ -16,14 +16,14 @@ export default function Entity() {
 
     const fetchEntities = async () => {
         // const urlToShowAllEntities = "http://127.0.0.1:8000/api_gateway/api/user/";
-        const urlToShowAllEntities = URLS.API_USER;
+        const urlToShowAllEntities = "";
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllEntities);
-            console.log("respo",response);
+            // console.log("respo",response);
             
-                if (response && response?.results) {
-                        const results = response?.results;
+                if (response && response?.data?.results) {
+                        const results = response?.data?.results;
                         const filteredEntity = results?.map(item => {
                         const { user_created_by, user_updated_by, is_staff, is_superuser, ...rest } = item;
                         return rest;
@@ -53,13 +53,13 @@ export default function Entity() {
                 <h1 className='text-sm my-3 font-semibold'>Gestion des entités</h1>
                 <div className='space-y-2'>
                     <CreateEntity setOpen={setOpen} onSubmit={fetchEntities} />
-                    {columnsEntity && entities.length > 0 && (
-                        // <DataTable
-                        //     className="rounded-md border w-[800px] text-xs"
-                        //     columns={columnsEntity}
-                        //     data={entities} 
-                        // />
-                        <div>Je ne pas là.</div>
+                    {columnsEntity && entities.length >= 0 && (
+                        <DataTable
+                            className="rounded-md border w-[800px] text-xs"
+                            columns={columnsEntity}
+                            data={entities} 
+                        />
+                        // <div>Je ne pas là.</div>
                     )}
                 </div>
                 {showDialogEntity()}

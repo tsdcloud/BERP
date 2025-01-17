@@ -14,6 +14,7 @@ import { AUTHCONTEXT } from '../contexts/AuthProvider';
 import { URLS } from '../../configUrl';
 import { useFetch } from '../hooks/useFetch';
 import EntityEntryPoint from './entity/EntityEntryPoint';
+import IncidentEntryPoint from './incidents/IncidentEntryPoint';
 
 
 export default function LuncherApp() {
@@ -72,6 +73,7 @@ export default function LuncherApp() {
                         {/* Ajoutez ici le reste de votre contenu */}
                         <EntityEntryPoint/>
                         <UserEntryPoint/>
+                        <IncidentEntryPoint/>
 
                     </div>
 

@@ -23,7 +23,7 @@ import {
 //   import { Checkbox } from "./ui/checkbox";
 
 
-export default function DataTable({columns, data, className}) {
+export default function DataTable({ columns, data, className }) {
 
     const [globalFilter, setGlobalFilter] = useState([]);
 
@@ -85,7 +85,7 @@ export default function DataTable({columns, data, className}) {
             
                     <TableBody>
                         {
-                            tableModel.getRowModel().rows?.length ? (
+                            tableModel.getRowModel().rows?.length && data.length ? (
                                 tableModel.getRowModel()?.rows?.map((row) => (
                                     <TableRow
                                         key={row.id}

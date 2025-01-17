@@ -62,7 +62,7 @@ export default function AsignPermApp() {
     <h1 className='text-sm mb-2'>Gestion des asignations Permissions - Applications</h1>
     <div className='space-y-2'>
         <CreateAsignPermApp setOpen={setOpen} onSubmit={fetchAsignPermApp}/>
-        {columnsAsignPermApp && asignPermApp?.length > 0 && (
+        {columnsAsignPermApp && asignPermApp?.length >= 0 && (
             <DataTable
                 className="rounded-md border w-[850px] text-xs"
                 columns={columnsAsignPermApp}

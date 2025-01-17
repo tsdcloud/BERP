@@ -62,7 +62,7 @@ export default function AsignPermUser() {
     <h1 className='text-sm mb-2'>Gestion des asignations Permissions - utilisateurs</h1>
     <div className='space-y-2'>
         <CreateAsignPermUser setOpen={setOpen} onSubmit={fetchAsignPermUser}/>
-        {columnsAsignPermUser && asignPermUser?.length > 0 && (
+        {columnsAsignPermUser && asignPermUser?.length >= 0 && (
             <DataTable
                 className="rounded-md border w-[850px] text-xs"
                 columns={columnsAsignPermUser}

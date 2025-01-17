@@ -52,7 +52,7 @@ export default function Role() {
     <h1 className='text-sm mb-2'>Gestion des rôles</h1>
     <div className='space-y-2'>
         <CreateRole setOpen={setOpen} onSubmit={fetchRole}/>
-        {columnsRole && roles?.length > 0 && (
+        {columnsRole && roles?.length >= 0 && (
             <DataTable
                 className="rounded-md border w-[800px] text-xs"
                 columns={columnsRole}

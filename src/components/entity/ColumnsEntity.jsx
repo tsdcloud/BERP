@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { EyeIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, NoSymbolIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { AlertDialog, 
          AlertDialogAction, 
          AlertDialogCancel, 
@@ -20,23 +20,18 @@ import { URLS } from '../../../configUrl';
 
 // Schéma de validation avec Zod
 const entitySchema = z.object({
-    last_name: z.string()
+
+    entity_name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
-    .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
+    .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z]+$/, "Ce champ doit être un 'nom' conforme."),
+    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme."),
 
-    first_name: z.string()
-    .nonempty("Ce champs 'Pénom' est réquis")
-    .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
+    localisation: z.string()
+    .nonempty("Ce champs 'Localisation' est réquis")
+    .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z]+$/, "Ce champs doit être un 'prénom' conforme"),
-
-    email: z.string()
-    .nonempty("Ce champs 'Email' est réquis.")
-    .email("Adresse mail invalide")
-    .max(255)
-    ,
+    .regex(/^[a-zA-Z ,]+$/, "Ce champs doit être une 'localisation' conforme"),
 
     phone: z.string()
     .nonempty("Ce champs 'Téléphone' est réquis.")
@@ -44,11 +39,12 @@ const entitySchema = z.object({
     .regex(/^[0-9]+$/)
     ,
 
-    username: z.string()
-    .nonempty('Ce champs "Nom d utilisateur" est réquis')
-    // .min(5, "La valeur de ce champs doit contenir au moins 5 caractères.")
+    id_ville: z.string()
+    .nonempty('Ce champs "Nom de la ville" est réquis')
+    .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
-    .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom d utilisateur' Conforme.")
+    .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom de la ville' Conforme.")
+    ,
 
     });
 
@@ -210,60 +206,63 @@ export const EntityAction = () => {
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
                                     <div>
-                                            <label htmlFor='last_name' className="text-xs mt-2">
-                                                Nom <sup className='text-red-500'>*</sup>
+                                            <label htmlFor='entity_name' className="text-xs mt-2">
+                                                Nom de l'entité <sup className='text-red-500'>*</sup>
                                             </label>
                                             <Input
-                                                id="last_name"
+                                                id="entity_name"
                                                 type="text"
-                                                defaultValue={selectedEntity?.last_name}
-                                                {...register("last_name")}
+                                                defaultValue={selectedEntity?.entity_name}
+                                                {...register("entity_name")}
                                                 className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                                    errors.last_name ? "border-red-500" : "border-gray-300"
+                                                    errors.entity_name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
-                                                {errors.last_name && (
-                                                <p className="text-red-500 text-[9px] mt-1">{errors.last_name.message}</p>
+                                                {errors.entity_name && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.entity_name.message}</p>
                                                 )}
                                     </div>
                                     <div>
-                                                <label htmlFor='first_name' className="text-xs">
-                                                    Prénom <sup className='text-red-500'>*</sup>
+                                                <label htmlFor='localisation' className="text-xs">
+                                                    Localisation de l'entité <sup className='text-red-500'>*</sup>
                                                 </label>
                                                 <Input
-                                                    id="first_name"
+                                                    id="localisation"
                                                     type="text"
-                                                    defaultValue={selectedEntity?.first_name}
-                                                    {...register("first_name")}
+                                                    defaultValue={selectedEntity?.localisation}
+                                                    {...register("localisation")}
                                                     className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                                        errors.first_name ? "border-red-500" : "border-gray-300"
+                                                        errors.localisation ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 />
-                                                {errors.first_name && (
-                                                <p className="text-red-500 text-[9px] mt-1">{errors.first_name.message}</p>
+                                                {errors.localisation && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.localisation.message}</p>
                                                 )}
                                     </div>
+                                   
                                     <div>
-                                                <label htmlFor='email' className="text-xs">
-                                                    Adresse mail <sup className='text-red-500'>*</sup>
-                                                </label>
-                                                <Input
-                                                    id="email"
-                                                    type="mail"
-                                                    defaultValue={selectedEntity?.email}
-                                                    {...register("email")}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                                        errors.email ? "border-red-500" : "border-gray-300"
-                                                    }`}
-                                                />
-                                                 {errors.email && (
-                                                <p className="text-red-500 text-[9px] mt-1">{errors.email.message}</p>
-                                                )}
-
+                                             <label htmlFor='id_ville' className="text-xs">
+                                                Nom de la ville <sup className='text-red-500'>*</sup>
+                                            </label>
+                                            <Input
+                                                id="id_ville"
+                                                type="text"
+                                                defaultValue={selectedEntity?.id_ville}
+                                                disabled
+                                                {...register("id_ville")}
+                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    errors.id_ville ? "border-red-500" : "border-gray-300"
+                                                }`}
+                                            />
+                                            {errors.id_ville && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.id_ville.message}</p>
+                                            )}
                                     </div>
+
+
                                     <div>
                                             <label htmlFor='phone' className="text-xs">
-                                                Téléphone <sup className='text-red-500'>*</sup>
+                                                Téléphone de l'entité <sup className='text-red-500'>*</sup>
                                             </label>
                                             <Input
                                                 id="phone"
@@ -278,24 +277,8 @@ export const EntityAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.phone.message}</p>
                                             )}
                                     </div>
-                                    <div>
-                                             <label htmlFor='username' className="text-xs">
-                                                Nom d'utilisateur <sup className='text-red-500'>*</sup>
-                                            </label>
-                                            <Input
-                                                id="username"
-                                                type="text"
-                                                defaultValue={selectedEntity?.username}
-                                                disabled
-                                                {...register("username")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                                    errors.username ? "border-red-500" : "border-gray-300"
-                                                }`}
-                                            />
-                                            {errors.username && (
-                                                <p className="text-red-500 text-[9px] mt-1">{errors.username.message}</p>
-                                            )}
-                                    </div>
+
+                                    
                                     <div className='flex space-x-2 justify-end'>
                                         <Button 
                                             type="submit"
@@ -323,23 +306,19 @@ export const EntityAction = () => {
                                         </div>
                                         <div>
                                             <p className="text-xs">Nom</p>
-                                            <h3 className="font-bold text-sm">{selectedEntity?.last_name}</h3>
+                                            <h3 className="font-bold text-sm">{selectedEntity?.entity_name}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Prénom</p>
-                                            <h3 className="font-bold text-sm">{selectedEntity?.first_name}</h3>
+                                            <h3 className="font-bold text-sm">{selectedEntity?.localisation}</h3>
                                         </div>
                                         <div>
-                                            <p className="text-xs">Email</p>
-                                            <h3 className="font-bold text-sm">{selectedEntity?.email}</h3>
+                                            <p className="text-xs">Nom de la ville</p>
+                                            <h3 className="font-bold text-sm">{selectedEntity?.id_ville}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Téléphone</p>
                                             <h3 className="font-bold text-sm">{selectedEntity?.phone}</h3>
-                                        </div>
-                                        <div>
-                                            <p className="text-xs">Nom d'utilisateur</p>
-                                            <h3 className="font-bold text-sm">{selectedEntity?.username}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Statut</p>
@@ -403,13 +382,10 @@ export const EntityAction = () => {
 
 
     const columnsEntity = useMemo(() => [
-        { accessorKey: 'last_name', header: 'Nom' },
-        { accessorKey: 'first_name', header: 'Prénom' },
-        { accessorKey: 'email', header: 'Email' },
+        { accessorKey: 'entity_name', header: 'Nom de l\'entité' },
+        { accessorKey: 'localisation', header: 'Localisation' },
+        { accessorKey: 'id_ville', header: 'Nom de la ville' },
         { accessorKey: 'phone', header: 'Téléphone' },
-        // { accessorKey: 'is_staff', header: 'Administrateur' },
-        // { accessorKey: 'is_superuser', header: 'Super administrateur' },
-        { accessorKey: 'username', header: 'Nom d\'utilisateur' },
         { accessorKey: 'is_active', header: 'Statut' },
         {
             accessorKey: "action",
@@ -418,7 +394,7 @@ export const EntityAction = () => {
                 <div className="flex justify-center">
                     <EyeIcon className="h-4 w-4 text-green-500" onClick={() => handleShowEntity(row.original)} />
                     <PencilSquareIcon className="h-4 w-4 text-blue-500" onClick={() => handleEditEntity(row.original)} />
-                    {/* <NoSymbolIcon className="h-4 w-4 text-gray-500" onClick={() => disabledEntity(row.original.id)} /> */}
+                    <NoSymbolIcon className="h-4 w-4 text-gray-500" onClick={() => disabledEntity(row.original.id)} />
                     <TrashIcon className="h-4 w-4 text-red-500" onClick={() => deletedEntity(row.original.id)} />
                 </div>
             )
