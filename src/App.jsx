@@ -34,6 +34,7 @@ import AsignRoleUser from './Pages/users/AsignRoleUser';
 import Entity from './Pages/entity/index';
 import Department from './Pages/entity/Department';
 import Service from './Pages/entity/Service';
+import Function from './Pages/entity/Function';
 
 
 
@@ -68,8 +69,9 @@ function App() {
                 <Route path="" element={<Entity />} />
                <Route path="department" element={<Department />} />
                <Route path="service" element={<Service />} />
+               <Route path="function" element={<Function />} />
+
                 {/* 
-                <Route path="application" element={<Application />} />
                 <Route path="asign_perm_role" element={<AsignPermRole />} />
                 <Route path="asign_perm_app" element={<AsignPermApp />} />
                 <Route path="asign_perm_user" element={<AsignPermUser />} />
