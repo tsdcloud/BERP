@@ -226,7 +226,7 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
                                         <option value="">Selectionner un rôle</option>
                                             {fetchRole.map((item) => (
                                                 <option key={item.id} value={item.id}>
-                                                        {item.role_name}
+                                                        {item.display_name}
                                                 </option>
                                             ))}
                             </select>
@@ -240,10 +240,10 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
                         
                         <div className='my-3'>
                             <h6 className='text-xs'>Attribuer une ou plusieurs permissions</h6>
-                            <div className='flex flex-wrap space-x-2 my-2'>
+                            <div className='flex flex-wrap  my-2'>
                                 {fetchPermission.map(item => (
                                     <div key={item?.id} 
-                                    className={`flex font-mono items-center mb-2 px-2 py-2 border bg-secondary text-white rounded-sm
+                                    className={`flex font-mono items-center ml-2  mb-2 px-2 py-2 border bg-secondary text-white rounded-sm
                                     ${errors.permission_id ? "border-red-500" : "border-gray-300"}`}>
                                     <input
                                       type="checkbox"
@@ -253,7 +253,7 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
                                       onChange={() => handleCheckboxChange(item?.id)}
                                     />
                                     <label htmlFor={`checkbox-${item?.id}`} className='text-xs '>
-                                      {item?.permission_name}
+                                      {item?.display_name}
                                     </label>
                                   </div>
                                 ))}

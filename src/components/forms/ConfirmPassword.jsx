@@ -51,7 +51,7 @@ export default function ConfirmPassword() {
   const token = queryParams.get('token');
 
 
-  const { handlePost } = useFetch();
+  const { handlePatchPassword } = useFetch();
 
   const returnDialog = () =>{
 
@@ -82,15 +82,15 @@ export default function ConfirmPassword() {
     });
 
   const handleSubmitConfirmPassword = async(data) => {
-      const urlToSetPassword = `http://127.0.0.1:8000/api_gateway/api/set_password/?token=${token}`;
+      const urlToSetPassword = `http://127.0.0.1:8000/gateway/api/users/set_password/?token=${token}`;
       try {
-        const response = await handlePost(urlToSetPassword, data, false);
+        const response = await handlePatchPassword(urlToSetPassword, data);
         // console.log("rio",response);
-        if (response && response?.message ) {
+        if (response && response?.success ) {
           setDialogOpen(true);
         }
         else {
-          toast.error(response?.error, { duration: 5000});
+          toast.error(response?.detail || response?.error || response?.errors, { duration: 5000});
         }
         
       } catch (error) {

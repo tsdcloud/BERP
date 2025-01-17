@@ -136,33 +136,43 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
       const onSubmitDataFormAsignRoleUser = async (data) => {
         // console.log("Données du formulaire :", data);
         const urlToCreateAsignRoleUser = URLS.API_ASIGN_ROLE_USER;
-      
+
         try {
-          const { role_id, user_id } = data;
-        //   console.log("Role ID:", role_id, "Permission IDs:", user_id);
-        //   console.log(" checked Permission IDs:", checkedUser);
-      
-          for (const userId of user_id) {
-            // console.log(`Envoi de la requête pour user_id: ${userId}`);
-            const response = await handlePost(urlToCreateAsignRoleUser, { role_id, user_id: userId }, true);
-            if (response && response.status === 201) {
-              toast.success(`Assignation créée avec succès`, { duration: 1000 });
-              setTimeout(()=>{
-                window.location.reload();
-              }, [1000])
-            } else {
-              toast.error(response.errors.non_field_errors || "Erreur lors de la création de l'assignation", { duration: 1000 });
+            const { role_id, user_id } = data;
+            let allSuccess = true;
+    
+            console.log("this is the userId :", [user_id])
+          
+            for (const userId of user_id) {
+              try {
+                // Envoyer la requête pour chaque `user_id`
+                const response = await handlePost(urlToCreateAsignRoleUser, { role_id, user_id: userId }, true);
+          
+                if (!response || response.status !== 201) {
+                  toast.error(`${response.errors.non_field_errors}`, { duration: 3000 });
+                  allSuccess = false;
+                  break; // Stop the loop
+                }
+              } catch (error) {
+                toast.error(`Erreur d'assignetion pour le user ID ${userId}`, { duration: 5000 });
+                allSuccess = false;
+                break; // Stop the loop
+              }
             }
-          }
-      
-        //   setOpen(false);
-        //   onSubmit();
-        //   window.location.reload();
-        } catch (error) {
-          console.error("Erreur lors de la création", error);
-          toast.error("Erreur lors de la création de l'assignation", { duration: 5000 });
+            
+            if (allSuccess) {
+                toast.success("role assigned successfully !", { duration: 2000 });
+                setTimeout(() => {
+                  window.location.reload();
+                }, 2000);
+              }
+    
+          } catch (globalError) {
+            // Gestion des erreurs globales
+            console.error("Erreur globale:", globalError.message);
+            toast.error("Une erreur inattendue s'est produite", { duration: 5000 });
         }
-      };
+    };
 
 
 
@@ -198,7 +208,7 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
                                         <option value="">Selectionner un rôle</option>
                                             {fetchRole.map((item) => (
                                                 <option key={item.id} value={item.id}>
-                                                        {item.role_name}
+                                                        {item.display_name}
                                                 </option>
                                             ))}
                             </select>
@@ -234,10 +244,10 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
                         
                         <div className='my-3'>
                             <h6 className='text-xs'>Ajouter un ou plusieurs utilisateurs</h6>
-                            <div className='flex flex-wrap space-x-2 my-2'>
+                            <div className='flex flex-wrap  my-2'>
                                 {fetchUser.map(item => (
                                     <div key={item?.id} 
-                                    className={`flex font-mono items-center mb-2 px-2 py-2 border bg-secondary text-white rounded-sm
+                                    className={`flex font-mono items-center ml-2 mb-2 px-2 py-2 border bg-secondary text-white rounded-sm
                                     ${errors.user_id ? "border-red-500" : "border-gray-300"}`}>
                                     <input
                                       type="checkbox"

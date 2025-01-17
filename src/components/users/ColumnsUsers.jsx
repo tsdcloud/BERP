@@ -63,7 +63,6 @@ export const UserAction = () => {
 
     const [selectedRole, setSelectedRole] = useState(null);
     const [selectedPermission, setSelectedPermission] = useState(null);
-    const [activeDropdown, setActiveDropdown] = useState(null);
 
     const { register, handleSubmit, reset, formState:{errors, isSubmitting} } = useForm({
         resolver: zodResolver(userSchema),
@@ -73,18 +72,14 @@ export const UserAction = () => {
 
 
     const handleRoleClick = (role) => {
-        setSelectedRole(role);
+        setSelectedRole((prev) => (prev?.id === role.id ? null : role));
         setSelectedPermission(null)
     };
 
     const handlePermissionClick = (permission) => {
-        setSelectedPermission(permission);
+        setSelectedPermission((prev) => (prev?.id === permission.id ? null : permission));
         setSelectedRole(null)
     };
-
-    const toggleDropdown = (id) => {
-        setActiveDropdown((prev) => (prev === id ? null : id));
-      };
 
 
     const onSubmit = async (data) => {
@@ -386,16 +381,15 @@ export const UserAction = () => {
                                                 {selectedUser?.is_active ? "Actif" : "Désactivé"}
                                             </h3>
                                         </div>
-                                        <div className="grid gap-1">
-                                            {/* Dropdown pour les rôles */}
-                                            <div className="bg-white shadow-md p-4 rounded-lg">
-                                            <h2 className="text-lg font-semibold mb-2">Rôles :</h2>
-                                            <div className="space-y-2">
-                                                {selectedUser.roles.length === 0 ? "This user does'nt have roles" : selectedUser.roles.map((role) => (
+                                        {/* Dropdown pour les rôles */}
+                                        <div>
+                                            <p className="text-xs">Rôles</p>
+                                            <div className="mt-2 flex flex-wrap">
+                                                {selectedUser.roles.length === 0 ? <h3 className="font-bold text-sm">This user does'nt have roles</h3> : selectedUser.roles.map((role) => (
                                                 <div key={role.id}>
                                                     <button
                                                     onClick={() => {handleRoleClick(role)}}
-                                                    className="w-full text-left px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                                                    className={`w-auto mt-1 ml-1 text-left px-4 py-2 ${selectedRole && selectedRole.id === role.id ? "bg-blue-600" : "bg-blue-500"} text-white rounded-lg hover:bg-blue-600`}
                                                     >
                                                         <span>{role.display_name}</span>
                                                     </button>
@@ -403,11 +397,11 @@ export const UserAction = () => {
                                                 ))}
                                             </div>
                                             {selectedRole && (
-                                                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                                                <div className="ml-1 mt-2 p-4 bg-gray-50 rounded-lg">
                                                 <h3 className="font-bold text-lg">Détails du rôle</h3>
                                                 <p><strong>Nom :</strong> {selectedRole.display_name}</p>
                                                 <p><strong>Description :</strong> {selectedRole.description}</p>
-                                                <h4 className="font-semibold mt-3">Permissions associées :</h4>
+                                                <h4 className="font-semibold mt-3">Permissions associées : {selectedRole.permissions.length === 0 ? "none" : ""}</h4>
                                                 <ul className="list-disc ml-5">
                                                     {selectedRole.permissions.map((perm) => (
                                                     <li key={perm.id}>{perm.display_name}</li>
@@ -415,32 +409,31 @@ export const UserAction = () => {
                                                 </ul>
                                                 </div>
                                             )}
-                                            </div>
+                                        </div>
 
-                                            {/* Dropdown pour les permissions */}
-                                            <div className="bg-white shadow-md p-4 rounded-lg">
-                                            <h2 className="text-lg font-semibold mb-2">Permissions :</h2>
-                                            <div className="space-y-2">
-                                                {selectedUser.permissions.length === 0 ? "This user does'nt have permissions" : selectedUser.permissions.map((permission) => (
+                                        {/* Dropdown pour les permissions */}
+                                        <div className=''>
+                                            <p className="text-xs mb-2">Permissions</p>
+                                            <div className="flex flex-wrap">
+                                                {selectedUser.permissions.length === 0 ? <h3 className="font-bold text-sm">This user does'nt have permissions</h3> : selectedUser.permissions.map((permission) => (
                                                 <div key={permission.id}>
                                                     <button
                                                     onClick={() => handlePermissionClick(permission)}
-                                                    className="w-full text-left px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                                                    className={`w-auto text-left mt-1 ml-1 px-4 py-2 ${selectedPermission && selectedPermission.id === permission.id ? "bg-green-600" : "bg-green-500"} text-white rounded-lg hover:bg-green-600`}
                                                     >
-                                                    {permission.display_name}
+                                                        {permission.display_name}
                                                     </button>
                                                 </div>
                                                 ))}
                                             </div>
                                             {selectedPermission && (
-                                                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                                                <h3 className="font-bold text-lg">Détails de la permission</h3>
-                                                <p><strong>Nom :</strong> {selectedPermission.display_name}</p>
-                                                <p><strong>Description :</strong> {selectedPermission.description}</p>
-                                                <p><strong>Statut :</strong> {selectedPermission.is_active ? "Actif" : "Inactif"}</p>
+                                                <div className="ml-1 mt-2 p-4 bg-gray-50 rounded-lg">
+                                                    <h3 className="font-bold text-lg">Détails de la permission</h3>
+                                                    <p><strong>Nom :</strong> {selectedPermission.display_name}</p>
+                                                    <p><strong>Description :</strong> {selectedPermission.description}</p>
+                                                    <p><strong>Statut :</strong> {selectedPermission.is_active ? "Actif" : "Inactif"}</p>
                                                 </div>
                                             )}
-                                            </div>
                                         </div>
                                     </div>
                                 )
