@@ -4,11 +4,13 @@ import { Outlet, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { AUTHCONTEXT } from '../contexts/AuthProvider';
 import { URLS } from '../../configUrl';
 import { useFetch } from './useFetch';
+import Preloader from '../components/Preloader';
 
 export default function ProtectedRoutes() {
   const { token, setToken, refresh, setRefresh, isAuth } = useContext(AUTHCONTEXT);
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isReconnecting, setIsReconnecting] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const urlCheckTokenValidity = URLS.API_VERIFY_TOKEN
@@ -33,11 +35,18 @@ export default function ProtectedRoutes() {
           // retrieving a new token from refresh token
           const responseGetNewToken = await handlePost(urlGetNewToken, { refresh: refresh }, false)
           if (responseGetNewToken.status === 200) {
-            setToken(responseGetNewToken.access);
 
-            navigateToLogin("/utilisateurs")
+            setIsReconnecting(true)
+            setToken(responseGetNewToken.access);
+            
+            setTimeout(()=>{
+              setIsReconnecting(false)
+              navigateToLogin("/utilisateurs")
+            }, [3000])
+
 
             // setRefresh(responseGetNewToken.refresh);
+
             // console.log("new access :", token , "new refresh :", refresh, "pathName: ", location.pathname);
 
             // if (responseGetNewToken.access === token){ console.log("token mis a jours avec success")} else {console.log("token mis a jours echouée")}
@@ -68,6 +77,9 @@ export default function ProtectedRoutes() {
     
   }, [location.pathname]);
 
+  if (isReconnecting) {
+    return <Preloader size={40} className={"bg-gray-50 h-screen"} description={"Reconnecting..."}/>;
+  }
   if (!isAuth) {
     return <Navigate to="/signIn" />;
   }
