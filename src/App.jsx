@@ -46,7 +46,6 @@ function App() {
   return (
     <>
       <Router>
-
         <Routes>
           <Route element={<ProtectedRoutes />}>
             <Route path='/' element={<LuncherApp/>} exact/>
@@ -98,10 +97,6 @@ function App() {
               <Route path="equipement" element={<Consommable />} />
            </Route>
         </Routes>
-
-       
-
-         
       </Router>
       <Toaster/>
     </>
