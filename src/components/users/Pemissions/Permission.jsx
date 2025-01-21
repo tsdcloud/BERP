@@ -4,6 +4,7 @@ import { useFetch } from '../../../hooks/useFetch';
 import { URLS } from '../../../../configUrl'; 
 import DataTable from '../../DataTable'; 
 import CreatePermission from './CreatePermission'; 
+import Preloader from '../../Preloader';
 
 export default function Permission() {
 
@@ -50,17 +51,17 @@ export default function Permission() {
     }, []);
 
   return (
-    <div className='m-1 space-y-3 my-10 '>
+    <div className='m-1 space-y-3 my-10 w-full'>
     <h1 className='text-sm mb-2'>Gestion des persmissions</h1>
-    <div className='space-y-2'>
+    <div className='space-y-2 w-full'>
         <CreatePermission setOpen={setOpen} onSubmit={fetchPermissions}/>
-        {columnsPermission && permissions?.length >= 0 && (
+        {columnsPermission && permissions?.length > 0 ? (
             <DataTable
-                className="rounded-md border w-[750px] text-xs"
+                className="rounded-md border w-full max-w-full text-xs sm:text-sm"
                 columns={columnsPermission}
                 data={permissions} 
             />
-        )}
+        ) : <Preloader size={40} />}
     </div>
     {showDialogPermission()}
 </div> 

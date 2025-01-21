@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import PropTypes from 'prop-types'; // Ajout de l'importation de PropTypes
 import {
     Table,
@@ -26,6 +26,7 @@ import {
 export default function DataTable({ columns, data, className }) {
 
     const [globalFilter, setGlobalFilter] = useState([]);
+    
 
     // Adding props validation
     DataTable.propTypes = {
@@ -69,57 +70,61 @@ export default function DataTable({ columns, data, className }) {
           className="w-[250px] m-2 text-xs"
         />
 
-        <Table className="text-xs">
+        <div className="relative">
+            <div className="absolute top-0 right-0 h-full w-4 bg-gradient-to-l from-gray-300 via-transparent pointer-events-none sm:hidden"></div>
 
-            <TableHeader>
-                    <TableRow>
-                        { 
-                            columns?.map((item, index) => (
+            <Table className="text-xs">
+
+                <TableHeader>
+                        <TableRow>
+                            { 
+                                columns?.map((item, index)=> 
                                 <TableHead key={index} className="text-bold bg-blue-900 text-white">
                                     {flexRender(item?.header)}
-                                </TableHead> 
-                                ))
-                        }
-                    </TableRow>
-            </TableHeader>
-            
-                    <TableBody>
-                        {
-                            tableModel.getRowModel().rows?.length && data.length ? (
-                                tableModel.getRowModel()?.rows?.map((row) => (
-                                    <TableRow
-                                        key={row.id}
-                                        data-state={row.getIsSelected() && "selected"}
-                                    >
-                                        {
-                                          row.getVisibleCells()?.map((cell) => (
+                                </TableHead>
+                                )
+                            }
+                        
+                        </TableRow>
+                </TableHeader>
+                        <TableBody className="">
+                            {
+                                tableModel.getRowModel().rows?.length ? (
+                                    tableModel.getRowModel()?.rows?.map((row) => (
+                                        <TableRow
+                                            key={row.id}
+                                            data-state={row.getIsSelected() && "selected"}
+                                        >
+                                            {row.getVisibleCells()?.map((cell) => (
                                             <TableCell key={cell.id} >
                                                 {
                                                     cell.column.columnDef.accessorKey === "is_active" ?
                                                     cell.row.original.is_active === true ? "Activé" : "Desactivé"
                                                     :
                                                         cell.column.columnDef.accessorKey === "email" ?
-                                                        (cell.row.original?.email?.length > 6 ? 
+                                                        (cell.row.original.email.length > 6 ? 
                                                         `${cell.row.original.email.slice(0, 6)}...` : 
                                                         cell.row.original.email) 
                                                     :
                                                     flexRender(cell.column.columnDef.cell, cell.getContext()) 
                                                 }
                                             </TableCell>
-                                        ))}
+                                            ))}
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                            <TableCell colSpan={columns?.length} className="h-24 text-center">
+                                                Pas de résultats.
+                                            </TableCell>
                                     </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                        <TableCell colSpan={columns?.length} className="h-24 text-center">
-                                            Pas de résultats.
-                                        </TableCell>
-                                </TableRow>
-                            )
-                        }
-                   </TableBody>
+                                )
+                            }
+                    </TableBody>
 
-        </Table>
+            </Table>
+        </div>
+
 
         <div className="flex items-center justify-end space-x-2 m-2 pb-1">
 

@@ -5,6 +5,8 @@ import { URLS } from '../../../../configUrl';
 import DataTable from '../../DataTable'; 
 import CreateApplication from './CreateApplication'; 
 
+import Preloader from '../../Preloader';
+
 export default function Application() {
 
     const { showDialogApplication, columnsApplication } = ApplicationAction();
@@ -44,24 +46,23 @@ export default function Application() {
 
     useEffect(() => {
         fetchApplication();
-        
     }, []);
 
   return (
-    <div className='m-1 space-y-3 my-10 '>
-    <h1 className='text-sm mb-2'>Gestion des applications</h1>
-    <div className='space-y-2'>
-        <CreateApplication setOpen={setOpen} onSubmit={fetchApplication}/>
-        {columnsApplication && applications?.length >= 0 && (
-            <DataTable
-                className="rounded-md border w-[900px] text-xs"
-                columns={columnsApplication}
-                data={applications} 
-            />
-        )}
-    </div>
-    {showDialogApplication()}
-</div> 
+    <div className='m-1 space-y-3 my-10 w-full'>
+        <h1 className='text-sm mb-2'>Gestion des applications</h1>
+        <div className='space-y-2 w-full'>
+            <CreateApplication setOpen={setOpen} onSubmit={fetchApplication}/>
+            {columnsApplication && applications?.length > 0 ? (
+                <DataTable
+                    className="rounded-md border w-full max-w-full text-xs sm:text-sm"
+                    columns={columnsApplication}
+                    data={applications} 
+                />
+            ) : <Preloader size={40} />} 
+        </div>
+        {showDialogApplication()}
+    </div> 
   );
 };
 

@@ -187,17 +187,17 @@ export const AsignPermUserAction = () => {
     const showDialogAsignPermUser = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg">
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? "Modifier les informations" : "Détails de l'asignation permission - rôle " }
+                        <span className='flex text-left'>{ isEdited ? "Modifier les informations" : "Détails de l'asignation permission - utilisateur"}</span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className="flex flex-col text-left">
                                             <label htmlFor='permission_name' className="text-xs mt-2">
                                                 Nom du rôle <sup className='text-red-500'>*</sup>
                                             </label>
@@ -214,7 +214,7 @@ export const AsignPermUserAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.role_name.message}</p>
                                                 )}
                                     </div>
-                                    <div>
+                                    <div className="flex flex-col text-left">
                                                 <label htmlFor='description' className="text-xs">
                                                     Description <sup className='text-red-500'>*</sup>
                                                 </label>
@@ -251,7 +251,7 @@ export const AsignPermUserAction = () => {
                                 </form>
                             ) : (
                                 selectedAsignPermUser && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-black text-left space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedAsignPermUser?.id}</h3>
@@ -287,7 +287,7 @@ export const AsignPermUserAction = () => {
                     <AlertDialogFooter>
                         {
                         isEdited === false ? (
-                            <div className='flex space-x-2'>
+                            <div className='flex space-x-2 justify-end'>
                                             {/* <div className='flex space-x-2'>
                                             { 
                                                 selectedAsignPermUser?.is_active == false ? 

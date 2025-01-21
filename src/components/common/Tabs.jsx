@@ -21,7 +21,7 @@ const Tabs = ({ links }) => {
   };
     
   return (
-    <div className='flex gap-2 items-center'>
+    <div className='flex gap-2 items-center whitespace-nowrap overflow-x-auto no-scrollbar'>
       {
         links.map((link, index) => (
           <div

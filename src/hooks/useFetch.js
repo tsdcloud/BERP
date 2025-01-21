@@ -42,7 +42,7 @@ export const useFetch = () => {
         if(withAuth){
             myHeaders.append("Authorization", `Bearer ${token}`);
         }
-        myHeaders.append("Content-Type", "application/json");
+        myHeaders.append("Content-Type", "application/json"); 
         const raw = JSON.stringify(data);
         const requestOptions = {
             method: "POST",
