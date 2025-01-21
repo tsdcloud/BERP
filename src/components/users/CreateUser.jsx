@@ -189,6 +189,7 @@ export default function CreateUser({setOpen, onSubmit}) {
                               )
                             }
                   </div>
+                  
                   <hr className="border-dashed border-1 m-5 border-black" />
                   <h2 className='font-bold'>Informations de connexion</h2>
                   <p className='text-[8px] mb-3'>

@@ -101,7 +101,7 @@ export default function Header() {
                                                         <li className='hover:bg-gray-200 rounded-md p-1'>
                                                                 Paramètres
                                                         </li>
-                                                        <li className='hover:bg-red-200 w-full rounded-md p-1' onClick={() => {logout()}}>
+                                                        <li className='hover:bg-red-200 hover:text-red-700 w-full rounded-md p-1' onClick={() => {logout()}}>
                                                                 Se déconnecter
                                                         </li>
                                                 </ul>
