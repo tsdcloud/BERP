@@ -4,6 +4,7 @@ import { useFetch } from '../../../hooks/useFetch';
 import { URLS } from '../../../../configUrl'; 
 import DataTable from '../../DataTable';
 import CreateAsignPermApp from './CreateAsignPermApp';
+import Preloader from '../../Preloader';
 
 export default function AsignPermApp() {
 
@@ -58,17 +59,17 @@ export default function AsignPermApp() {
     }, []);
 
   return (
-    <div className='m-1 space-y-3 my-10 '>
+    <div className='m-1 space-y-3 my-10 w-full'>
     <h1 className='text-sm mb-2'>Gestion des asignations Permissions - Applications</h1>
-    <div className='space-y-2'>
+    <div className='space-y-2 w-full'>
         <CreateAsignPermApp setOpen={setOpen} onSubmit={fetchAsignPermApp}/>
-        {columnsAsignPermApp && asignPermApp?.length > 0 && (
+        {columnsAsignPermApp && asignPermApp?.length > 0 ? (
             <DataTable
-                className="rounded-md border w-[850px] text-xs"
+                className="rounded-md border w-full max-w-full text-xs sm:text-sm"
                 columns={columnsAsignPermApp}
                 data={asignPermApp} 
             />
-        )}
+        ) : <Preloader size={40} />}
     </div>
     {showDialogAsignPermApp()}
 </div> 

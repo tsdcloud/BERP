@@ -3,7 +3,10 @@ import CreateUser from './CreateUser';
 import DataTable from '../DataTable'; 
 import { UserAction } from './ColumnsUsers';
 import { useFetch } from '../../hooks/useFetch';
-import { URLS } from '../../../configUrl'; 
+import { URLS } from '../../../configUrl';
+
+import Preloader from '../Preloader';
+
 
 export default function Users() {
     const { showDialogUser, columnsUser } = UserAction();
@@ -49,17 +52,17 @@ export default function Users() {
 
 
   return (
-            <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des utilisateurs</h1>
-                <div className='space-y-2'>
+            <div className='m-1 space-y-3 my-10 w-full'>
+                <h1 className='text-sm'>Gestion des utilisateurs</h1>
+                <div className='space-y-2 w-full'>
                     <CreateUser setOpen={setOpen} onSubmit={fetchUsers} />
-                    {columnsUser && users.length > 0 && (
+                    {columnsUser && users.length > 0 ? (
                         <DataTable
-                            className="rounded-md border w-[800px] text-xs"
+                            className="rounded-md border w-full max-w-full text-xs sm:text-sm"
                             columns={columnsUser}
                             data={users} 
-                        />
-                    )}
+                        />    
+                    ) : <Preloader size={40} />}
                 </div>
                 {showDialogUser()}
             </div>

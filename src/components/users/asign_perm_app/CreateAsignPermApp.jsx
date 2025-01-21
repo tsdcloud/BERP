@@ -55,12 +55,12 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
                 
                     }
                 else {
-                toast.error(response.error, { duration: 5000});
+                toast.error(response.error, { duration: 2000});
                 }
                 
         } catch (error) {
             console.error("Error during creating", error);
-            toast.error("Erreur lors de la récupération des permissions", { duration: 5000 });
+            toast.error("Erreur lors de la récupération des permissions", { duration: 2000 });
         }
     };
     const showApp = async () => {
@@ -80,12 +80,12 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
                 
                     }
                 else {
-                toast.error(response.error, { duration: 5000});
+                toast.error(response.error, { duration: 2000});
                 }
                 
         } catch (error) {
             console.error("Error during creating", error);
-            toast.error("Erreur lors de la récupération des app", { duration: 5000 });
+            toast.error("Erreur lors de la récupération des app", { duration: 2000 });
         }
     };
 
@@ -259,7 +259,7 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
                         
                         <div className='my-3'>
                             <h6 className='text-xs'>Attribuer une ou plusieurs permissions</h6>
-                            <div className='flex flex-wrap  my-2'>
+                            <div className='flex flex-wrap my-2 overflow-y-auto h-60'>
                                 {fetchPermission.map(item => (
                                     <div key={item?.id} 
                                     className={`flex font-mono items-center ml-2  mb-2 px-2 py-2 border bg-secondary text-white rounded-sm

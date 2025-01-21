@@ -4,6 +4,7 @@ import { useFetch } from '../../../hooks/useFetch';
 import { URLS } from '../../../../configUrl'; 
 import DataTable from '../../DataTable'; 
 import CreateAsignPermRole from './CreateAsignPermRole'; 
+import Preloader from '../../Preloader';
 
 export default function AsignPermRole() {
 
@@ -58,17 +59,17 @@ export default function AsignPermRole() {
     }, []);
 
   return (
-    <div className='m-1 space-y-3 my-10 '>
+    <div className='m-1 space-y-3 my-10 w-full'>
     <h1 className='text-sm mb-2'>Gestion des asignations Permissions - Rôles</h1>
-    <div className='space-y-2'>
+    <div className='space-y-2 w-full'>
         <CreateAsignPermRole setOpen={setOpen} onSubmit={fetchAsignPermRole}/>
-        {columnsAsignPermRole && asignPermRole?.length > 0 && (
+        {columnsAsignPermRole && asignPermRole?.length > 0 ? (
             <DataTable
-                className="rounded-md border w-[850px] text-xs"
+                className="rounded-md border w-full max-w-full text-xs sm:text-sm"
                 columns={columnsAsignPermRole}
                 data={asignPermRole} 
             />
-        )}
+        ) : <Preloader size={40} />}
     </div>
     {showDialogAsignPermRole()}
 </div> 

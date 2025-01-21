@@ -60,12 +60,12 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
                 
                     }
                 else {
-                toast.error(response.error, { duration: 5000});
+                toast.error(response.error || "Erreur lors de la récupération des users", { duration: 2000});
                 }
                 
         } catch (error) {
             console.error("Error during creating", error);
-            toast.error("Erreur lors de la récupération des users", { duration: 5000 });
+            toast.error("Erreur lors de la récupération des users", { duration: 2000 });
         }
     };
 
@@ -89,12 +89,12 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
                 
                     }
                 else {
-                toast.error(response.error, { duration: 5000});
+                toast.error(response.error || "Erreur lors de la récupération des rôles", { duration: 2000});
                 }
                 
         } catch (error) {
             console.error("Error during creating", error);
-            toast.error("Erreur lors de la récupération des rôles", { duration: 5000 });
+            toast.error("Erreur lors de la récupération des rôles", { duration: 2000 });
         }
     };
 
@@ -244,7 +244,7 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
                         
                         <div className='my-3'>
                             <h6 className='text-xs'>Ajouter un ou plusieurs utilisateurs</h6>
-                            <div className='flex flex-wrap  my-2'>
+                            <div className='flex flex-wrap overflow-y-auto h-60 my-2'>
                                 {fetchUser.map(item => (
                                     <div key={item?.id} 
                                     className={`flex font-mono items-center ml-2 mb-2 px-2 py-2 border bg-secondary text-white rounded-sm

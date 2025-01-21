@@ -4,6 +4,7 @@ import { useFetch } from '../../../hooks/useFetch';
 import { URLS } from '../../../../configUrl'; 
 import DataTable from '../../DataTable';
 import CreateAsignRoleUser from './CreateAsignRoleUser';
+import Preloader from '../../Preloader';
 
 export default function AsignRoleUser() {
 
@@ -58,17 +59,17 @@ export default function AsignRoleUser() {
     }, []);
 
   return (
-    <div className='m-1 space-y-3 my-10 '>
+    <div className='m-1 space-y-3 my-10 w-full'>
     <h1 className='text-sm mb-2'>Gestion des asignations Rôles - utilisateurs</h1>
-    <div className='space-y-2'>
+    <div className='space-y-2 w-full'>
         <CreateAsignRoleUser setOpen={setOpen} onSubmit={fetchAsignRoleUser}/>
-        {columnsAsignRoleUser && asignRoleUser?.length > 0 && (
+        {columnsAsignRoleUser && asignRoleUser?.length > 0 ? (
             <DataTable
-                className="rounded-md border w-[850px] text-xs"
+                className="rounded-md border w-full max-w-full text-xs sm:text-sm"
                 columns={columnsAsignRoleUser}
                 data={asignRoleUser} 
             />
-        )}
+        ) : <Preloader size={40} />}
     </div>
     {showDialogAsignRoleUser()}
 </div> 

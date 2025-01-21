@@ -233,17 +233,17 @@ export const UserAction = () => {
     const showDialogUser = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent className="max-h-[80vh] overflow-y-auto">
+                <AlertDialogContent className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg">
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? "Modifier les informations" : "Détails de l'utilisateur" }
+                            <span className='flex text-left'>{ isEdited ? "Modifier les informations" : "Détails de l'utilisateur" }</span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className="flex flex-col text-left">
                                             <label htmlFor='last_name' className="text-xs mt-2">
                                                 Nom <sup className='text-red-500'>*</sup>
                                             </label>
@@ -252,7 +252,7 @@ export const UserAction = () => {
                                                 type="text"
                                                 defaultValue={selectedUser?.last_name}
                                                 {...register("last_name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-full sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.last_name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -260,7 +260,7 @@ export const UserAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.last_name.message}</p>
                                                 )}
                                     </div>
-                                    <div>
+                                    <div className="flex flex-col text-left">
                                                 <label htmlFor='first_name' className="text-xs">
                                                     Prénom <sup className='text-red-500'>*</sup>
                                                 </label>
@@ -269,7 +269,7 @@ export const UserAction = () => {
                                                     type="text"
                                                     defaultValue={selectedUser?.first_name}
                                                     {...register("first_name")}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-full sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.first_name ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 />
@@ -277,7 +277,7 @@ export const UserAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.first_name.message}</p>
                                                 )}
                                     </div>
-                                    <div>
+                                    <div className="flex flex-col text-left">
                                                 <label htmlFor='email' className="text-xs">
                                                     Adresse mail <sup className='text-red-500'>*</sup>
                                                 </label>
@@ -286,7 +286,7 @@ export const UserAction = () => {
                                                     type="mail"
                                                     defaultValue={selectedUser?.email}
                                                     {...register("email")}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-full sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.email ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 />
@@ -295,7 +295,7 @@ export const UserAction = () => {
                                                 )}
 
                                     </div>
-                                    <div>
+                                    <div className="flex flex-col text-left">
                                             <label htmlFor='phone' className="text-xs">
                                                 Téléphone <sup className='text-red-500'>*</sup>
                                             </label>
@@ -304,7 +304,7 @@ export const UserAction = () => {
                                                 type="phone"
                                                 defaultValue={selectedUser?.phone}
                                                 {...register("phone")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-full sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.phone ? "border-red-500" : "border-gray-300"
                                                 }`}
                                             />
@@ -312,7 +312,7 @@ export const UserAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.phone.message}</p>
                                             )}
                                     </div>
-                                    <div>
+                                    <div className="flex flex-col text-left">
                                              <label htmlFor='username' className="text-xs">
                                                 Nom d'utilisateur <sup className='text-red-500'>*</sup>
                                             </label>
@@ -322,7 +322,7 @@ export const UserAction = () => {
                                                 defaultValue={selectedUser?.username}
                                                 // disabled
                                                 {...register("username")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-full sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.username ? "border-red-500" : "border-gray-300"
                                                 }`}
                                             />
@@ -350,7 +350,7 @@ export const UserAction = () => {
                                 </form>
                             ) : (
                                 selectedUser && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-left text-black space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedUser?.id}</h3>
@@ -398,10 +398,10 @@ export const UserAction = () => {
                                             </div>
                                             {selectedRole && (
                                                 <div className="ml-1 mt-2 p-4 bg-gray-50 rounded-lg">
-                                                <h3 className="font-bold text-lg">Détails du rôle</h3>
-                                                <p><strong>Nom :</strong> {selectedRole.display_name}</p>
-                                                <p><strong>Description :</strong> {selectedRole.description}</p>
-                                                <h4 className="font-semibold mt-3">Permissions associées : {selectedRole.permissions.length === 0 ? "none" : ""}</h4>
+                                                <h3 className="font-bold text-sm">Détails du rôle</h3>
+                                                <p>Nom : {selectedRole.display_name}</p>
+                                                <p>Description : {selectedRole.description}</p>
+                                                <h4 className="text-sm mt-3 font-bold">Permissions associées : {selectedRole.permissions.length === 0 ? "none" : ""}</h4>
                                                 <ul className="list-disc ml-5">
                                                     {selectedRole.permissions.map((perm) => (
                                                     <li key={perm.id}>{perm.display_name}</li>
@@ -428,10 +428,10 @@ export const UserAction = () => {
                                             </div>
                                             {selectedPermission && (
                                                 <div className="ml-1 mt-2 p-4 bg-gray-50 rounded-lg">
-                                                    <h3 className="font-bold text-lg">Détails de la permission</h3>
-                                                    <p><strong>Nom :</strong> {selectedPermission.display_name}</p>
-                                                    <p><strong>Description :</strong> {selectedPermission.description}</p>
-                                                    <p><strong>Statut :</strong> {selectedPermission.is_active ? "Actif" : "Inactif"}</p>
+                                                    <h3 className="font-bold text-sm">Détails de la permission</h3>
+                                                    <p>Nom : {selectedPermission.display_name}</p>
+                                                    <p>Description : {selectedPermission.description}</p>
+                                                    <p>Statut : {selectedPermission.is_active ? "Actif" : "Inactif"}</p>
                                                 </div>
                                             )}
                                         </div>
@@ -444,7 +444,7 @@ export const UserAction = () => {
                     <AlertDialogFooter>
                         {
                         isEdited === false ? (
-                            <div className='flex space-x-2'>
+                            <div className='flex space-x-2 justify-end'>
                                             <div className='flex space-x-2'>
                                             { 
                                                 selectedUser?.is_active == false ? 
