@@ -163,7 +163,7 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
             console.error("Erreur globale:", globalError.message);
             toast.error("Une erreur inattendue s'est produite", { duration: 5000 });
           }
-        }
+        };
       
     //     try {
     //       const { application_id, permission_id } = data;

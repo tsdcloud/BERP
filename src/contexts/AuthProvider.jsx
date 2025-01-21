@@ -11,13 +11,13 @@ export default function AuthProvider({children}) {
     const [userData, setUserData] = useState(JSON.stringify(token));
 
     const disconnect = () => {
-      localStorage.removeItem("isAuth")
-      localStorage.removeItem("refresh")
-      localStorage.removeItem("token")
+      localStorage.removeItem("isAuth");
+      localStorage.removeItem("refresh");
+      localStorage.removeItem("token");
       setIsAuth(false);
       setToken(null);
       setUserData(null);
-    }
+    };
 
     useEffect(()=> {
       localStorage.setItem("isAuth", isAuth);

@@ -16,17 +16,17 @@ export default function UserEntryPoint() {
                     </div>
                 ) : (
                     <div className='flex flex-col items-center m-7 space-y-2'>
-                        {/* <a
+                        <a
                             href="/utilisateurs"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center justify-center w-[90px] h-[90px] bg-secondary text-white rounded-full shadow-lg hover:bg-orange-600 transition duration-300"
                         >
                             <FaUser size={40} />
-                        </a> */}
-                        <Link to={"/utilisateurs"} className='flex items-center justify-center w-[90px] h-[90px] bg-secondary text-white rounded-full shadow-lg hover:bg-orange-600 transition duration-300'>
+                        </a>
+                        {/* <Link to={"/utilisateurs"} className='flex items-center justify-center w-[90px] h-[90px] bg-secondary text-white rounded-full shadow-lg hover:bg-orange-600 transition duration-300'>
                             <FaUser size={40} />
-                        </Link>
+                        </Link> */}
                         <p className='text-white text-xs'>Gestion des utilisateurs</p>
                     </div>
                 )

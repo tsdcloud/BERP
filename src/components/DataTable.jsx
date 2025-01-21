@@ -23,7 +23,7 @@ import {
 //   import { Checkbox } from "./ui/checkbox";
 
 
-export default function DataTable({columns, data, className}) {
+export default function DataTable({ columns, data, className }) {
 
     const [globalFilter, setGlobalFilter] = useState([]);
     
