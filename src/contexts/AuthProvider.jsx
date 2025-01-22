@@ -16,6 +16,7 @@ export default function AuthProvider({children}) {
       localStorage.removeItem("token");
       setIsAuth(false);
       setToken(null);
+      setRefresh(null);
       setUserData(null);
     };
 

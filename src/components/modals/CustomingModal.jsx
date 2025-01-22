@@ -23,18 +23,18 @@ export default function CustomingModal({ children, title, buttonText }) {
             <Modal
                 title={title}
                 open={open}
-                onCancel={handleCancel}
+                onCancel={handleCancel} 
                 footer={null}
             >
                 {/* {children} */}
-                {React.cloneElement(children, { setOpen })}
+                {React.cloneElement(children, { handleCancel })}
             </Modal>
         </div>
     );
 }
    // Ajout de la validation des props
    CustomingModal.propTypes = {
-    children: PropTypes.func.isRequired,
+    children: PropTypes.node.isRequired,
     title: PropTypes.string.isRequired,
     buttonText: PropTypes.string.isRequired,
 };

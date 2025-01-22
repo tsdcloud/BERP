@@ -84,7 +84,7 @@ export default function SignIn() {
         <p className='text-xs'>Renseignez correctement vos identifiants.</p>
      </div>
 
-      <form onSubmit={handleSubmit(submitDataSignIn)} 
+      <form onSubmit={handleSubmit(submitDataSignIn)}  
         className='text-xs'>
 
               {/* Champ Identifier (Email ou Username) */}

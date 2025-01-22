@@ -15,6 +15,7 @@ import { URLS } from '../../configUrl';
 import { useFetch } from '../hooks/useFetch';
 import EntityEntryPoint from './entity/EntityEntryPoint';
 import IncidentEntryPoint from './incidents/IncidentEntryPoint';
+import { ArrowLeftEndOnRectangleIcon  } from "@heroicons/react/24/outline";
 
 
 export default function LuncherApp() {
@@ -33,7 +34,7 @@ export default function LuncherApp() {
     try {
           const response = await handlePost(urlToLogout, data, false);
 
-          if (response.status === 200) {
+          if (response) {
             disconnect();
             navigateToLogin("/signIn");
           }
@@ -62,14 +63,14 @@ export default function LuncherApp() {
                       <h1 className="text-white text-3xl font-bold">Mes applications</h1>
                       <Button
                           type="submit"
-                          className="absolute top-0 right-6 my-8 mx-4 w-auto bg-red-500 text-white py-2 px-4 text-xs rounded-3xl shadow-md hover:bg-blue-700 transition "
+                          className="absolute top-0 right-6 my-9 mx-4 w-auto bg-red-500 text-white px-2 text-xs rounded-3xl shadow-md hover:bg-blue-700 transition "
                           onClick={logout}
                       >
-                        Se déconnecter
+                        <ArrowLeftEndOnRectangleIcon className="h-6 w-6 rotate-180" />
                       </Button>
                   </div>
 
-                    <div className='flex flex-row space-x-1'>
+                    <div className='flex flex-wrap space-x-1 justify-center sm:justify-normal'>
                         {/* Ajoutez ici le reste de votre contenu */}
                         <EntityEntryPoint/>
                         <UserEntryPoint/>

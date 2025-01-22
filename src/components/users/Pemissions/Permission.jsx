@@ -6,6 +6,8 @@ import DataTable from '../../DataTable';
 import CreatePermission from './CreatePermission'; 
 import Preloader from '../../Preloader';
 
+import CreatePermissionModal from './CreatePermissionModal';
+
 export default function Permission() {
 
     const { showDialogPermission, columnsPermission } = PermissionAction();
@@ -45,6 +47,10 @@ export default function Permission() {
           }
     };
 
+    const upDateTable = (newRecord) => {
+        setPermissions((prev) => [newRecord, ...prev,])
+    }
+
     useEffect(() => {
         fetchPermissions();
         
@@ -54,7 +60,7 @@ export default function Permission() {
     <div className='m-1 space-y-3 my-10 w-full'>
     <h1 className='text-sm mb-2'>Gestion des persmissions</h1>
     <div className='space-y-2 w-full'>
-        <CreatePermission setOpen={setOpen} onSubmit={fetchPermissions}/>
+        <CreatePermissionModal setOpen={setOpen} onSubmit={upDateTable}/>
         {columnsPermission && permissions?.length > 0 ? (
             <DataTable
                 className="rounded-md border w-full max-w-full text-xs sm:text-sm"

@@ -6,6 +6,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
 import toast, { Toaster } from 'react-hot-toast';
+import { ArrowLeftEndOnRectangleIcon  } from "@heroicons/react/24/outline";
+
 
 export default function Header() {
         const { userData, disconnect, refresh } = useContext(AUTHCONTEXT);
@@ -26,7 +28,7 @@ export default function Header() {
                 try {
                       const response = await handlePost(urlToLogout, data, false);
             
-                      if (response.status === 200) {
+                      if (response) {
                         disconnect();
                         navigateToLogin("/signIn");
                       }
@@ -102,7 +104,7 @@ export default function Header() {
                                                                 Paramètres
                                                         </li>
                                                         <li className='hover:bg-red-200 hover:text-red-700 w-full rounded-md p-1' onClick={() => {logout()}}>
-                                                                Se déconnecter
+                                                                <span className='flex justify-between'>Se déconnecter <ArrowLeftEndOnRectangleIcon className="h-6 w-6 text-red-700 rotate-180" /></span>    
                                                         </li>
                                                 </ul>
                                 
