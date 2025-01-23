@@ -8,6 +8,10 @@ import { useNavigate } from 'react-router-dom';
 import { URLS } from '../../../../configUrl';
 import { useFetch } from '../../../hooks/useFetch';
 
+import { AutoComplete, Select, Tag } from 'antd';
+// import 'antd/dist/reset.css';
+
+
 import PropTypes from 'prop-types';
 
 import toast, { Toaster } from 'react-hot-toast';
@@ -19,7 +23,65 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
     const [fetchPermission, setFetchPermission] = useState([]);
     const [fetchRole, setFetchRole] = useState([]);
     const [checkedPermissions, setCheckedPermissions] = useState([]);
+
     const [selectedRole, setSelectedRole] = useState([]);
+    const [selectedItems, setSelectedItems] = useState([]);
+    const [selectedPerm, setSelectedPerm] = useState([]);
+
+    const tagRender = (props) => {
+        const { label, value, onClose } = props;
+        return (
+          <Tag
+            color="white"
+            closable
+            onClose={onClose}
+            style={{ marginRight: 3 , backgroundColor: "#22c55e"}}
+          >
+            {label}
+          </Tag>
+        );
+    };
+
+    const handleSearch = (searchText) => {
+        setSelectedRole(
+          searchText
+            ? fetchRole
+                .filter((item) => item.display_name.toLowerCase().includes(searchText.toLowerCase()))
+                .map((item) => ({ value: item.display_name}))
+            : []
+        );
+      };
+    
+      // Fonction pour gérer la sélection d'un item
+      const handleSelect = (value) => {
+        console.log('Selected:', value);
+        const roleSelected = fetchRole.find((item) => item.display_name === value);
+        
+        console.log("Selected Role id:", roleSelected?.id);
+
+        // Mettre à jour le champ `permission_id` dans le formulaire
+        setValue('role_id', roleSelected?.id, { shouldValidate : true });
+    
+      };
+    
+      // Fonction pour gérer le select multiple avec recherche
+      const handleMultiSearch = (searchText) => {
+        const filteredOptions = fetchPermission.filter((item) =>
+          item.display_name.toLowerCase().includes(searchText.toLowerCase())
+        );
+        setSelectedItems(filteredOptions.map((item) => ({ label: item.display_name, value: item.id })));
+      };
+    
+      // Fonction pour gérer la sélection multiple
+      const handleMultiSelect = (values) => {
+        setSelectedPerm(values);
+
+        console.log(values);
+
+        // Mettre à jour le champ `permission_id` dans le formulaire
+        setValue('permission_id', values, { shouldValidate : true });
+        
+      };
 
     const handleCheckboxChange = (id) => {
         setCheckedPermissions(prevState => {
@@ -206,7 +268,7 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
                 <form onSubmit={handleSubmit(onSubmitDataFormAsignPermRole)} 
                     className='sm:bg-blue-200 md:bg-transparent'>
 
-                        <div className='mb-4'>
+                        {/* <div className='mb-4'>
                             <label htmlFor="role_id" className="block text-xs font-medium mb-1">
                                 Nom du rôle<sup className='text-red-500'>*</sup>
                             </label>
@@ -236,9 +298,9 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
                                 )
                             }
                     
-                        </div>
+                        </div> */}
                         
-                        <div className='my-3'>
+                        {/* <div className='my-3'>
                             <h6 className='text-xs'>Attribuer une ou plusieurs permissions</h6>
                             <div className='flex flex-wrap  my-2 overflow-y-auto h-60'>
                                 {fetchPermission.map(item => (
@@ -258,6 +320,43 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
                                   </div>
                                 ))}
                             </div>
+                            {errors.permission_id && (
+                                <p className="text-red-500 text-[9px] mt-1">{errors.permission_id.message}</p>
+                            )}
+                        </div> */}
+
+                         {/* Autocomplete simple */}
+                         <div className='mb-4 '>
+                            <AutoComplete
+                                style={{ width: '100%', height: '40px' }}
+                                options={selectedRole}
+                                onSearch={handleSearch}
+                                onSelect={handleSelect}
+                                onChange={handleSelect}
+                                showSearch
+                                placeholder="Rechercher un rôle"
+                                className={`${errors.role_id ? "border-red-500 border-2" : "border-blue-300 border-2"} rounded-md`}
+                            />
+                            {errors.role_id && (
+                                <p className="text-red-500 text-[9px] mt-1">{errors.role_id.message}</p>
+                            )}
+                         </div>
+
+                        {/* Select multiple avec autocomplete */}
+                        <div>
+                            <Select
+                                mode="multiple"
+                                allowClear
+                                style={{ width: '100%' }}
+                                placeholder="Recherchez et sélectionnez des technologies"
+                                onSearch={handleMultiSearch}
+                                // onSelect={handleMultiSelect}
+                                onChange={handleMultiSelect}
+                                options={selectedItems}
+                                value={selectedPerm}
+                                tagRender={tagRender}
+                                className={`${errors.permission_id ? "border-red-500 border-2" : "border-blue-300 border-2"} rounded-md`}
+                            />
                             {errors.permission_id && (
                                 <p className="text-red-500 text-[9px] mt-1">{errors.permission_id.message}</p>
                             )}

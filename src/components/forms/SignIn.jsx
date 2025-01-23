@@ -79,7 +79,7 @@ export default function SignIn() {
 
   return (
    <SignInLayout>
-    <div className='text-center py-3'>
+    <div className='text-center'>
         <h3 className='font-semibold text-xs'>Connectez-vous à votre compte</h3>
         <p className='text-xs'>Renseignez correctement vos identifiants.</p>
      </div>

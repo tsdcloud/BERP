@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { AUTHCONTEXT } from '../../contexts/AuthProvider';
 import { jwtDecode } from 'jwt-decode';
@@ -17,6 +17,8 @@ export default function Header() {
         const { handlePost } = useFetch();
 
         const navigateToLogin = useNavigate();
+
+        const dropdownRef = useRef(null);
 
         const logout = async () => {
                 const urlToLogout = URLS.LOGOUT;
@@ -60,6 +62,17 @@ export default function Header() {
                     console.error("Invalid token: must be a string", userData);
                     // Gérer l'erreur, par exemple, en réinitialisant l'état ou en affichant un message d'erreur
                 }
+
+                const handleClickOutside = (event) => {
+                        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                          setDropdownOpen(false);
+                        }
+                      };
+                  
+                      document.addEventListener("click", handleClickOutside);
+                      return () => {
+                        document.removeEventListener("click", handleClickOutside);
+                      };
             }, []);
 
 
@@ -77,7 +90,7 @@ export default function Header() {
                         BERP. Business Entreprise Resource Planning
                 </h1>
                        
-                <div className="relative">
+                <div className="relative" ref={dropdownRef}>
                         <Avatar className="m-2 rounded-full border-2 border-orange-500" onClick={toggleDropdown}>
                         <AvatarImage 
                                 className="border-white rounded-full" 

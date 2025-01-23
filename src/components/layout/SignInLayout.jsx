@@ -23,11 +23,13 @@ export default function SignInLayout({children}) {
               </div>
 
 
-              <div className='h-full flex flex-col space-y-8 items-center mt-[100px]'>
+              <div className='h-full w-full flex flex-col justify-center sm:justify-normal space-y-8 items-center sm:mt-[100px]'>
+                    <div className='sm:hidden flex flex-col items-center justify-center'>
+                      <h3 className='text-5xl font-bold mb-1'>BERP.</h3>
+                      <h1 className='font-medium text-xl'>Rapprochez-vous de l&apos;essentiel.</h1>  
+                    </div>
                     <div className=' w-[360px] h-[370px] bg-white shadow-2xl relative rounded-sm '>
-                    
-                      
-                      <div className=' sm:bg-blue-400 md:bg-transparent p-5 m-0'>
+                      <div className='sm:bg-blue-400 md:bg-transparent p-5 m-0'>
                           {children}
                       </div>
                     </div>

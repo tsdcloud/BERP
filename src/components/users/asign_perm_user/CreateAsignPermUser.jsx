@@ -212,7 +212,7 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
                         </div>
                         
                         <div className='my-3'>
-                            <h6 className='text-xs'>Attribuer une ou plusieurs permissions</h6>
+                            <h6 className='text-xs'>Attribuer une ou plusieurs permissions</h6> 
                             <div className='flex flex-wrap my-2 overflow-y-auto h-60'>
                                 {fetchPermission.map(item => (
                                     <div key={item?.id} 
