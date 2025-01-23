@@ -33,7 +33,7 @@ export default function CreateRole({setOpen, onSubmit}) {
   
   const { handlePost } = useFetch();
   
-      const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm({
+      const { register, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
           resolver: zodResolver(roleSchema),
       });
 
@@ -55,7 +55,8 @@ export default function CreateRole({setOpen, onSubmit}) {
           toast.success("Rôle crée avec succès", {duration:2000});
           // console.log("ROLE created", response?.success);
           setOpen(false);
-          onSubmit();
+          onSubmit(response.data);
+          reset();
           // navigateToDashboard("/");
           // window.location.reload();
           return;

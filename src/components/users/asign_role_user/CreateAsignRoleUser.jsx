@@ -126,11 +126,16 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
       });
 
 
-      const { register, handleSubmit, setValue, formState: { errors, isSubmitting }} = useForm({
+      const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting }} = useForm({
           resolver: zodResolver(asignUserRoleSchema),
       });
 
 
+      const getUserName = (id) =>{
+        const permName = fetchUser.filter((user)=>(user.id === id))?.[0]?.first_name || ''
+
+        return permName
+      }
 
 
       const onSubmitDataFormAsignRoleUser = async (data) => {
@@ -140,32 +145,56 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
         try {
             const { role_id, user_id } = data;
             let allSuccess = true;
+
+            const successfullUsers = [];
+            const failedUsers = [];
     
             console.log("this is the userId :", [user_id])
           
             for (const userId of user_id) {
+                const userName = getUserName(userId)
               try {
                 // Envoyer la requête pour chaque `user_id`
                 const response = await handlePost(urlToCreateAsignRoleUser, { role_id, user_id: userId }, true);
           
                 if (!response || response.status !== 201) {
-                  toast.error(`${response.errors.non_field_errors}`, { duration: 3000 });
-                  allSuccess = false;
-                  break; // Stop the loop
+                    failedUsers.push(userName)
+                    allSuccess = false;
+                    // break; // Stop the loop
+                  } else {
+                    successfullUsers.push(userName);
                 }
               } catch (error) {
-                toast.error(`Erreur d'assignetion pour le user ID ${userId}`, { duration: 5000 });
-                allSuccess = false;
-                break; // Stop the loop
+                toast.error(`Erreur lors de l'assignation a l'utilisateur ${userName}`, { duration: 5000 });
+                failedUsers.push(userName);
               }
             }
             
             if (allSuccess) {
-                toast.success("role assigned successfully !", { duration: 2000 });
-                setTimeout(() => {
-                  window.location.reload();
-                }, 2000);
-              }
+                toast.success("Role assigned successfully !", { duration: 2000 });
+                onSubmit();
+                reset();
+                setCheckedUser([])
+                // setTimeout(() => {
+                //   window.location.reload();
+                // }, 2000);
+            } else {
+                if (successfullUsers.length > 0) {
+                    toast.success(`Le role a été assigné avec succès aux utilisateurs : ${successfullUsers.join(', ')}`, { duration: 2000 });
+                    onSubmit();
+                    reset();
+                    setCheckedUser([])
+                }
+                if (failedUsers.length > 0) {
+                    if (successfullUsers.length > 0){
+                        setTimeout(() => {
+                            toast.error(`Les utilisateurs suivants :  ${failedUsers.join(', ')}  ont deja ce role`, { duration: 2000 });
+                        }, 2000);
+                    } else {
+                        toast.error(`Les utilisateurs suivants : ${failedUsers.join(', ')} ont deja ce role`, { duration: 3000 });
+                    }
+                }
+            }
     
           } catch (globalError) {
             // Gestion des erreurs globales

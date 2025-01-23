@@ -48,11 +48,15 @@ export default function Role() {
         
     }, []);
 
+    const upDateTable = (newRecord) => {
+        setRoles((prev) => [newRecord, ...prev,])
+    }
+
   return (
     <div className='m-1 space-y-3 my-10 w-full'>
     <h1 className='text-sm mb-2'>Gestion des rôles</h1>
     <div className='space-y-2 w-full'>
-        <CreateRole setOpen={setOpen} onSubmit={fetchRole}/>
+        <CreateRole setOpen={setOpen} onSubmit={upDateTable}/>
         {columnsRole && roles?.length > 0 ? (
             <DataTable
                 className="rounded-md border w-full max-w-full text-xs sm:text-sm"

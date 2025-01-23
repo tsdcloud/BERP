@@ -56,7 +56,7 @@ export default function CreateUser({setOpen, onSubmit}) {
   // const navigateToDashboard = useNavigate();
   const { handlePost } = useFetch();
 
-    const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm({
+    const { register, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
         resolver: zodResolver(userSchema),
     });
 
@@ -71,8 +71,9 @@ export default function CreateUser({setOpen, onSubmit}) {
           if (response && response?.success && response.status === 201) {
             toast.success("Utilisateur crée avec succès", {duration:2000});
             console.log("User created", response?.success);
-            setOpen(false);
-            onSubmit();
+            // setOpen(false);
+            onSubmit(response.data);
+            reset()
             // navigateToDashboard("/");
             // window.location.reload();
 

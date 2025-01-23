@@ -48,11 +48,15 @@ export default function Application() {
         fetchApplication();
     }, []);
 
+    const upDateTable = (newRecord) => {
+        setApplications((prev) => [newRecord, ...prev,])
+    }
+
   return (
     <div className='m-1 space-y-3 my-10 w-full'>
         <h1 className='text-sm mb-2'>Gestion des applications</h1>
         <div className='space-y-2 w-full'>
-            <CreateApplication setOpen={setOpen} onSubmit={fetchApplication}/>
+            <CreateApplication setOpen={setOpen} onSubmit={upDateTable}/>
             {columnsApplication && applications?.length > 0 ? (
                 <DataTable
                     className="rounded-md border w-full max-w-full text-xs sm:text-sm"

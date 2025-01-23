@@ -49,12 +49,17 @@ export default function Users() {
         
     }, []);
 
+    
+    const upDateTable = (newRecord) => {
+        setUsers((prev) => [newRecord, ...prev,])
+    }
+
 
   return (
             <div className='m-1 space-y-3 my-10 w-full'>
                 <h1 className='text-sm'>Gestion des utilisateurs</h1>
                 <div className='space-y-2 w-full'>
-                    <CreateUser setOpen={setOpen} onSubmit={fetchUsers} />
+                    <CreateUser setOpen={setOpen} onSubmit={upDateTable} />
                     {columnsUser && users.length > 0 ? (
                         <DataTable
                             className="rounded-md border w-full max-w-full text-xs sm:text-sm"

@@ -26,7 +26,9 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
 
     const [selectedRole, setSelectedRole] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
-    const [selectedPerm, setSelectedPerm] = useState([]);
+    const [selectedPerms, setSelectedPerms] = useState([]);
+    const [selectedRoleValue, setSelectedRoleValue] = useState("");
+    // const [selectedPermValues, setSelectedPermValues] = useState([]);
 
     const tagRender = (props) => {
         const { label, value, onClose } = props;
@@ -56,6 +58,8 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
       const handleSelect = (value) => {
         console.log('Selected:', value);
         const roleSelected = fetchRole.find((item) => item.display_name === value);
+
+        setSelectedRoleValue(roleSelected?.display_name)
         
         console.log("Selected Role id:", roleSelected?.id);
 
@@ -74,7 +78,7 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
     
       // Fonction pour gérer la sélection multiple
       const handleMultiSelect = (values) => {
-        setSelectedPerm(values);
+        setSelectedPerms(values);
 
         console.log(values);
 
@@ -167,7 +171,7 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
       });
 
 
-      const { register, handleSubmit, setValue, formState: { errors, isSubmitting }} = useForm({
+      const { register, handleSubmit, setValue, reset, formState: { errors, isSubmitting }} = useForm({
           resolver: zodResolver(asignPermRoleSchema),
       });
 
@@ -235,9 +239,15 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
       
             if (response.success) {
               toast.success( "assigntion fais avec succès" , { duration: 2000 });
+              reset()
+              onSubmit()
+              setSelectedRole([])
+              setSelectedItems([])
+              setSelectedPerms([])
+              setSelectedRoleValue("")
 
               setTimeout(() => {
-                window.location.reload(); 
+                // window.location.reload(); 
               }, 2000);
 
             }else{
@@ -328,12 +338,13 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
                          {/* Autocomplete simple */}
                          <div className='mb-4 '>
                             <AutoComplete
-                                style={{ width: '100%', height: '40px' }}
+                                style={{ width: '100%', height: '35px' }}
                                 options={selectedRole}
                                 onSearch={handleSearch}
                                 onSelect={handleSelect}
                                 onChange={handleSelect}
                                 showSearch
+                                value={selectedRoleValue}
                                 placeholder="Rechercher un rôle"
                                 className={`${errors.role_id ? "border-red-500 border-2" : "border-blue-300 border-2"} rounded-md`}
                             />
@@ -352,8 +363,8 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
                                 onSearch={handleMultiSearch}
                                 // onSelect={handleMultiSelect}
                                 onChange={handleMultiSelect}
+                                value={selectedPerms}
                                 options={selectedItems}
-                                value={selectedPerm}
                                 tagRender={tagRender}
                                 className={`${errors.permission_id ? "border-red-500 border-2" : "border-blue-300 border-2"} rounded-md`}
                             />
@@ -362,7 +373,7 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
                             )}
                         </div>
 
-                        <div className='flex justify-end space-x-2 mt-2'>
+                        <div className='flex justify-end space-x-2 mt-4'>
                             <Button 
                               className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md bg-transparent hover:bg-primary hover:text-white transition" 
                                 type="submit"

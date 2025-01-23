@@ -37,7 +37,7 @@ export default function CreateApplication({setOpen, onSubmit}) {
   
   const { handlePost } = useFetch();
   
-      const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm({
+      const { register, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
           resolver: zodResolver(applicationSchema),
       });
 
@@ -58,9 +58,10 @@ export default function CreateApplication({setOpen, onSubmit}) {
         if (response && response.status === 201) {
           // console.log("ROLE created", response?.success);
           setOpen(false);
-          onSubmit();
+          onSubmit(response.data);
+          reset()
           // navigateToDashboard("/");
-          window.location.reload();
+          // window.location.reload();
           toast.success("application created successfully", { duration: 2000});
           return;
         }

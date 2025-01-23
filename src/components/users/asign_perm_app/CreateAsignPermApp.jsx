@@ -34,6 +34,11 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
         });
     };
 
+    const getPermName = (id) =>{
+        const permName = fetchPermission.filter((perm)=>(perm.id === id))?.[0]?.display_name || ''
+
+        return permName
+    }
 
     const { handleFetch, handlePost } = useFetch();
 
@@ -117,7 +122,7 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
       });
 
 
-      const { register, handleSubmit, setValue, formState: { errors, isSubmitting }} = useForm({
+      const { register, handleSubmit, setValue, reset,  formState: { errors, isSubmitting }} = useForm({
           resolver: zodResolver(asignPermAppSchema),
       });
 
@@ -131,32 +136,60 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
         try {
             const { application_id, permission_id } = data;
             let allSuccess = true;
+            const successfulPermissions = [];
+            const failedPermissions = [];
     
             console.log("this is the permissions :", [permission_id])
           
             for (const permId of permission_id) {
-              try {
-                // Envoyer la requête pour chaque `permission_id`
-                const response = await handlePost(urlToCreateAsignPermApp, { application_id, permission_id: permId }, true);
-          
-                if (!response || response.status !== 201) {
-                  toast.error(`${response.errors.non_field_errors}`, { duration: 3000 });
-                  allSuccess = false;
-                  break; // Stop the loop
+                const permName = getPermName(permId)
+                try {
+                    // Envoyer la requête pour chaque `permission_id`
+                    const response = await handlePost(urlToCreateAsignPermApp, { application_id, permission_id: permId }, true);
+
+            
+                    if (!response || response.status !== 201) {
+                        //   toast.error(`${response.errors.non_field_errors}`, { duration: 3000 });
+                        failedPermissions.push(permName)
+                        allSuccess = false;
+                        // break; // Stop the loop
+                    } else {
+                        successfulPermissions.push(permName);
+                    }
+                } catch (error) {
+                    toast.error(`Erreur pour permission ${permName}`, { duration: 5000 });
+                    failedPermissions.push(permName);
+                    allSuccess = false;
+                    // break; // Stop the loop
+                    
                 }
-              } catch (error) {
-                toast.error(`Erreur pour permission ID ${permId}`, { duration: 5000 });
-                allSuccess = false;
-                break; // Stop the loop
-              }
             }
             
             if (allSuccess) {
                 toast.success("Permissions assigned successfully !", { duration: 2000 });
-                setTimeout(() => {
-                  window.location.reload();
-                }, 2000);
-              }
+                onSubmit();
+                reset();
+                setCheckedPermissions([])
+                // setTimeout(() => {
+                //   window.location.reload();
+                // }, 2000);
+            } else {
+                if (successfulPermissions.length > 0) {
+                    toast.success(`Les permissions suivantes ont été assignées avec succès : ${successfulPermissions.join(', ')}`, { duration: 2000 });
+                    onSubmit();
+                    reset();
+                    setCheckedPermissions([])
+                }
+                if (failedPermissions.length > 0) {
+                    if (successfulPermissions.length > 0){
+                        setTimeout(() => {
+                            toast.error(`Les permissions suivantes sont deja assignées a l'application : ${failedPermissions.join(', ')}`, { duration: 2000 });
+                        }, 2000);
+                    } else {
+                        toast.error(`Les permissions suivantes sont deja assignées a l'application : ${failedPermissions.join(', ')}`, { duration: 2000 });
+                    }
+                }
+            }
     
           } catch (globalError) {
             // Gestion des erreurs globales
