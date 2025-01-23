@@ -8,7 +8,11 @@ import { useToast } from "../../../hooks/use-toast";
 
 const InitiateForm = ({onSucess}) => {
   
-  const { register, handleSubmit, formState:{errors} } = useForm();
+  const { register, handleSubmit, formState:{errors} } = useForm({
+    defaultValues:{
+      name:""
+    }
+  });
   const { handlePost } = useFetch();
   const { toast } = useToast();
 

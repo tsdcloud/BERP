@@ -7,9 +7,13 @@ import Datalist from '../../components/incidents/Equipement/Datalist';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
 import Pagination from '../../components/common/Pagination';
+// import { highlightText } from '../../utils/highlight.utils';
+import { Table } from 'antd';
+import InputSearch from '../../components/common/InputSearch';
 
 
 const Equipement = () => {
+
     const {handleFetch} = useFetch();
     const [equipements, setEquipements] = useState([]);
     const [isOpenned, setIsOpenned] = useState(false);
@@ -41,6 +45,41 @@ const Equipement = () => {
         fetchEquipement();
     }, []);
 
+    const columns = [
+        {
+            title: '#',
+            dataIndex: 'no',
+            key: 'no',
+            width:  "50px",
+            // render:(text)=>highlightText(text)
+        },
+        {
+            title: 'Nom',
+            dataIndex: 'name',
+            key: 'name',
+            width:  "200px",
+            // render:(text)=>highlightText(text)
+        },
+        {
+            title: 'Crée par',
+            dataIndex: 'createdBy',
+            key: 'createdBy',
+            width:  "200px",
+            // render:(text)=>highlightText(text)
+        },
+        {
+            title: 'Date de creation',
+            dataIndex: 'createdAt',
+            key: 'createdAt',
+            width:  "200px",
+            // render:(text)=>highlightText(text)
+        },
+        {
+            title: 'Actions',
+            dataIndex: 'actions',
+            key: 'actions'
+        },
+    ]
   return (
     <>
         <Header />
@@ -65,10 +104,18 @@ const Equipement = () => {
                 </div>
             </div>
             {/* Table */}
-            <div className='w-full bg-white rounded-lg p-2'>
-                <Datalist 
+            <div className='w-full bg-white rounded-lg p-2 h-[60vh] flex flex-col justify-between'>
+                {/* <Datalist 
                     dataList={equipements}
                     fetchData={fetchEquipement}
+                /> */}
+                <InputSearch />
+                <Table 
+                    className='h-full'
+                    dataSource={equipements}
+                    columns={columns}
+                    pagination={false}
+                    size='meduim'
                 />
                 {/* Pagination */}
                 <Pagination 
