@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import { useFetch } from '../../../hooks/useFetch';
+import { useForm } from 'react-hook-form';
+import { INCIDENT_STATUS } from '../../../utils/constant.utils';
 import { Button } from '../../ui/button';
 import {
     Pagination,
@@ -10,7 +12,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "../../ui/pagination";
-import { ArchiveBoxXMarkIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { ArchiveBoxXMarkIcon, PencilIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { EyeIcon } from 'lucide-react';
 
 import {
@@ -66,6 +68,7 @@ const Datalist = ({dataList, fetchData}) => {
     }
   }
 
+
   const columns = [
     {
       id: "select",
@@ -91,17 +94,17 @@ const Datalist = ({dataList, fetchData}) => {
       enableHiding: false,
     },
     {
-      accessorKey: "name",
-      header: "Nom",
+      accessorKey: "siteId",
+      header: "Site",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("name")}</div>
-      ),
-    },
+        <div className="capitalize">{sites.find(item => row.getValue("siteId") == item?.value)?.name}
+        </div>
+      )},
     {
-      accessorKey: "createdBy",
-      header: "Crée par",
+      accessorKey: "supplierId",
+      header: "Maintenancier",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("createdBy")}</div>
+        <div className="capitalize">{externalEntities.find(item => row.getValue("supplierId") == item?.value)?.name || employees.find(item => row.getValue("supplierId") == item?.value)?.name}</div>
       ),
     },
     {
@@ -112,10 +115,27 @@ const Datalist = ({dataList, fetchData}) => {
       ),
     },
     {
+      accessorKey: "closedDate",
+      header: "Date de cloture",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("closedDate")?.split("T")[0] || "--"}</div>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: "Etat",
+      cell: ({ row }) => (
+        <div className={`${
+          row.getValue("status") === "UNDER_MAINTENANCE"?"border-yellow-500 bg-yellow-300":
+          row.getValue("status") === "CLOSED" ? "border-green-500 bg-green-300" :""
+        } p-2 rounded-lg border`}>{INCIDENT_STATUS[row.getValue("status")] || "Unknown Status"}</div>
+      ),
+    },
+    {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const consommable = row.original;
+        const maintenance = row.original;
    
         return (
           <DropdownMenu>
@@ -133,10 +153,45 @@ const Datalist = ({dataList, fetchData}) => {
                 Copy payment ID
               </DropdownMenuItem> */}
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
-                <PencilIcon className='h-4 w-6'/>
-                <span className=''>Editer</span>
-              </DropdownMenuItem>
+              {
+                (maintenance.status === "PENDING") &&
+                <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
+                  <button className='flex items-center space-x-2'
+                    onClick={async ()=>{
+                      if (window.confirm("Voulez vous cloturer la maintenance ?")) {
+                        try {
+                          let url = `${URLS.INCIDENT_API}/maintenances/${maintenance.id}`;
+                          let response = await fetch(url, {
+                            method:"PATCH",
+                            headers:{
+                              "Content-Type":"application/json",
+                            },
+                            body:JSON.stringify({status: "CLOSED"})
+                          });
+                          if(response.status === 200){
+                            let urlIncident = `${URLS.INCIDENT_API}/incidents/${maintenance.incidentId}`;
+                            let response = await fetch(urlIncident, {
+                              method:"PATCH",
+                              headers:{
+                                "Content-Type":"application/json",
+                              },
+                              body:JSON.stringify({status: "CLOSED"})
+                            });
+                            if(response.status == 200){
+                              fetchData();
+                            }
+                          }
+                        } catch (error) {
+                          console.log(error);
+                        }
+                      }
+                    }}
+                  >
+                    <XMarkIcon />
+                    <span>Cloturer la maintenance</span>
+                  </button>
+                </DropdownMenuItem>
+              }
               <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(consommable.id)}>
                 <TrashIcon className='text-red-500 h-4 w-6'/>
                 <span className='text-red-500'>Supprimer</span>
@@ -152,7 +207,15 @@ const Datalist = ({dataList, fetchData}) => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
-    
+  
+  const [sites, setSites] = useState([]);
+  const [isLoading, setIsLoading] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [externalEntities, setExternalEntities] = useState([]);
+
+  const {handleFetch, handlePost} = useFetch();
+  const {register, handleSubmit, formState:{errors}, setValue} = useForm();
+
   const table = useReactTable({
       data: dataList,
       columns,
@@ -171,6 +234,69 @@ const Datalist = ({dataList, fetchData}) => {
         rowSelection,
       },
   });
+
+  const handleFetchSites = async (link) =>{
+    try {
+      let response = await handleFetch(link);     
+      if(response?.status === 200){
+        let formatedData = response?.data.map(item=>{
+          return {
+            name:item?.name,
+            value: item?.id
+          }
+        });
+        setSites(formatedData);
+        console.log(formatedData)
+      }
+    } catch (error) {
+      console.error(error);
+    } finally{
+      setIsLoading(false);
+    }
+  }
+
+  const handleFetchEmployees = async (link) =>{
+    try {
+      let response = await handleFetch(link);     
+      if(response?.status === 200){
+        let formatedData = response?.data.map(item=>{
+          return {
+            name:item?.name,
+            value: item?.id
+          }
+        });
+        setEmployees(formatedData);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally{
+      setIsLoading(false);
+    }
+  }
+  const handleFetchExternalEntities = async (link) =>{
+    try {
+      let response = await handleFetch(link);     
+      if(response?.status === 200){
+        let formatedData = response?.data.map(item=>{
+          return {
+            name:item?.name,
+            value: item?.id
+          }
+        });
+        setExternalEntities(formatedData);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally{
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(()=>{
+    handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/sites`);
+    handleFetchEmployees(`${import.meta.env.VITE_ENTITY_API}/employees`);
+    handleFetchExternalEntities(`${import.meta.env.VITE_ENTITY_API}/suppliers`);
+  }, [])
 
   return (
     <div className="w-full">

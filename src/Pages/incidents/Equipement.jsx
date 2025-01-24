@@ -105,18 +105,11 @@ const Equipement = () => {
             </div>
             {/* Table */}
             <div className='w-full bg-white rounded-lg p-2 h-[60vh] flex flex-col justify-between'>
-                {/* <Datalist 
+                <Datalist 
                     dataList={equipements}
                     fetchData={fetchEquipement}
-                /> */}
-                <InputSearch />
-                <Table 
-                    className='h-full'
-                    dataSource={equipements}
-                    columns={columns}
-                    pagination={false}
-                    size='meduim'
                 />
+                
                 {/* Pagination */}
                 <Pagination 
                     totalPages={totalPages}

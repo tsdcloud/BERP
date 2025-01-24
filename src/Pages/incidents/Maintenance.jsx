@@ -3,7 +3,7 @@ import Header from '../../components/layout/Header';
 import Dialogue from '../../components/incidents/Dialogue';
 import InitiateForm from '../../components/incidents/Consommable/InitiateForm';
 import Tabs from '../../components/incidents/Tabs';
-import Datalist from '../../components/incidents/Consommable/Datalist';
+import Datalist from '../../components/incidents/maintenance/Datalist';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
 import Pagination from '../../components/common/Pagination';
@@ -22,7 +22,7 @@ const Maintenance = () => {
         try {
            const response = await handleFetch(url);
            if(response.data){
-            setConsommables(response.data);
+            setMaintenances(response.data);
             setTotalPages(response.totalPages);
             setPage(response.page);
            }

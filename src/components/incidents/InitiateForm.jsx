@@ -4,7 +4,7 @@ import { useFetch } from '../../hooks/useFetch';
 import AutoComplete from '../common/AutoComplete';
 import { Button } from '../ui/button';
 
-const InitiateForm = () => {
+const InitiateForm = ({onSucess}) => {
     const {register, handleSubmit, formState:{errors}, setValue} = useForm();
     const {handleFetch, handlePost} = useFetch();
 
@@ -18,7 +18,16 @@ const InitiateForm = () => {
 
     const handleSubmitDecleration = async (data) =>{
       try {
-        console.log(data)
+        let url = `${import.meta.env.VITE_INCIDENT_API}/incidents`;
+        data.userId= "15f82bfb-79d7-4c79-9a98-d289cdcb1a84";
+        data.createdBy= "15f82bfb-79d7-4c79-9a98-d289cdcb1a84";
+        // console.log(data)
+        let response = await handlePost(url, data);
+        if(response?.status !== 201){
+          alert("Echec. Echec lors de la création");
+          return
+        }
+        onSucess();
       } catch (error) {
         console.log(error)
       }
@@ -143,7 +152,7 @@ const InitiateForm = () => {
 
     const handleSearchTypes=async(searchInput)=>{
       try{
-        handleFetchTypes(`${import.meta.env.VITE_INCIDENT_API}/incident-causes?search=${searchInput}`);
+        handleFetchTypes(`${import.meta.env.VITE_INCIDENT_API}/incident-types?search=${searchInput}`);
       }catch(error){
         console.log(error);
       }
@@ -186,12 +195,45 @@ const InitiateForm = () => {
       setValue("siteId", item.value);
     };
 
+    // shifts
+    const handleFetchShifts = async (link) =>{
+      try {
+        let response = await handleFetch(link);     
+        if(response?.status === 200){
+          let formatedData = response?.data.map(item=>{
+            return {
+              name:item?.name,
+              value: item?.id
+            }
+          });
+          setShifts(formatedData);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally{
+        setIsLoading(false);
+      }
+    }
+
+    const handleSearchShifts=async(searchInput)=>{
+      try{
+        handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/shifts?search=${searchInput}`);
+      }catch(error){
+        console.log(error);
+      }
+    }
+
+    const handleSelectShifts = (item) => {
+      setValue("shiftId", item.value);
+    }
+
     useEffect(()=>{
       handleFetchConsommable(`${import.meta.env.VITE_INCIDENT_API}/consommables`);
       handleFetchEquipements(`${import.meta.env.VITE_INCIDENT_API}/equipements`);
       handleFetchCauses(`${import.meta.env.VITE_INCIDENT_API}/incident-causes`);
       handleFetchTypes(`${import.meta.env.VITE_INCIDENT_API}/incident-types`);
       handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/sites`);
+      handleFetchShifts(`${import.meta.env.VITE_ENTITY_API}/shifts`);
     },[]);
 
   return (
@@ -205,7 +247,7 @@ const InitiateForm = () => {
             isLoading={isLoading}
             dataList={incidentTypes}
             onSearch={handleSearchTypes}
-            onSelect={handleSearchTypes}
+            onSelect={handleSelectTypes}
             // register={register}
           />
           {errors.incidentId && <small className='text-xs my-2 text-red-500'>{errors.incidentId.message}</small>}
@@ -218,7 +260,7 @@ const InitiateForm = () => {
             placeholder="Choisir une cause d'incident"
             isLoading={isLoading}
             dataList={incidentCauses}
-            onSearch={handleSelectCause}
+            onSearch={handleSearchCauses}
             onSelect={handleSelectCause}
             // register={register}
           />
@@ -272,11 +314,11 @@ const InitiateForm = () => {
         <div className='flex flex-col'>
           <label htmlFor="" className='text-xs px-2'>Choisir le Shift :</label>
           <AutoComplete
-            placeholder="Choisir un equipment"
+            placeholder="Choisir un shift"
             isLoading={isLoading}
-            dataList={consommables}
-            onSearch={handleSearchConsommables}
-            onSelect={handleSelectConsommable}
+            dataList={shifts}
+            onSearch={handleSearchShifts}
+            onSelect={handleSelectShifts}
             // register={register}
           />
           {errors.consomableId && <small className='text-xs my-2 text-red-500'>{errors.consomableId.message}</small>}
