@@ -47,8 +47,8 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
             const response = await handleFetch(urlToGetUser);
             console.log("response show user", response);
 
-                if (response && response.results) {
-                    const results = response?.results;
+                if (response && response?.data?.results) {
+                    const results = response?.data?.results;
                     const filteredUser = results
                     // .filter(item => item.is_active)
                     ?.map(item => {
@@ -60,12 +60,12 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
                 
                     }
                 else {
-                toast.error(response.error, { duration: 5000});
+                toast.error(response.error || "Erreur lors de la récupération des users", { duration: 2000});
                 }
                 
         } catch (error) {
             console.error("Error during creating", error);
-            toast.error("Erreur lors de la récupération des users", { duration: 5000 });
+            toast.error("Erreur lors de la récupération des users", { duration: 2000 });
         }
     };
 
@@ -76,8 +76,8 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
             const response = await handleFetch(urlToGetRole);
             console.log("response show role", response);
 
-                if (response && response.results) {
-                        const results = response?.results;
+                if (response && response?.data?.results) {
+                        const results = response?.data?.results;
                         const filteredRole = results
                         // ?.filter(item => item.is_active)
                         ?.map(item => {
@@ -89,12 +89,12 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
                 
                     }
                 else {
-                toast.error(response.error, { duration: 5000});
+                toast.error(response.error || "Erreur lors de la récupération des rôles", { duration: 2000});
                 }
                 
         } catch (error) {
             console.error("Error during creating", error);
-            toast.error("Erreur lors de la récupération des rôles", { duration: 5000 });
+            toast.error("Erreur lors de la récupération des rôles", { duration: 2000 });
         }
     };
 
@@ -108,11 +108,11 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
         role_id: z.string()
           .nonempty("Vous devez sélectionner un rôle."),
       
-        description_role: z.string()
-          .nonempty("Ce champ 'description du rôle' est requis.")
-          .min(5, "Le champ doit avoir une valeur de 5 caractères au moins.")
-          .max(100)
-          .regex(/^[a-zA-Z0-9\sàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]+$/, "Ce champ doit être une 'description' conforme."),
+        // description_role: z.string()
+        //   .nonempty("Ce champ 'description du rôle' est requis.")
+        //   .min(5, "Le champ doit avoir une valeur de 5 caractères au moins.")
+        //   .max(100)
+        //   .regex(/^[a-zA-Z0-9\sàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ]+$/, "Ce champ doit être une 'description' conforme."),
       
         // description: z.string()
         //   .nonempty("Ce champ 'description' est requis.")
@@ -126,40 +126,82 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
       });
 
 
-      const { register, handleSubmit, setValue, formState: { errors, isSubmitting }} = useForm({
+      const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting }} = useForm({
           resolver: zodResolver(asignUserRoleSchema),
       });
 
 
+      const getUserName = (id) =>{
+        const permName = fetchUser.filter((user)=>(user.id === id))?.[0]?.first_name || ''
+
+        return permName
+      }
 
 
       const onSubmitDataFormAsignRoleUser = async (data) => {
         // console.log("Données du formulaire :", data);
         const urlToCreateAsignRoleUser = URLS.API_ASIGN_ROLE_USER;
-      
+
         try {
-          const { role_id, user_id } = data;
-        //   console.log("Role ID:", role_id, "Permission IDs:", user_id);
-        //   console.log(" checked Permission IDs:", checkedUser);
-      
-          for (const userId of user_id) {
-            // console.log(`Envoi de la requête pour user_id: ${userId}`);
-            const response = await handlePost(urlToCreateAsignRoleUser, { role_id, user_id: userId }, true);
-            if (response && response.status === 201) {
-              toast.success("Assignation créée avec succès", { duration: 2000 });
-            } else {
-              toast.error(response.error || "Erreur lors de la création de l'assignation", { duration: 5000 });
+            const { role_id, user_id } = data;
+            let allSuccess = true;
+
+            const successfullUsers = [];
+            const failedUsers = [];
+    
+            console.log("this is the userId :", [user_id])
+          
+            for (const userId of user_id) {
+                const userName = getUserName(userId)
+              try {
+                // Envoyer la requête pour chaque `user_id`
+                const response = await handlePost(urlToCreateAsignRoleUser, { role_id, user_id: userId }, true);
+          
+                if (!response || response.status !== 201) {
+                    failedUsers.push(userName)
+                    allSuccess = false;
+                    // break; // Stop the loop
+                  } else {
+                    successfullUsers.push(userName);
+                }
+              } catch (error) {
+                toast.error(`Erreur lors de l'assignation a l'utilisateur ${userName}`, { duration: 5000 });
+                failedUsers.push(userName);
+              }
             }
-          }
-      
-        //   setOpen(false);
-          onSubmit();
-          window.location.reload();
-        } catch (error) {
-          console.error("Erreur lors de la création", error);
-          toast.error("Erreur lors de la création de l'assignation", { duration: 5000 });
+            
+            if (allSuccess) {
+                toast.success("Role assigned successfully !", { duration: 2000 });
+                onSubmit();
+                reset();
+                setCheckedUser([])
+                // setTimeout(() => {
+                //   window.location.reload();
+                // }, 2000);
+            } else {
+                if (successfullUsers.length > 0) {
+                    toast.success(`Le role a été assigné avec succès aux utilisateurs : ${successfullUsers.join(', ')}`, { duration: 2000 });
+                    onSubmit();
+                    reset();
+                    setCheckedUser([])
+                }
+                if (failedUsers.length > 0) {
+                    if (successfullUsers.length > 0){
+                        setTimeout(() => {
+                            toast.error(`Les utilisateurs suivants :  ${failedUsers.join(', ')}  ont deja ce role`, { duration: 2000 });
+                        }, 2000);
+                    } else {
+                        toast.error(`Les utilisateurs suivants : ${failedUsers.join(', ')} ont deja ce role`, { duration: 3000 });
+                    }
+                }
+            }
+    
+          } catch (globalError) {
+            // Gestion des erreurs globales
+            console.error("Erreur globale:", globalError.message);
+            toast.error("Une erreur inattendue s'est produite", { duration: 5000 });
         }
-      };
+    };
 
 
 
@@ -195,7 +237,7 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
                                         <option value="">Selectionner un rôle</option>
                                             {fetchRole.map((item) => (
                                                 <option key={item.id} value={item.id}>
-                                                        {item.role_name}
+                                                        {item.display_name}
                                                 </option>
                                             ))}
                             </select>
@@ -207,7 +249,7 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
                     
                         </div>
 
-                        <div className='mb-4'>
+                        {/* <div className='mb-4'>
                                 <label htmlFor="description_role" className="block text-xs font-medium mb-1">
                                     Description du rôle<sup className='text-red-500'>*</sup>
                                 </label>
@@ -227,14 +269,14 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
                                     )
                                 }
 
-                        </div>
+                        </div> */}
                         
                         <div className='my-3'>
                             <h6 className='text-xs'>Ajouter un ou plusieurs utilisateurs</h6>
-                            <div className='flex flex-wrap space-x-2 my-2'>
+                            <div className='flex flex-wrap overflow-y-auto h-60 my-2'>
                                 {fetchUser.map(item => (
                                     <div key={item?.id} 
-                                    className={`flex font-mono items-center mb-2 px-2 py-2 border bg-secondary text-white rounded-sm
+                                    className={`flex font-mono items-center ml-2 mb-2 px-2 py-2 border bg-secondary text-white rounded-sm
                                     ${errors.user_id ? "border-red-500" : "border-gray-300"}`}>
                                     <input
                                       type="checkbox"

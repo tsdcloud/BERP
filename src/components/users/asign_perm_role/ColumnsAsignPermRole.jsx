@@ -39,7 +39,7 @@ const asignPermRoleSchema = z.object({
     });
 
 // Fonction principale pour gérer les actions utilisateur
-export const AsignPermRoleAction = () => {
+export const AsignPermRoleAction = ( { upDateTable } ) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -114,8 +114,7 @@ export const AsignPermRoleAction = () => {
 
                         finally{
                             setIsLoading(false);
-                            
-                            }
+                        }
 
                 } 
                 else {
@@ -160,7 +159,7 @@ export const AsignPermRoleAction = () => {
                             if (response && response?.message) {
                                 toast.success(response?.message, { duration: 5000});
                                 isDialogOpen && setDialogOpen(false);
-                                window.location.reload();
+                                upDateTable(id)
                             }
                             else {
                             toast.error(response.error, { duration: 5000});
@@ -187,17 +186,17 @@ export const AsignPermRoleAction = () => {
     const showDialogAsignPermRole = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg">
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? "Modifier les informations" : "Détails de l'asignation permission - rôle " }
+                        <span className='flex text-left'>{ isEdited ? "Modifier les informations" : "Détails de l'asignation permission - rôle " }</span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className="flex flex-col text-left">
                                             <label htmlFor='permission_name' className="text-xs mt-2">
                                                 Nom du rôle <sup className='text-red-500'>*</sup>
                                             </label>
@@ -214,7 +213,7 @@ export const AsignPermRoleAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.role_name.message}</p>
                                                 )}
                                     </div>
-                                    <div>
+                                    <div className="flex flex-col text-left">
                                                 <label htmlFor='description' className="text-xs">
                                                     Description <sup className='text-red-500'>*</sup>
                                                 </label>
@@ -251,7 +250,7 @@ export const AsignPermRoleAction = () => {
                                 </form>
                             ) : (
                                 selectedAsignPermRole && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-left text-black space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedAsignPermRole?.id}</h3>
@@ -287,8 +286,8 @@ export const AsignPermRoleAction = () => {
                     <AlertDialogFooter>
                         {
                         isEdited === false ? (
-                            <div className='flex space-x-2'>
-                                            <div className='flex space-x-2'>
+                            <div className='flex space-x-2 justify-end'>
+                                            {/* <div className='flex space-x-2'>
                                             { 
                                                 selectedAsignPermRole?.is_active == false ? 
                                                     (
@@ -309,7 +308,7 @@ export const AsignPermRoleAction = () => {
                                             
                                             }
                                             
-                                           </div>
+                                           </div> */}
                                             <AlertDialogAction 
                                                 className="border-2 border-red-900 outline-red-700 text-red-900 text-xs shadow-md bg-transparent hover:bg-red-600 hover:text-white transition"
                                                 onClick={() => deletedAsignPermRole(selectedAsignPermRole.id)}>

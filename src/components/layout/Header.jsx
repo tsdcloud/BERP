@@ -1,23 +1,59 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useRef } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { AUTHCONTEXT } from '../../contexts/AuthProvider';
 import { jwtDecode } from 'jwt-decode';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useFetch } from '../../hooks/useFetch';
+import { URLS } from '../../../configUrl';
+import toast, { Toaster } from 'react-hot-toast';
+import { ArrowLeftEndOnRectangleIcon  } from "@heroicons/react/24/outline";
+
 
 export default function Header() {
-        const { userData } = useContext(AUTHCONTEXT);
+        const { userData, disconnect, refresh } = useContext(AUTHCONTEXT);
         const [userDataDecoded, setUserDataDecoded] = useState();
         const [dropdownOpen, setDropdownOpen] = useState(false);
 
+        const { handlePost } = useFetch();
+
+        const navigateToLogin = useNavigate();
+
+        const dropdownRef = useRef(null);
+
+        const logout = async () => {
+                const urlToLogout = URLS.LOGOUT;
+            
+                const data = {
+                    refresh : refresh
+                };
+            
+                try {
+                      const response = await handlePost(urlToLogout, data, false);
+            
+                      if (response) {
+                        disconnect();
+                        navigateToLogin("/signIn");
+                      }
+                      else {
+                        toast.error(response.detail, { duration: 5000});
+                      }
+                      
+                    } catch (error) {
+                      // toast.error("Erreur lors de la déconnexion", { duration: 5000 });
+                    }
+                  };
+
+
+                //   console.log("header userdata", userData);
         useEffect(() => {
                 
-                console.log("header userdata", userData);
         
                 if (typeof userData === 'string') {
                     try {
                         const decoded = jwtDecode(userData);
-                        console.log("decoded", decoded);
+                        // console.log("decoded", decoded);
                         setUserDataDecoded(decoded);
+                        // console.log("user",userDataDecoded);
                     } catch (error) {
                         console.error("Failed to decode token:", error);
                         // Gérer l'erreur, par exemple, en réinitialisant l'état ou en affichant un message d'erreur
@@ -26,7 +62,18 @@ export default function Header() {
                     console.error("Invalid token: must be a string", userData);
                     // Gérer l'erreur, par exemple, en réinitialisant l'état ou en affichant un message d'erreur
                 }
-            }, [userData]);
+
+                const handleClickOutside = (event) => {
+                        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                          setDropdownOpen(false);
+                        }
+                      };
+                  
+                      document.addEventListener("click", handleClickOutside);
+                      return () => {
+                        document.removeEventListener("click", handleClickOutside);
+                      };
+            }, []);
 
 
 
@@ -43,7 +90,7 @@ export default function Header() {
                         BERP. Business Entreprise Resource Planning
                 </h1>
                        
-                <div className="relative">
+                <div className="relative" ref={dropdownRef}>
                         <Avatar className="m-2 rounded-full border-2 border-orange-500" onClick={toggleDropdown}>
                         <AvatarImage 
                                 className="border-white rounded-full" 
@@ -63,14 +110,14 @@ export default function Header() {
                                         <p> Vous interéagissez en tant que <span className='text-secondary'>{ userDataDecoded?.user?.first_name + " " + userDataDecoded?.user?.last_name }</span></p>
                                         <hr />
                                                 <ul className='px-1 w-full'>
-                                                        <li className='hover:bg-gray-200'>
+                                                        <li className='hover:bg-gray-200 rounded-md p-1'>
                                                                 Profil
                                                         </li>
-                                                        <li className='hover:bg-gray-200'>
+                                                        <li className='hover:bg-gray-200 rounded-md p-1'>
                                                                 Paramètres
                                                         </li>
-                                                        <li className='hover:bg-red-200 w-full'>
-                                                                Se déconnecter
+                                                        <li className='hover:bg-red-200 hover:text-red-700 w-full rounded-md p-1' onClick={() => {logout()}}>
+                                                                <span className='flex justify-between'>Se déconnecter <ArrowLeftEndOnRectangleIcon className="h-6 w-6 text-red-700 rotate-180" /></span>    
                                                         </li>
                                                 </ul>
                                 
@@ -83,3 +130,6 @@ export default function Header() {
     </div>
   );
 };
+
+
+// disconnect(); navigateToLogin("/signIn")

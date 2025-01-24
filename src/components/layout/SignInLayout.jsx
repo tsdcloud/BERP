@@ -13,7 +13,7 @@ export default function SignInLayout({children}) {
         <img src={illustration} className="sm:bg-red-400 md:bg-transparent top-0 -right-10  w-[400px] h-[370px] absolute -z-10" alt='water frame'/>
         <div className='flex h-full w-full'>
 
-              <div className='md:w-1/2 h-full flex flex-col justify-between ml-9 p-8'>
+              <div className='hidden sm:block md:w-1/2 h-full flex flex-col justify-between ml-9 p-8'>
                 <div className='sm:bg-pink-600 md:bg-transparent flex-col mt-9 space-y-1'>
                         <h3 className='font-medium mb-10'>BERP.</h3>
                         <h1 className='text-3xl font-bold'>Rapprochez-vous <br/>de l&apos;essentiel.</h1>
@@ -23,11 +23,13 @@ export default function SignInLayout({children}) {
               </div>
 
 
-              <div className='md:w-1/2 h-full flex flex-col space-y-8 items-center mt-[100px]'>
+              <div className='h-full w-full flex flex-col justify-center sm:justify-normal space-y-8 items-center sm:mt-[100px]'>
+                    <div className='sm:hidden flex flex-col items-center justify-center'>
+                      <h3 className='text-5xl font-bold mb-1'>BERP.</h3>
+                      <h1 className='font-medium text-xl'>Rapprochez-vous de l&apos;essentiel.</h1>  
+                    </div>
                     <div className=' w-[360px] h-[370px] bg-white shadow-2xl relative rounded-sm '>
-                    
-                      
-                      <div className=' sm:bg-blue-400 md:bg-transparent p-5 m-0'>
+                      <div className='sm:bg-blue-400 md:bg-transparent p-5 m-0'>
                           {children}
                       </div>
                     </div>

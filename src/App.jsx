@@ -35,6 +35,17 @@ import AsignPermUser from './Pages/users/AsignPermUser';
 import AsignRoleUser from './Pages/users/AsignRoleUser';
 
 
+//entités
+import Entity from './Pages/entity/index';
+import Department from './Pages/entity/Department';
+import Service from './Pages/entity/Service';
+import Function from './Pages/entity/Function';
+import Grade from './Pages/entity/Grade';
+import Echelon from './Pages/entity/Echelon';
+import Category from './Pages/entity/Category';
+import Employee from './Pages/entity/Employee';
+
+
 
 
 function App() {
@@ -44,7 +55,6 @@ function App() {
   return (
     <>
       <Router>
-
         <Routes>
           <Route element={<ProtectedRoutes />}>
             <Route path='/' element={<LuncherApp/>} exact/>
@@ -60,6 +70,22 @@ function App() {
                 <Route path="asign_perm_app" element={<AsignPermApp />} />
                 <Route path="asign_perm_user" element={<AsignPermUser />} />
                 <Route path="asign_role_user" element={<AsignRoleUser />} />
+            </Route>
+
+              {/* Entités */}
+            <Route path="/entités">
+                <Route path="" element={<Entity />} />
+               <Route path="department" element={<Department />} />
+               <Route path="service" element={<Service />} />
+               <Route path="function" element={<Function />} />
+               <Route path="grade" element={<Grade />} />
+               <Route path="echelon" element={<Echelon />} />
+               <Route path="category" element={<Category />} />
+               <Route path="employee" element={<Employee />} />
+
+                {/* 
+                <Route path="asign_role_user" element={<AsignRoleUser />} /> 
+                */}
             </Route>
 
           </Route>
@@ -82,10 +108,6 @@ function App() {
               <Route path="equipement" element={<Equipement />} />
            </Route>
         </Routes>
-
-       
-
-         
       </Router>
       <Toaster/>
     </>

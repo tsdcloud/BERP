@@ -25,21 +25,21 @@ import { URLS } from '../../../../configUrl';
 
 // Schéma de validation avec Zod
 const permissionSchema = z.object({
-    permission_name: z.string()
+    display_name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
+    .max(100),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
 
     description: z.string()
     .nonempty("Ce champs 'description' est réquis")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z\s,]+$/, "Ce champs doit être un 'description' conforme"),
+    // .regex(/^[a-zA-Z\s,]+$/, "Ce champs doit être un 'description' conforme"),
     });
 
 // Fonction principale pour gérer les actions utilisateur
-export const PermissionAction = () => {
+export const PermissionAction = ( {actPerm, desPerm, updateData}) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -52,26 +52,28 @@ export const PermissionAction = () => {
    const { handlePatch, handleDelete } = useFetch();
    
 
-    const onSubmit = async (data) => {
-        const urlToUpdate = `${URLS.API_PERMISSION}${selectedPermission?.id}`;
-      
+   const onSubmit = async (data) => {
+        const urlToUpdate = `${URLS.API_PERMISSION}${selectedPermission?.id}/`;
+
         try {
             const response = await handlePatch(urlToUpdate, data);
-            // console.log("response update", response);
-            if (response ) {
-                // console.log("User updated", response);
-                setDialogOpen(false);
-                window.location.reload();
-            }
-            else {
-              toast.error(response.error, { duration: 5000});
-            }
             
-          } catch (error) {
-            console.error("Error during updated",error);
+            if (response.success) {
+                setDialogOpen(false);
+                toast.success("Permission mis a jour avec succès", { duration: 100 });
+                updateData(response.data.id, response.data)
+            } else {
+                setDialogOpen(false);
+                setTimeout(()=>{
+                    toast.error(response.errors.display_name || "Une erreur est survenue", { duration: 3000 });
+                },[100])
+            }
+        } catch (error) {
+            console.error("Erreur inattendue :", error);
             toast.error("Erreur lors de la modification de la permission", { duration: 5000 });
-          }
+        }
     };
+
 
     const handleShowPermission = (persmission) => {
         setSelectedPermission(persmission);
@@ -94,12 +96,13 @@ export const PermissionAction = () => {
                         try {
                                 const response = await handlePatch(urlToDisabledPermission, {is_active:false});
                                 console.log("response for disabled", response);
-                                if (response && response?.message) {
+                                if (response && response?.success) {
                                     // console.log("permission disabled", response);
                                     // console.log("La permission a été désactivé.", id);
-                                    toast.success(response?.message, { duration: 5000});
+                                    toast.success("Permission desactivated successfully", { duration: 5000});
                                     isDialogOpen && setDialogOpen(false);
-                                    window.location.reload();
+                                    desPerm(id)
+                                    // window.location.reload();
                                 }
                                 else {
                                 toast.error(response.error, { duration: 5000});
@@ -113,7 +116,6 @@ export const PermissionAction = () => {
 
                         finally{
                             setIsLoading(false);
-                            
                             }
 
                 } 
@@ -126,10 +128,25 @@ export const PermissionAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette permission ?");
 
         if (confirmation) {
+            const urlToActivePermission = `${URLS.API_PERMISSION}${id}/`;
               try{
-                setDialogOpen(false);
+                // setDialogOpen(false);
                 //   await handlePatch(url)
                 //   navigateToMyEvent(`/events/${eventId}`)
+                const response = await handlePatch(urlToActivePermission, {is_active:true});
+                console.log("response for disabled", response);
+                if (response.success) {
+                    // console.log("permission disabled", response);
+                    // console.log("La permission a été désactivé.", id);
+                    toast.success("permission activated successfully", { duration: 3000});
+                    isDialogOpen && setDialogOpen(false);
+                    // window.location.reload();
+                    actPerm(id)
+                }
+                else {
+                toast.error(response.error, { duration: 5000});
+                }
+                isDialogOpen && setDialogOpen(false);
               }
               catch(error){
                   console.error("Erreur lors de la désactivation de cette permission:", error);
@@ -159,7 +176,8 @@ export const PermissionAction = () => {
                             if (response && response?.message) {
                                 toast.success(response?.message, { duration: 5000});
                                 isDialogOpen && setDialogOpen(false);
-                                window.location.reload();
+                                // window.location.reload();
+                                desPerm(id)
                             }
                             else {
                             toast.error(response.error, { duration: 5000});
@@ -186,34 +204,34 @@ export const PermissionAction = () => {
     const showDialogPermission = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg">
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? "Modifier les informations" : "Détails de la permission" }
+                        <span className='flex text-left'> { isEdited ? "Modifier les informations" : "Détails de la permission" } </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
-                                            <label htmlFor='permission_name' className="text-xs mt-2">
+                                    <div className="flex flex-col text-left">
+                                            <label htmlFor='display_name' className="text-xs mt-2">
                                                 Nom de la permission <sup className='text-red-500'>*</sup>
                                             </label>
                                             <Input
-                                                id="permission_name"
+                                                id="display_name"
                                                 type="text"
-                                                defaultValue={selectedPermission?.permission_name}
-                                                {...register("permission_name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                                    errors.permission_name ? "border-red-500" : "border-gray-300"
+                                                defaultValue={selectedPermission?.display_name}
+                                                {...register("display_name")}
+                                                className={`w-full sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    errors.display_name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
-                                                {errors.permission_name && (
-                                                <p className="text-red-500 text-[9px] mt-1">{errors.permission_name.message}</p>
+                                                {errors.display_name && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.display_name.message}</p>
                                                 )}
                                     </div>
-                                    <div>
+                                    <div className="flex flex-col text-left">
                                                 <label htmlFor='description' className="text-xs">
                                                     Description <sup className='text-red-500'>*</sup>
                                                 </label>
@@ -222,7 +240,7 @@ export const PermissionAction = () => {
                                                     type="text"
                                                     defaultValue={selectedPermission?.description}
                                                     {...register("description")}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-full sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.description ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 />
@@ -250,14 +268,14 @@ export const PermissionAction = () => {
                                 </form>
                             ) : (
                                 selectedPermission && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-left text-black space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedPermission?.id}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Nom de la permission</p>
-                                            <h3 className="font-bold text-sm">{selectedPermission?.permission_name}</h3>
+                                            <h3 className="font-bold text-sm">{selectedPermission?.display_name}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Description</p>
@@ -278,7 +296,7 @@ export const PermissionAction = () => {
                     <AlertDialogFooter>
                         {
                         isEdited === false ? (
-                            <div className='flex space-x-2'>
+                            <div className='flex space-x-2 justify-end'>
                                             <div className='flex space-x-2'>
                                             { 
                                                 selectedPermission?.is_active == false ? 
@@ -325,7 +343,7 @@ export const PermissionAction = () => {
 
 
     const columnsPermission = useMemo(() => [
-        { accessorKey: 'permission_name', header: 'Nom' },
+        { accessorKey: 'display_name', header: 'Nom' },
         { accessorKey: 'description', header: 'Description' },
         { accessorKey: 'is_active', header: 'Statut' },
         {

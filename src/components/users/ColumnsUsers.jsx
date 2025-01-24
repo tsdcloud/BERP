@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { EyeIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 import { AlertDialog, 
          AlertDialogAction, 
          AlertDialogCancel, 
@@ -54,17 +55,32 @@ const userSchema = z.object({
 
 
 // Fonction principale pour gérer les actions utilisateur
-export const UserAction = () => {
+export const UserAction = ({ actUser, desUser, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
     const [selectedUser, setSelectedUser] = useState({});
 
+    const [selectedRole, setSelectedRole] = useState(null);
+    const [selectedPermission, setSelectedPermission] = useState(null);
+
     const { register, handleSubmit, reset, formState:{errors, isSubmitting} } = useForm({
         resolver: zodResolver(userSchema),
     });
 
-   const { handlePatch, handleDelete } = useFetch();
+    const { handlePatch, handleDelete } = useFetch();
+
+
+    const handleRoleClick = (role) => {
+        setSelectedRole((prev) => (prev?.id === role.id ? null : role));
+        setSelectedPermission(null)
+    };
+
+    const handlePermissionClick = (permission) => {
+        setSelectedPermission((prev) => (prev?.id === permission.id ? null : permission));
+        setSelectedRole(null)
+    };
+
 
     const onSubmit = async (data) => {
         const urlToUpdate = `${URLS.API_USER}${selectedUser?.id}`;
@@ -72,14 +88,20 @@ export const UserAction = () => {
         try {
             const response = await handlePatch(urlToUpdate, data);
             console.log("response update", response);
-            if (response ) {
+            if (response.success) {
   
-              console.log("User updated", response);
+                console.log("User updated", response);
                 setDialogOpen(false);
-                window.location.reload();
+
+                // window.location.reload();
+
+                toast.success("user modified successfully", { duration: 1000});
+
+                updateData(response.data.id, response.data)
             }
             else {
-              toast.error(response.error, { duration: 5000});
+                setDialogOpen(false);
+                toast.error(response.errors.email || response.errors.username, { duration: 2000});
             }
             
           } catch (error) {
@@ -112,12 +134,12 @@ export const UserAction = () => {
                                 if (response && response?.message) {
                                     console.log("User diabled", response);
                                     console.log("L'utilisateur a été désactivé.", id);
-                                    toast.success(response?.message, { duration: 5000});
+                                    toast.success(response?.message, { duration: 1000});
                                     isDialogOpen && setDialogOpen(false);
-                                    window.location.reload();
+                                    desUser(id)
                                 }
                                 else {
-                                toast.error(response.error, { duration: 5000});
+                                toast.error(response.error, { duration: 2000});
                                 }
                                 isDialogOpen && setDialogOpen(false);
                         }
@@ -139,11 +161,19 @@ export const UserAction = () => {
 
     const activedUser = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cet utilisateur ?");
-
+        const urlToDisabledUser = `${URLS.API_USER}${id}`;
         if (confirmation) {
               try{
-                setDialogOpen(false);
-                //   await handlePatch(url)
+                    const response = await handlePatch(urlToDisabledUser, {is_active: true})
+
+                    if (response.success){
+                        setDialogOpen(false);
+                        toast.success("user activated successfully", { duration: 2000});
+                        actUser(id)
+                    }else{
+                        toast.error("error occured", { duration: 2000});
+                    }
+
                 //   navigateToMyEvent(`/events/${eventId}`)
               }
               catch(error){
@@ -170,12 +200,12 @@ export const UserAction = () => {
                             const response = await handleDelete(urlToDeleteUser);
                             if (response && response?.message) {
                                 // console.log("User deleted", response);
-                                toast.success(response?.message, { duration: 5000});
+                                toast.success(response?.message, { duration: 2000});
                                 isDialogOpen && setDialogOpen(false);
-                                window.location.reload();
+                                desUser(id)
                             }
                             else {
-                            toast.error(response.error, { duration: 5000});
+                            toast.error(response.error, { duration: 2000});
                             }
                             setDialogOpen(false);
                     }
@@ -199,17 +229,17 @@ export const UserAction = () => {
     const showDialogUser = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg">
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? "Modifier les informations" : "Détails de l'utilisateur" }
+                            <span className='flex text-left'>{ isEdited ? "Modifier les informations" : "Détails de l'utilisateur" }</span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className="flex flex-col text-left">
                                             <label htmlFor='last_name' className="text-xs mt-2">
                                                 Nom <sup className='text-red-500'>*</sup>
                                             </label>
@@ -218,7 +248,7 @@ export const UserAction = () => {
                                                 type="text"
                                                 defaultValue={selectedUser?.last_name}
                                                 {...register("last_name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-full sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.last_name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -226,7 +256,7 @@ export const UserAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.last_name.message}</p>
                                                 )}
                                     </div>
-                                    <div>
+                                    <div className="flex flex-col text-left">
                                                 <label htmlFor='first_name' className="text-xs">
                                                     Prénom <sup className='text-red-500'>*</sup>
                                                 </label>
@@ -235,7 +265,7 @@ export const UserAction = () => {
                                                     type="text"
                                                     defaultValue={selectedUser?.first_name}
                                                     {...register("first_name")}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-full sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.first_name ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 />
@@ -243,7 +273,7 @@ export const UserAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.first_name.message}</p>
                                                 )}
                                     </div>
-                                    <div>
+                                    <div className="flex flex-col text-left">
                                                 <label htmlFor='email' className="text-xs">
                                                     Adresse mail <sup className='text-red-500'>*</sup>
                                                 </label>
@@ -252,7 +282,7 @@ export const UserAction = () => {
                                                     type="mail"
                                                     defaultValue={selectedUser?.email}
                                                     {...register("email")}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-full sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.email ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 />
@@ -261,7 +291,7 @@ export const UserAction = () => {
                                                 )}
 
                                     </div>
-                                    <div>
+                                    <div className="flex flex-col text-left">
                                             <label htmlFor='phone' className="text-xs">
                                                 Téléphone <sup className='text-red-500'>*</sup>
                                             </label>
@@ -270,7 +300,7 @@ export const UserAction = () => {
                                                 type="phone"
                                                 defaultValue={selectedUser?.phone}
                                                 {...register("phone")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-full sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.phone ? "border-red-500" : "border-gray-300"
                                                 }`}
                                             />
@@ -278,7 +308,7 @@ export const UserAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.phone.message}</p>
                                             )}
                                     </div>
-                                    <div>
+                                    <div className="flex flex-col text-left">
                                              <label htmlFor='username' className="text-xs">
                                                 Nom d'utilisateur <sup className='text-red-500'>*</sup>
                                             </label>
@@ -286,9 +316,9 @@ export const UserAction = () => {
                                                 id="username"
                                                 type="text"
                                                 defaultValue={selectedUser?.username}
-                                                disabled
+                                                // disabled
                                                 {...register("username")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-full sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.username ? "border-red-500" : "border-gray-300"
                                                 }`}
                                             />
@@ -316,7 +346,7 @@ export const UserAction = () => {
                                 </form>
                             ) : (
                                 selectedUser && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-left text-black space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedUser?.id}</h3>
@@ -347,6 +377,60 @@ export const UserAction = () => {
                                                 {selectedUser?.is_active ? "Actif" : "Désactivé"}
                                             </h3>
                                         </div>
+                                        {/* Dropdown pour les rôles */}
+                                        <div>
+                                            <p className="text-xs">Rôles</p>
+                                            <div className="mt-2 flex flex-wrap">
+                                                {selectedUser.roles.length === 0 ? <h3 className="font-bold text-sm">This user does'nt have roles</h3> : selectedUser.roles.map((role) => (
+                                                <div key={role.id}>
+                                                    <button
+                                                    onClick={() => {handleRoleClick(role)}}
+                                                    className={`w-auto mt-1 ml-1 text-left px-4 py-2 ${selectedRole && selectedRole.id === role.id ? "bg-blue-600" : "bg-blue-500"} text-white rounded-lg hover:bg-blue-600`}
+                                                    >
+                                                        <span>{role.display_name}</span>
+                                                    </button>
+                                                </div>
+                                                ))}
+                                            </div>
+                                            {selectedRole && (
+                                                <div className="ml-1 mt-2 p-4 bg-gray-50 rounded-lg">
+                                                <h3 className="font-bold text-sm">Détails du rôle</h3>
+                                                <p>Nom : {selectedRole.display_name}</p>
+                                                <p>Description : {selectedRole.description}</p>
+                                                <h4 className="text-sm mt-3 font-bold">Permissions associées : {selectedRole.permissions.length === 0 ? "none" : ""}</h4>
+                                                <ul className="list-disc ml-5">
+                                                    {selectedRole.permissions.map((perm) => (
+                                                    <li key={perm.id}>{perm.display_name}</li>
+                                                    ))}
+                                                </ul>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Dropdown pour les permissions */}
+                                        <div className=''>
+                                            <p className="text-xs mb-2">Permissions</p>
+                                            <div className="flex flex-wrap">
+                                                {selectedUser.permissions.length === 0 ? <h3 className="font-bold text-sm">This user does'nt have permissions</h3> : selectedUser.permissions.map((permission) => (
+                                                <div key={permission.id}>
+                                                    <button
+                                                    onClick={() => handlePermissionClick(permission)}
+                                                    className={`w-auto text-left mt-1 ml-1 px-4 py-2 ${selectedPermission && selectedPermission.id === permission.id ? "bg-green-600" : "bg-green-500"} text-white rounded-lg hover:bg-green-600`}
+                                                    >
+                                                        {permission.display_name}
+                                                    </button>
+                                                </div>
+                                                ))}
+                                            </div>
+                                            {selectedPermission && (
+                                                <div className="ml-1 mt-2 p-4 bg-gray-50 rounded-lg">
+                                                    <h3 className="font-bold text-sm">Détails de la permission</h3>
+                                                    <p>Nom : {selectedPermission.display_name}</p>
+                                                    <p>Description : {selectedPermission.description}</p>
+                                                    <p>Statut : {selectedPermission.is_active ? "Actif" : "Inactif"}</p>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 )
                             )}
@@ -356,7 +440,7 @@ export const UserAction = () => {
                     <AlertDialogFooter>
                         {
                         isEdited === false ? (
-                            <div className='flex space-x-2'>
+                            <div className='flex space-x-2 justify-end'>
                                             <div className='flex space-x-2'>
                                             { 
                                                 selectedUser?.is_active == false ? 
@@ -386,7 +470,7 @@ export const UserAction = () => {
                                             </AlertDialogAction>
                                             <AlertDialogCancel 
                                                 className="border-2 border-black outline-black text-black text-xs shadow-md hover:bg-black hover:text-white transition"
-                                                onClick={() => setDialogOpen(false)}>
+                                                onClick={() => {setDialogOpen(false); setSelectedRole(null); setSelectedPermission(null)}}>
                                                     Retour
                                             </AlertDialogCancel>
                                             

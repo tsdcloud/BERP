@@ -27,7 +27,7 @@ const Consommable = () =>{
             setPage(response.page);
            }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     }
 
@@ -40,6 +40,7 @@ const Consommable = () =>{
         fetchConsommable();
     }, []);
 
+    
     return(
         <>
             <Header />

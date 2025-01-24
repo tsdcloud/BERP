@@ -4,10 +4,10 @@ import { useFetch } from '../../../hooks/useFetch';
 import { URLS } from '../../../../configUrl'; 
 import DataTable from '../../DataTable';
 import CreateAsignPermUser from './CreateAsignPermUser';
+import Preloader from '../../Preloader';
 
 export default function AsignPermUser() {
 
-    const { showDialogAsignPermUser, columnsAsignPermUser } = AsignPermUserAction();
     const [asignPermUser, setAsignPermUser] = useState([]);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -22,8 +22,8 @@ export default function AsignPermUser() {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllAsignPermUser);
             console.log("respoasignPermUser",response);
-                if (response && response?.results) {
-                        const results = response?.results;
+                if (response.success && response?.data?.results) {
+                        const results = response?.data?.results;
                         console.log("rest asign perm user", results);
                         const filteredAsignPermUser = results?.map(item => {
                             const { perm_assigned_by, date_assigned,  ...rest } = item;
@@ -31,7 +31,7 @@ export default function AsignPermUser() {
                                 id:rest.id,
                                 id_permission:rest.permission.id,
                                 id_user:rest.user.id,
-                                permission_name: rest.permission.permission_name,
+                                permission_name: rest.permission.display_name,
                                 description: rest.permission.description,
                                 first_name: rest.user.first_name,
                                 username: rest.user.username
@@ -57,18 +57,24 @@ export default function AsignPermUser() {
         
     }, []);
 
+    const upDateTable = (id) => {
+        setAsignPermUser((prevData) => prevData.filter((item) => item.id !== id));
+    }
+
+    const { showDialogAsignPermUser, columnsAsignPermUser } = AsignPermUserAction( { upDateTable: upDateTable } );
+
   return (
-    <div className='m-1 space-y-3 my-10 '>
+    <div className='m-1 space-y-3 my-10 w-full'>
     <h1 className='text-sm mb-2'>Gestion des asignations Permissions - utilisateurs</h1>
-    <div className='space-y-2'>
+    <div className='space-y-2 w-full'>
         <CreateAsignPermUser setOpen={setOpen} onSubmit={fetchAsignPermUser}/>
-        {columnsAsignPermUser && asignPermUser?.length > 0 && (
+        {columnsAsignPermUser && asignPermUser?.length > 0 ? (
             <DataTable
-                className="rounded-md border w-[850px] text-xs"
+                className="rounded-md border w-full max-w-full text-xs sm:text-sm"
                 columns={columnsAsignPermUser}
                 data={asignPermUser} 
             />
-        )}
+        ) : <Preloader size={40} />}
     </div>
     {showDialogAsignPermUser()}
 </div> 

@@ -4,10 +4,10 @@ import { useFetch } from '../../../hooks/useFetch';
 import { URLS } from '../../../../configUrl'; 
 import DataTable from '../../DataTable'; 
 import CreateRole from './CreateRole'; 
+import Preloader from '../../Preloader';
 
 export default function Role() {
 
-    const { showDialogRole, columnsRole } = RoleAction();
     const [roles, setRoles] = useState([]);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -23,8 +23,8 @@ export default function Role() {
             const response = await handleFetch(urlToShowAllRole);
             console.log("respoRoles",response);
             
-                if (response && response?.results) {
-                        const results = response?.results;
+                if (response && response?.data?.results) {
+                        const results = response?.data?.results;
                         const filteredRole = results?.map(item => {
                         const { role_created_by, role_updated_by, ...rest } = item;
                         return rest;
@@ -47,18 +47,47 @@ export default function Role() {
         
     }, []);
 
+    const upDateTable = (newRecord) => {
+        setRoles((prev) => [newRecord, ...prev,]) 
+    }
+
+    const actRole = (id) => {
+        setRoles((prev) =>
+            prev.map((role) =>
+                role.id === id ? { ...role, is_active: true } : role
+        ));
+    }
+
+    const desRole = (id) => {
+        setRoles((prev) =>
+            prev.map((role) =>
+                role.id === id ? { ...role, is_active: false } : role
+        ));
+    }
+
+    const updateData = (id, updatedRole) => {
+        setRoles((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedRole } : item
+            )
+        );
+    };
+
+    const { showDialogRole, columnsRole } = RoleAction( { actRole: actRole, desRole: desRole, updateData: updateData } );
+
+
   return (
-    <div className='m-1 space-y-3 my-10 '>
+    <div className='m-1 space-y-3 my-10 w-full'>
     <h1 className='text-sm mb-2'>Gestion des rôles</h1>
-    <div className='space-y-2'>
-        <CreateRole setOpen={setOpen} onSubmit={fetchRole}/>
-        {columnsRole && roles?.length > 0 && (
+    <div className='space-y-2 w-full'>
+        <CreateRole setOpen={setOpen} onSubmit={upDateTable}/>
+        {columnsRole && roles?.length > 0 ? (
             <DataTable
-                className="rounded-md border w-[800px] text-xs"
+                className="rounded-md border w-full max-w-full text-xs sm:text-sm"
                 columns={columnsRole}
                 data={roles} 
             />
-        )}
+        ) : <Preloader size={40} />}
     </div>
     {showDialogRole()}
 </div> 

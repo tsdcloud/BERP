@@ -56,7 +56,7 @@ export default function CreateUser({setOpen, onSubmit}) {
   // const navigateToDashboard = useNavigate();
   const { handlePost } = useFetch();
 
-    const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm({
+    const { register, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
         resolver: zodResolver(userSchema),
     });
 
@@ -71,14 +71,15 @@ export default function CreateUser({setOpen, onSubmit}) {
           if (response && response?.success && response.status === 201) {
             toast.success("Utilisateur crée avec succès", {duration:2000});
             console.log("User created", response?.success);
-            setOpen(false);
-            onSubmit();
+            // setOpen(false);
+            onSubmit(response.data);
+            reset()
             // navigateToDashboard("/");
             // window.location.reload();
 
           }
           else {
-            toast.error(response.error, { duration: 5000});
+            toast.error(response.errors.email || response.errors.username, { duration: 5000});
           }
           
         } catch (error) {
@@ -189,6 +190,7 @@ export default function CreateUser({setOpen, onSubmit}) {
                               )
                             }
                   </div>
+                  
                   <hr className="border-dashed border-1 m-5 border-black" />
                   <h2 className='font-bold'>Informations de connexion</h2>
                   <p className='text-[8px] mb-3'>

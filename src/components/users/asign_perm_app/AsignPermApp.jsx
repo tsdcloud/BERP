@@ -4,10 +4,10 @@ import { useFetch } from '../../../hooks/useFetch';
 import { URLS } from '../../../../configUrl'; 
 import DataTable from '../../DataTable';
 import CreateAsignPermApp from './CreateAsignPermApp';
+import Preloader from '../../Preloader';
 
 export default function AsignPermApp() {
 
-    const { showDialogAsignPermApp, columnsAsignPermApp } = AsignPermAppAction();
     const [asignPermApp, setAsignPermApp] = useState([]);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -22,8 +22,8 @@ export default function AsignPermApp() {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllAsignPermApp);
             console.log("respoasignPermApp",response);
-                if (response && response?.results) {
-                        const results = response?.results;
+                if (response && response?.data?.results) {
+                        const results = response?.data?.results;
                         console.log("rest asign perm app", results);
                         const filteredAsignPermApp = results?.map(item => {
                             const { perm_assigned_by, ...rest } = item;
@@ -31,7 +31,7 @@ export default function AsignPermApp() {
                                 id:rest.id,
                                 id_permission:rest.permission.id,
                                 id_app:rest.app.id,
-                                permission_name: rest.permission.permission_name,
+                                permission_name: rest.permission.display_name,
                                 description: rest.permission.description,
                                 application_name: rest.app.application_name,
                                 description_app: rest.app.description
@@ -57,18 +57,25 @@ export default function AsignPermApp() {
         
     }, []);
 
+    const upDateTable = (id) => {
+        setAsignPermApp((prevData) => prevData.filter((item) => item.id !== id));
+    }
+
+    const { showDialogAsignPermApp, columnsAsignPermApp } = AsignPermAppAction( { upDateTable: upDateTable } );
+
+
   return (
-    <div className='m-1 space-y-3 my-10 '>
+    <div className='m-1 space-y-3 my-10 w-full'>
     <h1 className='text-sm mb-2'>Gestion des asignations Permissions - Applications</h1>
-    <div className='space-y-2'>
+    <div className='space-y-2 w-full'>
         <CreateAsignPermApp setOpen={setOpen} onSubmit={fetchAsignPermApp}/>
-        {columnsAsignPermApp && asignPermApp?.length > 0 && (
+        {columnsAsignPermApp && asignPermApp?.length > 0 ? (
             <DataTable
-                className="rounded-md border w-[850px] text-xs"
+                className="rounded-md border w-full max-w-full text-xs sm:text-sm"
                 columns={columnsAsignPermApp}
                 data={asignPermApp} 
             />
-        )}
+        ) : <Preloader size={40} />}
     </div>
     {showDialogAsignPermApp()}
 </div> 
