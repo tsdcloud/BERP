@@ -39,11 +39,7 @@ const asignRoleUserSchema = z.object({
     });
 
 // Fonction principale pour gérer les actions utilisateur
-<<<<<<< HEAD
 export const AsignRoleUserAction = ( { upDateTable } ) => {
-=======
-export const AsignRoleUserAction = () => {
->>>>>>> 31873a823b069693726b6474af191cfc684d13f1
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
