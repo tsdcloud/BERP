@@ -18,6 +18,8 @@ import {  AlertDialog,
 
 } from "../ui/alert-dialog";
 
+import { URLS } from '../../../configUrl';
+
 import SignInLayout from '../layout/SignInLayout';
 
 
@@ -66,7 +68,8 @@ export default function ForgetPassword() {
     });
 
   const handleSubmitEmailForReseting = async(data) => {
-      const urlToResetPassword = "http://127.0.0.1:8000/gateway/api/reset_password_email/";
+      // const urlToResetPassword = "http://127.0.0.1:8000/gateway/api/reset_password_email/";
+      const urlToResetPassword = URLS.FORGOT_PASSWORD
       try {
         const response = await handlePost(urlToResetPassword, data, false);
         console.log("reset",response);
