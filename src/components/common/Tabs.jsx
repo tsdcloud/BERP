@@ -12,7 +12,6 @@ const Tabs = ({ links }) => {
   useEffect(() => {
     setActiveTab(pathname);
   }, [pathname]);
-<<<<<<< HEAD
 
   const handleTabClick = (link) => {
     if (link !== activeTab) {
@@ -30,30 +29,6 @@ const Tabs = ({ links }) => {
             className={`px-2 p-1 rounded-full cursor-pointer text-xs font-semibold ${
               activeTab === link.link ? "bg-secondary text-white" : "border-[1px] border-gray-300"
             }`}
-=======
-
-  const handleTabClick = (link) => {
-    if (link !== activeTab) {
-      setActiveTab(link);
-      navigate(link);
-    }
-  };
-
-  // const entryLink = links.map(link => ({
-  //   ...link,
-  //   isActive: activeTab.includes(link.link) ? true : false,
-  // }));
-    
-  return (
-    <div className='flex gap-2 items-center'>
-      {
-        links.map((link, index) => (
-          <div 
-            key={index} 
-            className={`px-2 p-1 rounded-full cursor-pointer text-xs font-semibold ${
-              activeTab === link.link ? "bg-secondary text-white" : "border-[1px] border-gray-300"
-            }`} 
->>>>>>> 31873a823b069693726b6474af191cfc684d13f1
             onClick={() => handleTabClick(link.link)}
           >
             {link.name}
