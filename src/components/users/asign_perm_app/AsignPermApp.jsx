@@ -8,7 +8,6 @@ import Preloader from '../../Preloader';
 
 export default function AsignPermApp() {
 
-    const { showDialogAsignPermApp, columnsAsignPermApp } = AsignPermAppAction();
     const [asignPermApp, setAsignPermApp] = useState([]);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -57,6 +56,13 @@ export default function AsignPermApp() {
         fetchAsignPermApp();
         
     }, []);
+
+    const upDateTable = (id) => {
+        setAsignPermApp((prevData) => prevData.filter((item) => item.id !== id));
+    }
+
+    const { showDialogAsignPermApp, columnsAsignPermApp } = AsignPermAppAction( { upDateTable: upDateTable } );
+
 
   return (
     <div className='m-1 space-y-3 my-10 w-full'>

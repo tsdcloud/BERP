@@ -39,7 +39,7 @@ const asignPermRoleSchema = z.object({
     });
 
 // Fonction principale pour gérer les actions utilisateur
-export const AsignPermRoleAction = () => {
+export const AsignPermRoleAction = ( { upDateTable } ) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -159,7 +159,7 @@ export const AsignPermRoleAction = () => {
                             if (response && response?.message) {
                                 toast.success(response?.message, { duration: 5000});
                                 isDialogOpen && setDialogOpen(false);
-                                window.location.reload();
+                                upDateTable(id)
                             }
                             else {
                             toast.error(response.error, { duration: 5000});

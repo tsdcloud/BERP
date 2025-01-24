@@ -8,7 +8,6 @@ import Preloader from '../../Preloader';
 
 export default function AsignPermRole() {
 
-    const { showDialogAsignPermRole, columnsAsignPermRole } = AsignPermRoleAction();
     const [asignPermRole, setAsignPermRole] = useState([]);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -52,6 +51,12 @@ export default function AsignPermRole() {
             setIsLoading(false);
           }
     };
+
+    const upDateTable = (id) => {
+        setAsignPermRole((prevData) => prevData.filter((item) => item.id !== id));
+    }
+
+    const { showDialogAsignPermRole, columnsAsignPermRole } = AsignPermRoleAction( { upDateTable: upDateTable } );
 
     useEffect(() => {
         fetchAsignPermRole();

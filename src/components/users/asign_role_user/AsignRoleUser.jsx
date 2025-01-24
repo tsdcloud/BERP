@@ -8,7 +8,6 @@ import Preloader from '../../Preloader';
 
 export default function AsignRoleUser() {
 
-    const { showDialogAsignRoleUser, columnsAsignRoleUser } = AsignRoleUserAction();
     const [asignRoleUser, setAsignRoleUser] = useState([]);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -57,6 +56,12 @@ export default function AsignRoleUser() {
         fetchAsignRoleUser();
         
     }, []);
+
+    const upDateTable = (id) => {
+        setAsignRoleUser((prevData) => prevData.filter((item) => item.id !== id));
+    }
+
+    const { showDialogAsignRoleUser, columnsAsignRoleUser } = AsignRoleUserAction( { upDateTable: upDateTable } );
 
   return (
     <div className='m-1 space-y-3 my-10 w-full'>

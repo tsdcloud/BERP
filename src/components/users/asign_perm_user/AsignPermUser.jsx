@@ -8,7 +8,6 @@ import Preloader from '../../Preloader';
 
 export default function AsignPermUser() {
 
-    const { showDialogAsignPermUser, columnsAsignPermUser } = AsignPermUserAction();
     const [asignPermUser, setAsignPermUser] = useState([]);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -57,6 +56,12 @@ export default function AsignPermUser() {
         fetchAsignPermUser();
         
     }, []);
+
+    const upDateTable = (id) => {
+        setAsignPermUser((prevData) => prevData.filter((item) => item.id !== id));
+    }
+
+    const { showDialogAsignPermUser, columnsAsignPermUser } = AsignPermUserAction( { upDateTable: upDateTable } );
 
   return (
     <div className='m-1 space-y-3 my-10 w-full'>
