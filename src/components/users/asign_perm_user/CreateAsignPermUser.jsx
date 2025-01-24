@@ -45,8 +45,15 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
             const response = await handleFetch(urlToGetPermission);
             console.log("response show permission", response);
 
+<<<<<<< HEAD
                 if (response && response?.data?.results) {
                     const filteredPermission = response?.data?.results.map(item => {
+=======
+                if (response && response.results) {
+                    const filteredPermission = response.results
+                    // .filter(item => item.is_active)
+                    .map(item => {
+>>>>>>> 31873a823b069693726b6474af191cfc684d13f1
                     const { perm_created_by, perm_updated_by, description, ...rest } = item;
                     return rest;
                     });
@@ -85,7 +92,11 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
                 
         } catch (error) {
             console.error("Error during creating", error);
+<<<<<<< HEAD
             toast.error("Erreur lors de la récupération des users", { duration: 2000 });
+=======
+            toast.error("Erreur lors de la récupération des users", { duration: 5000 });
+>>>>>>> 31873a823b069693726b6474af191cfc684d13f1
         }
     };
 
@@ -242,6 +253,31 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
                             }
                     
                         </div>
+<<<<<<< HEAD
+=======
+
+                        {/* <div className='mb-4'>
+                                <label htmlFor="description_user" className="block text-xs font-medium mb-1">
+                                    Description du rôle<sup className='text-red-500'>*</sup>
+                                </label>
+                                <input 
+                                    id='description_user'
+                                    type="text"
+                                    {...register('description_user')}
+                                    className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                                    ${
+                                        errors.description_user ? "border-red-500" : "border-gray-300"
+                                    }`}
+                                />
+
+                                {
+                                    errors.description_user && (
+                                        <p className="text-red-500 text-[9px] mt-1">{errors.description_user.message}</p>
+                                    )
+                                }
+
+                        </div> */}
+>>>>>>> 31873a823b069693726b6474af191cfc684d13f1
                         
                         <div className='my-3'>
                             <h6 className='text-xs'>Attribuer une ou plusieurs permissions</h6> 

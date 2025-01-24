@@ -1,17 +1,6 @@
-import React, {useEffect, useState} from 'react'
-import { useFetch } from '../../../hooks/useFetch';
+import React, {useState} from 'react';
 import { Button } from '../../ui/button';
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "../../ui/pagination";
-import { ArchiveBoxXMarkIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { EyeIcon } from 'lucide-react';
+import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 import {
   flexRender,
@@ -21,7 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ChevronDown, MoreHorizontal } from "lucide-react"
 import { Checkbox } from "../../ui/checkbox"
 import {
   DropdownMenu,
@@ -50,9 +39,9 @@ import { URLS } from '../../../../configUrl';
 const Datalist = ({dataList, fetchData}) => {
 
   const handleDelete = async (id) =>{
-    if (window.confirm("Voulez vous supprimer le consomable ?")) {
+    if (window.confirm("Voulez vous supprimer l'equipement ?")) {
       try {
-        let url = `${URLS.INCIDENT_API}/consommables/${id}`;
+        let url = `${URLS.INCIDENT_API}/equipements/${id}`;
         let response = await fetch(url, {
           method:"DELETE"
         });
@@ -84,7 +73,7 @@ const Datalist = ({dataList, fetchData}) => {
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}
           aria-label="Select row"
-          className=""
+          className="text-"
         />
       ),
       enableSorting: false,
@@ -94,7 +83,7 @@ const Datalist = ({dataList, fetchData}) => {
       accessorKey: "name",
       header: "Nom",
       cell: ({ row }) => (
-        <div className="capitalize w-[50px]">{row.getValue("name")}</div>
+        <div className="capitalize">{row.getValue("name")}</div>
       ),
     },
     {
@@ -113,10 +102,9 @@ const Datalist = ({dataList, fetchData}) => {
     },
     {
       id: "actions",
-      header: "Actions",
-      // enableHiding: false,
+      enableHiding: false,
       cell: ({ row }) => {
-        const consommable = row.original;
+        const equipement = row.original;
    
         return (
           <DropdownMenu>
@@ -138,7 +126,7 @@ const Datalist = ({dataList, fetchData}) => {
                 <PencilIcon className='h-4 w-6'/>
                 <span className=''>Editer</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(consommable.id)}>
+              <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(equipement.id)}>
                 <TrashIcon className='text-red-500 h-4 w-6'/>
                 <span className='text-red-500'>Supprimer</span>
               </DropdownMenuItem>
@@ -177,7 +165,7 @@ const Datalist = ({dataList, fetchData}) => {
     <div className="w-full">
       <div className="flex items-center py-4 w-full">
         <Input
-          placeholder="Recherche un consommable"
+          placeholder="Recherche un equipement"
           value={(table.getColumn("name")?.getFilterValue()) ?? ""}
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)
@@ -274,6 +262,24 @@ const Datalist = ({dataList, fetchData}) => {
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>
+        <div className="space-x-2">
+          {/* <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button> */}
         </div>
       </div>
     </div>

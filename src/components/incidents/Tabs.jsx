@@ -7,17 +7,37 @@ const Tabs = () => {
 
     const links = [
         {
+            name:"Dashboard",
+            isActive:pathname.includes("dashboard") ? true : false,
+            link: "/incidents/dashboard"
+        },
+        {
             name:"Incidents",
             isActive:pathname === "/incidents" ? true : false,
             link: "/incidents"
         },
         {
             name:"Maintenances",
-            isActive:pathname.includes("maintenance") ? true : false,
+            isActive:(pathname.includes("maintenance") && !pathname.includes("type")) ? true : false,
             link: "/incidents/maintenance"
         },
         {
-            name:"Consumables",
+            name:"Causes d'incidents",
+            isActive:pathname.includes("incident-cause") ? true : false,
+            link: "/incidents/incident-cause"
+        },
+        {
+            name:"Types d'incidents",
+            isActive:pathname.includes("incident-type") ? true : false,
+            link: "/incidents/incident-type"
+        },
+        {
+            name:"Type de Maintenances",
+            isActive:pathname.includes("maintenance-type") ? true : false,
+            link: "/incidents/maintenance-type"
+        },
+        {
+            name:"Consommables",
             isActive: pathname.includes("consommable") ? true : false,
             link: "/incidents/consommable"
         },

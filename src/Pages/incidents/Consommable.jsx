@@ -1,21 +1,20 @@
 import React, {useEffect, useState} from 'react';
 import Header from '../../components/layout/Header';
-import {Input} from "../../components/ui/input";
-import {Button} from "../../components/ui/button";
-import Footer from '../../components/layout/Footer';
 import Dialogue from '../../components/incidents/Dialogue';
 import InitiateForm from '../../components/incidents/Consommable/InitiateForm';
 import Tabs from '../../components/incidents/Tabs';
 import Datalist from '../../components/incidents/Consommable/Datalist';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
+import Pagination from '../../components/common/Pagination';
 
 const Consommable = () =>{
     const {handleFetch} = useFetch();
     const [consommables, setConsommables] = useState([]);
     const [isOpenned, setIsOpenned] = useState(false);
     const [totalPages, setTotalPages] = useState(0);
-    const [total, setTotal] = useState(0);
+    const [page, setPage] = useState(0);
+    const [pageList, setPageList] = useState([]);
 
 
     const fetchConsommable= async () => {
@@ -25,16 +24,17 @@ const Consommable = () =>{
            if(response.data){
             setConsommables(response.data);
             setTotalPages(response.totalPages);
-            setTotal(response.total);
+            setPage(response.page);
            }
         } catch (error) {
             console.log(error);
         }
-    };
+    }
+
     const handleSubmit=()=>{
         fetchConsommable();
-        document.getElementById("close-consommable").click();
-    };
+        document.getElementById("close-dialog").click();
+    }
 
     useEffect(()=>{
         fetchConsommable();
@@ -70,23 +70,17 @@ const Consommable = () =>{
                         dataList={consommables}
                         fetchData={fetchConsommable}
                     />
-
+                    {/* Pagination */}
+                    <Pagination 
+                     totalPages={totalPages}
+                     setList={setConsommables}
+                     handleNext={()=>{}}
+                     handlePrev={()=>{}}
+                     link={`${URLS.INCIDENT_API}/consommables`}
+                    />
                 </div>
 
-                {/* Pagination */}
-                {
-                    consommables.length > 0 &&
-                    <div className='flex items-center gap-2'>
-                        {/* Prev */}
-                        <button className='text-sm'>Prev</button>
-                        {/* Steps */}
-                        {
-                            
-                        }
-                        {/* Next */}
-                        <button className='text-sm'>Next</button>
-                    </div>
-                }
+                
             </div>
         </>
     )
