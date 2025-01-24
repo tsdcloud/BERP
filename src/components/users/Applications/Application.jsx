@@ -9,7 +9,6 @@ import Preloader from '../../Preloader';
 
 export default function Application() {
 
-    const { showDialogApplication, columnsApplication } = ApplicationAction();
     const [applications, setApplications] = useState([]);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -44,13 +43,38 @@ export default function Application() {
           }
     };
 
+    
     useEffect(() => {
         fetchApplication();
     }, []);
-
+    
     const upDateTable = (newRecord) => {
         setApplications((prev) => [newRecord, ...prev,])
     }
+
+    const actApp = (id) => {
+        setApplications((prev) =>
+            prev.map((app) =>
+                app.id === id ? { ...app, is_active: true } : app
+        ));
+    }
+
+    const desApp = (id) => {
+        setApplications((prev) =>
+            prev.map((app) =>
+                app.id === id ? { ...app, is_active: false } : app
+        ));
+    }
+
+    const updateData = (id, updatedApp) => {
+        setApplications((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedApp } : item
+            )
+        );
+    };
+
+    const { showDialogApplication, columnsApplication } = ApplicationAction( { actApp: actApp, desApp: desApp, updateData: updateData } );
 
   return (
     <div className='m-1 space-y-3 my-10 w-full'>
@@ -65,7 +89,7 @@ export default function Application() {
                 />
             ) : <Preloader size={40} />} 
         </div>
-        {showDialogApplication()}
+        {showDialogApplication}
     </div> 
   );
 };

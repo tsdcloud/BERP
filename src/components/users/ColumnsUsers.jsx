@@ -55,7 +55,7 @@ const userSchema = z.object({
 
 
 // Fonction principale pour gérer les actions utilisateur
-export const UserAction = () => {
+export const UserAction = ({ actUser, desUser, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -93,13 +93,15 @@ export const UserAction = () => {
                 console.log("User updated", response);
                 setDialogOpen(false);
 
-                window.location.reload();
+                // window.location.reload();
 
-                toast.success("user modified successfully", { duration: 5000});
+                toast.success("user modified successfully", { duration: 1000});
+
+                updateData(response.data.id, response.data)
             }
             else {
                 setDialogOpen(false);
-                toast.error(response.errors.email || response.errors.username, { duration: 5000});
+                toast.error(response.errors.email || response.errors.username, { duration: 2000});
             }
             
           } catch (error) {
@@ -132,12 +134,12 @@ export const UserAction = () => {
                                 if (response && response?.message) {
                                     console.log("User diabled", response);
                                     console.log("L'utilisateur a été désactivé.", id);
-                                    toast.success(response?.message, { duration: 5000});
+                                    toast.success(response?.message, { duration: 1000});
                                     isDialogOpen && setDialogOpen(false);
-                                    window.location.reload();
+                                    desUser(id)
                                 }
                                 else {
-                                toast.error(response.error, { duration: 5000});
+                                toast.error(response.error, { duration: 2000});
                                 }
                                 isDialogOpen && setDialogOpen(false);
                         }
@@ -166,14 +168,8 @@ export const UserAction = () => {
 
                     if (response.success){
                         setDialogOpen(false);
-
-                        setTimeout(()=>{
-                            toast.success("user activated successfully", { duration: 2000});
-                        },[100])
-                        
-                        setTimeout(()=>{
-                            window.location.reload();
-                        },[900])
+                        toast.success("user activated successfully", { duration: 2000});
+                        actUser(id)
                     }else{
                         toast.error("error occured", { duration: 2000});
                     }
@@ -204,12 +200,12 @@ export const UserAction = () => {
                             const response = await handleDelete(urlToDeleteUser);
                             if (response && response?.message) {
                                 // console.log("User deleted", response);
-                                toast.success(response?.message, { duration: 5000});
+                                toast.success(response?.message, { duration: 2000});
                                 isDialogOpen && setDialogOpen(false);
-                                window.location.reload();
+                                desUser(id)
                             }
                             else {
-                            toast.error(response.error, { duration: 5000});
+                            toast.error(response.error, { duration: 2000});
                             }
                             setDialogOpen(false);
                     }

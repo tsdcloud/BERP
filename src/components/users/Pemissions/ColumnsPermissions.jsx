@@ -39,7 +39,7 @@ const permissionSchema = z.object({
     });
 
 // Fonction principale pour gérer les actions utilisateur
-export const PermissionAction = () => {
+export const PermissionAction = ( {actPerm, desPerm, updateData}) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -60,14 +60,8 @@ export const PermissionAction = () => {
             
             if (response.success) {
                 setDialogOpen(false);
-                
-                setTimeout(()=>{
-                    toast.success("Permission mis a jour avec succès", { duration: 900 });
-                },[100])
-                
-                setTimeout(()=>{
-                    window.location.reload();
-                },[900])
+                toast.success("Permission mis a jour avec succès", { duration: 100 });
+                updateData(response.data.id, response.data)
             } else {
                 setDialogOpen(false);
                 setTimeout(()=>{
@@ -102,12 +96,13 @@ export const PermissionAction = () => {
                         try {
                                 const response = await handlePatch(urlToDisabledPermission, {is_active:false});
                                 console.log("response for disabled", response);
-                                if (response && response?.message) {
+                                if (response && response?.success) {
                                     // console.log("permission disabled", response);
                                     // console.log("La permission a été désactivé.", id);
-                                    toast.success(response?.message, { duration: 5000});
+                                    toast.success("Permission desactivated successfully", { duration: 5000});
                                     isDialogOpen && setDialogOpen(false);
-                                    window.location.reload();
+                                    desPerm(id)
+                                    // window.location.reload();
                                 }
                                 else {
                                 toast.error(response.error, { duration: 5000});
@@ -145,7 +140,8 @@ export const PermissionAction = () => {
                     // console.log("La permission a été désactivé.", id);
                     toast.success("permission activated successfully", { duration: 3000});
                     isDialogOpen && setDialogOpen(false);
-                    window.location.reload();
+                    // window.location.reload();
+                    actPerm(id)
                 }
                 else {
                 toast.error(response.error, { duration: 5000});
@@ -180,7 +176,8 @@ export const PermissionAction = () => {
                             if (response && response?.message) {
                                 toast.success(response?.message, { duration: 5000});
                                 isDialogOpen && setDialogOpen(false);
-                                window.location.reload();
+                                // window.location.reload();
+                                desPerm(id)
                             }
                             else {
                             toast.error(response.error, { duration: 5000});

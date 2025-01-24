@@ -8,7 +8,6 @@ import Preloader from '../../Preloader';
 
 export default function Role() {
 
-    const { showDialogRole, columnsRole } = RoleAction();
     const [roles, setRoles] = useState([]);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -49,8 +48,33 @@ export default function Role() {
     }, []);
 
     const upDateTable = (newRecord) => {
-        setRoles((prev) => [newRecord, ...prev,])
+        setRoles((prev) => [newRecord, ...prev,]) 
     }
+
+    const actRole = (id) => {
+        setRoles((prev) =>
+            prev.map((role) =>
+                role.id === id ? { ...role, is_active: true } : role
+        ));
+    }
+
+    const desRole = (id) => {
+        setRoles((prev) =>
+            prev.map((role) =>
+                role.id === id ? { ...role, is_active: false } : role
+        ));
+    }
+
+    const updateData = (id, updatedRole) => {
+        setRoles((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedRole } : item
+            )
+        );
+    };
+
+    const { showDialogRole, columnsRole } = RoleAction( { actRole: actRole, desRole: desRole, updateData: updateData } );
+
 
   return (
     <div className='m-1 space-y-3 my-10 w-full'>

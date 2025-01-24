@@ -10,7 +10,6 @@ import CreatePermissionModal from './CreatePermissionModal';
 
 export default function Permission() {
 
-    const { showDialogPermission, columnsPermission } = PermissionAction();
     const [permissions, setPermissions] = useState([]);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -50,6 +49,31 @@ export default function Permission() {
     const upDateTable = (newRecord) => {
         setPermissions((prev) => [newRecord, ...prev,])
     }
+
+    const actPerm = (id) => {
+        setPermissions((prev) =>
+            prev.map((perm) =>
+                perm.id === id ? { ...perm, is_active: true } : perm
+        ));
+    }
+
+    const desPerm = (id) => {
+        setPermissions((prev) =>
+            prev.map((perm) =>
+                perm.id === id ? { ...perm, is_active: false } : perm
+        ));
+    }
+
+    const updateData = (id, updatedPerm) => {
+        setPermissions((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedPerm } : item
+            )
+        );
+    };
+
+    const { showDialogPermission, columnsPermission } = PermissionAction( { actPerm: actPerm, desPerm: desPerm, updateData: updateData } );
+
 
     useEffect(() => {
         fetchPermissions();

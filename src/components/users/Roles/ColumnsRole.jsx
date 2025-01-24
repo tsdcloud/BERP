@@ -39,7 +39,7 @@ const roleSchema = z.object({
     });
 
 // Fonction principale pour gérer les actions utilisateur
-export const RoleAction = () => {
+export const RoleAction = ( { actRole, desRole, updateData } ) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -62,17 +62,13 @@ export const RoleAction = () => {
                 // console.log("User updated", response);
                 setDialogOpen(false);
 
-                setTimeout(()=>{
-                    toast.success("role modified successfully", { duration: 900 });
-                },[100])
-                
-                setTimeout(()=>{
-                    window.location.reload();
-                },[900])
+                toast.success("role modified successfully", { duration: 1000 });
+
+                updateData(response.data.id, response.data)
             }
             else {
                 setDialogOpen(false);
-                toast.error(response.errors.display_name, { duration: 5000});
+                toast.error(response.errors.display_name, { duration: 2000});
             }
             
           } catch (error) {
@@ -105,12 +101,13 @@ export const RoleAction = () => {
                                 if (response.success) {
                                     // console.log("ROLE disabled", response);
                                     // console.log("La ROLE a été désactivé.", id);
-                                    toast.success("role disabled successfully", { duration: 5000});
+                                    toast.success("role disabled successfully", { duration: 1000});
                                     isDialogOpen && setDialogOpen(false);
-                                    window.location.reload();
+                                    desRole(id)
+                                    // window.location.reload();
                                 }
                                 else {
-                                toast.error(response.error, { duration: 5000});
+                                toast.error(response.error, { duration: 1000});
                                 }
                                 isDialogOpen && setDialogOpen(false);
                         }
@@ -131,16 +128,20 @@ export const RoleAction = () => {
     };
 
     const enableRole = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver ce rôle ?");
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir activer ce rôle ?");
 
         const urlToDisabledRole = `${URLS.API_ROLE}${id}/`
 
         if (confirmation) {
               try{
                     setDialogOpen(false);
-                    await handlePatch(urlToDisabledRole, {is_active: true})
-                    window.location.reload();
-                //   navigateToMyEvent(`/events/${eventId}`)
+                    const response = await handlePatch(urlToDisabledRole, {is_active: true})
+
+                    if (response.success) {
+                        toast.success("role activated successfully", { duration: 1000});
+                        isDialogOpen && setDialogOpen(false);
+                        actRole(id)
+                    }
               }
               catch(error){
                   console.error("Erreur lors de la désactivation de ce rôle :", error);
@@ -168,9 +169,10 @@ export const RoleAction = () => {
                             const response = await handleDelete(urlToDeleteRole);
                             console.log("response for deleting", response);
                             if (response.success) {
-                                toast.success("role disabled successfully", { duration: 5000});
+                                toast.success("role disabled successfully", { duration: 1000});
                                 isDialogOpen && setDialogOpen(false);
-                                window.location.reload();
+                                desRole(id)
+                                // window.location.reload();
                             }
 
                             setDialogOpen(false);

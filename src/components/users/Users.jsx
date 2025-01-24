@@ -9,7 +9,6 @@ import Preloader from '../Preloader';
 
 
 export default function Users() {
-    const { showDialogUser, columnsUser } = UserAction();
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -53,6 +52,30 @@ export default function Users() {
     const upDateTable = (newRecord) => {
         setUsers((prev) => [newRecord, ...prev,])
     }
+
+    const actUser = (id) => {
+        setUsers((prev) =>
+            prev.map((user) =>
+                user.id === id ? { ...user, is_active: true } : user
+        ));
+    }
+
+    const desUser = (id) => {
+        setUsers((prev) =>
+            prev.map((user) =>
+                user.id === id ? { ...user, is_active: false } : user
+        ));
+    }
+
+    const updateData = (id, updatedRole) => {
+        setUsers((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedRole } : item
+            )
+        );
+    };
+
+    const { showDialogUser, columnsUser } = UserAction( { actUser: actUser, desUser: desUser, updateData: updateData } );
 
 
   return (
