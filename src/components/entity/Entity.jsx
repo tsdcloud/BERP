@@ -15,12 +15,11 @@ export default function Entity() {
     const { handleFetch } = useFetch();
 
     const fetchEntities = async () => {
-        // const urlToShowAllEntities = "http://127.0.0.1:8000/api_gateway/api/user/";
-        const urlToShowAllEntities = "";
+        const urlToShowAllEntities = URLS.API_ENTITY;
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllEntities);
-            // console.log("respo",response);
+            console.log("respo entities",response);
             
                 if (response && response?.data?.results) {
                         const results = response?.data?.results;
@@ -28,7 +27,7 @@ export default function Entity() {
                         const { user_created_by, user_updated_by, is_staff, is_superuser, ...rest } = item;
                         return rest;
                         });
-                        // console.log("Entities", filteredEntity);
+                        console.log("Entities", filteredEntity);
                         setEntities(filteredEntity);
                 }
                 else{

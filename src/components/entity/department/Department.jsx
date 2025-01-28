@@ -17,7 +17,7 @@ export default function Department() {
     const { handleFetch } = useFetch();
 
     const fetchDepartment = async () => {
-        const urlToShowAllDepartment = "";
+        const urlToShowAllDepartment = URLS.API_DEPARTMENT;
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllDepartment);
@@ -27,7 +27,7 @@ export default function Department() {
                     
                         const results = response?.data?.results;
                         const filteredDepartment = results?.map(item => {
-                        const { role_created_by, role_updated_by, ...rest } = item;
+                        const { department_created_by, department_updated_by, ...rest } = item;
                         return rest;
 
                         });
@@ -35,6 +35,7 @@ export default function Department() {
                 }
                 else{
                     throw new Error('Erreur lors de la récupération des departements');
+                    
                 }
         } catch (error) {
             setError(error.message);

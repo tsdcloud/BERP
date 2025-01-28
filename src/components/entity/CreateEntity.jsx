@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import CustomingModal from '../modals/CustomingModal';
 import { Button } from "../ui/button";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { URLS } from '../../../configUrl';
 
 import PropTypes from 'prop-types';
@@ -12,12 +12,12 @@ import { useFetch } from '../../hooks/useFetch';
 
 import toast, { Toaster } from 'react-hot-toast';
 
-import mock_data from "../../helpers/mock_data.json"
+import mock_data from "../../helpers/mock_data.json";
 
 // Définition du schéma avec Zod
 const entitySchema = z.object({
 
-    entity_name: z.string()
+    name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
@@ -35,25 +35,14 @@ const entitySchema = z.object({
     .regex(/^[0-9]+$/)
     ,
 
-    id_ville: z.string()
+    townId: z.string()
     .nonempty('Ce champs "Nom de la ville" est réquis')
     .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
     .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom de la ville' Conforme.")
     ,
-
-    // email: z.string()
-    // .nonempty("Ce champs 'Email' est réquis.")
-    // .email("Adresse mail invalide")
-    // .max(255)
-    // ,
-
-
-    // password: z.string()
-    // .nonempty("Ce champs 'Mot de passe' est réquis.")
-    // .regex(/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@]).{8,}/, 
-    //   "Le mot de passe saisie doit avoir au moins une lettre majuscule, une minuscule, un caractère spécial (@), un chiffre et doit contenir au moins 8 caractères."),
-});
+  
+  });
 
 export default function CreateEntity({setOpen, onSubmit}) {
 
@@ -93,7 +82,7 @@ export default function CreateEntity({setOpen, onSubmit}) {
     }, []);
 
 
-    const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm({
+    const { register, handleSubmit, reset,  formState: { errors, isSubmitting }} = useForm({
         resolver: zodResolver(entitySchema),
     });
 
@@ -101,26 +90,33 @@ export default function CreateEntity({setOpen, onSubmit}) {
     const handleSubmitDataFormEntity = async(data) => {
       console.log(data);
       // const urlToCreateEntity = "http://127.0.0.1:8000/api_gateway/api/user/";
-      // const urlToCreateEntity = URLS.API_USER;
-      //   // console.log(data);
-      //   try {
-      //     const response = await handlePost(urlToCreateEntity, data, true);
-      //     // console.log("response crea", response);
-      //     if (response && response?.success && response.status === 201) {
-      //       toast.success("Entité crée avec succès", {duration:2000});
-      //       console.log("entity created", response?.success);
-      //       setOpen(false);
-      //       onSubmit();
+      const urlToCreateEntity = URLS.API_ENTITY;
+        // console.log(data);
+        try {
+          const response = await handlePost(urlToCreateEntity, data, true);
+          console.log("response crea", response);
+          if (response && response.status === 201) {
+            toast.success("Entité crée avec succès", { duration : 2000 });
+            console.log("entity created", response?.success);
+            setOpen(false);
+            onSubmit();
+            reset();
 
-      //     }
-      //     else {
-      //       toast.error(response.error, { duration: 5000});
-      //     }
+          }
+          else {
+                if (Array.isArray(response.errors)) {
+                  const errorMessages = response.errors.map(error => error.msg).join(', ');
+                  toast.error(errorMessages, { duration: 5000 });
+                } else {
+                  toast.error(response.errors.msg, { duration: 5000 });
+                }
+
+          }
           
-      //   } catch (error) {
-      //     console.error("Error during creating",error);
-      //     toast.error("Erreur lors de la création de l'entité", { duration: 5000 });
-      //   }
+        } catch (error) {
+          console.error("Error during creating",error);
+          toast.error("Erreur lors de la création de l'entité", { duration: 5000 });
+        }
     };
 
 
@@ -136,22 +132,22 @@ export default function CreateEntity({setOpen, onSubmit}) {
                 <form onSubmit={handleSubmit(handleSubmitDataFormEntity)} className='sm:bg-blue-200 md:bg-transparent'>
 
                   <div className='mb-1'>
-                      <label htmlFor="entity_name" className="block text-xs font-medium mb-0">
+                      <label htmlFor="name" className="block text-xs font-medium mb-0">
                           Nom de l'entité<sup className='text-red-500'>*</sup>
                       </label>
 
                       <input 
-                        id='entity_name'
+                        id='name'
                         type="text"
-                        {...register('entity_name')} 
+                        {...register('name')} 
                         className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
                         ${
-                            errors.entity_name ? "border-red-500" : "border-gray-300"
+                            errors.name ? "border-red-500" : "border-gray-300"
                           }`}
                       />
                       {
-                        errors.entity_name && (
-                          <p className="text-red-500 text-[9px] mt-1">{errors.entity_name.message}</p>
+                        errors.name && (
+                          <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
                         )
                       }
                   </div>
@@ -179,7 +175,7 @@ export default function CreateEntity({setOpen, onSubmit}) {
                   </div>
 
                   <div className='mb-4'>
-                            <label htmlFor="id_ville" className="block text-xs font-medium mb-1">
+                            <label htmlFor="townId" className="block text-xs font-medium mb-1">
                                 Nom de la ville<sup className='text-red-500'>*</sup>
                             </label>
 
@@ -190,10 +186,10 @@ export default function CreateEntity({setOpen, onSubmit}) {
                                             const nameCitySelected = fetchCities.find(item => item.id === e.target.value);
                                             setSelectedCity(nameCitySelected);
                                         }}
-                                        {...register('id_ville')} 
+                                        {...register('townId')} 
                                         className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
                                         ${
-                                            errors.id_ville ? "border-red-500" : "border-gray-300"
+                                            errors.townId ? "border-red-500" : "border-gray-300"
                                         }`}
                                     >
                                         <option value="">Selectionner une ville</option>
@@ -204,8 +200,8 @@ export default function CreateEntity({setOpen, onSubmit}) {
                                             ))}
                             </select>
                             {
-                                errors.id_ville && (
-                                <p className="text-red-500 text-[9px] mt-1">{errors?.id_ville?.message}</p>
+                                errors.townId && (
+                                <p className="text-red-500 text-[9px] mt-1">{errors?.townId?.message}</p>
                                 )
                             }
                     

@@ -98,13 +98,18 @@ export default function DataTable({ columns, data, className }) {
                                             {row.getVisibleCells()?.map((cell) => (
                                             <TableCell key={cell.id} >
                                                 {
-                                                    cell.column.columnDef.accessorKey === "is_active" ?
-                                                    cell.row.original.is_active === true ? "Activé" : "Desactivé"
+                                                    cell.column.columnDef.accessorKey === "is_active" || cell.column.columnDef.accessorKey === "isActive" ?
+                                                    cell.row.original.is_active === true || cell.row.original.isActive === true? "Activé" : "Desactivé"
                                                     :
                                                         cell.column.columnDef.accessorKey === "email" ?
                                                         (cell.row.original.email.length > 6 ? 
                                                         `${cell.row.original.email.slice(0, 6)}...` : 
                                                         cell.row.original.email) 
+                                                        :
+                                                        
+                                                        cell.column.columnDef.accessorKey === "createdAt" ?
+                                                        cell.row.original.createdAt.split("T")[0]
+                                                        
                                                     :
                                                     flexRender(cell.column.columnDef.cell, cell.getContext()) 
                                                 }

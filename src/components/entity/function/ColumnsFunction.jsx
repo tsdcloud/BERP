@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -17,31 +17,22 @@ import { Button } from '../../ui/button';
 import { useFetch } from '../../../hooks/useFetch';
 import toast, { Toaster } from 'react-hot-toast';
 import { URLS } from '../../../../configUrl';
+import { jwtDecode } from 'jwt-decode';
 
 
 
 
 // Schéma de validation avec Zod
 const functionSchema = z.object({
-    function_name: z.string()
+    name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
     .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme."),
 
-    // localisation: z.string()
-    // .nonempty("Ce champs 'Localisation' est réquis")
-    // .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
-    // .max(100)
-    // .regex(/^[a-zA-Z ,]+$/, "Ce champs doit être une 'localisation' conforme"),
-
-    // id_department: z.string()
-    // .nonempty('Ce champs "Nom du service" est réquis')
-    // .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
-    // .max(100)
-    // .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom de la ville' Conforme.")
-    // ,
+    createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
     });
+
 
 // Fonction principale pour gérer les actions utilisateur
 export const FunctionAction = () => {
@@ -49,6 +40,7 @@ export const FunctionAction = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
     const [selectedFunction, setSelectedFunction] = useState({});
+    const [tokenUser, setTokenUser] = useState();
 
     const { register, handleSubmit, reset, formState:{errors, isSubmitting} } = useForm({
         resolver: zodResolver(functionSchema),
@@ -57,36 +49,39 @@ export const FunctionAction = () => {
    const { handlePatch, handleDelete } = useFetch();
    
 
+   useEffect(()=>{
+    const token = localStorage.getItem("token");
+    if(token){
+        const decode = jwtDecode(token);
+        setTokenUser(decode.user_id);
+        // console.log("var", tokenUser);
+    }
+  }, [tokenUser]);
+
+
     const onSubmit = async (data) => {
-
-        console.log("data function", data);
-
-        // const urlToUpdate = `${URLS.API_ROLE}${selectedFunction?.id}`;
+        // console.log("data function", data);
+        const urlToUpdate = `${URLS.API_FUNCTION}/${selectedFunction?.id}`;
       
-        // try {
-        //     const response = await handlePatch(urlToUpdate, data);
-        //     // console.log("response update", response);
-        //     if (response.success) {
-        //         // console.log("User updated", response);
-        //         setDialogOpen(false);
-
-        //         setTimeout(()=>{
-        //             toast.success("department modified successfully", { duration: 900 });
-        //         },[100]);
-                
-        //         setTimeout(()=>{
-        //             window.location.reload();
-        //         },[900]);
-        //     }
-        //     else {
-        //         setDialogOpen(false);
-        //         toast.error(response.error.message, { duration: 5000});
-        //     }
+        try {
+            const response = await handlePatch(urlToUpdate, data);
+            // console.log("response function update", response);
+                if (response) {
+                    setDialogOpen(false);
+                        
+                    setTimeout(()=>{
+                        toast.success("function modified successfully", { duration: 900 });
+                        window.location.reload();
+                    },[200]);
+                }
+                else {
+                    setDialogOpen(false);
+                    toast.error("Erreur lors de la modification de la fonction", { duration: 5000 });
+                }
             
-        //   } catch (error) {
-        //     console.error("Error during updated",error);
-        //     toast.error("Erreur lors de la modification du service", { duration: 5000 });
-        //   }
+          } catch (error) {
+            console.error("Error during updated",error);
+          }
     };
 
     const handleShowFunction = (item) => {
@@ -102,95 +97,165 @@ export const FunctionAction = () => {
         setDialogOpen(true);
     };
 
+
     const disabledFunction = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette fonction ?");
-            if (confirmation) {
-                const urlToDisabledFunction = `${URLS.API_ROLE}${id}/`;
 
+            // if (confirmation) {
+            //     const urlToDisabledFunction = `${URLS.API_FUNCTION}/${id}`;
+
+            //             try {
+            //                     const response = await handlePatch(urlToDisabledFunction, {isActive:false});
+            //                     console.log("response for disabled", response);
+            //                         if (response) {
+            //                             setTimeout(()=>{
+            //                                 toast.success("function disabled successfully", { duration: 5000});
+            //                                 // isDialogOpen && setDialogOpen(false);
+            //                                 window.location.reload();
+            //                             },[200]);
+
+            //                         }
+            //                         else {
+            //                             toast.error("Erreur lors de la désactivation de la  fonction", { duration: 5000 });
+                                    
+            //                         }
+            //                     isDialogOpen && setDialogOpen(false);
+            //             }
+            //             catch(error){
+            //                 console.error("Erreur lors de la désactivation de la  fonction :", error);
+            //             }
+
+            //             finally{
+            //                 setIsLoading(false);
+                            
+            //                 }
+
+            //     } 
+            //     else {
+            //         console.log("La désactivation a été annulée.");
+            //     }
+
+            if (confirmation) {
+                const urlToDisabledFunction = `${URLS.API_FUNCTION}/${id}`;
+    
                         try {
-                                const response = await handlePatch(urlToDisabledFunction, {is_active:false});
-                                console.log("response for disabled", response);
-                                if (response.success) {
-                                    // console.log("ROLE disabled", response);
-                                    // console.log("La ROLE a été désactivé.", id);
-                                    toast.success("function disabled successfully", { duration: 5000});
-                                    isDialogOpen && setDialogOpen(false);
-                                    window.location.reload();
-                                }
-                                else {
-                                toast.error(response.error, { duration: 5000});
-                                }
+                                const response = await handlePatch(urlToDisabledFunction, {isActive:false});
+                                // console.log("response for deleted", response);
+                                    if (response) {
+                                        setTimeout(()=>{
+                                            toast.success("function disabled successfully", { duration: 5000});
+                                            window.location.reload();
+                                        },[200]);
+                                    }
+                                    else {
+                                      toast.error("Erreur lors de la désactivation de la  fonction", { duration: 5000 });
+                                    }
                                 isDialogOpen && setDialogOpen(false);
                         }
                         catch(error){
                             console.error("Erreur lors de la désactivation de la  fonction :", error);
-                            toast.error("Erreur lors de la désactivation de la  fonction", { duration: 5000 });
                         }
-
+    
                         finally{
                             setIsLoading(false);
-                            
                             }
-
+    
                 } 
                 else {
-                    console.log("La désactivation a été annulée.");
+                    console.log("La suppression a été annulée.");
                 }
     };
 
     const enabledFunction = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette fonction ?");
-
-        const urlToDisabledFunction = `${URLS.API_ROLE}${id}/`;
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir réactiver cette fonction ?");
 
         if (confirmation) {
-              try{
-                    setDialogOpen(false);
-                    await handlePatch(urlToDisabledFunction, {is_active: true});
-                    window.location.reload();
-                //   navigateToMyEvent(`/events/${eventId}`)
-              }
-              catch(error){
-                  console.error("Erreur lors de la désactivation de ce fonction :", error);
-              }
-              finally{
-                // setIsLoading(false);
-                console.log("okay");
-                }
+            const urlToDisabledFunction = `${URLS.API_FUNCTION}/${id}`;
 
-                console.log("Le fonction a été désactivé.", id);
-                } else {
-                console.log("La désactivation a été annulée.");
-                }
+                    try {
+                            const response = await handlePatch(urlToDisabledFunction, {isActive:true});
+                            // console.log("response for deleted", response);
+                                if (response) {
+                                    setTimeout(()=>{
+                                        toast.success("function enabled successfully", { duration: 5000});
+                                        window.location.reload();
+                                    },[200]);
+                                }
+                                else {
+                                  toast.error("Erreur lors de la réactivation de la  fonction", { duration: 5000 });
+                                }
+                            isDialogOpen && setDialogOpen(false);
+                    }
+                    catch(error){
+                        console.error("Erreur lors de la réactivation de la  fonction :", error);
+                    }
+
+                    finally{
+                        setIsLoading(false);
+                        }
+
+            } 
+            else {
+                console.log("La suppression a été annulée.");
+            }
     };
     
     const deletedFunction = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette fonction ?");
 
+        // if (confirmation) {
+        //     const urlToDeleteFunction = `${URLS.API_FUNCTION}${id}/`;
+        //     console.log("url delete function ",urlToDeleteFunction);
+        //     // const urlToDeleteFunction = URLS.API_FUNCTION`${id}/?delete=true`;
+
+        //             try {
+        //                     const response = await handleDelete(urlToDeleteFunction);
+        //                     console.log("response for deleting", response);
+        //                     if (response.success) {
+        //                         toast.success("function disabled successfully", { duration: 5000});
+        //                         isDialogOpen && setDialogOpen(false);
+        //                         window.location.reload();
+        //                     }
+
+        //                     setDialogOpen(false);
+        //             }
+        //             catch(error){
+        //                 console.error("Erreur lors de la suppression de cette fonction:", error);
+        //                 toast.error("Erreur lors de la suppression de la fonction", { duration: 5000 });
+        //             }
+
+        //             finally{
+        //                 setIsLoading(false);
+                        
+        //                 }
+
+        //     } 
+        //     else {
+        //         console.log("La suppression a été annulée.");
+        //     }
         if (confirmation) {
-            const urlToDeleteFunction = `${URLS.API_ROLE}${id}/`;
-            console.log("url delete function ",urlToDeleteFunction);
-            // const urlToDeleteFunction = URLS.API_ROLE`${id}/?delete=true`;
+            const urlToDisabledFunction = `${URLS.API_FUNCTION}/${id}`;
 
                     try {
-                            const response = await handleDelete(urlToDeleteFunction);
-                            console.log("response for deleting", response);
-                            if (response.success) {
-                                toast.success("function disabled successfully", { duration: 5000});
-                                isDialogOpen && setDialogOpen(false);
-                                window.location.reload();
-                            }
-
-                            setDialogOpen(false);
+                            const response = await handlePatch(urlToDisabledFunction, {isActive:false});
+                            // console.log("response for deleted", response);
+                                if (response) {
+                                    setTimeout(()=>{
+                                        toast.success("function disabled successfully", { duration: 5000});
+                                        window.location.reload();
+                                    },[200]);
+                                }
+                                else {
+                                  toast.error("Erreur lors de la désactivation de la  fonction", { duration: 5000 });
+                                }
+                            isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la suppression de cette fonction:", error);
-                        toast.error("Erreur lors de la suppression de la fonction", { duration: 5000 });
+                        console.error("Erreur lors de la désactivation de la  fonction :", error);
                     }
 
                     finally{
                         setIsLoading(false);
-                        
                         }
 
             } 
@@ -214,20 +279,20 @@ export const FunctionAction = () => {
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
                                     <div>
-                                            <label htmlFor='function_name' className="text-xs mt-2">
+                                            <label htmlFor='name' className="text-xs mt-2 font-bold">
                                                 Nom de la fonction <sup className='text-red-500'>*</sup>
                                             </label>
                                             <Input
-                                                id="function_name"
+                                                id="name"
                                                 type="text"
-                                                defaultValue={selectedFunction?.function_name}
-                                                {...register("function_name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                                    errors.function_name ? "border-red-500" : "border-gray-300"
+                                                defaultValue={selectedFunction?.name}
+                                                {...register("name")}
+                                                className={`w-[400px] mb-2 text-sm px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    errors.name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
-                                                {errors.function_name && (
-                                                <p className="text-red-500 text-[9px] mt-1">{errors.function_name.message}</p>
+                                                {errors.name && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
                                                 )}
                                     </div>
 
@@ -248,6 +313,28 @@ export const FunctionAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.id_department.message}</p>
                                                 )}
                                     </div> */}
+
+                                  <div className='mb-1 hidden'>
+                                            <label htmlFor="createdBy" className="block text-xs font-medium mb-0">
+                                                    créer par<sup className='text-red-500'>*</sup>
+                                                </label>
+                                                <input 
+                                                    id='createdBy'
+                                                    type="text"
+                                                    defaultValue={tokenUser}
+                                                    {...register('createdBy')}
+                                                    className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                                                        ${
+                                                        errors.createdBy ? "border-red-500" : "border-gray-300"
+                                                        }`}
+                                                />
+
+                                                {
+                                                    errors.createdBy && (
+                                                    <p className="text-red-500 text-[9px] mt-1">{errors.createdBy.message}</p>
+                                                    )
+                                                }
+                                    </div>
 
                                     <div className='flex space-x-2 justify-end'>
                                         <Button 
@@ -276,16 +363,16 @@ export const FunctionAction = () => {
                                         </div>
                                         <div>
                                             <p className="text-xs">Nom de la fonction</p>
-                                            <h3 className="font-bold text-sm">{selectedFunction?.function_name}</h3>
+                                            <h3 className="font-bold text-sm">{selectedFunction?.name}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Date de création</p>
-                                            <h3 className="font-bold text-sm">{selectedFunction?.Created_at}</h3>
+                                            <h3 className="font-bold text-sm">{selectedFunction?.createdAt}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Statut</p>
                                             <h3 className="font-bold text-sm">
-                                                {selectedFunction?.is_active ? "Actif" : "Désactivé"}
+                                                {selectedFunction?.isActive ? "Actif" : "Désactivé"}
                                             </h3>
                                         </div>
                                     </div>
@@ -300,7 +387,7 @@ export const FunctionAction = () => {
                             <div className='flex space-x-2'>
                                             <div className='flex space-x-2'>
                                             { 
-                                                selectedFunction?.is_active == false ? 
+                                                selectedFunction?.isActive == false ? 
                                                     (
                                                             <AlertDialogAction
                                                                 className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md bg-transparent hover:bg-blue-600 hover:text-white transition"
@@ -344,9 +431,9 @@ export const FunctionAction = () => {
 
 
     const columnsFunction = useMemo(() => [
-        { accessorKey: 'function_name', header: 'Nom de la fonction' },
-        { accessorKey: 'created_at', header: 'Date de création' },
-        { accessorKey: 'is_active', header: 'Statut' },
+        { accessorKey: 'name', header: 'Nom de la fonction' },
+        { accessorKey: 'createdAt', header: 'Date de création' },
+        { accessorKey: 'isActive', header: 'Statut' },
         {
             accessorKey: "action",
             header: "Actions",

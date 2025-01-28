@@ -15,17 +15,16 @@ export default function Function() {
     const { handleFetch } = useFetch();
 
     const fetchFunction = async () => {
-        // const urlToShowAllFunctions = "http://127.0.0.1:8000/api_gateway/api/user/";
-        const urlToShowAllFunctions = "";
+        const urlToShowAllFunctions = URLS.API_FUNCTION;
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllFunctions);
             // console.log("respo",response);
             
-                if (response && response?.data?.results) {
-                        const results = response?.data?.results;
+                if (response && response?.status === 200) {
+                        const results = response?.data;
                         const filteredEntity = results?.map(item => {
-                        const { user_created_by, user_updated_by, is_staff, is_superuser, ...rest } = item;
+                        const { createdBy, updateAt, ...rest } = item;
                         return rest;
                         });
                         // console.log("Functions", filteredEntity);
@@ -59,7 +58,6 @@ export default function Function() {
                             columns={columnsFunction}
                             data={Functions} 
                         />
-                        // <div>Je ne pas là.</div>
                     )}
                 </div>
                 {showDialogFunction()}

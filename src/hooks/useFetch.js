@@ -79,8 +79,8 @@ export const useFetch = () => {
         try {
             let response = await fetch(url, requestOptions);
             let result = await response.json(); // Utiliser json() pour obtenir un objet JSON
-            console.log("result", result);
-            console.log("response", response);
+            // console.log("result", result);
+            // console.log("response", response);
             if (response.ok) {
                 return result; // Retourner l'objet JSON complet
             }
@@ -112,8 +112,8 @@ export const useFetch = () => {
         try {
             let response = await fetch(url, requestOptions);
             let result = await response.json(); // Utiliser json() pour obtenir un objet JSON
-            console.log("result", result);
-            console.log("response", response);
+            // console.log("result", result);
+            // console.log("response", response);
             if (response.ok) {
                 return result; // Retourner l'objet JSON complet
             }
