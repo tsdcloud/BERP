@@ -21,6 +21,9 @@ const AutoComplete = ({
     const inputValue = e.target.value;
     setValue(inputValue);
     onSearch(inputValue);
+    if (inputValue === "") {
+      onSelect(null);
+    }
   };
 
   const handleSelect = (item) => {
@@ -48,18 +51,18 @@ const AutoComplete = ({
   return isLoading ? (
     <Skeleton className="h-4 w-full p-2" />
   ) : (
-    <div>
+    <div className="w-full">
         <div className="w-full p-2 bg-white relative" ref={autocompleteRef}>
-        <input
-            className="w-full p-2 rounded-md border"
-            placeholder={placeholder}
-            value={value}
-            onFocus={() => setShowOptions(true)}
-            onChange={handleOnChange}
-            {...(register && register(inputName, validation))}
-        />
+          <input
+              className="w-full p-1 rounded-md border"
+              placeholder={placeholder}
+              value={value}
+              onFocus={() => setShowOptions(true)}
+              onChange={handleOnChange}
+              {...(register && register(inputName, validation))}
+          />
         {showOptions && (
-            <div className="bg-white shadow-sm rounded-sm p-2 absolute w-full transition-all space-y-2 max-h-[150px] overflow-auto z-30">
+            <div className="bg-white shadow-lg rounded-sm p-2 absolute w-[97%] transition-all space-y-2 max-h-[100px] overflow-scroll z-[30] mr-3">
             {dataList.map((item, index) => (
                 <div
                 key={index}

@@ -12,12 +12,36 @@ const TypeMaintenance = () => {
     const {handleFetch} = useFetch();
     const [maintenanceTypes, setMaintenanceTypes] = useState([]);
     const [isOpenned, setIsOpenned] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(0);
     const [page, setPage] = useState(0);
     const [pageList, setPageList] = useState([]);
+    const [searchValue, setSearchValue] = useState([]);
 
-    const fetchMaintenanceTypes= async () => {
-        let url = `${URLS.INCIDENT_API}/maintenance-types`;
+    const fetchMaintenanceTypes= async (url) => {
+        setIsLoading(true);
+        try {
+           const response = await handleFetch(url);
+           if(response.data){
+            setMaintenanceTypes(response.data);
+            setTotalPages(response.totalPages);
+            setPage(response.page);
+           }
+        } catch (error) {
+            console.log(error)
+        }finally{
+            setIsLoading(false);
+        }
+    }
+
+    const handleSubmit=()=>{
+        document.getElementById("close-dialog").click();
+        fetchMaintenanceTypes(`${URLS.INCIDENT_API}/maintenance-types`);
+    }
+
+    const handleSearch = async(e)=>{
+        setSearchValue(e.target.value)
+        let url = `${URLS.INCIDENT_API}/maintenance-types?search=${e.target.value}`;
         try {
            const response = await handleFetch(url);
            if(response.data){
@@ -30,13 +54,8 @@ const TypeMaintenance = () => {
         }
     }
 
-    const handleSubmit=()=>{
-        fetchMaintenanceTypes();
-        document.getElementById("close-dialog").click();
-    }
-
     useEffect(()=>{
-        fetchMaintenanceTypes();
+        fetchMaintenanceTypes(`${URLS.INCIDENT_API}/maintenance-types`);
     }, []);
 
   return (
@@ -50,7 +69,6 @@ const TypeMaintenance = () => {
                 </div>
                 {/* Dialog */}
                 <div className='flex gap-2 items-center'>
-                    {/* <Input placeholder="Recherche..." className="outline-primary"/> */}
                     <Dialogue 
                         buttonText={"Nouveau Type de maintenance"}
                         header={<h2 className='text-xl font-semibold'>Nouveau type de maintenance</h2>}
@@ -64,17 +82,27 @@ const TypeMaintenance = () => {
             </div>
             {/* Table */}
             <div className='w-full bg-white rounded-lg p-2'>
+                <div className='px-4'>
+                    <input 
+                        type="text"
+                        className='p-2 text-sm border rounded-lg' 
+                        placeholder='Recherche...' 
+                        value={searchValue}
+                        onChange={handleSearch}
+                    />
+                </div>
                 <Datalist 
                     dataList={maintenanceTypes}
-                    fetchData={fetchMaintenanceTypes}
-                />
-                {/* Pagination */}
-                <Pagination 
-                    totalPages={totalPages}
-                    setList={setMaintenanceTypes}
-                    handleNext={()=>{}}
-                    handlePrev={()=>{}}
-                    link={`${URLS.INCIDENT_API}/maintenance-types`}
+                    fetchData={()=>fetchMaintenanceTypes(`${URLS.INCIDENT_API}/maintenance-types`)}
+                    searchValue={searchValue}
+                    pagination={{
+                        total: totalPages,
+                        pageSize: 100,
+                        onchange:()=>{
+                            totalPages > page && fetchMaintenanceTypes(`${URLS.INCIDENT_API}/maintenance-types?page=${page+1}`)
+                        }
+                    }}
+                    loading={isLoading}
                 />
             </div>
 

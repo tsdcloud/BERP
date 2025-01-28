@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import Header from '../../components/layout/Header';
 import Dialogue from '../../components/incidents/Dialogue';
-import Datalist from '../../components/incidents/Datalist';
-import InitiateForm from '../../components/incidents/InitiateForm';
 import Tabs from '../../components/incidents/Tabs';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
-
-const Incident = () =>{
+import Card from '../../components/incidents/Dashboard/Card';
+import { Cog8ToothIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import ActionHeader from '../../components/incidents/Dashboard/ActionHeader';
+const Dashboard = () =>{
     const {handleFetch} = useFetch();
     const [incidents, setIncidents] = useState([]);
     const [isOpenned, setIsOpenned] = useState(false);
@@ -43,27 +43,27 @@ const Incident = () =>{
     return(
         <>
             <Header />
-            <div className='px-6 space-y-4'>
+            <div className='px-6 space-y-2'>
                 {/* Header */}
                 <div className='overflow-x-auto'>
                     <Tabs />
                 </div>
                 {/* Dialog */}
-                <div className='flex gap-2 items-center'>
-                    <Dialogue 
-                        buttonText={"Declarer un incident"}
-                        header={<h2 className='text-xl font-semibold'>Déclarer un incident</h2>}
-                        content={<InitiateForm onSucess={handleSubmit}/>}
-                    />
+                <div className='p-2'>
+                    <ActionHeader />
                 </div>
-                {/* Table */}
-                <div className='w-full bg-white rounded-lg p-2'>
-                    <div className='px-2'>
-                        <input type="text" className='p-2 border rounded-lg' placeholder='Recherche...' />
-                    </div>
-                    <Datalist 
-                        dataList={incidents}
-                        fetchData={fetchIncidents}
+                <div className='p-2 py-[50px] flex items-center space-x-2'>
+                    <Card 
+                        icon={<ExclamationTriangleIcon  className='h-8 w-8 text-white'/>}
+                        title={"Incidents"}
+                        data={"2000"}
+                        iconBg={"bg-red-500"}
+                    />
+                    <Card 
+                        icon={<Cog8ToothIcon  className='h-8 w-8 text-white'/>}
+                        title={"Maintenances"}
+                        data={"2000"}
+                        iconBg={"bg-blue-500"}
                     />
                 </div>
             </div>
@@ -71,4 +71,4 @@ const Incident = () =>{
     )
 }
 
-export default Incident;
+export default Dashboard;

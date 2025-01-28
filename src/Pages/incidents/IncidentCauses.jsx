@@ -13,12 +13,14 @@ const IncidentCauses = () => {
     const {handleFetch} = useFetch();
     const [incidentCauses, setIncidentCauses] = useState([]);
     const [isOpenned, setIsOpenned] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(0);
     const [page, setPage] = useState(0);
+    const [searchValue, setSearchValue] = useState("");
     const [pageList, setPageList] = useState([]);
 
-    const fetchIncidentCauses= async () => {
-        let url = `${URLS.INCIDENT_API}/incident-causes`;
+    const fetchIncidentCauses= async (url) => {
+        setIsLoading(true);
         try {
            const response = await handleFetch(url);
            if(response.data){
@@ -28,16 +30,26 @@ const IncidentCauses = () => {
            }
         } catch (error) {
             console.log(error)
+        }finally{
+            setIsLoading(false)
         }
     }
 
     const handleSubmit=()=>{
-        fetchIncidentCauses();
+        fetchIncidentCauses(`${URLS.INCIDENT_API}/incident-causes`);
         document.getElementById("close-dialog").click();
     }
 
+    const handleSearch =(e)=>{
+        setSearchValue(e.target.value)
+        try {
+            fetchIncidentCauses(`${URLS.INCIDENT_API}/incident-causes?search=${e.target.value}`)
+        } catch (error) {
+            console.log(error)
+        }
+    }
     useEffect(()=>{
-        fetchIncidentCauses();
+        fetchIncidentCauses(`${URLS.INCIDENT_API}/incident-causes`);
     }, []);
 
   return (
@@ -51,7 +63,6 @@ const IncidentCauses = () => {
                 </div>
                 {/* Dialog */}
                 <div className='flex gap-2 items-center'>
-                    {/* <Input placeholder="Recherche..." className="outline-primary"/> */}
                     <Dialogue 
                         buttonText={"Créer une cause d'incident"}
                         header={<h2 className='text-xl font-semibold'>Créer une cause d'incident</h2>}
@@ -65,17 +76,27 @@ const IncidentCauses = () => {
             </div>
             {/* Table */}
             <div className='w-full bg-white rounded-lg p-2'>
+                <div className='px-4'>
+                    <input 
+                        type="text" 
+                        placeholder='Recherch' 
+                        className='p-2 rounded-lg border'
+                        value={searchValue}
+                        onChange={handleSearch}
+                    />
+                </div>
                 <Datalist 
                     dataList={incidentCauses}
-                    fetchData={fetchIncidentCauses}
-                />
-                {/* Pagination */}
-                <Pagination 
-                    totalPages={totalPages}
-                    setList={setIncidentCauses}
-                    handleNext={()=>{}}
-                    handlePrev={()=>{}}
-                    link={`${URLS.INCIDENT_API}/incident-causes`}
+                    fetchData={()=>fetchIncidentCauses(`${URLS.INCIDENT_API}/incident-causes`)}
+                    loading={isLoading}
+                    searchValue={searchValue}
+                    pagination={{
+                        pageSize:100,
+                        total: totalPages,
+                        onChange:()=>{
+                            totalPages > pages && fetchIncidentCauses(`${URLS.INCIDENT_API}/incident-causes?page=${page+1}`)
+                        }
+                    }}
                 />
             </div>
 

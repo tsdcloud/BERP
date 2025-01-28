@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetch } from '../../hooks/useFetch';
 import AutoComplete from '../common/AutoComplete';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { Button } from '../ui/button';
 
 const InitiateForm = ({onSucess}) => {
@@ -15,12 +16,13 @@ const InitiateForm = ({onSucess}) => {
     const [equipements, setEquipments] = useState([]);
     const [shifts, setShifts] = useState([]);
     const [sites, setSites] = useState([]);
+    const [supplierType, setSupplierType] = useState("");
 
     const handleSubmitDecleration = async (data) =>{
       try {
         let url = `${import.meta.env.VITE_INCIDENT_API}/incidents`;
-        data.userId= "15f82bfb-79d7-4c79-9a98-d289cdcb1a84";
-        data.createdBy= "15f82bfb-79d7-4c79-9a98-d289cdcb1a84";
+        data.userId= "878c6bae-b754-4577-b614-69e15821dac8";
+        data.createdBy= "878c6bae-b754-4577-b614-69e15821dac8";
         // console.log(data)
         let response = await handlePost(url, data);
         if(response?.status !== 201){
@@ -269,7 +271,7 @@ const InitiateForm = ({onSucess}) => {
 
 
         {/* Consommable selection */}
-        <div className='flex flex-col'>
+        {/* <div className='flex flex-col'>
           <label htmlFor="" className='text-xs px-2'>Choisir le consommable :</label>
           <AutoComplete
             placeholder="Choisir un consommable"
@@ -280,7 +282,7 @@ const InitiateForm = ({onSucess}) => {
             // register={register}
           />
           {errors.consomableId && <small className='text-xs my-2 text-red-500'>{errors.consomableId.message}</small>}
-        </div>
+        </div> */}
 
         {/* Equipement selection */}
         <div className='flex flex-col'>
@@ -326,7 +328,7 @@ const InitiateForm = ({onSucess}) => {
 
         {/* Description */}
         <div className='flex flex-col px-2'>
-          <textarea name="" id="" className='p-2 rounded-lg tetx-sm w-full border' placeholder='Description'></textarea>
+          <textarea {...register("description", {required:false})} className='p-2 rounded-lg tetx-sm w-full border' placeholder='Description'></textarea>
         </div>
 
       </div>

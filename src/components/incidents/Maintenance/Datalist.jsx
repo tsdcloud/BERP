@@ -1,20 +1,9 @@
-import React, {useEffect, useState} from 'react'
-import { useFetch } from '../../../hooks/useFetch';
-import { useForm } from 'react-hook-form';
-import { INCIDENT_STATUS } from '../../../utils/constant.utils';
+import React, {useEffect, useState} from 'react';
 import { Button } from '../../ui/button';
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "../../ui/pagination";
-import { ArchiveBoxXMarkIcon, PencilIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { EyeIcon } from 'lucide-react';
-
+import { INCIDENT_STATUS } from '../../../utils/constant.utils';
+import { XMarkIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { Form, Table } from 'antd';
+import { useFetch } from '../../../hooks/useFetch';
 import {
   flexRender,
   getCoreRowModel,
@@ -23,8 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
-import { Checkbox } from "../../ui/checkbox"
+import { ChevronDown, MoreHorizontal } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -33,28 +21,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../../components/ui/dropdown-menu"
-import { Input } from "../../../components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../../components/ui/table"
+} from "../../../components/ui/dropdown-menu";
 import { URLS } from '../../../../configUrl';
  
 
 
 
 
-const Datalist = ({dataList, fetchData}) => {
+const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
 
   const handleDelete = async (id) =>{
     if (window.confirm("Voulez vous supprimer la maintenance ?")) {
       try {
-        let url = `${URLS.INCIDENT_API}/maintenances/${id}`;
+        let url = `${URLS.INCIDENT_API}/maintenance/${id}`;
         let response = await fetch(url, {
           method:"DELETE"
         });
@@ -68,172 +47,175 @@ const Datalist = ({dataList, fetchData}) => {
     }
   }
 
+  const highlightText = (text) => {
+    if (!searchValue) return text;
 
-  const columns = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-          className="text-"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
-      accessorKey: "siteId",
-      header: "Site",
-      cell: ({ row }) => (
-        <div className="capitalize">{sites.find(item => row.getValue("siteId") == item?.value)?.name}
-        </div>
-      )},
-    {
-      accessorKey: "supplierId",
-      header: "Maintenancier",
-      cell: ({ row }) => (
-        <div className="capitalize">{externalEntities.find(item => row.getValue("supplierId") == item?.value)?.name || employees.find(item => row.getValue("supplierId") == item?.value)?.name}</div>
-      ),
-    },
-    {
-      accessorKey: "createdAt",
-      header: "Date de creation",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("createdAt").split("T")[0]}</div>
-      ),
-    },
-    {
-      accessorKey: "closedDate",
-      header: "Date de cloture",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("closedDate")?.split("T")[0] || "--"}</div>
-      ),
-    },
-    {
-      accessorKey: "status",
-      header: "Etat",
-      cell: ({ row }) => (
-        <div className={`${
-          row.getValue("status") === "UNDER_MAINTENANCE"?"border-yellow-500 bg-yellow-300":
-          row.getValue("status") === "CLOSED" ? "border-green-500 bg-green-300" :""
-        } p-2 rounded-lg border`}>{INCIDENT_STATUS[row.getValue("status")] || "Unknown Status"}</div>
-      ),
-    },
-    {
-      id: "actions",
-      enableHiding: false,
-      cell: ({ row }) => {
-        const maintenance = row.original;
-   
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              {/* <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(payment.id)}
-              >
-                Copy payment ID
-              </DropdownMenuItem> */}
-              <DropdownMenuSeparator />
-              {
-                (maintenance.status === "PENDING") &&
-                <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
-                  <button className='flex items-center space-x-2'
-                    onClick={async ()=>{
-                      if (window.confirm("Voulez vous cloturer la maintenance ?")) {
-                        try {
-                          let url = `${URLS.INCIDENT_API}/maintenances/${maintenance.id}`;
-                          let response = await fetch(url, {
-                            method:"PATCH",
-                            headers:{
-                              "Content-Type":"application/json",
-                            },
-                            body:JSON.stringify({status: "CLOSED"})
-                          });
-                          if(response.status === 200){
-                            let urlIncident = `${URLS.INCIDENT_API}/incidents/${maintenance.incidentId}`;
-                            let response = await fetch(urlIncident, {
-                              method:"PATCH",
-                              headers:{
-                                "Content-Type":"application/json",
-                              },
-                              body:JSON.stringify({status: "CLOSED"})
-                            });
-                            if(response.status == 200){
-                              fetchData();
-                            }
-                          }
-                        } catch (error) {
-                          console.log(error);
-                        }
-                      }
-                    }}
-                  >
-                    <XMarkIcon />
-                    <span>Cloturer la maintenance</span>
-                  </button>
-                </DropdownMenuItem>
-              }
-              <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(consommable.id)}>
-                <TrashIcon className='text-red-500 h-4 w-6'/>
-                <span className='text-red-500'>Supprimer</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )
-      },
-    },
-  ];
-
+    const regex = new RegExp(searchValue, 'gi');
+    return <span dangerouslySetInnerHTML={{ __html: text?.replace(
+      new RegExp(searchValue, 'gi'),
+      (match) => `<mark style="background-color: yellow;">${match}</mark>`
+    )}} />
+  };
+          
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
-  const [columnVisibility, setColumnVisibility] = useState({});
-  const [rowSelection, setRowSelection] = useState({});
-  
   const [sites, setSites] = useState([]);
-  const [isLoading, setIsLoading] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [externalEntities, setExternalEntities] = useState([]);
+  const [columnVisibility, setColumnVisibility] = useState({});
+  const [rowSelection, setRowSelection] = useState({});
+  const [editingRow, setEditingRow] = useState("");
 
+  const columns=[
+    {
+      title:"No ref",
+      dataIndex:"numRef",
+      width:"100px",
+      render:(value, record)=>
+        editingRow == record.id ?
+        <input />:
+        <p className='text-sm'>{highlightText(value)}</p>
+    },
+    {
+      title:"Ref incident",
+      dataIndex:"incident",
+      width:"100px",
+      render:(value)=><p className='text-sm'>{highlightText(value?.numRef) || "--"}</p>
+    },
+    {
+      title:"Equipement",
+      dataIndex:"equipement",
+      width:"200px",
+      render:(value)=><p className='text-sm'>{highlightText(value?.name)}</p>
+    },
+    {
+      title:"Site",
+      dataIndex:"siteId",
+      width:"200px",
+      render:(value)=>
+        <p className='text-sm capitalize'>
+          {sites.find(site => site.value === value)?.name || value}
+        </p>
+    },
+    {
+      title:"Date previsionells",
+      dataIndex:"projectedDate",
+      width:"200px",
+      render:(value)=><p className='text-sm'>{value?.split("T")[0] || "--"}</p>
+    },
+    {
+      title:"Prochain maintenance",
+      dataIndex:"nextMaintenance",
+      width:"200px",
+      render:(value)=><p className='text-sm'>{value?.split("T")[0] || "--"}</p>
+    },
+    {
+      title:"Chef de guerrite",
+      dataIndex:"userId",
+      width:"200px",
+      render:(value)=><p className='text-sm'>{employees.find(site => site.value === value)?.name || "N/A"}</p>
+    },
+    {
+      title:"Maintenancier",
+      dataIndex:"supplierId",
+      width:"200px",
+      render:(value)=><p className='text-sm'>{employees.find(site => site.value === value)?.name || externalEntities.find(site => site.value === value)?.name || "--"}</p>
+    },
+    {
+      title:"Date de création",
+      dataIndex:"createdAt",
+      width:"200px",
+      render:(value)=><p className='text-sm'>{highlightText(value?.split("T")[0])}</p>
+    },
+    {
+      title:"Dernière mise a jour",
+      dataIndex:"updatedAt",
+      width:"200px",
+      render:(value)=><p className='text-sm'>{highlightText(value?.split("T")[0])}</p>
+    },
+    {
+      title:"Statut",
+      dataIndex:"status",
+      width:"200px",
+      fixed:"right",
+      render:(value)=>(
+        <div className={`${
+          value === "UNDER_MAINTENANCE"?"border-yellow-500 bg-yellow-300":
+          value === "CLOSED" ? "border-green-500 bg-green-300" :""
+        } p-2 rounded-lg border`}>{INCIDENT_STATUS[value] || "Unknown Status"}</div>
+      )
+    },
+    {
+      title:"Actions",
+      width:  "200px",
+      fixed: 'right',
+      render:(value, record)=>
+        editingRow == record.id ?
+        <button title='Enregistrer'>Enreg...</button>:
+        <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          {/* <DropdownMenuItem
+            onClick={() => navigator.clipboard.writeText(payment.id)}
+          >
+            Copy payment ID
+          </DropdownMenuItem> */}
+          <DropdownMenuSeparator />
+          {
+            (record.status === "PENDING") &&
+            <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
+              <button className='flex items-center space-x-2'
+                onClick={async ()=>{
+                  if (window.confirm("Voulez vous cloturer la maintenance ?")) {
+                    try {
+                      let url = `${URLS.INCIDENT_API}/maintenances/${record.id}`;
+                      let response = await fetch(url, {
+                        method:"PATCH",
+                        headers:{
+                          "Content-Type":"application/json",
+                        },
+                        body:JSON.stringify({status: "CLOSED"})
+                      });
+                      if(response.status === 200){
+                        let urlIncident = `${URLS.INCIDENT_API}/incidents/${record.incidentId}`;
+                        let response = await fetch(urlIncident, {
+                          method:"PATCH",
+                          headers:{
+                            "Content-Type":"application/json",
+                          },
+                          body:JSON.stringify({status: "CLOSED"})
+                        });
+                        if(response.status == 200){
+                          fetchData();
+                        }
+                      }
+                    } catch (error) {
+                      console.log(error);
+                    }
+                  }
+                }}
+              >
+                <XMarkIcon />
+                <span>Cloturer la maintenance</span>
+              </button>
+            </DropdownMenuItem>
+          }
+          <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(consommable.id)}>
+            <TrashIcon className='text-red-500 h-4 w-6'/>
+            <span className='text-red-500'>Supprimer</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    },
+  ]
+    
   const {handleFetch, handlePost} = useFetch();
-  const {register, handleSubmit, formState:{errors}, setValue} = useForm();
-
-  const table = useReactTable({
-      data: dataList,
-      columns,
-      onSortingChange: setSorting,
-      onColumnFiltersChange: setColumnFilters,
-      getCoreRowModel: getCoreRowModel(),
-      getPaginationRowModel: getPaginationRowModel(),
-      getSortedRowModel: getSortedRowModel(),
-      getFilteredRowModel: getFilteredRowModel(),
-      onColumnVisibilityChange: setColumnVisibility,
-      onRowSelectionChange: setRowSelection,
-      state: {
-        sorting,
-        columnFilters,
-        columnVisibility,
-        rowSelection,
-      },
-  });
 
   const handleFetchSites = async (link) =>{
     try {
@@ -246,12 +228,9 @@ const Datalist = ({dataList, fetchData}) => {
           }
         });
         setSites(formatedData);
-        console.log(formatedData)
       }
     } catch (error) {
       console.error(error);
-    } finally{
-      setIsLoading(false);
     }
   }
 
@@ -269,10 +248,9 @@ const Datalist = ({dataList, fetchData}) => {
       }
     } catch (error) {
       console.error(error);
-    } finally{
-      setIsLoading(false);
     }
   }
+
   const handleFetchExternalEntities = async (link) =>{
     try {
       let response = await handleFetch(link);     
@@ -287,8 +265,6 @@ const Datalist = ({dataList, fetchData}) => {
       }
     } catch (error) {
       console.error(error);
-    } finally{
-      setIsLoading(false);
     }
   }
 
@@ -296,128 +272,27 @@ const Datalist = ({dataList, fetchData}) => {
     handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/sites`);
     handleFetchEmployees(`${import.meta.env.VITE_ENTITY_API}/employees`);
     handleFetchExternalEntities(`${import.meta.env.VITE_ENTITY_API}/suppliers`);
-  }, [])
-
+  }, []);
+  
   return (
     <div className="w-full">
-      <div className="flex items-center py-4 w-full">
-        <Input
-          placeholder="Recherche un consommable"
-          value={(table.getColumn("name")?.getFilterValue()) ?? ""}
-          onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm text-xs py-1"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              <span className='text-xs'>Choisir les colonnes</span> <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="rounded-md border overflow-x-auto w-full">
-        <div className='sticky top-0 z-10'>
-          <Table className="bg-white">
-            <TableHeader className="bg-gray-100 top-0">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id} className="w-[100px] text-left">
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-          </Table>
-        </div>
-        <div className='h-[500px] max-h-[30vh] overflow-y-auto flex'>
-          <Table className="bg-white">
-            <TableBody className="">
-              {
-                table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="w-[100px] text-left">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : 
-                (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No results.
-                    </TableCell>
-                  </TableRow>
-                )
-              }
-            </TableBody>
-          </Table>
-        </div>
+      <div className="py-4 px-4 w-full max-h-[500px]">
+        <Form>
+          <Table 
+            footer={() => <div className='flex'></div>}
+            dataSource={dataList}
+            columns={columns}
+            bordered={true}
+            scroll={{
+                x: 500,
+                y: "30vh"
+            }}
+            pagination={pagination}
+            loading={loading}
+          />
+        </Form>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          {/* <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button> */}
-        </div>
       </div>
     </div>
   )

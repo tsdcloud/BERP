@@ -44,6 +44,7 @@ import Grade from './Pages/entity/Grade';
 import Echelon from './Pages/entity/Echelon';
 import Category from './Pages/entity/Category';
 import Employee from './Pages/entity/Employee';
+import Dashboard from './Pages/incidents/Dashboard';
 
 
 
@@ -99,7 +100,7 @@ function App() {
            {/* Incident */}
            <Route path="/incidents">
               <Route path="" element={<Incident />} />
-              <Route path="dashboard" element={<Incident />} />
+              <Route path="dashboard" element={<Dashboard />} />
               <Route path="incident-cause" element={<IncidentCauses />} />
               <Route path="incident-type" element={<IncidentType />} />
               <Route path="maintenance" element={<Maintenance />} />

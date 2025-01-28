@@ -1,28 +1,21 @@
 import React, {useEffect, useState} from 'react';
-import { useForm } from 'react-hook-form';
 import { Button } from '../ui/button';
+import { useForm } from 'react-hook-form';
+import { INCIDENT_STATUS } from '../../utils/constant.utils';
+import { XMarkIcon, TrashIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { Form, Table } from 'antd';
 import { useFetch } from '../../hooks/useFetch';
-import { ExclamationTriangleIcon, PencilIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { URLS } from '../../../configUrl';
+import AutoComplete from '../common/AutoComplete';
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "../ui/dialog"
-
-import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-import { ChevronDown, MoreHorizontal } from "lucide-react"
-import { Checkbox } from "../ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -31,27 +24,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu"
-import { Input } from "../../components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../components/ui/table"
-import { URLS } from '../../../configUrl';
-import { INCIDENT_STATUS, INTERVENANT } from '../../utils/constant.utils';
-import AutoComplete from '../common/AutoComplete';
+} from "../../components/ui/dropdown-menu";
+import { ChevronDown, MoreHorizontal } from "lucide-react";
+ 
 
 
-const Datalist = ({dataList, fetchData}) => {
+
+
+const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
 
   const handleDelete = async (id) =>{
-    if (window.confirm("Voulez vous supprimer l'incident ?")) {
+    if (window.confirm("Voulez vous supprimer la maintenance ?")) {
       try {
-        let url = `${URLS.INCIDENT_API}/incidents/${id}`;
+        let url = `${URLS.INCIDENT_API}/maintenance/${id}`;
         let response = await fetch(url, {
           method:"DELETE"
         });
@@ -65,100 +50,136 @@ const Datalist = ({dataList, fetchData}) => {
     }
   }
 
+  const highlightText = (text) => {
+    if (!searchValue) return text;
+
+    const regex = new RegExp(searchValue, 'gi');
+    return <span dangerouslySetInnerHTML={{ __html: text?.replace(
+      new RegExp(searchValue, 'gi'),
+      (match) => `<mark style="background-color: yellow;">${match}</mark>`
+    )}} />
+  };
+          
+  const [sorting, setSorting] = useState([]);
+  const [columnFilters, setColumnFilters] = useState([]);
+  const [sites, setSites] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [shifts, setShifts] = useState([]);
+  const [employees, setEmployees] = useState([]);
+  const [externalEntities, setExternalEntities] = useState([]);
+  const [maintenanceTypes, setMaintenanceTypes] = useState([]);
+  const [columnVisibility, setColumnVisibility] = useState({});
+  const [rowSelection, setRowSelection] = useState({});
+  const [editingRow, setEditingRow] = useState("");
+  const [selectedSite, setSelectedSite] = useState("");
+  const [selectedIncident, setSelectedIncident] = useState("");
+  const [selectedEquipement, setSelectedEquipement] = useState("");
+
   const [isOpen, setIsOpen] = useState(false);
   const [maintenanceType, setMaintenanceType] = useState("");
   const [supplierType, setSupplierType] = useState("");
   const [description, setDescription] = useState("");
 
-  const handleClose = () => {
-    setIsOpen(false);
-  };
+  const {register, handleSubmit, formState:{errors}, setValue} = useForm();
 
-  const columns = [
+
+  const columns=[
     {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-          className="text-"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
+      title:"No ref",
+      dataIndex:"numRef",
+      width:"100px",
+      render:(value, record)=>
+        editingRow == record.id ?
+        <input />:
+        <p className='text-sm'>{highlightText(value)}</p>
     },
     {
-      accessorKey: "incidentId",
-      header: "Type incident",
-      cell: ({ row }) => (
-        <div className="capitalize">{incidentTypes.find(item => row.getValue("incidentId") == item?.value)?.name}</div>
-      ),
+      title:"Type incident",
+      dataIndex:"incident",
+      width:"200px",
+      render:(value)=><p className='text-sm'>{value?.name || value}</p>
     },
     {
-      accessorKey: "siteId",
-      header: "Site",
-      cell: ({ row }) => (
-        <div className="capitalize">{sites.find(item => row.getValue("siteId") == item?.value)?.name}</div>
-      ),
+      title:"Site",
+      dataIndex:"siteId",
+      width:"100px",
+      render:(value)=>
+        <p className='text-sm capitalize'>
+          {sites.find(site => site.value === value)?.name || value}
+        </p>
     },
     {
-      accessorKey: "shiftId",
-      header: "Shift",
-      cell: ({ row }) => (
-        <div className="capitalize">{shifts.find(item => row.getValue("shiftId") == item?.value)?.name}</div>
-      ),
+      title:"Shift",
+      dataIndex:"shiftId",
+      width:"150px",
+      render:(value)=>
+        <p className='text-sm capitalize'>
+          {shifts.find(shift => shift.value === value)?.name || value}
+        </p>
     },
     {
-      accessorKey: "consomableId",
-      header: "Consommables",
-      cell: ({ row }) => (
-        <div className="capitalize">{consommables.find(item => row.getValue("consomableId") == item?.value)?.name}</div>
-      ),
+      title:"Chef de guerite",
+      dataIndex:"userId",
+      width:"200px",
+      render:(value)=>
+        <p className='text-sm capitalize'>
+          {employees.find(employee => employee.value === value)?.name || value}
+        </p>
     },
     {
-      accessorKey: "equipementId",
-      header: "Equipements",
-      cell: ({ row }) => (
-        <div className="capitalize">{equipements.find(item => row.getValue("equipementId") == item?.value)?.name}</div>
-      ),
+      title:"Equipement",
+      dataIndex:"equipement",
+      width:"200px",
+      render:(value)=>
+        <p className='text-sm capitalize'>
+          {value?.name}
+        </p>
     },
     {
-      accessorKey: "incidentCauseId",
-      header: "Cause incident",
-      cell: ({ row }) => (
-        <div className="capitalize">{incidentCauses.find(item => row.getValue("incidentCauseId") == item?.value)?.name}</div>
-      ),
+      title:"Cause incident",
+      dataIndex:"incidentCauses",
+      width:"200px",
+      render:(value)=>
+        <p className='text-sm capitalize'>
+          {value?.name}
+        </p>
     },
     {
-      accessorKey: "status",
-      header: "Etat",
-      cell: ({ row }) => (
+      title:"Date de creation",
+      dataIndex:"creationDate",
+      width:"200px",
+      render:(value)=>
+        <p className='text-sm capitalize'>
+          {value?.split("T")[0] || "--"}
+        </p>
+    },
+    {
+      title:"Date de cloture",
+      dataIndex:"closedDate",
+      width:"200px",
+      render:(value)=>
+        <p className='text-sm capitalize'>
+          {value?.split("T")[0] || "--"}
+        </p>
+    },
+    {
+      title:"Statut",
+      dataIndex:"status",
+      fixed:"right",
+      width:"150px",
+      render:(value)=>
         <div className={`${
-          row.getValue("status") === "UNDER_MAINTENANCE"?"border-yellow-500 bg-yellow-300":
-          row.getValue("status") === "CLOSED" ? "border-green-500 bg-green-300" :""
-        } p-2 rounded-lg border`}>{INCIDENT_STATUS[row.getValue("status")] || "Unknown Status"}</div>
-      ),
+          value === "UNDER_MAINTENANCE"?"border-yellow-500 bg-yellow-300":
+          value === "CLOSED" ? "border-green-500 bg-green-300" :""
+        } p-2 rounded-lg border`}>{INCIDENT_STATUS[value] || "Unknown Status"}</div>
     },
     {
-      id: "actions",
-      header: "Actions",
-      enableHiding: false,
-      cell: ({ row }) => {
-        const incident = row.original;
-   
-        return (
-          <DropdownMenu>
+      title:"Action",
+      dataIndex:"",
+      fixed:"right",
+      width:"100px",
+      render:(value, record)=>
+        <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
                 <span className="sr-only">Open menu</span>
@@ -178,12 +199,13 @@ const Datalist = ({dataList, fetchData}) => {
                 <span className=''>Editer</span>
               </DropdownMenuItem> */}
               {
-                incident.status === "PENDING" &&
+                record.status === "PENDING" &&
                 <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
                   <button className='flex items-center space-x-2'
                     onClick={()=>{
-                      setSelectedSite(incident.siteId);
-                      setSelectedIncident(incident.id);
+                      setSelectedSite(record.siteId);
+                      setSelectedIncident(record.id);
+                      setSelectedEquipement(record.equipementId);
                       setIsOpen(true);
                     }}
                   >
@@ -193,13 +215,13 @@ const Datalist = ({dataList, fetchData}) => {
                 </DropdownMenuItem>
               }
               {
-                (incident.status === "UNDER_MAINTENANCE" || incident.status === "PENDING") &&
+                (record.status === "UNDER_MAINTENANCE" || record.status === "PENDING") &&
                 <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
                   <button className='flex items-center space-x-2'
                     onClick={async ()=>{
                       if (window.confirm("Voulez vous cloturer l'incident ?")) {
                         try {
-                          let url = `${URLS.INCIDENT_API}/incidents/${incident.id}`;
+                          let url = `${URLS.INCIDENT_API}/incidents/${record.id}`;
                           let response = await fetch(url, {
                             method:"PATCH",
                             headers:{
@@ -221,149 +243,18 @@ const Datalist = ({dataList, fetchData}) => {
                   </button>
                 </DropdownMenuItem>
               }
-              <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(consommable.id)}>
+              <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(incident.id)}>
                 <TrashIcon className='text-red-500 h-4 w-6'/>
                 <span className='text-red-500'>Supprimer</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        )
       },
-    },
-  ];
-  
+  ]
+    
   const {handleFetch, handlePost} = useFetch();
-  const {register, handleSubmit, formState:{errors}, setValue} = useForm();
 
-  const [sorting, setSorting] = useState([]);
-  const [columnFilters, setColumnFilters] = useState([]);
-  const [columnVisibility, setColumnVisibility] = useState({});
-  const [rowSelection, setRowSelection] = useState({});
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [incidentCauses, setIncidentCauses] = useState([]);
-  const [incidentTypes, setIncidentTypes] = useState([]);
-  const [consommables, setConsommables] = useState([]);
-  const [equipements, setEquipments] = useState([]);
-  const [employees, setEmployees] = useState([]);
-  const [externalEntities, setExternalEntities] = useState([]);
-  const [maintenanceTypes, setMaintenanceTypes] = useState([]);
-  const [shifts, setShifts] = useState([]);
-  const [sites, setSites] = useState([]);
-
-  const [selectedSite, setSelectedSite] = useState("")
-  const [selectedIncident, setSelectedIncident] = useState("")
-
-  // Handle Fetches
-  const handleFetchConsommable = async (link) =>{
-    try {
-      let response = await handleFetch(link);     
-      if(response?.status === 200){
-        let formatedData = response?.data.map(item=>{
-          return {
-            name:item?.name,
-            value: item?.id
-          }
-        });
-        setConsommables(formatedData);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally{
-      setIsLoading(false);
-    }
-  }
-  const handleFetchEquipements = async (link) =>{
-      try {
-        let response = await handleFetch(link);     
-        if(response?.status === 200){
-          let formatedData = response?.data.map(item=>{
-            return {
-              name:item?.name,
-              value: item?.id
-            }
-          });
-          setEquipments(formatedData);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally{
-        setIsLoading(false);
-      }
-    }
-  const handleFetchCauses = async (link) =>{
-      try {
-        let response = await handleFetch(link);     
-        if(response?.status === 200){
-          let formatedData = response?.data.map(item=>{
-            return {
-              name:item?.name,
-              value: item?.id
-            }
-          });
-          setIncidentCauses(formatedData);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally{
-        setIsLoading(false);
-      }
-    }
-  const handleFetchTypes = async (link) =>{
-      try {
-        let response = await handleFetch(link);     
-        if(response?.status === 200){
-          let formatedData = response?.data.map(item=>{
-            return {
-              name:item?.name,
-              value: item?.id
-            }
-          });
-          setIncidentTypes(formatedData);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally{
-        setIsLoading(false);
-      }
-    }
   const handleFetchSites = async (link) =>{
-      try {
-        let response = await handleFetch(link);     
-        if(response?.status === 200){
-          let formatedData = response?.data.map(item=>{
-            return {
-              name:item?.name,
-              value: item?.id
-            }
-          });
-          setSites(formatedData);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally{
-        setIsLoading(false);
-      }
-    }
-  const handleFetchShifts = async (link) =>{
-      try {
-        let response = await handleFetch(link);     
-        if(response?.status === 200){
-          let formatedData = response?.data.map(item=>{
-            return {
-              name:item?.name,
-              value: item?.id
-            }
-          });
-          setShifts(formatedData);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally{
-        setIsLoading(false);
-      }
-    }
-  const handleFetchMaintenanceTypes = async (link) =>{
     try {
       let response = await handleFetch(link);     
       if(response?.status === 200){
@@ -373,7 +264,24 @@ const Datalist = ({dataList, fetchData}) => {
             value: item?.id
           }
         });
-        setMaintenanceTypes(formatedData);
+        setSites(formatedData);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const handleFetchShifts = async (link) =>{
+    try {
+      let response = await handleFetch(link);     
+      if(response?.status === 200){
+        let formatedData = response?.data.map(item=>{
+          return {
+            name:item?.name,
+            value: item?.id
+          }
+        });
+        setShifts(formatedData);
       }
     } catch (error) {
       console.error(error);
@@ -381,6 +289,7 @@ const Datalist = ({dataList, fetchData}) => {
       setIsLoading(false);
     }
   }
+
   const handleFetchEmployees = async (link) =>{
     try {
       let response = await handleFetch(link);     
@@ -395,10 +304,9 @@ const Datalist = ({dataList, fetchData}) => {
       }
     } catch (error) {
       console.error(error);
-    } finally{
-      setIsLoading(false);
     }
   }
+
   const handleFetchExternalEntities = async (link) =>{
     try {
       let response = await handleFetch(link);     
@@ -413,45 +321,20 @@ const Datalist = ({dataList, fetchData}) => {
       }
     } catch (error) {
       console.error(error);
-    } finally{
-      setIsLoading(false);
     }
   }
 
-  const handleSelectMaintenanceType=(item)=>{
-    setValue("maintenanceId", item.value)
-  }
-
-  const handleSelectSupplier=(item)=>{
-    setValue("supplierId", item.value)
-  }
-
-  const handleSearchEmployee=async(searchInput)=>{
-    try{
-      // handleFetchEmployee(`${import.meta.env.VITE_ENTITY_API}/employee?search=${searchInput}`);
-    }catch(error){
-      console.log(error);
-    }
-  }
-
-  const handleSearchMaintenanceType=async(searchInput)=>{
-    try{
-      handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types?search=${searchInput}`);
-    }catch(error){
-      console.log(error);
-    }
-  }
-  
   const submitMaintenance = async(data) =>{
     data.userId = "user id";
     data.createdBy = "created id";
     data.description = description;
     data.siteId = selectedSite;
-    data.incidentId = selectedIncident
+    data.equipement = selectedEquipement
+    console.log(data)
     
     let url = `${import.meta.env.VITE_INCIDENT_API}/maintenances`
     try {
-      let response = await handlePost(url, data);
+      let response = await handlePost(url, {...data, incidentId: selectedIncident});
       if(response.status !== 201){
         alert("Echec de la creation de la maintenance");
         return;
@@ -475,144 +358,77 @@ const Datalist = ({dataList, fetchData}) => {
     }
   }
 
-  const table = useReactTable({
-      data: dataList,
-      columns,
-      onSortingChange: setSorting,
-      onColumnFiltersChange: setColumnFilters,
-      getCoreRowModel: getCoreRowModel(),
-      getPaginationRowModel: getPaginationRowModel(),
-      getSortedRowModel: getSortedRowModel(),
-      getFilteredRowModel: getFilteredRowModel(),
-      onColumnVisibilityChange: setColumnVisibility,
-      onRowSelectionChange: setRowSelection,
-      state: {
-        sorting,
-        columnFilters,
-        columnVisibility,
-        rowSelection,
-      },
-  });
+  const handleFetchMaintenanceTypes = async (link) =>{
+    try {
+      let response = await handleFetch(link);     
+      if(response?.status === 200){
+        let formatedData = response?.data.map(item=>{
+          return {
+            name:item?.name,
+            value: item?.id
+          }
+        });
+        setMaintenanceTypes(formatedData);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally{
+      setIsLoading(false);
+    }
+  }
+  const handleSelectMaintenanceType=(item)=>{
+    setValue("maintenanceId", item.value)
+  }
 
+  const handleSelectSupplier=(item)=>{
+    setValue("supplierId", item.value)
+  }
+
+  const handleSearchMaintenanceType=async(searchInput)=>{
+    try{
+      handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types?search=${searchInput}`);
+    }catch(error){
+      console.log(error);
+    }
+  }
 
   useEffect(()=>{
-    handleFetchConsommable(`${import.meta.env.VITE_INCIDENT_API}/consommables`);
-    handleFetchEquipements(`${import.meta.env.VITE_INCIDENT_API}/equipements`);
-    handleFetchCauses(`${import.meta.env.VITE_INCIDENT_API}/incident-causes`);
-    handleFetchTypes(`${import.meta.env.VITE_INCIDENT_API}/incident-types`);
-    handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types`);
     handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/sites`);
     handleFetchShifts(`${import.meta.env.VITE_ENTITY_API}/shifts`);
+    handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types?hasIncident=${true}`);
     handleFetchEmployees(`${import.meta.env.VITE_ENTITY_API}/employees`);
     handleFetchExternalEntities(`${import.meta.env.VITE_ENTITY_API}/suppliers`);
-  },[]);
+  }, []);
 
+  useEffect(()=>{
+    handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types?hasIncident=${true}`);
+  }, [isOpen])
+  
   return (
     <div className="w-full">
-      <div className="flex items-center py-4 w-full">
-        <Input
-          placeholder="Recherche un incidents"
-          value={(table.getColumn("status")?.getFilterValue()) ?? ""}
-          onChange={(event) =>
-            table.getColumn("status")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm text-xs py-1"
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              <span className='text-xs'>Choisir les colonnes</span> <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="rounded-md border overflow-x-auto w-full">
-        <div className='sticky top-0 z-10'>
-          <Table className="bg-white">
-            <TableHeader className="bg-gray-100 top-0">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id} className="w-[100px] text-left">
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-          </Table>
-        </div>
-        <div className='h-[500px] max-h-[30vh] overflow-y-auto flex'>
-          <Table className="bg-white">
-            <TableBody className="">
-              {
-                table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="w-[100px] text-left">
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : 
-                (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No results.
-                    </TableCell>
-                  </TableRow>
-                )
-              }
-            </TableBody>
-          </Table>
-        </div>
+      <div className="py-4 px-4 w-full max-h-[500px]">
+        <Form>
+          <Table 
+            footer={() => <div className='flex'></div>}
+            dataSource={dataList}
+            columns={columns}
+            bordered={true}
+            scroll={{
+                x: 500,
+                y: "30vh"
+            }}
+            pagination={pagination}
+            loading={loading}
+          />
+        </Form>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      </div>
+
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent>
                 <DialogHeader>{"Mettre en maintenance"}</DialogHeader>
-                {React.cloneElement(<form onSubmit={handleSubmit(submitMaintenance)}>
+                <form onSubmit={handleSubmit(submitMaintenance)}>
                   {/* Type maintenance selection */}
                   <div className='flex flex-col'>
                     <label htmlFor="" className='text-xs px-2'>Choisir le type de maintenance*:</label>
@@ -628,13 +444,13 @@ const Datalist = ({dataList, fetchData}) => {
                   </div>
                   
                   {/* type selection */}
-                  <label htmlFor="" className='text-xs px-2'>Choisir le type de maintenance*:</label>
+                  <label htmlFor="" className='text-xs px-2'>Choisir le type d'intervenant*:</label>
                   <div 
                     className='flex flex-col mx-2'
                     onChange={(e)=>setSupplierType(e.target.value)}
                   >
                     <select name="" id="" className='border rounded-lg p-2' placeholder="Choisir le type d'intervenant">
-                      <option value="">Choisir le type de maintenance</option>
+                      <option value="">Choisir le type d'intervenant</option>
                       <option value="EMPLOYEE">Employer</option>
                       <option value="SUPPLIER">Prestataire</option>
                     </select>
@@ -690,11 +506,10 @@ const Datalist = ({dataList, fetchData}) => {
                   <Button className="text-white">
                     Mettre en maintenance
                   </Button>
-                </form>, { onClose: handleClose })}
+                </form>
                 <DialogFooter>{""}</DialogFooter>
             </DialogContent>
         </Dialog>
-      </div>
     </div>
   )
 }
