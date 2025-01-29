@@ -7,14 +7,33 @@ import { URLS } from '../../../configUrl';
 import Card from '../../components/incidents/Dashboard/Card';
 import { Cog8ToothIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import ActionHeader from '../../components/incidents/Dashboard/ActionHeader';
+import { useNavigate } from 'react-router-dom';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+  } from "../../components/ui/dialog"
+import RapportIncidentForm from '../../components/incidents/Dashboard/RapportIncidentForm';
+import RapportMaintenanceForm from '../../components/incidents/Dashboard/RapportMaintenanceForm';
+
+
+
+
 const Dashboard = () =>{
     const {handleFetch} = useFetch();
     const [incidents, setIncidents] = useState([]);
     const [isOpenned, setIsOpenned] = useState(false);
-    const [totalPages, setTotalPages] = useState(0);
+    const [dialogType, setDialogType] = useState("");
+    const [totalIncident, setTotalIncident] = useState(0);
+    const [totalMaintenance, setTotalMaintenance] = useState(0);
     const [page, setPage] = useState(0);
     const [pageList, setPageList] = useState([]);
 
+    const navigate = useNavigate();
 
     const fetchIncidents= async () => {
         let url = `${URLS.INCIDENT_API}/incidents`;
@@ -22,7 +41,21 @@ const Dashboard = () =>{
            const response = await handleFetch(url);
            if(response.data){
             setIncidents(response.data);
-            setTotalPages(response.totalPages);
+            setTotalIncident(response.total);
+            setPage(response.page);
+           }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const fetchMaintenances= async () => {
+        let url = `${URLS.INCIDENT_API}/maintenances`;
+        try {
+           const response = await handleFetch(url);
+           if(response.data){
+            setIncidents(response.data);
+            setTotalMaintenance(response.total);
             setPage(response.page);
            }
         } catch (error) {
@@ -35,8 +68,14 @@ const Dashboard = () =>{
         document.getElementById("close-dialog").click();
     }
 
+    const handleOpenDialog=(dialog)=>{
+        setDialogType(dialog);
+        setIsOpenned(true);
+    }
+
     useEffect(()=>{
         fetchIncidents();
+        fetchMaintenances();
     }, []);
 
 
@@ -50,25 +89,46 @@ const Dashboard = () =>{
                 </div>
                 {/* Dialog */}
                 <div className='p-2'>
-                    <ActionHeader />
+                    <ActionHeader 
+                        onIncidentClick={()=>handleOpenDialog("INCIDENT")}
+                        onMaintenanceClick={()=>handleOpenDialog("MAINTENANCE")}
+                    />
                 </div>
                 <div className='p-2 py-[50px] flex items-center space-x-2'>
                     <Card 
                         icon={<ExclamationTriangleIcon  className='h-8 w-8 text-white'/>}
                         title={"Incidents"}
-                        data={"2000"}
+                        data={totalIncident}
                         iconBg={"bg-red-500"}
+                        onClick={()=>navigate("/incidents")}
                     />
                     <Card 
                         icon={<Cog8ToothIcon  className='h-8 w-8 text-white'/>}
                         title={"Maintenances"}
-                        data={"2000"}
+                        data={totalMaintenance}
                         iconBg={"bg-blue-500"}
+                        onClick={()=>navigate("/incidents/maintenance")}
                     />
                 </div>
             </div>
+
+            {/* Dialog */}
+            <Dialog open={isOpenned} onOpenChange={setIsOpenned}>
+                <DialogContent>
+                    <DialogHeader>{dialogType === "INCIDENT"?"Generer rapport incident":"Generer rapport maintenance"}</DialogHeader>
+                    {
+                        dialogType === "INCIDENT" &&
+                        <RapportIncidentForm onSubmit={()=>setIsOpenned(false)}/>
+                    }
+                    {
+                        dialogType === "MAINTENANCE" &&
+                        <RapportMaintenanceForm onSubmit={()=>setIsOpenned(false)}/>
+                    }
+                    <DialogFooter>{""}</DialogFooter>
+                </DialogContent>
+            </Dialog>
         </>
     )
 }
 
-export default Dashboard;
+export default Dashboard

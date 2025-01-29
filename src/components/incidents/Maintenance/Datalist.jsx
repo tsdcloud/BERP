@@ -116,6 +116,15 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       render:(value)=><p className='text-sm'>{employees.find(site => site.value === value)?.name || "N/A"}</p>
     },
     {
+      title:"Cloturer par",
+      dataIndex:"updatedBy",
+      width:"200px",
+      render:(value)=>
+        <p className='text-sm capitalize'>
+          {employees.find(employee => employee.value === value)?.name || value || "--"}
+        </p>
+    },
+    {
       title:"Maintenancier",
       dataIndex:"supplierId",
       width:"200px",
@@ -180,7 +189,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                         headers:{
                           "Content-Type":"application/json",
                         },
-                        body:JSON.stringify({status: "CLOSED"})
+                        body:JSON.stringify({status: "CLOSED", updatedBy:"878c6bae-b754-4577-b614-69e15821dac8"})
                       });
                       if(response.status === 200){
                         let urlIncident = `${URLS.INCIDENT_API}/incidents/${record.incidentId}`;
