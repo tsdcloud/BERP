@@ -8,6 +8,7 @@ const AutoComplete = ({
   isLoading = false,
   dataList = [],
   onSearch,
+  clearDependency=[],
   onSelect,
   register,
   inputName,
@@ -16,6 +17,7 @@ const AutoComplete = ({
   const [value, setValue] = useState("");
   const [showOptions, setShowOptions] = useState(false);
   const autocompleteRef = useRef();
+  const autocompleteInputRef = useRef(null);
 
   const handleOnChange = (e) => {
     const inputValue = e.target.value;
@@ -48,15 +50,20 @@ const AutoComplete = ({
     };
   }, []);
 
+  useEffect(() => {
+    setValue("");
+  }, [...clearDependency]); 
+
   return isLoading ? (
     <Skeleton className="h-4 w-full p-2" />
   ) : (
     <div className="w-full">
         <div className="w-full p-2 bg-white relative" ref={autocompleteRef}>
           <input
-              className="w-full p-1 rounded-md border"
+              className="w-full p-2 rounded-md border text-sm outline-[1px] outline-blue-300"
               placeholder={placeholder}
               value={value}
+              ref={autocompleteInputRef}
               onFocus={() => setShowOptions(true)}
               onChange={handleOnChange}
               {...(register && register(inputName, validation))}
@@ -66,7 +73,7 @@ const AutoComplete = ({
             {dataList.map((item, index) => (
                 <div
                 key={index}
-                className="w-full hover:bg-slate-100 p-2 transition-all cursor-pointer text-sm rounded-sm capitalize"
+                className="w-full hover:bg-slate-100 p-2 transition-all cursor-pointer text-xs rounded-sm capitalize"
                 onClick={() => handleSelect(item)}
                 >
                 {item.name}
