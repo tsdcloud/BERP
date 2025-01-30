@@ -1,17 +1,17 @@
 import React, {useEffect, useState} from 'react';
 import Header from '../../components/layout/Header';
 import Dialogue from '../../components/incidents/Dialogue';
-import InitiateForm from '../../components/incidents/Maintenance/InitiateForm';
+import HorsPontForm from '../../components/incidents/OffBridge/HorsPontForm'
 import Tabs from '../../components/incidents/Tabs';
-import Datalist from '../../components/incidents/maintenance/Datalist';
+import Datalist from '../../components/incidents/OffBridge/Datalist';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
 import Pagination from '../../components/common/Pagination';
 
 
-const Maintenance = () => {
+const OffBridge = () => {
     const {handleFetch} = useFetch();
-    const [maintenances, setMaintenances] = useState([]);
+    const [offBridges, setOffBridges] = useState([]);
     const [isOpenned, setIsOpenned] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [searchValue, setSearchValue] = useState("");
@@ -19,33 +19,33 @@ const Maintenance = () => {
     const [page, setPage] = useState(0);
     const [pageList, setPageList] = useState([]);
 
-    const fetchMaintenance= async (url) => {
+    const fetchOffBridges= async (url) => {
         setIsLoading(true)
         try {
            const response = await handleFetch(url);
            if(response.data){
-            setMaintenances(response.data);
+            setOffBridges(response.data);
             setTotalPages(response.totalPages);
             setPage(response.page);
            }
         } catch (error) {
             console.log(error)
         }finally{
-            setIsLoading(false)
+          setIsLoading(false)
         }
     }
 
     const handleSubmit=()=>{
-        fetchMaintenance(`${URLS.INCIDENT_API}/maintenances`);
+        fetchOffBridges(`${URLS.INCIDENT_API}/off-bridges`);
         document.getElementById("close-dialog").click();
     }
 
     const handleSearch=(e)=>{
         setSearchValue(e.target.value);
-        fetchMaintenance(`${URLS.INCIDENT_API}/maintenances?page=${e.target.value}`)
+        fetchOffBridges(`${URLS.INCIDENT_API}/off-bridges?page=${e.target.value}`)
     }
     useEffect(()=>{
-        fetchMaintenance(`${URLS.INCIDENT_API}/maintenances`);
+        fetchOffBridges(`${URLS.INCIDENT_API}/off-bridges`);
     }, []);
 
   return (
@@ -60,10 +60,10 @@ const Maintenance = () => {
                 {/* Dialog */}
                 <div className='flex gap-2 items-center'>
                     <Dialogue 
-                        buttonText={"Nouveau maintenance"}
-                        header={<h2 className='text-xl font-semibold'>Nouvelle maintenance</h2>}
+                        buttonText={"Nouveau hors pont"}
+                        header={<h2 className='text-xl font-semibold'>Nouveau hors pont</h2>}
                         content={
-                        <InitiateForm 
+                        <HorsPontForm 
                             onSucess={handleSubmit}
                         />}
                         isOpenned={isOpenned}
@@ -81,9 +81,9 @@ const Maintenance = () => {
                     />
                 </div>
                 <Datalist 
-                    dataList={maintenances}
-                    fetchData={()=>fetchMaintenance(`${URLS.INCIDENT_API}/maintenances`)}
-                    setDataList={setMaintenances}
+                    dataList={offBridges}
+                    fetchData={()=>fetchOffBridges(`${URLS.INCIDENT_API}/off-bridges`)}
+                    setDataList={setOffBridges}
                     searchValue={searchValue}
                     loading={isLoading}
                     pagination={{
@@ -102,4 +102,4 @@ const Maintenance = () => {
   )
 }
 
-export default Maintenance
+export default OffBridge

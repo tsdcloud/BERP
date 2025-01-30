@@ -34,9 +34,9 @@ import { ChevronDown, MoreHorizontal } from "lucide-react";
 const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
 
   const handleDelete = async (id) =>{
-    if (window.confirm("Voulez vous supprimer la maintenance ?")) {
+    if (window.confirm("Voulez vous supprimer l'incident ?")) {
       try {
-        let url = `${URLS.INCIDENT_API}/maintenance/${id}`;
+        let url = `${URLS.INCIDENT_API}/incidents/${id}`;
         let response = await fetch(url, {
           method:"DELETE"
         });
@@ -252,7 +252,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                   </button>
                 </DropdownMenuItem>
               }
-              <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(incident.id)}>
+              <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(record.id)}>
                 <TrashIcon className='text-red-500 h-4 w-6'/>
                 <span className='text-red-500'>Supprimer</span>
               </DropdownMenuItem>

@@ -17,6 +17,11 @@ const Tabs = () => {
             link: "/incidents"
         },
         {
+            name:"Hors pont",
+            isActive: pathname.includes("off-bridge") ? true : false,
+            link: "/incidents/off-bridge"
+        },
+        {
             name:"Maintenances",
             isActive:(pathname.includes("maintenance") && !pathname.includes("type")) ? true : false,
             link: "/incidents/maintenance"
@@ -36,11 +41,11 @@ const Tabs = () => {
             isActive:pathname.includes("maintenance-type") ? true : false,
             link: "/incidents/maintenance-type"
         },
-        {
-            name:"Consommables",
-            isActive: pathname.includes("consommable") ? true : false,
-            link: "/incidents/consommable"
-        },
+        // {
+        //     name:"Consommables",
+        //     isActive: pathname.includes("consommable") ? true : false,
+        //     link: "/incidents/consommable"
+        // },
         {
             name:"Equipements",
             isActive:pathname.includes("equipement") ? true : false,

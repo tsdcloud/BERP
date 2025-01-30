@@ -45,6 +45,7 @@ import Echelon from './Pages/entity/Echelon';
 import Category from './Pages/entity/Category';
 import Employee from './Pages/entity/Employee';
 import Dashboard from './Pages/incidents/Dashboard';
+import OffBridge from './Pages/incidents/OffBridge';
 
 
 
@@ -105,7 +106,8 @@ function App() {
               <Route path="incident-type" element={<IncidentType />} />
               <Route path="maintenance" element={<Maintenance />} />
               <Route path="maintenance-type" element={<TypeMaintenance />} />
-              <Route path="consommable" element={<Consommable />} />
+              {/* <Route path="consommable" element={<Consommable />} /> */}
+              <Route path="off-bridge" element={<OffBridge />} />
               <Route path="equipement" element={<Equipement />} />
            </Route>
         </Routes>

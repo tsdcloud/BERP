@@ -10,9 +10,10 @@ const AutoComplete = ({
   onSearch,
   clearDependency=[],
   onSelect,
-  register,
+  register={},
   inputName,
   validation = {},
+  errorMessage
 }) => {
   const [value, setValue] = useState("");
   const [showOptions, setShowOptions] = useState(false);
@@ -66,7 +67,7 @@ const AutoComplete = ({
               ref={autocompleteInputRef}
               onFocus={() => setShowOptions(true)}
               onChange={handleOnChange}
-              {...(register && register(inputName, validation))}
+              register
           />
         {showOptions && (
             <div className="bg-white shadow-lg rounded-sm p-2 absolute w-[97%] transition-all space-y-2 max-h-[100px] overflow-scroll z-[30] mr-3">
@@ -81,6 +82,7 @@ const AutoComplete = ({
             ))}
             </div>
         )}
+        {errorMessage}
         </div>
     </div>
   );

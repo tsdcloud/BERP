@@ -11,12 +11,14 @@ const Incident = () =>{
     const {handleFetch} = useFetch();
     const [incidents, setIncidents] = useState([]);
     const [isOpenned, setIsOpenned] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(0);
     const [page, setPage] = useState(0);
     const [pageList, setPageList] = useState([]);
 
 
     const fetchIncidents= async () => {
+        setIsLoading(true)
         let url = `${URLS.INCIDENT_API}/incidents`;
         try {
            const response = await handleFetch(url);
@@ -27,6 +29,8 @@ const Incident = () =>{
            }
         } catch (error) {
             console.log(error)
+        }finally{
+            setIsLoading(false);
         }
     }
 
@@ -45,11 +49,11 @@ const Incident = () =>{
             <Header />
             <div className='px-6 space-y-4'>
                 {/* Header */}
-                <div className='overflow-x-auto'>
-                    <Tabs />
-                </div>
                 {/* Dialog */}
-                <div className='flex gap-2 items-center'>
+                <div className='flex gap-2 items-center justify-between'>
+                    <div className='max-w-2/3 overflow-x-auto'>
+                        <Tabs />
+                    </div>
                     <Dialogue 
                         buttonText={"Declarer un incident"}
                         header={<h2 className='text-xl font-semibold'>Déclarer un incident</h2>}
@@ -64,6 +68,7 @@ const Incident = () =>{
                     <Datalist 
                         dataList={incidents}
                         fetchData={fetchIncidents}
+                        loading={isLoading}
                     />
                 </div>
             </div>
