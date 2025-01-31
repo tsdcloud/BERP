@@ -19,6 +19,7 @@ import {
   } from "../../components/ui/dialog"
 import RapportIncidentForm from '../../components/incidents/Dashboard/RapportIncidentForm';
 import RapportMaintenanceForm from '../../components/incidents/Dashboard/RapportMaintenanceForm';
+import RapportOffBridgeForm from '../../components/incidents/Dashboard/RapportOffBridgeForm';
 
 
 
@@ -104,6 +105,7 @@ const Dashboard = () =>{
                     <ActionHeader 
                         onIncidentClick={()=>handleOpenDialog("INCIDENT")}
                         onMaintenanceClick={()=>handleOpenDialog("MAINTENANCE")}
+                        onClickOffBridge={()=>handleOpenDialog("OFF_BRIDGE")}
                     />
                 </div>
                 <div className='p-2 py-[50px] flex items-center space-x-2'>
@@ -134,7 +136,9 @@ const Dashboard = () =>{
             {/* Dialog */}
             <Dialog open={isOpenned} onOpenChange={setIsOpenned}>
                 <DialogContent>
-                    <DialogHeader>{dialogType === "INCIDENT"?"Generer rapport incident":"Generer rapport maintenance"}</DialogHeader>
+                    <DialogHeader>{dialogType === "INCIDENT" && "Generer rapport incident" || 
+                                 dialogType === "MAINTENANCE" &&"Generer rapport maintenance"||
+                                 dialogType === "OFF_BRIDGE"&& "Generer rapport hors pont"}</DialogHeader>
                     {
                         dialogType === "INCIDENT" &&
                         <RapportIncidentForm onSubmit={()=>setIsOpenned(false)}/>
@@ -142,6 +146,10 @@ const Dashboard = () =>{
                     {
                         dialogType === "MAINTENANCE" &&
                         <RapportMaintenanceForm onSubmit={()=>setIsOpenned(false)}/>
+                    }
+                    {
+                        dialogType === "OFF_BRIDGE" &&
+                        <RapportOffBridgeForm onSubmit={()=>setIsOpenned(false)}/>
                     }
                     <DialogFooter>{""}</DialogFooter>
                 </DialogContent>
