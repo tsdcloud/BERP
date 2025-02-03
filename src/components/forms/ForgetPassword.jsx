@@ -21,6 +21,7 @@ import {  AlertDialog,
 import { URLS } from '../../../configUrl';
 
 import SignInLayout from '../layout/SignInLayout';
+import { URLS } from '../../../configUrl';
 
 
 const resetPasswordSchema = z.object({
