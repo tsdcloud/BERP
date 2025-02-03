@@ -42,7 +42,7 @@ const OffBridge = () => {
 
     const handleSearch=(e)=>{
         setSearchValue(e.target.value);
-        fetchOffBridges(`${URLS.INCIDENT_API}/off-bridges?page=${e.target.value}`)
+        fetchOffBridges(`${URLS.INCIDENT_API}/off-bridges?search=${e.target.value}`)
     }
     useEffect(()=>{
         fetchOffBridges(`${URLS.INCIDENT_API}/off-bridges`);

@@ -4,6 +4,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import ProtectedRoutes from './hooks/ProtectedRoutes';
+import * as IncidentSettings from './utils/ProtectedRoutes';
 import SignIn from './components/forms/SignIn';
 import LuncherApp from './Pages/LuncherApp';
 
@@ -100,14 +101,14 @@ function App() {
 
            {/* Incident */}
            <Route path="/incidents">
-              <Route path="" element={<Incident />} />
               <Route path="dashboard" element={<Dashboard />} />
-              <Route path="incident-cause" element={<IncidentCauses />} />
-              <Route path="incident-type" element={<IncidentType />} />
+              <Route path="" element={<Incident />} />
               <Route path="maintenance" element={<Maintenance />} />
+              <Route path="off-bridge" element={<OffBridge />} />
+              <Route path="incident-type" element={<IncidentType />} />
+              <Route path="incident-cause" element={<IncidentCauses />} />
               <Route path="maintenance-type" element={<TypeMaintenance />} />
               {/* <Route path="consommable" element={<Consommable />} /> */}
-              <Route path="off-bridge" element={<OffBridge />} />
               <Route path="equipement" element={<Equipement />} />
            </Route>
         </Routes>
