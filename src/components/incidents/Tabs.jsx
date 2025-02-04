@@ -1,12 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-
+import {getEmployee} from '../../utils/entity.utils'
 const Tabs = () => {
     const {pathname} = useLocation();
     const navigate = useNavigate();
     const [userPermissions, setUserPermissions] = useState([""]);
     // const [userPermissions, setUserPermissions] = useState(["incident__view_incident_causes","incident__view_incident_types", "incident__view_maintenance_types", "incident__view_equipements"]);
 
+    useEffect(()=>{
+        const handleCheckPermissions = async () =>{
+            try {
+                let employee = await getEmployee();
+                if(employee != null){
+                    let permissions = employee?.employeePermissions.map(permission=>permission?.permission.permissionName);
+                    setUserPermissions(permissions || []);
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        handleCheckPermissions();
+    }, [])
     const links = [
         {
             name:"Dashboard",

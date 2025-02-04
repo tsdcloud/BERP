@@ -1,33 +1,46 @@
 import React, {useState, useEffect} from 'react'
 import { Outlet, Navigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import { getEmployee } from './entity.utils';
+import Preloader from '../components/Preloader';
+import Header from '../components/layout/Header';
 
-const IncidentSettingRoutes = () => {
+const IncidentSettingRoutes = ({permissions}) => {
     
     const [isLoading, setIsLoading] = useState(true);
     const [hasPermissions, setHasPermissions] = useState(false);
 
     useEffect(()=>{
-        // const token = localStorage.getItem('token');
-        // if (token || token != null) {
-        //     const decodedToken = jwtDecode(token);
-        //     const requiredPermissions = ['VIEW_INCIDENTS', 'EDIT_INCIDENTS'];
-        //     const userPermissions = decodedToken.permissions || [];
-
-        //     const hasRequiredPermissions = "incident__view_equipements";
-        //     setHasPermissions(hasRequiredPermissions);
-        // }
-
-        // Get the user token 
-        // Check if the token is valid
-        // If token is valid, get user's employee profile, else redirect to the previous page
-        // If the user token is valid set the user employee state to the gotten value
-        setIsLoading(false);
         
+        const handleCheckPermissions = async () =>{
+            const employee = await getEmployee();
+            console.log(employee)
+            if(!employee){
+               setHasPermissions(false);
+               setIsLoading(false);
+               return 
+            }
+            const requiredPermissions = [...permissions];
+            const userPermissions = employee?.employeePermissions.map(permission=>permission?.permission.permissionName) || [];
+            console.log(userPermissions)
+            const hasRequiredPermissions = requiredPermissions.some(permission => userPermissions.includes(permission));
+            setHasPermissions(hasRequiredPermissions);
+            setIsLoading(false);
+        }
+        handleCheckPermissions();
     }, []);
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return (
+        <>
+            <Header />
+            <div className='px-6 h-full w-full flex items-center justify-center'>
+                <div className='w-[100px] h-[100px]'>
+                    <Preloader />
+                </div>
+            </div>
+        </>
+        );
     }
     
     if (!hasPermissions) {

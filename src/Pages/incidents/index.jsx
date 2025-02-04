@@ -35,7 +35,7 @@ const Incident = () =>{
     }
 
     const handleSubmit=()=>{
-        fetchIncidents();
+        fetchIncidents(`${URLS.INCIDENT_API}/incidents`);
         document.getElementById("close-dialog").click();
     }
 
@@ -76,7 +76,7 @@ const Incident = () =>{
                     </div>
                     <Datalist 
                         dataList={incidents}
-                        fetchData={fetchIncidents}
+                        fetchData={()=>fetchIncidents(`${URLS.INCIDENT_API}/incidents`)}
                         loading={isLoading}
                         searchValue={searchValue}
                     />

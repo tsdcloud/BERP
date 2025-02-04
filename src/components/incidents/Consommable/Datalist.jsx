@@ -43,7 +43,11 @@ const Datalist = ({dataList, fetchData, searchValue, pagination}) => {
       try {
         let url = `${URLS.INCIDENT_API}/equipements/${id}`;
         let response = await fetch(url, {
-          method:"DELETE"
+          method:"DELETE",
+          headers:{
+            "Content-Type":"application/json",
+            'authorization': `Bearer ${localStorage.getItem('token')}` || ''
+          },
         });
         if(response.status === 200){
           alert("Deleted successfully");

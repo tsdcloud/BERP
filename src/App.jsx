@@ -91,28 +91,33 @@ function App() {
                 */}
             </Route>
 
+            {/* Incident */}
+           <Route path="/incidents">
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="" element={<Incident />} />
+              <Route path="maintenance" element={<Maintenance />} />
+              <Route path="off-bridge" element={<OffBridge />} />
+              <Route element={<IncidenSettingRoutes permissions={["incident__view_incident_types"]}/>}>
+                <Route path="incident-type" element={<IncidentType />} />
+              </Route>
+              <Route element={<IncidenSettingRoutes permissions={["incident__view_incident_causes"]}/>}>
+                <Route path="incident-cause" element={<IncidentCauses />} />
+              </Route>
+              <Route element={<IncidenSettingRoutes permissions={["incident__view_maintenance_types"]}/>}>
+                <Route path="maintenance-type" element={<TypeMaintenance />} />
+              </Route>
+              <Route element={<IncidenSettingRoutes permissions={["incident__view_equipements"]}/>}>
+                <Route path="equipement" element={<Equipement />} />
+              </Route>
+                {/* <Route path="consommable" element={<Consommable />} /> */}
+           </Route>
+
           </Route>
           
           <Route path='/signIn' element={<SignIn/>}/>
           <Route path='/forgetPassword' element={<ForgetPassword/>} exact/>
           <Route path='/confirmPassword' element={<ConfirmPassword/>} exact/>
           <Route path='*' element={<NotFoundPage/>} exact/>
-
-
-           {/* Incident */}
-           <Route path="/incidents">
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="" element={<Incident />} />
-              <Route path="maintenance" element={<Maintenance />} />
-              <Route path="off-bridge" element={<OffBridge />} />
-              <Route element={<IncidenSettingRoutes />}>
-                <Route path="incident-type" element={<IncidentType />} />
-                <Route path="incident-cause" element={<IncidentCauses />} />
-                <Route path="maintenance-type" element={<TypeMaintenance />} />
-                {/* <Route path="consommable" element={<Consommable />} /> */}
-                <Route path="equipement" element={<Equipement />} />
-              </Route>
-           </Route>
         </Routes>
       </Router>
       <Toaster/>

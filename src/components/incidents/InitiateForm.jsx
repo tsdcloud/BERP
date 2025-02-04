@@ -21,8 +21,6 @@ const InitiateForm = ({onSucess}) => {
     const handleSubmitDecleration = async (data) =>{
       try {
         let url = `${import.meta.env.VITE_INCIDENT_API}/incidents`;
-        data.userId= "878c6bae-b754-4577-b614-69e15821dac8";
-        data.createdBy= "878c6bae-b754-4577-b614-69e15821dac8";
         // console.log(data)
         let response = await handlePost(url, data);
         if(response?.status !== 201){

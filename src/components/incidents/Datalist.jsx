@@ -38,7 +38,11 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       try {
         let url = `${URLS.INCIDENT_API}/incidents/${id}`;
         let response = await fetch(url, {
-          method:"DELETE"
+          method:"DELETE",
+          headers:{
+            "Content-Type":"application/json",
+            'authorization': `Bearer ${localStorage.getItem('token')}` || ''
+          },
         });
         if(response.status === 200){
           alert("Deleted successfully");
@@ -119,7 +123,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     },
     {
       title:"Chef de guerite",
-      dataIndex:"userId",
+      dataIndex:"createdBy",
       width:"200px",
       render:(value)=>
         <p className='text-sm capitalize'>
@@ -128,7 +132,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     },
     {
       title:"Cloturer par",
-      dataIndex:"updatedBy",
+      dataIndex:"closedBy",
       width:"200px",
       render:(value)=>
         <p className='text-sm capitalize'>
@@ -235,8 +239,9 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                             method:"PATCH",
                             headers:{
                               "Content-Type":"application/json",
+                              'authorization': `Bearer ${localStorage.getItem('token')}` || ''
                             },
-                            body:JSON.stringify({status: "CLOSED", updatedBy:"878c6bae-b754-4577-b614-69e15821dac8"})
+                            body:JSON.stringify({status: "CLOSED"})
                           });
                           if(response.status === 200){
                             fetchData();
@@ -338,8 +343,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     data.createdBy = "created id";
     data.description = description;
     data.siteId = selectedSite;
-    data.equipement = selectedEquipement
-    console.log(data)
+    data.equipement = selectedEquipement;
     
     let url = `${import.meta.env.VITE_INCIDENT_API}/maintenances`
     try {
@@ -352,6 +356,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       let res = await fetch(incidentUrl,{
         headers:{
           "Content-Type":"application/json",
+          'authorization': `Bearer ${localStorage.getItem('token')}` || ''
         },
         method:"PATCH",
         body: JSON.stringify({status:"UNDER_MAINTENANCE"})
