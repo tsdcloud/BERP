@@ -1,37 +1,35 @@
 import { useState, useEffect } from 'react';
 import DataTable from '../../DataTable'; 
-import { BankAction } from './ColumnsBank';
+import { RoleAction } from './ColumnsRole';
 import { useFetch } from '../../../hooks/useFetch';
 import { URLS } from '../../../../configUrl'; 
-import CreateBank from './CreateBank';
+import CreateRole from './CreateRole';
 
-export default function Bank() {
-    const { showDialogBank, columnsBank } = BankAction();
-    const [banks, setBanks] = useState([]);
+export default function Role() {
+    const { showDialogRole, columnsRole } = RoleAction();
+    const [roles, setRoles] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
 
     const { handleFetch } = useFetch();
 
-    const fetchBank = async () => {
-        const urlToShowAllBank = URLS.API_BANK;
+    const fetchRole = async () => {
+        const urlToShowAllRole = URLS.API_ROLE_ENTITY;
         try {
             setIsLoading(true);
-            const response = await handleFetch(urlToShowAllBank);
-            // console.log("respo",response);
+            const response = await handleFetch(urlToShowAllRole);
             
                 if (response && response?.status === 200) {
                         const results = response?.data;
-                        const filteredBank = results?.map(item => {
+                        const filteredroles = results?.map(item => {
                         const { createdBy, updateAt, ...rest } = item;
                         return rest;
                         });
-                        // console.log("bank", filteredBank);
-                        setBanks(filteredBank);
+                        setRoles(filteredroles);
                 }
                 else{
-                    throw new Error('Erreur lors de la récupération des banques');
+                    throw new Error('Erreur lors de la récupération des roles');
                 }
         } catch (error) {
             setError(error.message);
@@ -42,25 +40,25 @@ export default function Bank() {
     };
 
     useEffect(() => {
-        fetchBank();
+        fetchRole();
         
     }, []);
 
 
   return (
             <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des Banques</h1>
+                <h1 className='text-sm my-3 font-semibold'>Gestion des Rôles</h1>
                 <div className='space-y-2'>
-                    <CreateBank setOpen={setOpen} onSubmit={fetchBank} />
-                    {columnsBank && banks.length >= 0 && (
+                    <CreateRole setOpen={setOpen} onSubmit={fetchRole} />
+                    { columnsRole && roles.length >= 0 && (
                         <DataTable
                             className="rounded-md border w-[800px] text-xs"
-                            columns={columnsBank}
-                            data={banks} 
+                            columns={columnsRole}
+                            data={roles} 
                         />
                     )}
                 </div>
-                {showDialogBank()}
+                {showDialogRole()}
             </div>
   );
 }

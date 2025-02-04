@@ -14,7 +14,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { jwtDecode } from 'jwt-decode';
 
 // Définition du schéma avec Zod
-const categorySchema = z.object({
+const countrySchema = z.object({
 
     name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
@@ -25,15 +25,11 @@ const categorySchema = z.object({
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
 });
 
-export default function CreateCategory({setOpen, onSubmit}) {
+export default function CreateCountry({setOpen, onSubmit}) {
 
-
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [fetchCategory, setFetchCategory] = useState([]);
   const [tokenUser, setTokenUser] = useState();
     
-    // const navigateToDashboard = useNavigate();
-    const { handlePost, handleFetch } = useFetch();
+    const { handlePost } = useFetch();
     
 
     useEffect(()=>{
@@ -49,20 +45,20 @@ export default function CreateCategory({setOpen, onSubmit}) {
 
 
 
-    const { register, handleSubmit,reset,  formState: { errors, isSubmitting }} = useForm({
-        resolver: zodResolver(categorySchema),
+    const { register, handleSubmit, reset,  formState: { errors, isSubmitting }} = useForm({
+        resolver: zodResolver(countrySchema),
     });
 
 
-    const handleSubmitDataFormCategory = async (data) => {
+    const handleSubmitDataFormCountry = async (data) => {
       console.log(data);
-      const urlToCreateCategory = URLS.API_CATEGORY;
-      // console.log(data);
+      const urlToCreateCountry = URLS.API_COUNTRY;
+      console.log(data);
       try {
-        const response = await handlePost(urlToCreateCategory, data, true);
-        // console.log("response crea", response);
+        const response = await handlePost(urlToCreateCountry, data, true);
+        console.log("response crea", response);
         if (response && response.status === 201) {
-          toast.success("catégorie crée avec succès", { duration:2000 });
+          toast.success("pays crée avec succès", { duration:2000 });
           setOpen(false);
           onSubmit();
           reset();
@@ -79,25 +75,25 @@ export default function CreateCategory({setOpen, onSubmit}) {
         
       } catch (error) {
         console.error("Error during creating", error);
-        toast.error("Erreur lors de la création de la catégorie", { duration: 5000 });
+        toast.error("Erreur lors de la création du pays", { duration: 5000 });
       }
     };
 
 
     return (
       <CustomingModal
-        title="Ajouter une nouvelle catégorie"
-        buttonText="Créer une catégorie"
+        title="Ajouter un nouveau pays"
+        buttonText="Créer un pays"
       >
         
 
           <div className='space-y-0'>
-                <p className='text-[12px] mb-2'>Veuillez correctement renseigner les informations de la catégorie.</p>
-                <form onSubmit={handleSubmit(handleSubmitDataFormCategory)} className='sm:bg-blue-200 md:bg-transparent'>
+                <p className='text-[12px] mb-2'>Veuillez correctement renseigner les informations du pays.</p>
+                <form onSubmit={handleSubmit(handleSubmitDataFormCountry)} className='sm:bg-blue-200 md:bg-transparent'>
 
                   <div className='mb-1'>
                       <label htmlFor="name" className="block text-xs font-medium mb-0">
-                          Nom de la catégorie <sup className='text-red-500'>*</sup>
+                          Nom du pays <sup className='text-red-500'>*</sup>
                       </label>
 
                       <input 
@@ -115,6 +111,8 @@ export default function CreateCategory({setOpen, onSubmit}) {
                         )
                       }
                   </div>
+
+                 
 
                   <div className='mb-1 hidden'>
                         <label htmlFor="createdBy" className="block text-xs font-medium mb-0">
@@ -145,7 +143,7 @@ export default function CreateCategory({setOpen, onSubmit}) {
                     disabled={isSubmitting}
                    
                     >
-                      {isSubmitting ? "Création en cours..." : "Créer une catégorie"}
+                      {isSubmitting ? "Création en cours..." : "Créer un pays"}
                     </Button>
 
                   </div>
@@ -156,6 +154,6 @@ export default function CreateCategory({setOpen, onSubmit}) {
     );
 }
  // Ajout de la validation des props
- CreateCategory.propTypes = {
+ CreateCountry.propTypes = {
   setOpen: PropTypes.func.isRequired, // Validation de la prop setOpen
 };

@@ -21,28 +21,39 @@ import { jwtDecode } from 'jwt-decode';
 
 
 
-
 // Schéma de validation avec Zod
-const categorySchema = z.object({
-    name: z.string()
+const permissionSchema = z.object({
+    displayName: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
-    .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
+    .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme."),
+    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
+
+    permissionName: z.string()
+    .nonempty("Ce champs 'Nom' est réquis.")
+    .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
+    .max(100)
+    .regex(/^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/, "Ce champ doit être un 'permissionName' conforme."),
+  
+    description: z.string()
+    .nonempty("Ce champs 'description' est réquis")
+    .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
+    .max(100)
+    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champs doit être un 'description' conforme"),
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
-    });
+  });
 
 // fonction principale pour gérer les actions utilisateur
-export const CategoryAction = () => {
+export const PermissionAction = () => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
-    const [selectedCategory, setSelectedCategory] = useState({});
+    const [selectedPermission, setSelectedPermission] = useState({});
     const [tokenUser, setTokenUser] = useState();
 
     const { register, handleSubmit, reset, formState:{errors, isSubmitting} } = useForm({
-        resolver: zodResolver(categorySchema),
+        resolver: zodResolver(permissionSchema),
     });
 
    const { handlePatch, handleDelete } = useFetch();
@@ -58,25 +69,24 @@ export const CategoryAction = () => {
   }, [tokenUser]);
 
     const onSubmit = async (data) => {
+        // console.log("data role", data);
 
-        console.log("data category", data);
-
-        const urlToUpdate = `${URLS.API_CATEGORY}/${selectedCategory?.id}`;
+        const urlToUpdate = `${URLS.API_PERMISSION_ENTITY}/${selectedPermission?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            console.log("response category update", response);
+            // console.log("response role update", response);
                 if (response) {
                     setDialogOpen(false);
                         
                     setTimeout(()=>{
-                        toast.success("category modified successfully", { duration: 900 });
+                        toast.success("perm modified successfully", { duration: 900 });
                         window.location.reload();
                     },[200]);
                 }
                 else {
                     setDialogOpen(false);
-                    toast.error("Erreur lors de la modification category", { duration: 5000 });
+                    toast.error("Erreur lors de la modification de la permission", { duration: 5000 });
                 }
             
           } catch (error) {
@@ -84,40 +94,48 @@ export const CategoryAction = () => {
           }
     };
 
-    const handleShowCategory = (item) => {
-        setSelectedCategory(item);
+
+    const handleShowPermission = (item) => {
+        setSelectedPermission(item);
         setIsEdited(false);
         setDialogOpen(true);
+        console.log("item", item);
     };
 
-    const handleEditedCategory = (item) => {
-        setSelectedCategory(item);
+    const handleEditedPermission = (item) => {
+        setSelectedPermission(item);
         reset(item);
         setIsEdited(true);
         setDialogOpen(true);
     };
 
-    const disabledCategory = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette catégorie ?");
+
+    const disabledRole = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette application ?");
         if (confirmation) {
-            const urlToDisabledCategory = `${URLS.API_CATEGORY}/${id}`;
+            const urlToDisabledPerm = `${URLS.API_PERMISSION_ENTITY}/${id}`;
 
                     try {
-                            const response = await handlePatch(urlToDisabledCategory, {isActive:false});
-                            // console.log("response for deleted", response);
-                                if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("category disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                            const response = await handlePatch(urlToDisabledPerm, { isActive:false });
+                            console.log("response for disabled", response);
+                                if (response.errors) {
+                                    if (Array.isArray(response.errors)) {
+                                        const errorMessages = response.errors.map(error => error.msg).join(', ');
+                                        toast.error(errorMessages, { duration: 5000 });
+                                      } else {
+                                        toast.error(response.errors.msg, { duration: 5000 });
+                                      }
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation category", { duration: 5000 });
+                                    setTimeout(()=>{
+                                        toast.success("rôle disabled successfully", { duration: 5000 });
+                                        // window.location.reload();
+                                    },[200]);
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la désactivation category :", error);
+                        console.error("Erreur lors de la désactivation rôle :", error);
                     }
 
                     finally{
@@ -130,28 +148,28 @@ export const CategoryAction = () => {
             }
     };
 
-    const enabledCategory = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette catégorie ?");
+    const enabledRole = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette application ?");
 
         if (confirmation) {
-            const urlToDisabledCategory = `${URLS.API_CATEGORY}/${id}`;
+            const urlToDisabledPerm = `${URLS.API_PERMISSION_ENTITY}/${id}`;
 
                     try {
-                            const response = await handlePatch(urlToDisabledCategory, {isActive:true});
+                            const response = await handlePatch(urlToDisabledPerm, {isActive:true});
                             console.log("response for deleted", response);
                                 if (response) {
                                     setTimeout(()=>{
-                                        toast.success("category enabled successfully", { duration: 5000});
+                                        toast.success("rôle enabled successfully", { duration: 5000});
                                         window.location.reload();
                                     },[200]);
                                 }
                                 else {
-                                  toast.error("Erreur lors de la réactivation category", { duration: 5000 });
+                                  toast.error("Erreur lors de la réactivation rôle", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la réactivation category :", error);
+                        console.error("Erreur lors de la réactivation rôle :", error);
                     }
 
                     finally{
@@ -164,28 +182,28 @@ export const CategoryAction = () => {
             }
     };
     
-    const deletedCategory = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette catégorie ?");
+    const deletedPermission = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette permission ?");
 
         if (confirmation) {
-            const urlToDisabledCategory = `${URLS.API_CATEGORY}/${id}`;
+            const urlToDisabledPerm = `${URLS.API_PERMISSION_ENTITY}/${id}`;
 
                     try {
-                            const response = await handleDelete(urlToDisabledCategory, {isActive:false});
+                            const response = await handleDelete(urlToDisabledPerm, {isActive:false});
                             // console.log("response for deleted", response);
                                 if (response) {
                                     setTimeout(()=>{
-                                        toast.success("category disabled successfully", { duration: 5000});
+                                        toast.success("perm disabled successfully", { duration: 5000});
                                         window.location.reload();
                                     },[200]);
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation category", { duration: 5000 });
+                                  toast.error("Erreur lors de la désactivation perm", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la désactivation category :", error);
+                        console.error("Erreur lors de la désactivation perm :", error);
                     }
 
                     finally{
@@ -199,36 +217,72 @@ export const CategoryAction = () => {
     };
 
 
-    const showDialogCategory = () => {
+    const showDialogPermission = () => {
+        
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? " Modifier les informations " : " Détails de la catégorie " }
+                            { isEdited ? " Modifier les informations " : " Détails de la permission " }
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
-                                    className='flex flex-col space-y-3 mt-5 text-xs' 
+                                    className='flex flex-col space-y-3 mt-5 text-xs'
                                      onSubmit={handleSubmit(onSubmit)}>
                                     <div>
-                                            <label htmlFor='name' className="text-xs mt-2">
-                                                Nom de la catégorie <sup className='text-red-500'>*</sup>
+                                            <label htmlFor='displayName' className="text-xs mt-2">
+                                                Nom de la permission <sup className='text-red-500'>*</sup>
                                             </label>
                                             <Input
-                                                id="name"
+                                                id="displayName"
                                                 type="text"
-                                                defaultValue={selectedCategory?.name}
-                                                {...register("name")}
+                                                defaultValue={selectedPermission?.displayName}
+                                                {...register("displayName")}
                                                 className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                                    errors.name ? "border-red-500" : "border-gray-300"
+                                                    errors.displayName ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
-                                                {errors.name && (
-                                                <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
+                                                {errors.displayName && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.displayName.message}</p>
                                                 )}
                                     </div>
+                                    <div>
+                                            <label htmlFor='permissionName' className="text-xs mt-2">
+                                                Nom attribué <sup className='text-red-500'>*</sup>
+                                            </label>
+                                            <Input
+                                                id="permissionName"
+                                                type="text"
+                                                defaultValue={selectedPermission?.permissionName}
+                                                {...register("permissionName")}
+                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    errors.permissionName ? "border-red-500" : "border-gray-300"
+                                                }`}
+                                                />
+                                                {errors.permissionName && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.permissionName.message}</p>
+                                                )}
+                                    </div>
+                                    <div>
+                                            <label htmlFor='description' className="text-xs mt-2">
+                                                Description <sup className='text-red-500'>*</sup>
+                                            </label>
+                                            <Input
+                                                id="description"
+                                                type="text"
+                                                defaultValue={selectedPermission?.description}
+                                                {...register("description")}
+                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    errors.description ? "border-red-500" : "border-gray-300"
+                                                }`}
+                                                />
+                                                {errors.description && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.description.message}</p>
+                                                )}
+                                    </div>
+                                  
 
                                     <div className='mb-1 hidden'>
                                             <label htmlFor="createdBy" className="block text-xs font-medium mb-0">
@@ -271,24 +325,35 @@ export const CategoryAction = () => {
                                 <Toaster/>
                                 </form>
                             ) : (
-                                selectedCategory && (
+                                selectedPermission && (
                                     <div className='flex flex-col text-black space-y-3'>
+
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
-                                            <h3 className="font-bold text-sm">{selectedCategory?.id}</h3>
+                                            <h3 className="font-bold text-sm">{selectedPermission?.id}</h3>
+                                        </div>
+
+                                        <div>
+                                            <p className="text-xs">Nom de la permission</p>
+                                            <h3 className="font-bold text-sm">{selectedPermission?.displayName}</h3>
                                         </div>
                                         <div>
-                                            <p className="text-xs">Nom de la catégorie</p>
-                                            <h3 className="font-bold text-sm">{selectedCategory?.name}</h3>
+                                            <p className="text-xs">Nom attribué</p>
+                                            <h3 className="font-bold text-sm">{selectedPermission?.permissionName}</h3>
                                         </div>
+                                        <div>
+                                            <p className="text-xs">Description</p>
+                                            <h3 className="font-bold text-sm">{selectedPermission?.description}</h3>
+                                        </div>
+                                       
                                         <div>
                                             <p className="text-xs">Date de création</p>
-                                            <h3 className="font-bold text-sm">{selectedCategory?.createdAt.split("T")[0]}</h3>
+                                            <h3 className="font-bold text-sm">{selectedPermission?.createdAt.split("T")[0]}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Statut</p>
                                             <h3 className="font-bold text-sm">
-                                                {selectedCategory?.isActive ? "Actif" : "Désactivé"}
+                                                {selectedPermission?.isActive ? "Actif" : "Désactivé"}
                                             </h3>
                                         </div>
                                     </div>
@@ -301,13 +366,14 @@ export const CategoryAction = () => {
                         {
                         isEdited === false ? (
                             <div className='flex space-x-2'>
+
                                             {/* <div className='flex space-x-2'>
                                                 { 
-                                                    selectedCategory?.isActive == false ? 
+                                                    selectedPermission?.isActive == false ?
                                                         (
                                                                 <AlertDialogAction
                                                                     className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md bg-transparent hover:bg-blue-600 hover:text-white transition"
-                                                                    onClick={() => enabledCategory(selectedCategory.id)}>
+                                                                    onClick={() => enabledRole(selectedPermission.id)}>
                                                                         Activer
                                                                 </AlertDialogAction>
 
@@ -315,7 +381,7 @@ export const CategoryAction = () => {
 
                                                                 <AlertDialogAction 
                                                                     className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md bg-transparent hover:bg-gray-600 hover:text-white transition"
-                                                                    onClick={() => disabledCategory(selectedCategory.id)}>
+                                                                    onClick={() => disabledRole(selectedPermission.id)}>
                                                                         Désactiver
                                                                 </AlertDialogAction>
                                                         )
@@ -325,7 +391,7 @@ export const CategoryAction = () => {
                                            </div> */}
                                             <AlertDialogAction 
                                                 className="border-2 border-red-900 outline-red-700 text-red-900 text-xs shadow-md bg-transparent hover:bg-red-600 hover:text-white transition"
-                                                onClick={() => deletedCategory(selectedCategory.id)}>
+                                                onClick={() => deletedPermission(selectedPermission.id)}>
                                                     Supprimer
                                             </AlertDialogAction>
                                             <AlertDialogCancel
@@ -346,19 +412,21 @@ export const CategoryAction = () => {
     };
 
 
-    const columnsCategory = useMemo(() => [
-        { accessorKey: 'name', header: 'Nom de la catégorie' },
-        { accessorKey: 'createdAt', header: 'Date de création' },
+    const columnsPermission = useMemo(() => [
+        { accessorKey: 'displayName', header: 'Nom de la permission' },
+        { accessorKey: 'description', header: 'Description' },
+        // { accessorKey: 'phone', header: 'Téléphone' },
+        // { accessorKey: 'createdAt', header: 'Date de création' },
         { accessorKey: 'isActive', header: 'Statut' },
         {
             accessorKey: "action",
             header: "Actions",
             cell: ({ row }) => (
                 <div className="flex justify-center">
-                    <EyeIcon className="h-4 w-4 text-green-500" onClick={() => handleShowCategory(row.original)} />
-                    <PencilSquareIcon className="h-4 w-4 text-blue-500" onClick={() => handleEditedCategory(row.original)} />
-                    {/* <NoSymbolIcon className="h-4 w-4 text-gray-500" onClick={() => disabledCategory(row.original.id)} /> */}
-                    <TrashIcon className="h-4 w-4 text-red-500" onClick={() => deletedCategory(row.original.id)} />
+                    <EyeIcon className="h-4 w-4 text-green-500" onClick={() => handleShowPermission(row.original)} />
+                    <PencilSquareIcon className="h-4 w-4 text-blue-500" onClick={() => handleEditedPermission(row.original)} />
+                    {/* <NoSymbolIcon className="h-4 w-4 text-gray-500" onClick={() => disabledRole(row.original.id)} /> */}
+                    <TrashIcon className="h-4 w-4 text-red-500" onClick={() => deletedPermission(row.original.id)} />
                 </div>
             )
         },
@@ -367,10 +435,10 @@ export const CategoryAction = () => {
 
     return {
 
-                showDialogCategory,
-                columnsCategory,
-                handleShowCategory,
-                handleEditedCategory,
+                showDialogPermission,
+                columnsPermission,
+                handleShowPermission,
+                handleEditedPermission,
              
     };
 };

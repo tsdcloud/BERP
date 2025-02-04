@@ -14,26 +14,28 @@ import toast, { Toaster } from 'react-hot-toast';
 import { jwtDecode } from 'jwt-decode';
 
 // Définition du schéma avec Zod
-const categorySchema = z.object({
+const roleSchema = z.object({
 
-    name: z.string()
+    roleName: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
     .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme."),
 
+    displayName: z.string()
+    .nonempty("Ce champs 'Nom' est réquis.")
+    .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
+    .max(100)
+    .regex(/^[a-zA-Z0-9 ',]+$/, "Ce champ doit être une 'description' conforme."),
+
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
 });
 
-export default function CreateCategory({setOpen, onSubmit}) {
+export default function CreateRole({setOpen, onSubmit}) {
 
-
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [fetchCategory, setFetchCategory] = useState([]);
   const [tokenUser, setTokenUser] = useState();
     
-    // const navigateToDashboard = useNavigate();
-    const { handlePost, handleFetch } = useFetch();
+    const { handlePost } = useFetch();
     
 
     useEffect(()=>{
@@ -49,20 +51,19 @@ export default function CreateCategory({setOpen, onSubmit}) {
 
 
 
-    const { register, handleSubmit,reset,  formState: { errors, isSubmitting }} = useForm({
-        resolver: zodResolver(categorySchema),
+    const { register, handleSubmit, reset,  formState: { errors, isSubmitting }} = useForm({
+        resolver: zodResolver(roleSchema),
     });
 
 
-    const handleSubmitDataFormCategory = async (data) => {
+    const handleSubmitDataFormRole = async (data) => {
       console.log(data);
-      const urlToCreateCategory = URLS.API_CATEGORY;
-      // console.log(data);
+      const urlToCreateRole = URLS.API_ROLE_ENTITY;
       try {
-        const response = await handlePost(urlToCreateCategory, data, true);
-        // console.log("response crea", response);
+        const response = await handlePost(urlToCreateRole, data, true);
+        console.log("response crea", response);
         if (response && response.status === 201) {
-          toast.success("catégorie crée avec succès", { duration:2000 });
+          toast.success("rôle crée avec succès", { duration:2000 });
           setOpen(false);
           onSubmit();
           reset();
@@ -79,42 +80,65 @@ export default function CreateCategory({setOpen, onSubmit}) {
         
       } catch (error) {
         console.error("Error during creating", error);
-        toast.error("Erreur lors de la création de la catégorie", { duration: 5000 });
+        toast.error("Erreur lors de la création du rôle", { duration: 5000 });
       }
     };
 
 
     return (
       <CustomingModal
-        title="Ajouter une nouvelle catégorie"
-        buttonText="Créer une catégorie"
+        title="Ajouter un nouveau rôle"
+        buttonText="Créer un rôle"
       >
         
 
           <div className='space-y-0'>
-                <p className='text-[12px] mb-2'>Veuillez correctement renseigner les informations de la catégorie.</p>
-                <form onSubmit={handleSubmit(handleSubmitDataFormCategory)} className='sm:bg-blue-200 md:bg-transparent'>
+                <p className='text-[12px] mb-2'>Veuillez correctement renseigner les informations du rôle.</p>
+                <form onSubmit={handleSubmit(handleSubmitDataFormRole)} className='sm:bg-blue-200 md:bg-transparent'>
 
                   <div className='mb-1'>
                       <label htmlFor="name" className="block text-xs font-medium mb-0">
-                          Nom de la catégorie <sup className='text-red-500'>*</sup>
+                          Nom du rôle <sup className='text-red-500'>*</sup>
                       </label>
 
                       <input 
-                        id='name'
+                        id='roleName'
                         type="text"
-                        {...register('name')} 
+                        {...register('roleName')} 
                         className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
                         ${
-                            errors.name ? "border-red-500" : "border-gray-300"
+                            errors.roleName ? "border-red-500" : "border-gray-300"
                           }`}
                       />
                       {
-                        errors.name && (
-                          <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
+                        errors.roleName && (
+                          <p className="text-red-500 text-[9px] mt-1">{errors.roleName.message}</p>
                         )
                       }
                   </div>
+
+                  <div className='mb-1 mt-2'>
+                      <label htmlFor="displayName" className="block text-xs font-medium mb-0">
+                          Description <sup className='text-red-500'>*</sup>
+                      </label>
+
+                      <textarea 
+                        id='displayName'
+                        type="text"
+                        {...register('displayName')} 
+                        className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                        ${
+                            errors.displayName ? "border-red-500" : "border-gray-300"
+                          }`}
+                      />
+                      {
+                        errors.displayName && (
+                          <p className="text-red-500 text-[9px] mt-1">{errors.displayName.message}</p>
+                        )
+                      }
+                  </div>
+
+                 
 
                   <div className='mb-1 hidden'>
                         <label htmlFor="createdBy" className="block text-xs font-medium mb-0">
@@ -145,7 +169,7 @@ export default function CreateCategory({setOpen, onSubmit}) {
                     disabled={isSubmitting}
                    
                     >
-                      {isSubmitting ? "Création en cours..." : "Créer une catégorie"}
+                      {isSubmitting ? "Création en cours..." : "Créer un rôle"}
                     </Button>
 
                   </div>
@@ -156,6 +180,6 @@ export default function CreateCategory({setOpen, onSubmit}) {
     );
 }
  // Ajout de la validation des props
- CreateCategory.propTypes = {
+ CreateRole.propTypes = {
   setOpen: PropTypes.func.isRequired, // Validation de la prop setOpen
 };

@@ -1,37 +1,35 @@
 import { useState, useEffect } from 'react';
 import DataTable from '../../DataTable'; 
-import { BankAction } from './ColumnsBank';
+import { CountryAction } from './ColumnsCountry';
 import { useFetch } from '../../../hooks/useFetch';
 import { URLS } from '../../../../configUrl'; 
-import CreateBank from './CreateBank';
+import CreateCountry from './CreateCountry';
 
-export default function Bank() {
-    const { showDialogBank, columnsBank } = BankAction();
-    const [banks, setBanks] = useState([]);
+export default function Country() {
+    const { showDialogCountry, columnsCountry } = CountryAction();
+    const [countries, setCountries] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
 
     const { handleFetch } = useFetch();
 
-    const fetchBank = async () => {
-        const urlToShowAllBank = URLS.API_BANK;
+    const fetchCountry = async () => {
+        const urlToShowAllCountries = URLS.API_COUNTRY;
         try {
             setIsLoading(true);
-            const response = await handleFetch(urlToShowAllBank);
-            // console.log("respo",response);
+            const response = await handleFetch(urlToShowAllCountries);
             
                 if (response && response?.status === 200) {
                         const results = response?.data;
-                        const filteredBank = results?.map(item => {
+                        const filteredCountries = results?.map(item => {
                         const { createdBy, updateAt, ...rest } = item;
                         return rest;
                         });
-                        // console.log("bank", filteredBank);
-                        setBanks(filteredBank);
+                        setCountries(filteredCountries);
                 }
                 else{
-                    throw new Error('Erreur lors de la récupération des banques');
+                    throw new Error('Erreur lors de la récupération des countries');
                 }
         } catch (error) {
             setError(error.message);
@@ -42,25 +40,25 @@ export default function Bank() {
     };
 
     useEffect(() => {
-        fetchBank();
+        fetchCountry();
         
     }, []);
 
 
   return (
             <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des Banques</h1>
+                <h1 className='text-sm my-3 font-semibold'>Gestion des Pays</h1>
                 <div className='space-y-2'>
-                    <CreateBank setOpen={setOpen} onSubmit={fetchBank} />
-                    {columnsBank && banks.length >= 0 && (
+                    <CreateCountry setOpen={setOpen} onSubmit={fetchCountry} />
+                    { columnsCountry && countries.length >= 0 && (
                         <DataTable
                             className="rounded-md border w-[800px] text-xs"
-                            columns={columnsBank}
-                            data={banks} 
+                            columns={columnsCountry}
+                            data={countries} 
                         />
                     )}
                 </div>
-                {showDialogBank()}
+                {showDialogCountry()}
             </div>
   );
 }

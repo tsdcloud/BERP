@@ -24,7 +24,7 @@ export default function Permission() {
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllPermissions);
-            console.log("respoPermissions",response);
+            // console.log("respoPermissions",response);
             
                 if (response && response?.data?.results) {
                         const results = response?.data?.results;

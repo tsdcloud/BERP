@@ -83,7 +83,7 @@ export default function Users() {
                 <h1 className='text-sm'>Gestion des utilisateurs</h1>
                 <div className='space-y-2 w-full'>
                     <CreateUser setOpen={setOpen} onSubmit={upDateTable} />
-                    {columnsUser && users.length > 0 ? (
+                    {columnsUser && users.length >= 0 ? (
                         <DataTable
                             className="rounded-md border w-full max-w-full text-xs sm:text-sm"
                             columns={columnsUser}

@@ -237,7 +237,7 @@ export const FunctionAction = () => {
             const urlToDisabledFunction = `${URLS.API_FUNCTION}/${id}`;
 
                     try {
-                            const response = await handlePatch(urlToDisabledFunction, {isActive:false});
+                            const response = await handleDelete(urlToDisabledFunction, {isActive:false});
                             // console.log("response for deleted", response);
                                 if (response) {
                                     setTimeout(()=>{
@@ -296,24 +296,6 @@ export const FunctionAction = () => {
                                                 )}
                                     </div>
 
-                                    {/* <div>
-                                                <label htmlFor='id_department' className="text-xs">
-                                                    Nom du departement <sup className='text-red-500'>*</sup>
-                                                </label>
-                                                <Input
-                                                    id="id_department"
-                                                    type="text"
-                                                    defaultValue={selectedFunction?.id_department}
-                                                    {...register("id_department")}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                                        errors.id_department ? "border-red-500" : "border-gray-300"
-                                                    }`}
-                                                />
-                                                {errors.id_department && (
-                                                <p className="text-red-500 text-[9px] mt-1">{errors.id_department.message}</p>
-                                                )}
-                                    </div> */}
-
                                   <div className='mb-1 hidden'>
                                             <label htmlFor="createdBy" className="block text-xs font-medium mb-0">
                                                     créer par<sup className='text-red-500'>*</sup>
@@ -367,7 +349,7 @@ export const FunctionAction = () => {
                                         </div>
                                         <div>
                                             <p className="text-xs">Date de création</p>
-                                            <h3 className="font-bold text-sm">{selectedFunction?.createdAt}</h3>
+                                            <h3 className="font-bold text-sm">{selectedFunction?.createdAt.split("T")[0]}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Statut</p>
@@ -385,28 +367,28 @@ export const FunctionAction = () => {
                         {
                         isEdited === false ? (
                             <div className='flex space-x-2'>
-                                            <div className='flex space-x-2'>
-                                            { 
-                                                selectedFunction?.isActive == false ? 
-                                                    (
-                                                            <AlertDialogAction
-                                                                className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md bg-transparent hover:bg-blue-600 hover:text-white transition"
-                                                                onClick={() => enabledFunction(selectedFunction.id)}>
-                                                                    Activer
-                                                            </AlertDialogAction>
+                                            {/* <div className='flex space-x-2'>
+                                                { 
+                                                    selectedFunction?.isActive == false ? 
+                                                        (
+                                                                <AlertDialogAction
+                                                                    className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md bg-transparent hover:bg-blue-600 hover:text-white transition"
+                                                                    onClick={() => enabledFunction(selectedFunction.id)}>
+                                                                        Activer
+                                                                </AlertDialogAction>
 
-                                                    ):(
+                                                        ):(
 
-                                                            <AlertDialogAction 
-                                                                className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md bg-transparent hover:bg-gray-600 hover:text-white transition"
-                                                                onClick={() => disabledFunction(selectedFunction.id)}>
-                                                                    Désactiver
-                                                            </AlertDialogAction>
-                                                    )
+                                                                <AlertDialogAction 
+                                                                    className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md bg-transparent hover:bg-gray-600 hover:text-white transition"
+                                                                    onClick={() => disabledFunction(selectedFunction.id)}>
+                                                                        Désactiver
+                                                                </AlertDialogAction>
+                                                        )
+                                                
+                                                }
                                             
-                                            }
-                                            
-                                           </div>
+                                           </div> */}
                                             <AlertDialogAction 
                                                 className="border-2 border-red-900 outline-red-700 text-red-900 text-xs shadow-md bg-transparent hover:bg-red-600 hover:text-white transition"
                                                 onClick={() => deletedFunction(selectedFunction.id)}>

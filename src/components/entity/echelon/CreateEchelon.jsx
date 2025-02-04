@@ -11,92 +11,69 @@ import PropTypes from 'prop-types';
 import { useFetch } from '../../../hooks/useFetch'; 
 
 import toast, { Toaster } from 'react-hot-toast';
-
-import mock_data from "../../../helpers/mock_data.json";
+import { jwtDecode } from 'jwt-decode';
 
 // Définition du schéma avec Zod
 const echelonSchema = z.object({
 
-    echelon_name: z.string()
+    name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
-    .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
+    .min(1, "le champs doit avoir une valeur de 1 caractères au moins.")
     .max(100)
     .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme."),
 
-    // id_department: z.string()
-    // .nonempty('Ce champs "Nom du service" est réquis')
-    // .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
-    // .max(100)
-    // .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom du service' Conforme.")
-    // ,
+    createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
+
 });
 
 export default function CreateEchelon({setOpen, onSubmit}) {
 
 
-  const [selectedEchelon, setSelectedEchelon] = useState([]);
-  const [fetchEchelon, setFetchEchelon] = useState([]);
-    
-    // const navigateToDashboard = useNavigate();
-    const { handlePost, handleFetch } = useFetch();
+  const [tokenUser, setTokenUser] = useState();
+    const { handlePost } = useFetch();
     
 
-    const showEchelon = async () => {
+    useEffect(()=>{
+      const token = localStorage.getItem("token");
+      if(token){
+          const decode = jwtDecode(token);
+          setTokenUser(decode.user_id);
+          // console.log("var", tokenUser);
+      }
+    }, [tokenUser]);
 
-      setFetchEchelon(mock_data);
-
-        // const urlToCreateEchelon = "";
-        // try {
-        //     const response = await handleFetch(urlToCreateEchelon);
-        //     // console.log("response crea", response);
-        //     if (response && response?.success) {
-        //       toast.success("service crée avec succès", {duration:2000});
-        //       console.log("entity created", response?.success);
-  
-        //     }
-        //     else {
-        //       toast.error(response.error, { duration: 5000});
-        //     }
-            
-        //   } catch (error) {
-        //     console.error("Error during creating",error);
-        //     toast.error("Erreur lors de la récupération des villes", { duration: 5000 });
-        //   }
-    };
-
-    useEffect(() => {
-        showEchelon();
-    }, []);
-
-
-    const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm({
+    const { register, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
         resolver: zodResolver(echelonSchema),
     });
 
 
     const handleSubmitDataFormEchelon = async (data) => {
       console.log(data);
-      // const urlToCreateEchelon = "http://127.0.0.1:8000/api_gateway/api/user/";
-      // const urlToCreateEchelon = URLS.API_USER;
-      //   // console.log(data);
-      //   try {
-      //     const response = await handlePost(urlToCreateEchelon, data, true);
-      //     // console.log("response crea", response);
-      //     if (response && response?.success && response.status === 201) {
-      //       toast.success("service crée avec succès", {duration:2000});
-      //       console.log("entity created", response?.success);
-      //       setOpen(false);
-      //       onSubmit();
+      const urlToCreateEchelon = URLS.API_ECHELON;
+      // console.log(data);
+      try {
+        const response = await handlePost(urlToCreateEchelon, data, true);
+        // console.log("response crea", response);
+        if (response && response.status === 201) {
+          toast.success("échelon crée avec succès", { duration:2000 });
+          setOpen(false);
+          onSubmit();
+          reset();
 
-      //     }
-      //     else {
-      //       toast.error(response.error, { duration: 5000});
-      //     }
-          
-      //   } catch (error) {
-      //     console.error("Error during creating",error);
-      //     toast.error("Erreur lors de la création du service", { duration: 5000 });
-      //   }
+        }
+        else {
+          if (Array.isArray(response.errors)) {
+            const errorMessages = response.errors.map(error => error.msg).join(', ');
+            toast.error(errorMessages, { duration: 5000 });
+          } else {
+            toast.error(response.errors.msg, { duration: 5000 });
+          }
+        }
+        
+      } catch (error) {
+        console.error("Error during creating", error);
+        toast.error("Erreur lors de la création de l\'échelon", { duration: 5000 });
+      }
     };
 
 
@@ -112,58 +89,47 @@ export default function CreateEchelon({setOpen, onSubmit}) {
                 <form onSubmit={handleSubmit(handleSubmitDataFormEchelon)} className='sm:bg-blue-200 md:bg-transparent'>
 
                   <div className='mb-1'>
-                      <label htmlFor="echelon_name" className="block text-xs font-medium mb-0">
+                      <label htmlFor="name" className="block text-xs font-medium mb-0">
                           Nom de l'échelon <sup className='text-red-500'>*</sup>
                       </label>
 
                       <input 
-                        id='echelon_name'
+                        id='name'
                         type="text"
-                        {...register('echelon_name')} 
+                        {...register('name')} 
                         className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
                         ${
-                            errors.echelon_name ? "border-red-500" : "border-gray-300"
+                            errors.name ? "border-red-500" : "border-gray-300"
                           }`}
                       />
                       {
-                        errors.echelon_name && (
-                          <p className="text-red-500 text-[9px] mt-1">{errors.echelon_name.message}</p>
+                        errors.name && (
+                          <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
                         )
                       }
                   </div>
 
-                  {/* <div className='mb-4'>
-                            <label htmlFor="id_department" className="block text-xs font-medium mb-1">
-                                Nom de la ville<sup className='text-red-500'>*</sup>
-                            </label>
+                  <div className='mb-1 hidden'>
+                        <label htmlFor="createdBy" className="block text-xs font-medium mb-0">
+                                  créer par<sup className='text-red-500'>*</sup>
+                              </label>
+                              <input 
+                                  id='createdBy'
+                                  type="text"
+                                  defaultValue={tokenUser}
+                                  {...register('createdBy')}
+                                  className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                                    ${
+                                      errors.createdBy ? "border-red-500" : "border-gray-300"
+                                    }`}
+                              />
 
-                        
-                            <select
-                                        // value={showEchelon}
-                                        onChange={(e) => {
-                                            const nameCitySelected = fetchEchelon.find(item => item.id === e.target.value);
-                                            setSelectedEchelon(nameCitySelected);
-                                        }}
-                                        {...register('id_department')} 
-                                        className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
-                                        ${
-                                            errors.id_department ? "border-red-500" : "border-gray-300"
-                                        }`}
-                                    >
-                                        <option value="">Selectionner un departement</option>
-                                            {fetchEchelon.map((item) => (
-                                                <option key={item.id} value={item.id}>
-                                                        {item.name}
-                                                </option>
-                                            ))}
-                            </select>
-                            {
-                                errors.id_department && (
-                                <p className="text-red-500 text-[9px] mt-1">{errors?.id_department?.message}</p>
+                              {
+                                errors.createdBy && (
+                                  <p className="text-red-500 text-[9px] mt-1">{errors.createdBy.message}</p>
                                 )
-                            }
-                    
-                  </div> */}
+                              }
+                  </div>
 
                   <div className='flex justify-end space-x-2 mt-2'>
                     <Button 

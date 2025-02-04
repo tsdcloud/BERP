@@ -16,15 +16,16 @@ export default function EntityEntryPoint() {
                 ) : (
                     <div className='flex flex-col items-center m-7 space-y-2'>
                                 <a
-                                    href="/entités"
+                                    href="/entities"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center justify-center w-[90px] h-[90px] bg-secondary text-white rounded-full shadow-lg hover:bg-orange-600 transition duration-300"
+                                    className="flex items-center justify-center w-[90px] h-[90px] bg-secondary text-white rounded-xl shadow-lg hover:bg-orange-600 transition duration-300"
                                 >
                                     <FaIndustry size={40} />
                                 </a>
                                 <p className='text-white text-xs'>Gestion des entités</p>
                     </div>
+                   
                 )
             }
 

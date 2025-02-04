@@ -24,6 +24,20 @@ export const URLS = {
   // entity api
   API_ENTITY: import.meta.env.VITE_API_ENTITY,
   API_DEPARTMENT: import.meta.env.VITE_API_DEPARTMENT,
+
   API_FUNCTION: import.meta.env.VITE_API_FUNCTION,
+  API_GRADE: import.meta.env.VITE_API_GRADE,
+  API_ECHELON: import.meta.env.VITE_API_ECHELON,
+  API_CATEGORY: import.meta.env.VITE_API_CATEGORY,
+  API_BANK: import.meta.env.VITE_API_BANK,
+  API_CUSTOMER: import.meta.env.VITE_API_CUSTOMER,
+  API_COUNTRY: import.meta.env.VITE_API_COUNTRY,
+  API_ROLE_ENTITY: import.meta.env.VITE_API_ROLE_ENTITY,
+  API_PERMISSION_ENTITY: import.meta.env.VITE_API_PERMISSION_ENTITY,
+  API_APPLICATION_ENTITY: import.meta.env.VITE_API_APPLICATION_ENTITY,
+  API_DISTRICT: import.meta.env.VITE_API_DISTRICT,
+  API_TOWN: import.meta.env.VITE_API_TOWN,
+
+
   
 };

@@ -21,32 +21,75 @@ import { jwtDecode } from 'jwt-decode';
 
 
 
-
 // Schéma de validation avec Zod
-const categorySchema = z.object({
+const townSchema = z.object({
     name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
-    .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
+    .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme."),
+    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
+
+    districtId: z.string()
+    .nonempty('Ce champs "Nom du district" est réquis')
+    .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
+    .max(100)
+    .regex(/^(?:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|[a-zA-Z0-9 ,]+)$/, "Ce champs doit être un 'nom du pays Conforme."),
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
-    });
+  });
 
 // fonction principale pour gérer les actions utilisateur
-export const CategoryAction = () => {
+export const TownAction = () => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
-    const [selectedCategory, setSelectedCategory] = useState({});
+    const [selectedTown, setSelectedTown] = useState({});
+    const [showDistricts, setShowDistricts] = useState([]);
+    const [error, setError] = useState();
+    const [selectedDistricts, setSelectedDistricts] = useState([]);
+
     const [tokenUser, setTokenUser] = useState();
 
+
     const { register, handleSubmit, reset, formState:{errors, isSubmitting} } = useForm({
-        resolver: zodResolver(categorySchema),
+        resolver: zodResolver(townSchema),
     });
 
-   const { handlePatch, handleDelete } = useFetch();
+   const { handlePatch, handleDelete, handleFetch } = useFetch();
    
+
+   const fetchDistricts = async () => {
+    const getDistrict = URLS.API_DISTRICT;
+    try {
+        setIsLoading(true);
+        const response = await handleFetch(getDistrict);
+        
+            if (response && response?.status === 200) {
+                    const results = response?.data;
+                    // console.log("results", results);
+
+                    const filteredDistricts = results?.map(item => {
+                    const { createdBy, updateAt, ...rest } = item;
+                    return { id: item.id, ...rest};
+                });
+                    // console.log("districts - Town",filteredDistricts);
+                    setShowDistricts(filteredDistricts);
+            }
+            else{
+                throw new Error('Erreur lors de la récupération des districts');
+            }
+    } catch (error) {
+        setError(error.message);
+    }
+    finally {
+        setIsLoading(false);
+      }
+     };
+
+  useEffect(()=>{
+    fetchDistricts();
+  },[]);
+
 
    useEffect(()=>{
     const token = localStorage.getItem("token");
@@ -58,25 +101,24 @@ export const CategoryAction = () => {
   }, [tokenUser]);
 
     const onSubmit = async (data) => {
+        // console.log("data role", data);
 
-        console.log("data category", data);
-
-        const urlToUpdate = `${URLS.API_CATEGORY}/${selectedCategory?.id}`;
+        const urlToUpdate = `${URLS.API_TOWN}/${selectedTown?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            console.log("response category update", response);
+            // console.log("response role update", response);
                 if (response) {
                     setDialogOpen(false);
                         
                     setTimeout(()=>{
-                        toast.success("category modified successfully", { duration: 900 });
+                        toast.success("town modified successfully", { duration: 900 });
                         window.location.reload();
                     },[200]);
                 }
                 else {
                     setDialogOpen(false);
-                    toast.error("Erreur lors de la modification category", { duration: 5000 });
+                    toast.error("Erreur lors de la modification de la ville", { duration: 5000 });
                 }
             
           } catch (error) {
@@ -84,40 +126,48 @@ export const CategoryAction = () => {
           }
     };
 
-    const handleShowCategory = (item) => {
-        setSelectedCategory(item);
+
+    const handleShowTown = (item) => {
+        setSelectedTown(item);
         setIsEdited(false);
         setDialogOpen(true);
+        // console.log("item", item);
     };
 
-    const handleEditedCategory = (item) => {
-        setSelectedCategory(item);
+    const handleEditedTown = (item) => {
+        setSelectedTown(item);
         reset(item);
         setIsEdited(true);
         setDialogOpen(true);
     };
 
-    const disabledCategory = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette catégorie ?");
+
+    const disabledTown = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette ville ?");
         if (confirmation) {
-            const urlToDisabledCategory = `${URLS.API_CATEGORY}/${id}`;
+            const urlToDisabledTown = `${URLS.API_TOWN}/${id}`;
 
                     try {
-                            const response = await handlePatch(urlToDisabledCategory, {isActive:false});
-                            // console.log("response for deleted", response);
-                                if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("category disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                            const response = await handlePatch(urlToDisabledTown, { isActive:false });
+                            console.log("response for disabled", response);
+                                if (response.errors) {
+                                    if (Array.isArray(response.errors)) {
+                                        const errorMessages = response.errors.map(error => error.msg).join(', ');
+                                        toast.error(errorMessages, { duration: 5000 });
+                                      } else {
+                                        toast.error(response.errors.msg, { duration: 5000 });
+                                      }
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation category", { duration: 5000 });
+                                    setTimeout(()=>{
+                                        toast.success("town disabled successfully", { duration: 5000 });
+                                        // window.location.reload();
+                                    },[200]);
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la désactivation category :", error);
+                        console.error("Erreur lors de la désactivation town :", error);
                     }
 
                     finally{
@@ -130,28 +180,28 @@ export const CategoryAction = () => {
             }
     };
 
-    const enabledCategory = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette catégorie ?");
+    const enabledTown = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette ville?");
 
         if (confirmation) {
-            const urlToDisabledCategory = `${URLS.API_CATEGORY}/${id}`;
+            const urlToDisabledTown = `${URLS.API_TOWN}/${id}`;
 
                     try {
-                            const response = await handlePatch(urlToDisabledCategory, {isActive:true});
+                            const response = await handlePatch(urlToDisabledTown, {isActive:true});
                             console.log("response for deleted", response);
                                 if (response) {
                                     setTimeout(()=>{
-                                        toast.success("category enabled successfully", { duration: 5000});
+                                        toast.success("town enabled successfully", { duration: 5000});
                                         window.location.reload();
                                     },[200]);
                                 }
                                 else {
-                                  toast.error("Erreur lors de la réactivation category", { duration: 5000 });
+                                  toast.error("Erreur lors de la réactivation town", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la réactivation category :", error);
+                        console.error("Erreur lors de la réactivation town :", error);
                     }
 
                     finally{
@@ -164,28 +214,28 @@ export const CategoryAction = () => {
             }
     };
     
-    const deletedCategory = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette catégorie ?");
+    const deletedTown = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette ville ?");
 
         if (confirmation) {
-            const urlToDisabledCategory = `${URLS.API_CATEGORY}/${id}`;
+            const urlToDisabledTown = `${URLS.API_TOWN}/${id}`;
 
                     try {
-                            const response = await handleDelete(urlToDisabledCategory, {isActive:false});
+                            const response = await handleDelete(urlToDisabledTown, {isActive:false});
                             // console.log("response for deleted", response);
                                 if (response) {
                                     setTimeout(()=>{
-                                        toast.success("category disabled successfully", { duration: 5000});
+                                        toast.success("town disabled successfully", { duration: 5000});
                                         window.location.reload();
                                     },[200]);
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation category", { duration: 5000 });
+                                  toast.error("Erreur lors de la désactivation town", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la désactivation category :", error);
+                        console.error("Erreur lors de la désactivation town :", error);
                     }
 
                     finally{
@@ -199,27 +249,28 @@ export const CategoryAction = () => {
     };
 
 
-    const showDialogCategory = () => {
+    const showDialogTown = () => {
+        
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? " Modifier les informations " : " Détails de la catégorie " }
+                            { isEdited ? " Modifier les informations " : " Détails de la ville" }
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
-                                    className='flex flex-col space-y-3 mt-5 text-xs' 
+                                    className='flex flex-col space-y-3 mt-5 text-xs'
                                      onSubmit={handleSubmit(onSubmit)}>
                                     <div>
                                             <label htmlFor='name' className="text-xs mt-2">
-                                                Nom de la catégorie <sup className='text-red-500'>*</sup>
+                                                Nom de la ville <sup className='text-red-500'>*</sup>
                                             </label>
                                             <Input
                                                 id="name"
                                                 type="text"
-                                                defaultValue={selectedCategory?.name}
+                                                defaultValue={selectedTown?.name}
                                                 {...register("name")}
                                                 className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
@@ -229,6 +280,33 @@ export const CategoryAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
                                                 )}
                                     </div>
+                                    <div className=' flex flex-col'>
+                                            <label htmlFor='districtId' className="text-xs mt-2">
+                                                Nom du district <sup className='text-red-500'>*</sup>
+                                            </label>
+                                                    <select
+                                                    onChange={(e) => {
+                                                        const nameCountrySelected = showDistricts.find(item => item.id === e.target.value);
+                                                        setSelectedDistricts(nameCountrySelected);
+                                                    }}
+                                                    defaultValue={selectedTown?.districtId}
+                                                    {...register('districtId')}
+                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                        errors.districtId ? "border-red-500" : "border-gray-300"
+                                                    }`}
+                                                >
+                                                    <option value="">Selectionner un district pour cette ville</option>
+                                                    {showDistricts.map((item) => (
+                                                        <option key={item.id} value={item.id}>
+                                                            {item.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                {errors.districtId && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.districtId.message}</p>
+                                                )}
+                                    </div>
+                                  
 
                                     <div className='mb-1 hidden'>
                                             <label htmlFor="createdBy" className="block text-xs font-medium mb-0">
@@ -271,24 +349,31 @@ export const CategoryAction = () => {
                                 <Toaster/>
                                 </form>
                             ) : (
-                                selectedCategory && (
+                                selectedTown && (
                                     <div className='flex flex-col text-black space-y-3'>
+
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
-                                            <h3 className="font-bold text-sm">{selectedCategory?.id}</h3>
+                                            <h3 className="font-bold text-sm">{selectedTown?.id}</h3>
+                                        </div>
+
+                                        <div>
+                                            <p className="text-xs">Nom de la ville</p>
+                                            <h3 className="font-bold text-sm">{selectedTown?.name}</h3>
                                         </div>
                                         <div>
-                                            <p className="text-xs">Nom de la catégorie</p>
-                                            <h3 className="font-bold text-sm">{selectedCategory?.name}</h3>
+                                            <p className="text-xs">Nom du district</p>
+                                            <h3 className="font-bold text-sm">{selectedTown?.districtId}</h3>
                                         </div>
+                                       
                                         <div>
                                             <p className="text-xs">Date de création</p>
-                                            <h3 className="font-bold text-sm">{selectedCategory?.createdAt.split("T")[0]}</h3>
+                                            <h3 className="font-bold text-sm">{selectedTown?.createdAt.split("T")[0]}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Statut</p>
                                             <h3 className="font-bold text-sm">
-                                                {selectedCategory?.isActive ? "Actif" : "Désactivé"}
+                                                {selectedTown?.isActive ? "Actif" : "Désactivé"}
                                             </h3>
                                         </div>
                                     </div>
@@ -301,13 +386,14 @@ export const CategoryAction = () => {
                         {
                         isEdited === false ? (
                             <div className='flex space-x-2'>
+
                                             {/* <div className='flex space-x-2'>
                                                 { 
-                                                    selectedCategory?.isActive == false ? 
+                                                    selectedTown?.isActive == false ?
                                                         (
                                                                 <AlertDialogAction
                                                                     className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md bg-transparent hover:bg-blue-600 hover:text-white transition"
-                                                                    onClick={() => enabledCategory(selectedCategory.id)}>
+                                                                    onClick={() => enabledTown(selectedTown.id)}>
                                                                         Activer
                                                                 </AlertDialogAction>
 
@@ -315,7 +401,7 @@ export const CategoryAction = () => {
 
                                                                 <AlertDialogAction 
                                                                     className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md bg-transparent hover:bg-gray-600 hover:text-white transition"
-                                                                    onClick={() => disabledCategory(selectedCategory.id)}>
+                                                                    onClick={() => disabledTown(selectedTown.id)}>
                                                                         Désactiver
                                                                 </AlertDialogAction>
                                                         )
@@ -325,7 +411,7 @@ export const CategoryAction = () => {
                                            </div> */}
                                             <AlertDialogAction 
                                                 className="border-2 border-red-900 outline-red-700 text-red-900 text-xs shadow-md bg-transparent hover:bg-red-600 hover:text-white transition"
-                                                onClick={() => deletedCategory(selectedCategory.id)}>
+                                                onClick={() => deletedTown(selectedTown.id)}>
                                                     Supprimer
                                             </AlertDialogAction>
                                             <AlertDialogCancel
@@ -346,19 +432,21 @@ export const CategoryAction = () => {
     };
 
 
-    const columnsCategory = useMemo(() => [
-        { accessorKey: 'name', header: 'Nom de la catégorie' },
-        { accessorKey: 'createdAt', header: 'Date de création' },
+    const columnsTown = useMemo(() => [
+        { accessorKey: 'name', header: 'Nom de la ville' },
+        { accessorKey: 'districtId', header: 'Nom du district' },
+        // { accessorKey: 'phone', header: 'Téléphone' },
+        // { accessorKey: 'createdAt', header: 'Date de création' },
         { accessorKey: 'isActive', header: 'Statut' },
         {
             accessorKey: "action",
             header: "Actions",
             cell: ({ row }) => (
                 <div className="flex justify-center">
-                    <EyeIcon className="h-4 w-4 text-green-500" onClick={() => handleShowCategory(row.original)} />
-                    <PencilSquareIcon className="h-4 w-4 text-blue-500" onClick={() => handleEditedCategory(row.original)} />
-                    {/* <NoSymbolIcon className="h-4 w-4 text-gray-500" onClick={() => disabledCategory(row.original.id)} /> */}
-                    <TrashIcon className="h-4 w-4 text-red-500" onClick={() => deletedCategory(row.original.id)} />
+                    <EyeIcon className="h-4 w-4 text-green-500" onClick={() => handleShowTown(row.original)} />
+                    <PencilSquareIcon className="h-4 w-4 text-blue-500" onClick={() => handleEditedTown(row.original)} />
+                    {/* <NoSymbolIcon className="h-4 w-4 text-gray-500" onClick={() => disabledTown(row.original.id)} /> */}
+                    <TrashIcon className="h-4 w-4 text-red-500" onClick={() => deletedTown(row.original.id)} />
                 </div>
             )
         },
@@ -367,10 +455,10 @@ export const CategoryAction = () => {
 
     return {
 
-                showDialogCategory,
-                columnsCategory,
-                handleShowCategory,
-                handleEditedCategory,
+                showDialogTown,
+                columnsTown,
+                handleShowTown,
+                handleEditedTown,
              
     };
 };

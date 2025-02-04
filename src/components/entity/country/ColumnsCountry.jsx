@@ -21,28 +21,39 @@ import { jwtDecode } from 'jwt-decode';
 
 
 
-
 // Schéma de validation avec Zod
-const categorySchema = z.object({
+const countrySchema = z.object({
     name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
     .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme."),
 
+    email: z.string()
+    .nonempty("Ce champs 'Email' est réquis.")
+    .email("Adresse mail invalide")
+    .max(255)
+    ,
+
+    phone: z.string()
+    .nonempty("Ce champs 'Téléphone' est réquis.")
+    .length(9, "La valeur de ce champs doit contenir 9 caractères.")
+    .regex(/^[0-9]+$/)
+    ,
+
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
     });
 
 // fonction principale pour gérer les actions utilisateur
-export const CategoryAction = () => {
+export const CountryAction = () => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
-    const [selectedCategory, setSelectedCategory] = useState({});
+    const [selectedCountry, setSelectedCountry] = useState({});
     const [tokenUser, setTokenUser] = useState();
 
     const { register, handleSubmit, reset, formState:{errors, isSubmitting} } = useForm({
-        resolver: zodResolver(categorySchema),
+        resolver: zodResolver(countrySchema),
     });
 
    const { handlePatch, handleDelete } = useFetch();
@@ -59,24 +70,24 @@ export const CategoryAction = () => {
 
     const onSubmit = async (data) => {
 
-        console.log("data category", data);
+        console.log("data country", data);
 
-        const urlToUpdate = `${URLS.API_CATEGORY}/${selectedCategory?.id}`;
+        const urlToUpdate = `${URLS.API_COUNTRY}/${selectedCountry?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            console.log("response category update", response);
+            console.log("response country update", response);
                 if (response) {
                     setDialogOpen(false);
                         
                     setTimeout(()=>{
-                        toast.success("category modified successfully", { duration: 900 });
+                        toast.success("country modified successfully", { duration: 900 });
                         window.location.reload();
                     },[200]);
                 }
                 else {
                     setDialogOpen(false);
-                    toast.error("Erreur lors de la modification category", { duration: 5000 });
+                    toast.error("Erreur lors de la modification pays", { duration: 5000 });
                 }
             
           } catch (error) {
@@ -84,40 +95,40 @@ export const CategoryAction = () => {
           }
     };
 
-    const handleShowCategory = (item) => {
-        setSelectedCategory(item);
+    const handleShowCountry = (item) => {
+        setSelectedCountry(item);
         setIsEdited(false);
         setDialogOpen(true);
     };
 
-    const handleEditedCategory = (item) => {
-        setSelectedCategory(item);
+    const handleEditedCountry = (item) => {
+        setSelectedCountry(item);
         reset(item);
         setIsEdited(true);
         setDialogOpen(true);
     };
 
-    const disabledCategory = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette catégorie ?");
+    const disabledCountry = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver ce pays ?");
         if (confirmation) {
-            const urlToDisabledCategory = `${URLS.API_CATEGORY}/${id}`;
+            const urlToDisabledCountry = `${URLS.API_COUNTRY}/${id}`;
 
                     try {
-                            const response = await handlePatch(urlToDisabledCategory, {isActive:false});
+                            const response = await handlePatch(urlToDisabledCountry, { isActive:false });
                             // console.log("response for deleted", response);
                                 if (response) {
                                     setTimeout(()=>{
-                                        toast.success("category disabled successfully", { duration: 5000});
+                                        toast.success("pays disabled successfully", { duration: 5000 });
                                         window.location.reload();
                                     },[200]);
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation category", { duration: 5000 });
+                                  toast.error("Erreur lors de la désactivation pays", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la désactivation category :", error);
+                        console.error("Erreur lors de la désactivation pays :", error);
                     }
 
                     finally{
@@ -130,28 +141,28 @@ export const CategoryAction = () => {
             }
     };
 
-    const enabledCategory = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette catégorie ?");
+    const enabledCountry = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver ce pays ?");
 
         if (confirmation) {
-            const urlToDisabledCategory = `${URLS.API_CATEGORY}/${id}`;
+            const urlToDisabledCountry = `${URLS.API_COUNTRY}/${id}`;
 
                     try {
-                            const response = await handlePatch(urlToDisabledCategory, {isActive:true});
+                            const response = await handlePatch(urlToDisabledCountry, {isActive:true});
                             console.log("response for deleted", response);
                                 if (response) {
                                     setTimeout(()=>{
-                                        toast.success("category enabled successfully", { duration: 5000});
+                                        toast.success("pays enabled successfully", { duration: 5000});
                                         window.location.reload();
                                     },[200]);
                                 }
                                 else {
-                                  toast.error("Erreur lors de la réactivation category", { duration: 5000 });
+                                  toast.error("Erreur lors de la réactivation pays", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la réactivation category :", error);
+                        console.error("Erreur lors de la réactivation pays :", error);
                     }
 
                     finally{
@@ -164,28 +175,28 @@ export const CategoryAction = () => {
             }
     };
     
-    const deletedCategory = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette catégorie ?");
+    const deletedCountry = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer ce pays ?");
 
         if (confirmation) {
-            const urlToDisabledCategory = `${URLS.API_CATEGORY}/${id}`;
+            const urlToDisabledCountry = `${URLS.API_COUNTRY}/${id}`;
 
                     try {
-                            const response = await handleDelete(urlToDisabledCategory, {isActive:false});
+                            const response = await handleDelete(urlToDisabledCountry, {isActive:false});
                             // console.log("response for deleted", response);
                                 if (response) {
                                     setTimeout(()=>{
-                                        toast.success("category disabled successfully", { duration: 5000});
+                                        toast.success("customer disabled successfully", { duration: 5000});
                                         window.location.reload();
                                     },[200]);
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation category", { duration: 5000 });
+                                  toast.error("Erreur lors de la désactivation customer", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la désactivation category :", error);
+                        console.error("Erreur lors de la désactivation customer :", error);
                     }
 
                     finally{
@@ -199,27 +210,28 @@ export const CategoryAction = () => {
     };
 
 
-    const showDialogCategory = () => {
+    const showDialogCountry = () => {
+
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? " Modifier les informations " : " Détails de la catégorie " }
+                            { isEdited ? " Modifier les informations " : " Détails du pays " }
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
-                                    className='flex flex-col space-y-3 mt-5 text-xs' 
+                                    className='flex flex-col space-y-3 mt-5 text-xs'
                                      onSubmit={handleSubmit(onSubmit)}>
                                     <div>
                                             <label htmlFor='name' className="text-xs mt-2">
-                                                Nom de la catégorie <sup className='text-red-500'>*</sup>
+                                                Nom du pays <sup className='text-red-500'>*</sup>
                                             </label>
                                             <Input
                                                 id="name"
                                                 type="text"
-                                                defaultValue={selectedCategory?.name}
+                                                defaultValue={selectedCountry?.name}
                                                 {...register("name")}
                                                 className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
@@ -271,24 +283,27 @@ export const CategoryAction = () => {
                                 <Toaster/>
                                 </form>
                             ) : (
-                                selectedCategory && (
+                                selectedCountry && (
                                     <div className='flex flex-col text-black space-y-3'>
+
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
-                                            <h3 className="font-bold text-sm">{selectedCategory?.id}</h3>
+                                            <h3 className="font-bold text-sm">{selectedCountry?.id}</h3>
                                         </div>
+
                                         <div>
-                                            <p className="text-xs">Nom de la catégorie</p>
-                                            <h3 className="font-bold text-sm">{selectedCategory?.name}</h3>
+                                            <p className="text-xs">Nom du pays</p>
+                                            <h3 className="font-bold text-sm">{selectedCountry?.name}</h3>
                                         </div>
+                                       
                                         <div>
                                             <p className="text-xs">Date de création</p>
-                                            <h3 className="font-bold text-sm">{selectedCategory?.createdAt.split("T")[0]}</h3>
+                                            <h3 className="font-bold text-sm">{selectedCountry?.createdAt.split("T")[0]}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Statut</p>
                                             <h3 className="font-bold text-sm">
-                                                {selectedCategory?.isActive ? "Actif" : "Désactivé"}
+                                                {selectedCountry?.isActive ? "Actif" : "Désactivé"}
                                             </h3>
                                         </div>
                                     </div>
@@ -302,12 +317,13 @@ export const CategoryAction = () => {
                         isEdited === false ? (
                             <div className='flex space-x-2'>
                                             {/* <div className='flex space-x-2'>
+
                                                 { 
-                                                    selectedCategory?.isActive == false ? 
+                                                    selectedCountry?.isActive == false ?
                                                         (
                                                                 <AlertDialogAction
                                                                     className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md bg-transparent hover:bg-blue-600 hover:text-white transition"
-                                                                    onClick={() => enabledCategory(selectedCategory.id)}>
+                                                                    onClick={() => enabledCountry(selectedCountry.id)}>
                                                                         Activer
                                                                 </AlertDialogAction>
 
@@ -315,7 +331,7 @@ export const CategoryAction = () => {
 
                                                                 <AlertDialogAction 
                                                                     className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md bg-transparent hover:bg-gray-600 hover:text-white transition"
-                                                                    onClick={() => disabledCategory(selectedCategory.id)}>
+                                                                    onClick={() => disabledCountry(selectedCountry.id)}>
                                                                         Désactiver
                                                                 </AlertDialogAction>
                                                         )
@@ -325,7 +341,7 @@ export const CategoryAction = () => {
                                            </div> */}
                                             <AlertDialogAction 
                                                 className="border-2 border-red-900 outline-red-700 text-red-900 text-xs shadow-md bg-transparent hover:bg-red-600 hover:text-white transition"
-                                                onClick={() => deletedCategory(selectedCategory.id)}>
+                                                onClick={() => deletedCountry(selectedCountry.id)}>
                                                     Supprimer
                                             </AlertDialogAction>
                                             <AlertDialogCancel
@@ -346,8 +362,10 @@ export const CategoryAction = () => {
     };
 
 
-    const columnsCategory = useMemo(() => [
-        { accessorKey: 'name', header: 'Nom de la catégorie' },
+    const columnsCountry = useMemo(() => [
+        { accessorKey: 'name', header: 'Nom du pays' },
+        // { accessorKey: 'email', header: 'Adresse mail' },
+        // { accessorKey: 'phone', header: 'Téléphone' },
         { accessorKey: 'createdAt', header: 'Date de création' },
         { accessorKey: 'isActive', header: 'Statut' },
         {
@@ -355,10 +373,10 @@ export const CategoryAction = () => {
             header: "Actions",
             cell: ({ row }) => (
                 <div className="flex justify-center">
-                    <EyeIcon className="h-4 w-4 text-green-500" onClick={() => handleShowCategory(row.original)} />
-                    <PencilSquareIcon className="h-4 w-4 text-blue-500" onClick={() => handleEditedCategory(row.original)} />
-                    {/* <NoSymbolIcon className="h-4 w-4 text-gray-500" onClick={() => disabledCategory(row.original.id)} /> */}
-                    <TrashIcon className="h-4 w-4 text-red-500" onClick={() => deletedCategory(row.original.id)} />
+                    <EyeIcon className="h-4 w-4 text-green-500" onClick={() => handleShowCountry(row.original)} />
+                    <PencilSquareIcon className="h-4 w-4 text-blue-500" onClick={() => handleEditedCountry(row.original)} />
+                    {/* <NoSymbolIcon className="h-4 w-4 text-gray-500" onClick={() => disabledCountry(row.original.id)} /> */}
+                    <TrashIcon className="h-4 w-4 text-red-500" onClick={() => deletedCountry(row.original.id)} />
                 </div>
             )
         },
@@ -367,10 +385,10 @@ export const CategoryAction = () => {
 
     return {
 
-                showDialogCategory,
-                columnsCategory,
-                handleShowCategory,
-                handleEditedCategory,
+                showDialogCountry,
+                columnsCountry,
+                handleShowCountry,
+                handleEditedCountry,
              
     };
 };

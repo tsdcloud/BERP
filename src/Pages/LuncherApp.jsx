@@ -7,6 +7,7 @@ import { useState } from "react";
 import Preloader from '../components/Preloader';
 import { Link, useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
+import { FaWeightHanging } from 'react-icons/fa';
 
 import '../App.css'; 
 import { Button } from 'antd';
@@ -60,7 +61,7 @@ export default function LuncherApp() {
                 <div className="flex-grow relative z-10 p-8">
 
                   <div className='flex justify-between'>
-                      <h1 className="text-white text-3xl font-bold">Mes applications</h1>
+                      <h1 className="text-white text-xl md:text-3xl font-bold">Mes applications</h1>
                       <Button
                           type="submit"
                           className="absolute top-0 right-6 my-9 mx-4 w-auto bg-red-500 text-white px-2 text-xs rounded-3xl shadow-md hover:bg-blue-700 transition "
@@ -70,11 +71,26 @@ export default function LuncherApp() {
                       </Button>
                   </div>
 
-                    <div className='flex flex-wrap space-x-1 justify-center sm:justify-normal'>
+                    <div className='m-3 flex flex-wrap space-x-1 justify-center items-center sm:justify-normal'>
                         {/* Ajoutez ici le reste de votre contenu */}
                         <EntityEntryPoint/>
                         <UserEntryPoint/>
                         <IncidentEntryPoint/>
+                          <div className='flex justify-center items-center m-0 lg:m-4'>
+
+                                <div className='m-9 flex flex-col items-center space-y-2'>
+                                        <a
+                                            href="https://dex.zukulufeg.com/"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center justify-center w-[90px] h-[90px] bg-secondary text-white rounded-xl shadow-lg hover:bg-orange-600 transition duration-300"
+                                        >
+                                            <FaWeightHanging size={40} />
+                                        </a>
+                                        <p className='text-white text-xs'>WPO</p>
+                              </div>
+                              
+                          </div>
 
                     </div>
 

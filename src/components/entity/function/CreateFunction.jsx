@@ -12,8 +12,6 @@ import { useFetch } from '../../../hooks/useFetch';
 
 import toast, { Toaster } from 'react-hot-toast';
 
-import mock_data from "../../../helpers/mock_data.json";
-
 import { jwtDecode } from 'jwt-decode';
 
 // Définition du schéma avec Zod

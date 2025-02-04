@@ -7,7 +7,7 @@ import CreateFunction from './CreateFunction';
 
 export default function Function() {
     const { showDialogFunction, columnsFunction } = FunctionAction();
-    const [Functions, setFunctions] = useState([]);
+    const [functions, setFunctions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -49,14 +49,14 @@ export default function Function() {
 
   return (
             <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des Functions</h1>
+                <h1 className='text-sm my-3 font-semibold'>Gestion des Fonctions</h1>
                 <div className='space-y-2'>
                     <CreateFunction setOpen={setOpen} onSubmit={fetchFunction} />
-                    {columnsFunction && Functions.length >= 0 && (
+                    {columnsFunction && functions.length >= 0 && (
                         <DataTable
                             className="rounded-md border w-[800px] text-xs"
                             columns={columnsFunction}
-                            data={Functions} 
+                            data={functions} 
                         />
                     )}
                 </div>
