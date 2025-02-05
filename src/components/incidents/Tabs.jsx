@@ -78,11 +78,11 @@ const Tabs = () => {
     ]
 
   return (
-    <div className='flex gap-2 items-center w-full px-2 overflow-x-auto'>
+    <div className='flex gap-2 items-center w-full px-2 overflow-x-auto py-2'>
         {
             links.map((link, index) => 
                 link.requiredPermissions.every(permission => userPermissions.includes(permission)) &&
-            <div key={index} className={`px-2 p-1 ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold`} onClick={()=>navigate(link?.link)}>{link?.name}</div>
+            <div key={index} className={`px-2 p-1 ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold min-w-[100px] flex justify-center`} onClick={()=>navigate(link?.link)}><span>{link?.name}</span></div>
         )
         }
     </div>

@@ -65,7 +65,7 @@ const Equipement = () => {
         <div className='px-6 space-y-4'>
             <div className='flex items-center justify-between'>
                 {/* Header */}
-                <div>
+                <div className='sm:w-full'>
                     <Tabs />
                 </div>
                 {/* Dialog */}

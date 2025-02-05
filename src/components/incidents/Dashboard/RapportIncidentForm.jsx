@@ -32,6 +32,7 @@ const RapportIncidentForm = ({onSubmit}) => {
     // Criteria
     const [criteria, setCriteria] = useState("");
     const [condition, setCondition] = useState("EQUAL");
+    let token = localStorage.getItem("token") 
 
 
 
@@ -148,8 +149,13 @@ const RapportIncidentForm = ({onSubmit}) => {
             setError("tous les champs (*) sont requis");
             return;
         }
+        let requestOptions ={
+            headers:{
+                'authorization': `Bearer ${token}`
+            }
+        }
         try {
-            let response = await fetch(url);
+            let response = await fetch(url, requestOptions);
             if(response.status === 200){
                 const result = await response.json();
                 console.log(result)

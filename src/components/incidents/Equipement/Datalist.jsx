@@ -102,7 +102,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       title:"Site",
       dataIndex:"siteId",
       width:"200px",
-      render:(value)=><p className='text-sm capitalize'>{sites.find(site => site.value === value)?.name || value}</p>
+      render:(value)=><p className='text-sm capitalize'>{sites.find(site => site.value === value)?.name || value || '--'}</p>
     },
     {
       title:"Cree par",
