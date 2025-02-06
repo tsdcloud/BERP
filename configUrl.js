@@ -16,5 +16,6 @@ export const URLS = {
   API_VERIFY_TOKEN: import.meta.env.VITE_API_VERIFY_TOKEN,
   API_REFRESH_TOKEN: import.meta.env.VITE_API_REFRESH_TOKEN,
   ENTITY_API : import.meta.env.VITE_ENTITY_API,
-  WPO_API : import.meta.env.VITE_WPO_API
+  WPO_API : import.meta.env.VITE_WPO_API,
+  WPO_LINK : import.meta.env.VITE_WPO
 };

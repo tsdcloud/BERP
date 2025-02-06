@@ -144,13 +144,14 @@ const RapportIncidentForm = ({onSubmit}) => {
         setError("");
         let {startDate, endDate, value} = data;
         let url =`${URLS.INCIDENT_API}/incidents/file?criteria=${criteria}&condition=${condition}&value=${value}&start=${startDate ? new Date(startDate).toISOString():''}&end=${endDate?new Date(endDate).toISOString():''}`;
-        console.log(data, criteria, condition)
+        
         if(criteria==="" || condition === "" || !value){
             setError("tous les champs (*) sont requis");
             return;
         }
         let requestOptions ={
             headers:{
+                "Content-Type":"application/json",
                 'authorization': `Bearer ${token}`
             }
         }
@@ -158,7 +159,6 @@ const RapportIncidentForm = ({onSubmit}) => {
             let response = await fetch(url, requestOptions);
             if(response.status === 200){
                 const result = await response.json();
-                console.log(result)
                 const link = document.getElementById('download');
                 link.href = result?.downloadLink;
                 link.download = "incidents_report.xlsx";

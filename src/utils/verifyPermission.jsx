@@ -1,6 +1,6 @@
 import React from 'react'
 
-const verifyPermission = ({children, expected, roles, functions, isExclude = false}) => {
+const verifyPermission = ({children, expected=[], roles=[], functions=[], isExclude = false}) => {
     if(expected instanceof Array){
 
         if(isExclude){

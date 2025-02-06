@@ -79,6 +79,13 @@ const Incident = () =>{
                         fetchData={()=>fetchIncidents(`${URLS.INCIDENT_API}/incidents`)}
                         loading={isLoading}
                         searchValue={searchValue}
+                        pagination={{
+                            total: totalPages,
+                            pageSize:100,
+                            onChange:()=>{
+                                totalPages > page && fetchIncidents(`${URLS.INCIDENT_API}/incidents?page=${page+1}`)
+                            }
+                        }}
                     />
                 </div>
             </div>

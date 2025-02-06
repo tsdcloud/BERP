@@ -108,7 +108,7 @@ const Dashboard = () =>{
                         onClickOffBridge={()=>handleOpenDialog("OFF_BRIDGE")}
                     />
                 </div>
-                <div className='p-2 py-[50px] flex items-center space-x-2'>
+                <div className='p-2 py-[50px] flex flex-col md:flex-row  items-center gap-6 md:gap-2'>
                     <Card 
                         icon={<ExclamationTriangleIcon  className='h-8 w-8 text-white'/>}
                         title={"Incidents"}

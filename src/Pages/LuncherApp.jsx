@@ -16,6 +16,7 @@ import { useFetch } from '../hooks/useFetch';
 import EntityEntryPoint from './entity/EntityEntryPoint';
 import IncidentEntryPoint from './incidents/IncidentEntryPoint';
 import { ArrowLeftEndOnRectangleIcon  } from "@heroicons/react/24/outline";
+import WPOEnteryPoint from './wpo/WPOEnteryPoint';
 
 
 export default function LuncherApp() {
@@ -75,7 +76,7 @@ export default function LuncherApp() {
                         <EntityEntryPoint/>
                         <UserEntryPoint/>
                         <IncidentEntryPoint/>
-
+                        <WPOEnteryPoint />
                     </div>
 
 

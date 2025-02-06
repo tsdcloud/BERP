@@ -101,6 +101,12 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       title:"Type incident",
       dataIndex:"incident",
       width:"200px",
+      render:(value)=><p className='text-sm'>{highlightText(value?.name) || value}</p>
+    },
+    {
+      title:"Description",
+      dataIndex:"description",
+      width:"200px",
       render:(value)=><p className='text-sm'>{value?.name || value}</p>
     },
     {
@@ -118,7 +124,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       width:"150px",
       render:(value)=>
         <p className='text-sm capitalize'>
-          {shifts.find(shift => shift.value === value)?.name || value}
+          {shifts.find(shift => shift.value === value)?.name || value || "--"}
         </p>
     },
     {
@@ -431,7 +437,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                 x: 500,
                 y: "30vh"
             }}
-            pagination={pagination}
+            pagination={{...pagination}}
             loading={loading}
           />
         </Form>
