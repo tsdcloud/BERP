@@ -32,6 +32,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
     // Criteria
     const [criteria, setCriteria] = useState("");
     const [condition, setCondition] = useState("EQUAL");
+    let token = localStorage.getItem("token");
 
 
 
@@ -165,8 +166,14 @@ const RapportMaintenanceForm = ({onSubmit}) => {
             setError("tous les champs (*) sont requis");
             return;
         }
+        let requestOptions ={
+            headers:{
+                "Content-Type":"application/json",
+                'authorization': `Bearer ${token}`
+            }
+        }
         try {
-            let response = await fetch(url);
+            let response = await fetch(url, requestOptions);
             if(response.status === 200){
                 const result = await response.json();
                 console.log(result)

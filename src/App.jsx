@@ -93,8 +93,8 @@ function App() {
 
             {/* Incident */}
            <Route path="/incidents">
-              <Route path="dashboard" element={<Dashboard />} />
               <Route path="" element={<Incident />} />
+              <Route path="dashboard" element={<Dashboard />} />
               <Route path="maintenance" element={<Maintenance />} />
               <Route path="off-bridge" element={<OffBridge />} />
               <Route element={<IncidenSettingRoutes permissions={["incident__view_incident_types"]}/>}>

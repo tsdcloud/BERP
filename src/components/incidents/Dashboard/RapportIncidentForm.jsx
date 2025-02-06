@@ -32,7 +32,7 @@ const RapportIncidentForm = ({onSubmit}) => {
     // Criteria
     const [criteria, setCriteria] = useState("");
     const [condition, setCondition] = useState("EQUAL");
-    let token = localStorage.getItem("token") 
+    let token = localStorage.getItem("token");
 
 
 
