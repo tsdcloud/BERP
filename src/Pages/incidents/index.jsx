@@ -11,15 +11,15 @@ const Incident = () =>{
     const {handleFetch} = useFetch();
     const [incidents, setIncidents] = useState([]);
     const [isOpenned, setIsOpenned] = useState(false);
+    const [searchValue, setSearchValue] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(0);
     const [page, setPage] = useState(0);
     const [pageList, setPageList] = useState([]);
 
 
-    const fetchIncidents= async () => {
-        setIsLoading(true)
-        let url = `${URLS.INCIDENT_API}/incidents`;
+    const fetchIncidents= async (url) => {
+        setIsLoading(true);
         try {
            const response = await handleFetch(url);
            if(response.data){
@@ -35,12 +35,12 @@ const Incident = () =>{
     }
 
     const handleSubmit=()=>{
-        fetchIncidents();
+        fetchIncidents(`${URLS.INCIDENT_API}/incidents`);
         document.getElementById("close-dialog").click();
     }
 
     useEffect(()=>{
-        fetchIncidents();
+        fetchIncidents(`${URLS.INCIDENT_API}/incidents`);
     }, []);
 
 
@@ -63,12 +63,29 @@ const Incident = () =>{
                 {/* Table */}
                 <div className='w-full bg-white rounded-lg p-2'>
                     <div className='px-2'>
-                        <input type="text" className='p-2 border rounded-lg' placeholder='Recherche...' />
+                        <input 
+                            type="text" 
+                            className='p-2 border rounded-lg' 
+                            placeholder='Recherche...' 
+                            value={searchValue}
+                            onChange={(e)=>{
+                                setSearchValue(e.target.value);
+                                fetchIncidents(`${URLS.INCIDENT_API}/incidents?search=${e.target.value}`)
+                            }}
+                        />
                     </div>
                     <Datalist 
                         dataList={incidents}
-                        fetchData={fetchIncidents}
+                        fetchData={()=>fetchIncidents(`${URLS.INCIDENT_API}/incidents`)}
                         loading={isLoading}
+                        searchValue={searchValue}
+                        pagination={{
+                            total: totalPages,
+                            pageSize:100,
+                            onChange:()=>{
+                                totalPages > page && fetchIncidents(`${URLS.INCIDENT_API}/incidents?page=${page+1}`)
+                            }
+                        }}
                     />
                 </div>
             </div>

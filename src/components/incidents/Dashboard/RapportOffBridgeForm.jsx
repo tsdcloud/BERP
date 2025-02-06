@@ -28,6 +28,7 @@ const RapportOffBridgeForm = ({onSubmit}) => {
     // Criteria
     const [criteria, setCriteria] = useState("");
     const [condition, setCondition] = useState("EQUAL");
+    let token = localStorage.getItem("token");
 
 
 
@@ -90,19 +91,24 @@ const RapportOffBridgeForm = ({onSubmit}) => {
         setError("");
         let {startDate, endDate, value} = data;
         let url =`${URLS.INCIDENT_API}/off-bridges/file?criteria=${criteria}&condition=${condition}&value=${value}&start=${startDate ? new Date(startDate).toISOString():''}&end=${endDate?new Date(endDate).toISOString():''}`;
-        console.log(data, criteria, condition)
         if(criteria==="" || condition === "" || !value){
             setError("tous les champs (*) sont requis");
             return;
         }
+        let requestOptions ={
+            headers:{
+                "Content-Type":"application/json",
+                'authorization': `Bearer ${token}`
+            }
+        }
         try {
-            let response = await fetch(url);
+            let response = await fetch(url, requestOptions);
             if(response.status === 200){
                 const result = await response.json();
                 console.log(result)
                 const link = document.getElementById('download');
                 link.href = result?.downloadLink;
-                link.download = `incidents_report_${new Date().toISOString()}.xlsx`;
+                link.download = `off-bridge_report_${new Date().toISOString()}.xlsx`;
                 link.click();
                 onSubmit()
                 return;

@@ -43,7 +43,6 @@ const HorsPontForm = ({onSucess}) =>{
     const handleSubmitForm=async(data)=>{
         let url = `${URLS.INCIDENT_API}/off-bridges`
         try {
-            data.createdBy= "878c6bae-b754-4577-b614-69e15821dac8";
             let response = await handlePost(url, data);
             if(response.status === 201){
                 onSucess();

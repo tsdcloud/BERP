@@ -17,9 +17,8 @@ const InitiateForm = ({onSucess}) => {
 
   const submitForm = async (data) =>{
     let url = `${URLS.INCIDENT_API}/equipements`
-    data.createdBy = "878c6bae-b754-4577-b614-69e15821dac8";
     try {
-      let response = await handlePost(url, data, false);
+      let response = await handlePost(url, data, true);
       if(response.status != 201){
         alert("Erreur. Une erreur est survenue lors de la création.");
         return
