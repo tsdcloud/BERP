@@ -18,8 +18,6 @@ import {  AlertDialog,
 
 } from "../ui/alert-dialog";
 
-import { URLS } from '../../../configUrl';
-
 import SignInLayout from '../layout/SignInLayout';
 import { URLS } from '../../../configUrl';
 
