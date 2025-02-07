@@ -54,7 +54,7 @@ const Maintenance = () => {
         <div className='px-6 space-y-2'>
             <div className='flex items-center justify-between'>
                 {/* Header */}
-                <div>
+                <div className='max-w-2/3 overflow-x-auto'>
                     <Tabs />
                 </div>
                 {/* Dialog */}

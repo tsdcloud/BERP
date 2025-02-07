@@ -75,7 +75,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       title:"No ref",
       dataIndex:"numRef",
       width:"100px",
-      render:(value, record)=>
+      render:(value, record)=> 
         editingRow == record.id ?
         <input />:
         <p className='text-sm'>{highlightText(value)}</p>

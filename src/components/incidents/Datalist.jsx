@@ -428,7 +428,8 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   }, []);
 
   useEffect(()=>{
-    handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types?hasIncident=${true}`);
+    // handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types?hasIncident=${true}`);
+    handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types?hasIncident=${false}`);
   }, [isOpen])
   
   return (

@@ -36,7 +36,7 @@ const InitiateForm = ({onSucess}) => {
             value: item?.id
           }
         });
-        setMaintenanceTypes(formatedData);
+        setMaintenanceTypes(formatedData); 
       }
     } catch (error) {
       console.error(error);
@@ -229,7 +229,7 @@ const InitiateForm = ({onSucess}) => {
     let url = `${URLS.INCIDENT_API}/maintenances`
     data.createdBy = "878c6bae-b754-4577-b614-69e15821dac8";
     try {
-      let response = await handlePost(url, data, false);
+      let response = await handlePost(url, data, true);
       if(response.error){
         alert("Erreur. Une erreur est survenue lors de la création.");
         return

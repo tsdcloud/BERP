@@ -65,7 +65,7 @@ const IncidentType = () => {
         <div className='px-6'>
             <div className='flex items-center justify-between'>
                 {/* Header */}
-                <div>
+                <div className='max-w-2/3 overflow-x-auto'>
                     <Tabs />
                 </div>
                 {/* Dialog */}

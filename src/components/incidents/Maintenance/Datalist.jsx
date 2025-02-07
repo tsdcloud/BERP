@@ -29,7 +29,7 @@ import { URLS } from '../../../../configUrl';
 
 
 const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
-
+ 
   const handleDelete = async (id) =>{
     if (window.confirm("Voulez vous supprimer la maintenance ?")) {
       try {
@@ -208,6 +208,8 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                         });
                         if(response.status == 200){
                           fetchData();
+                        } else {
+                          fetchData()
                         }
                       }
                     } catch (error) {

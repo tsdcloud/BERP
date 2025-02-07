@@ -54,7 +54,7 @@ const OffBridge = () => {
         <div className='px-6 space-y-2'>
             <div className='flex items-center justify-between'>
                 {/* Header */}
-                <div>
+                <div className='max-w-2/3 overflow-x-auto'>
                     <Tabs />
                 </div>
                 {/* Dialog */}
@@ -77,18 +77,19 @@ const OffBridge = () => {
                         type="text" 
                         className='p-2 rounded-lg border'
                         placeholder='Recherche...'
+                        value={searchValue}
                         onChange={handleSearch} 
                     />
                 </div>
                 <Datalist 
                     dataList={offBridges}
                     fetchData={()=>fetchOffBridges(`${URLS.INCIDENT_API}/off-bridges`)}
-                    setDataList={setOffBridges}
+                    // setDataList={setOffBridges}
                     searchValue={searchValue}
                     loading={isLoading}
                     pagination={{
                         pageSize:100,
-                        total:totalPages,
+                        total:totalPages, 
                         onChange:()=>{
 
                         }
