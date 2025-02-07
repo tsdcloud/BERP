@@ -312,7 +312,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
 
   const handleFetchEmployees = async (link) =>{
     try {
-      let response = await handleFetch(link);     
+      let response = await handleFetch(link);
       if(response?.status === 200){
         let formatedData = response?.data.map(item=>{
           return {
@@ -320,7 +320,14 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
             value: item?.id
           }
         });
+
         setEmployees(formatedData);
+
+        // setTimeout(()=>{
+        //   console.log(employees.find(employee => employee.value === "5435e1e3-4074-4d7f-94b2-f2157f3b0c71")?.name);
+
+        // }, [10000])
+
       }
     } catch (error) {
       console.error(error);

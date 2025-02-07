@@ -90,11 +90,11 @@ const Tabs = () => {
     ]
 
   return (
-    <div className='flex gap-2 items-center w-full px-2 overflow-x-auto py-2'>
+    <div className='flex gap-2 items-center whitespace-nowrap overflow-x-auto no-scrollbar'>
         {
             links.map((link, index) => 
                 (link.requiredPermissions.every(permission => userPermissions.includes(permission)) && link.requiredRoles.every(role => userRoles.includes(role))) &&
-            <div key={index} className={`px-2 p-1 ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold min-w-[100px] flex justify-center`} onClick={()=>navigate(link?.link)}><span>{link?.name}</span></div>
+            <div key={index} className={`px-2 p-1 ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold flex justify-center`} onClick={()=>navigate(link?.link)}><span>{link?.name}</span></div>
         )
         }
     </div>
