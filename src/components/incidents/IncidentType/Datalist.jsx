@@ -32,6 +32,7 @@ import {
 } from "../../../components/ui/table"
 import { URLS } from '../../../../configUrl';
  
+const token = localStorage.getItem("token")
 
 
 
@@ -43,7 +44,11 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       try {
         let url = `${URLS.INCIDENT_API}/incident-types/${id}`;
         let response = await fetch(url, {
-          method:"DELETE"
+          method:"DELETE",
+          headers:{
+            'authorization':`Bearer ${token}`,
+            'Content-Type':'application/json'
+          }
         });
         if(response.status === 200){
           alert("Deleted successfully");
