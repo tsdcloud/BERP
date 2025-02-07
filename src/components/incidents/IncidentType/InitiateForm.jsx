@@ -14,7 +14,7 @@ const InitiateForm = ({onSucess}) => {
     let url = `${URLS.INCIDENT_API}/incident-types`
     data.createdBy = "user 1";
     try {
-      let response = await handlePost(url, data, false);
+      let response = await handlePost(url, data, true);
       if(response.error){
         alert("Erreur. Une erreur est survenue lors de la création.");
         console.log(response)

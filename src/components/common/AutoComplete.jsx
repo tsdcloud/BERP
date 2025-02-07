@@ -74,10 +74,10 @@ const AutoComplete = ({
             {dataList.map((item, index) => (
                 <div
                 key={index}
-                className="w-full hover:bg-slate-100 p-2 transition-all cursor-pointer text-xs rounded-sm capitalize"
+                className="w-full hover:bg-slate-100 p-2 transition-all cursor-pointer text-xs font-semibold rounded-sm capitalize"
                 onClick={() => handleSelect(item)}
                 >
-                {item.name}
+                <span>{item.name}</span>
                 </div>
             ))}
             </div>
