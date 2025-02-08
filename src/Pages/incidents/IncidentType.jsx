@@ -6,7 +6,7 @@ import Tabs from '../../components/incidents/Tabs';
 import Datalist from '../../components/incidents/IncidentType/Datalist';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
-import Pagination from '../../components/common/Pagination';
+import { Pagination } from 'antd';
 
 const IncidentType = () => {
     const {handleFetch} = useFetch();
@@ -14,6 +14,7 @@ const IncidentType = () => {
     const [isOpenned, setIsOpenned] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(0);
+    const [total, setTotal] = useState(0);
     const [page, setPage] = useState(0);
     const [searchValue, setSearchValue] = useState("");
     const [pageList, setPageList] = useState([]);
@@ -25,6 +26,7 @@ const IncidentType = () => {
            if(response.data){
             setIncidentTypes(response.data);
             setTotalPages(response.totalPages);
+            setTotal(response.total);
             setPage(response.page);
            }
         } catch (error) {
@@ -105,6 +107,16 @@ const IncidentType = () => {
                         }
                     }}
                 />
+                <div className='flex items-center px-6'>
+                    <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                    <Pagination 
+                        total={total}
+                        pageSize={100}
+                        onChange={(page)=>{
+                            totalPages > page && fetchIncidents(`${URLS.INCIDENT_API}/incident-types?page=${page}`)
+                        }}
+                    />
+                </div>
             </div>
 
             

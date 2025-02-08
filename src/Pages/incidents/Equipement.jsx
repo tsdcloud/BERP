@@ -5,6 +5,7 @@ import InitiateForm from '../../components/incidents/Equipement/InitiateForm';
 import Tabs from '../../components/incidents/Tabs';
 import Datalist from '../../components/incidents/Equipement/Datalist';
 import { useFetch } from '../../hooks/useFetch';
+import { Pagination } from 'antd';
 import { URLS } from '../../../configUrl';
 
 
@@ -16,6 +17,7 @@ const Equipement = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [searchValue, setSearchValue] = useState("");
     const [totalPages, setTotalPages] = useState(0);
+    const [total, setTotal] = useState(0);
     const [page, setPage] = useState(0);
     const [pageList, setPageList] = useState([]);
 
@@ -26,6 +28,7 @@ const Equipement = () => {
            const response = await handleFetch(url);
            if(response.data){
             setEquipements(response.data);
+            setTotal(response.total);
             setTotalPages(response.totalPages);
             setPage(response.page);
            }
@@ -104,6 +107,16 @@ const Equipement = () => {
                         onChange:()=>{
                             totalPages > page && fetchEquipement(`${URLS.INCIDENT_API}/equipements?page=${page+1}`)
                         }
+                    }}
+                />
+            </div>
+            <div className='flex items-center px-6'>
+                <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                <Pagination 
+                    total={total}
+                    pageSize={100}
+                    onChange={(page)=>{
+                        totalPages > page && fetchEquipement(`${URLS.INCIDENT_API}/equipements?page=${page}`)
                     }}
                 />
             </div>

@@ -84,11 +84,8 @@ export default function Header() {
     <div className='m-6'>
         <div className='bg-blue-900 w-full h-[55px] rounded-sm flex justify-between'>
 
-                <h1 className='text-white text-xs font-mono text-md p-5 flex items-center gap-2'>
-                        <button className='p-1 rounded-lg border border-white'>
-                                <Bars3Icon className='text-white h-5 w-5'/>
-                        </button>
-                        <span className='hidden md:block text-xl'>BERP</span>
+                <h1 className='text-white text-xs font-console text-md p-5 flex items-center gap-2'>
+                        <span className='text-xl'>BERP</span>
                 </h1>
                        
                 <div className="relative" ref={dropdownRef}>

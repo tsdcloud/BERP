@@ -5,7 +5,7 @@ import Tabs from '../../components/incidents/Tabs';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
 import Card from '../../components/incidents/Dashboard/Card';
-import { Cog8ToothIcon, ExclamationTriangleIcon, TruckIcon } from '@heroicons/react/24/outline';
+import { Cog6ToothIcon, Cog8ToothIcon, ExclamationTriangleIcon, PlusIcon, TruckIcon } from '@heroicons/react/24/outline';
 import ActionHeader from '../../components/incidents/Dashboard/ActionHeader';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -20,6 +20,7 @@ import {
 import RapportIncidentForm from '../../components/incidents/Dashboard/RapportIncidentForm';
 import RapportMaintenanceForm from '../../components/incidents/Dashboard/RapportMaintenanceForm';
 import RapportOffBridgeForm from '../../components/incidents/Dashboard/RapportOffBridgeForm';
+import { FloatButton } from 'antd';
 
 
 
@@ -28,6 +29,7 @@ const Dashboard = () =>{
     const {handleFetch} = useFetch();
     const [incidents, setIncidents] = useState([]);
     const [isOpenned, setIsOpenned] = useState(false);
+    const [openFloatBtn, setOpenFloatBtn] = useState(false);
     const [dialogType, setDialogType] = useState("");
     const [totalIncident, setTotalIncident] = useState(0);
     const [totalMaintenance, setTotalMaintenance] = useState(0);
@@ -101,7 +103,7 @@ const Dashboard = () =>{
                     <Tabs />
                 </div>
                 {/* Dialog */}
-                <div className='p-2'>
+                <div className='p-2 hidden md:block'>
                     <ActionHeader 
                         onIncidentClick={()=>handleOpenDialog("INCIDENT")}
                         onMaintenanceClick={()=>handleOpenDialog("MAINTENANCE")}
@@ -154,6 +156,41 @@ const Dashboard = () =>{
                     <DialogFooter>{""}</DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            {/* floating button */}
+            <div className='md:hidden'>
+                <FloatButton.Group
+                    open={openFloatBtn}
+                    trigger="click"
+                    style={{
+                        insetInlineEnd: 24,
+                    }}
+                    icon={<PlusIcon className='text-gray-500 h-4 w-4' />}
+                    onClick={()=>setOpenFloatBtn(!openFloatBtn)}
+                >
+                    <FloatButton 
+                        onClick={()=>{
+                            setOpenFloatBtn(false);
+                            handleOpenDialog("INCIDENT");
+                        }}
+                        icon={<ExclamationTriangleIcon />}
+                    />
+                    <FloatButton 
+                        onClick={()=>{
+                            setOpenFloatBtn(false);
+                            handleOpenDialog("MAINTENANCE");
+                        }}
+                        icon={<Cog6ToothIcon />}
+                    />
+                    <FloatButton 
+                        onClick={()=>{
+                            setOpenFloatBtn(false);
+                            handleOpenDialog("OFF_BRIDGE");
+                        }}
+                        icon={<TruckIcon />}
+                    />
+                </FloatButton.Group>
+            </div>
         </>
     )
 }

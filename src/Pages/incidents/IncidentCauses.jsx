@@ -6,7 +6,7 @@ import Tabs from '../../components/incidents/Tabs';
 import Datalist from '../../components/incidents/IncidentCauses/Datalist';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
-import Pagination from '../../components/common/Pagination';
+import { Pagination } from 'antd';
 
 const IncidentCauses = () => {
 
@@ -15,6 +15,7 @@ const IncidentCauses = () => {
     const [isOpenned, setIsOpenned] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(0);
+    const [total, setTotal] = useState(0);
     const [page, setPage] = useState(0);
     const [searchValue, setSearchValue] = useState("");
     const [pageList, setPageList] = useState([]);
@@ -26,6 +27,7 @@ const IncidentCauses = () => {
            if(response.data){
             setIncidentCauses(response.data);
             setTotalPages(response.totalPages);
+            setTotal(response.total);
             setPage(response.page);
            }
         } catch (error) {
@@ -90,14 +92,17 @@ const IncidentCauses = () => {
                     fetchData={()=>fetchIncidentCauses(`${URLS.INCIDENT_API}/incident-causes`)}
                     loading={isLoading}
                     searchValue={searchValue}
-                    pagination={{
-                        pageSize:100,
-                        total: totalPages,
-                        onChange:()=>{
-                            totalPages > pages && fetchIncidentCauses(`${URLS.INCIDENT_API}/incident-causes?page=${page+1}`)
-                        }
-                    }}
                 />
+                <div className='flex items-center px-6'>
+                        <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                        <Pagination 
+                            total={total}
+                            pageSize={100}
+                            onChange={(page)=>{
+                                totalPages > page && fetchIncidentCauses(`${URLS.INCIDENT_API}/incident-causes?page=${page}`)
+                            }}
+                        />
+                </div>
             </div>
 
             

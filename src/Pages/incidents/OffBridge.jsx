@@ -6,7 +6,8 @@ import Tabs from '../../components/incidents/Tabs';
 import Datalist from '../../components/incidents/OffBridge/Datalist';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
-import Pagination from '../../components/common/Pagination';
+import _Pagination from '../../components/common/Pagination';
+import { Pagination } from 'antd';
 
 
 const OffBridge = () => {
@@ -16,6 +17,7 @@ const OffBridge = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [searchValue, setSearchValue] = useState("");
     const [totalPages, setTotalPages] = useState(0);
+    const [total, setTotal] = useState(0);
     const [page, setPage] = useState(0);
     const [pageList, setPageList] = useState([]);
 
@@ -27,6 +29,7 @@ const OffBridge = () => {
             setOffBridges(response.data);
             setTotalPages(response.totalPages);
             setPage(response.page);
+            setTotal(response.total)
            }
         } catch (error) {
             console.log(error)
@@ -95,6 +98,16 @@ const OffBridge = () => {
                         }
                     }}
                 />
+                <div className='flex items-center px-6'>
+                    <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                    <Pagination 
+                        total={total}
+                        pageSize={100}
+                        onChange={(page)=>{
+                            totalPages > page && fetchOffBridges(`${URLS.INCIDENT_API}/off-bridges?page=${page}`)
+                        }}
+                    />
+                </div>
             </div>
 
             

@@ -6,7 +6,8 @@ import Tabs from '../../components/incidents/Tabs';
 import Datalist from '../../components/incidents/maintenance/Datalist';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
-import Pagination from '../../components/common/Pagination';
+import { Pagination } from 'antd';
+
 
 
 const Maintenance = () => {
@@ -16,6 +17,7 @@ const Maintenance = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [searchValue, setSearchValue] = useState("");
     const [totalPages, setTotalPages] = useState(0);
+    const [total, setTotal] = useState(0);
     const [page, setPage] = useState(0);
     const [pageList, setPageList] = useState([]);
 
@@ -26,6 +28,7 @@ const Maintenance = () => {
            if(response.data){
             setMaintenances(response.data);
             setTotalPages(response.totalPages);
+            setTotal(response.total);
             setPage(response.page);
            }
         } catch (error) {
@@ -94,6 +97,16 @@ const Maintenance = () => {
                         }
                     }}
                 />
+                <div className='flex items-center px-6'>
+                    <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                    <Pagination 
+                        total={total}
+                        pageSize={100}
+                        onChange={(page)=>{
+                            totalPages > page && fetchMaintenance(`${URLS.INCIDENT_API}/maintenances?page=${page}`)
+                        }}
+                    />
+                </div>
             </div>
 
             

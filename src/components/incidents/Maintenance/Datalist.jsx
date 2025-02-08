@@ -33,7 +33,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   const handleDelete = async (id) =>{
     if (window.confirm("Voulez vous supprimer la maintenance ?")) {
       try {
-        let url = `${URLS.INCIDENT_API}/maintenance/${id}`;
+        let url = `${URLS.INCIDENT_API}/maintenances/${id}`;
         let response = await fetch(url, {
           method:"DELETE",
           headers:{
@@ -223,7 +223,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
               </button>
             </DropdownMenuItem>
           }
-          <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(consommable.id)}>
+          <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(record.id)}>
             <TrashIcon className='text-red-500 h-4 w-6'/>
             <span className='text-red-500'>Supprimer</span>
           </DropdownMenuItem>
@@ -304,7 +304,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                 x: 500,
                 y: "30vh"
             }}
-            pagination={pagination}
+            pagination={{...pagination}}
             loading={loading}
           />
         </Form>

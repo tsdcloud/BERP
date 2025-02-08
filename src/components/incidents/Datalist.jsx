@@ -26,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
 import { ChevronDown, MoreHorizontal } from "lucide-react";
+import CustomPagination from '../common/Pagination';
  
 
 
@@ -445,12 +446,10 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                 x: 500,
                 y: "30vh"
             }}
-            pagination={{...pagination}}
+            pagination={false}
             loading={loading}
           />
         </Form>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
       </div>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>

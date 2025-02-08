@@ -6,7 +6,7 @@ import Tabs from '../../components/incidents/Tabs';
 import Datalist from '../../components/incidents/Consommable/Datalist';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
-import Pagination from '../../components/common/Pagination';
+import _Pagination from '../../components/common/Pagination';
 
 const Consommable = () =>{
     const {handleFetch} = useFetch();
@@ -71,7 +71,7 @@ const Consommable = () =>{
                         fetchData={fetchConsommable}
                     />
                     {/* Pagination */}
-                    <Pagination 
+                    <_Pagination 
                      totalPages={totalPages}
                      setList={setConsommables}
                      handleNext={()=>{}}

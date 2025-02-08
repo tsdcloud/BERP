@@ -103,7 +103,7 @@ function App() {
               <Route element={<IncidenSettingRoutes permissions={["incident__view_incident_causes"]}/>}>
                 <Route path="incident-cause" element={<IncidentCauses />} />
               </Route>
-              <Route element={<IncidenSettingRoutes permissions={["incident__view_maintenance_types"]}/>}>
+              <Route element={<IncidenSettingRoutes permissions={["incident__view_maintenance-types"]}/>}>
                 <Route path="maintenance-type" element={<TypeMaintenance />} />
               </Route>
               <Route element={<IncidenSettingRoutes permissions={["incident__view_equipements"]}/>}>

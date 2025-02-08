@@ -6,6 +6,7 @@ import InitiateForm from '../../components/incidents/InitiateForm';
 import Tabs from '../../components/incidents/Tabs';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
+import { Pagination } from 'antd';
 
 const Incident = () =>{
     const {handleFetch} = useFetch();
@@ -14,17 +15,18 @@ const Incident = () =>{
     const [searchValue, setSearchValue] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [totalPages, setTotalPages] = useState(0);
+    const [total, setTotal] = useState(0);
     const [page, setPage] = useState(0);
-    const [pageList, setPageList] = useState([]);
 
 
     const fetchIncidents= async (url) => {
         setIsLoading(true);
         try {
            const response = await handleFetch(url);
-           if(response.data){
+           if(response.status === 200){
             setIncidents(response.data);
             setTotalPages(response.totalPages);
+            setTotal(response.total);
             setPage(response.page);
            }
         } catch (error) {
@@ -81,12 +83,22 @@ const Incident = () =>{
                         searchValue={searchValue}
                         pagination={{
                             total: totalPages,
-                            pageSize:100,
-                            onChange:()=>{
-                                totalPages > page && fetchIncidents(`${URLS.INCIDENT_API}/incidents?page=${page+1}`)
+                            pageSize: 100,
+                            onChange:(page)=>{
+                                totalPages > page && fetchIncidents(`${URLS.INCIDENT_API}/incidents?page=${page}`)
                             }
                         }}
                     />
+                    <div className='flex items-center px-6'>
+                        <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                        <Pagination 
+                            total={total}
+                            pageSize={100}
+                            onChange={(page)=>{
+                                totalPages > page && fetchIncidents(`${URLS.INCIDENT_API}/incidents?page=${page}`)
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
         </>
