@@ -51,12 +51,13 @@ export default function CreateCountry({setOpen, onSubmit}) {
 
 
     const handleSubmitDataFormCountry = async (data) => {
-      console.log(data);
-      const urlToCreateCountry = URLS.API_COUNTRY;
-      console.log(data);
+      // console.log(data);
+      // const urlToCreateCountry = URLS.API_COUNTRY;
+      const urlToCreateCountry =  `${URLS.ENTITY_API}/countries`;
+      // console.log(data);
       try {
         const response = await handlePost(urlToCreateCountry, data, true);
-        console.log("response crea", response);
+        // console.log("response crea", response);
         if (response && response.status === 201) {
           toast.success("pays crée avec succès", { duration:2000 });
           setOpen(false);

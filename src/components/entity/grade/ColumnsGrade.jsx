@@ -57,13 +57,13 @@ export const GradeAction = () => {
   }, [tokenUser]);
 
     const onSubmit = async (data) => {
-
-        console.log("data grade", data);
-        const urlToUpdate = `${URLS.API_GRADE}/${selectedGrade?.id}`;
+        // console.log("data grade", data);
+        // const urlToUpdate = `${URLS.API_GRADE}/${selectedGrade?.id}`;
+        const urlToUpdate = `${URLS.ENTITY_API}/grades/${selectedGrade?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            console.log("response function update", response);
+            // console.log("response function update", response);
                 if (response) {
                     setDialogOpen(false);
                         
@@ -98,7 +98,8 @@ export const GradeAction = () => {
     const disabledGrade = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver ce grade ?");
         if (confirmation) {
-            const urlToDisabledGrade = `${URLS.API_GRADE}/${id}`;
+            // const urlToDisabledGrade = `${URLS.API_GRADE}/${id}`;
+            const urlToDisabledGrade = `${URLS.ENTITY_API}/grades/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledGrade, {isActive:false});
@@ -131,7 +132,7 @@ export const GradeAction = () => {
     const enabledGrade = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir réactiver ce grade ?");
         if (confirmation) {
-            const urlToDisabledGrade = `${URLS.API_GRADE}/${id}`;
+            const urlToDisabledGrade = `${URLS.ENTITY_API}/grades/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledGrade, {isActive:true});
@@ -165,7 +166,7 @@ export const GradeAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer ce grade ?");
 
         if (confirmation) {
-            const urlToDisabledGrade = `${URLS.API_GRADE}/${id}`;
+            const urlToDisabledGrade = `${URLS.ENTITY_API}/grades/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledGrade, {isActive:false});

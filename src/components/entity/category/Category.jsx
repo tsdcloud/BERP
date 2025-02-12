@@ -15,7 +15,9 @@ export default function Category() {
     const { handleFetch } = useFetch();
 
     const fetchCategory = async () => {
-        const urlToShowAllCategories = URLS.API_CATEGORY;
+        // const urlToShowAllCategories = URLS.API_CATEGORY;
+        const urlToShowAllCategories = `${URLS.ENTITY_API}/categories`;
+        
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllCategories);

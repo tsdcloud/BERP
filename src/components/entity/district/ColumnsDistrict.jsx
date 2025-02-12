@@ -25,7 +25,7 @@ import { jwtDecode } from 'jwt-decode';
 const districtSchema = z.object({
     name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
-    .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
+    .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
     .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
 
@@ -59,7 +59,8 @@ export const DistrictAction = () => {
    
 
    const fetchCountries = async () => {
-    const getCountries = URLS.API_COUNTRY;
+    // const getCountries = URLS.API_COUNTRY;
+    const getCountries =  `${URLS.ENTITY_API}/countries`;
     try {
         setIsLoading(true);
         const response = await handleFetch(getCountries);
@@ -103,7 +104,8 @@ export const DistrictAction = () => {
     const onSubmit = async (data) => {
         // console.log("data role", data);
 
-        const urlToUpdate = `${URLS.API_DISTRICT}/${selectedDistrict?.id}`;
+        // const urlToUpdate = `${URLS.API_DISTRICT}/${selectedDistrict?.id}`;
+        const urlToUpdate = `${URLS.ENTITY_API}/districts/${selectedDistrict?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -131,7 +133,7 @@ export const DistrictAction = () => {
         setSelectedDistrict(item);
         setIsEdited(false);
         setDialogOpen(true);
-        console.log("item", item);
+        // console.log("item", item);
     };
 
     const handleEditedDistrict = (item) => {
@@ -145,7 +147,8 @@ export const DistrictAction = () => {
     const disabledDistrict = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver ce district ?");
         if (confirmation) {
-            const urlToDisabledDistrict = `${URLS.API_DISTRICT}/${id}`;
+            // const urlToDisabledDistrict = `${URLS.API_DISTRICT}/${id}`;
+            const urlToDisabledDistrict = `${URLS.ENTITY_API}/districts/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledDistrict, { isActive:false });
@@ -184,7 +187,8 @@ export const DistrictAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver ce district?");
 
         if (confirmation) {
-            const urlToDisabledDistrict = `${URLS.API_DISTRICT}/${id}`;
+            // const urlToDisabledDistrict = `${URLS.API_DISTRICT}/${id}`;
+            const urlToDisabledDistrict = `${URLS.ENTITY_API}/districts/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledDistrict, {isActive:true});
@@ -218,7 +222,8 @@ export const DistrictAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer ce district ?");
 
         if (confirmation) {
-            const urlToDisabledDistrict = `${URLS.API_DISTRICT}/${id}`;
+            // const urlToDisabledDistrict = `${URLS.API_DISTRICT}/${id}`;
+            const urlToDisabledDistrict = `${URLS.ENTITY_API}/districts/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledDistrict, {isActive:false});

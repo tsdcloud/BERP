@@ -53,7 +53,8 @@ export const AsignPermAppAction = ( { upDateTable } ) => {
    
 
     const onSubmit = async (data) => {
-        const urlToUpdate = `${URLS.API_ASIGN_PERM_APP}${selectedAsignPermApp?.id}`;
+        // const urlToUpdate = `${URLS.API_ASIGN_PERM_APP}${selectedAsignPermApp?.id}`;
+        const urlToUpdate = `${URLS.USER_API}/grant_permission_application/${selectedAsignPermApp?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -90,7 +91,10 @@ export const AsignPermAppAction = ( { upDateTable } ) => {
     const disabledAsignPermApp = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette asignation permission - rôle ?");
             if (confirmation) {
-                const urlToDisabledAsignPermApp = `${URLS.API_ASIGN_PERM_APP}${id}/`;
+                // const urlToDisabledAsignPermApp = `${URLS.API_ASIGN_PERM_APP}${id}/`;
+                const urlToDisabledAsignPermApp = `${URLS.USER_API}/grant_permission_application/${id}/`;
+                
+                
 
                         try {
                             const response = await handlePatch(urlToDisabledAsignPermApp, {is_active:false});
@@ -150,7 +154,8 @@ export const AsignPermAppAction = ( { upDateTable } ) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette asignation permission - app ?");
 
         if (confirmation) {
-            const urlToDeleteAsignPermApp = `${URLS.API_ASIGN_PERM_APP}${id}/`;
+            // const urlToDeleteAsignPermApp = `${URLS.API_ASIGN_PERM_APP}${id}/`;
+            const urlToDeleteAsignPermApp = `${URLS.USER_API}/grant_permission_application/${id}/`;
             console.log("url delete app ",urlToDeleteAsignPermApp);
             // const urlToDeleteAsignPermApp = URLS.API_ASIGN_PERM_APP`${id}/?delete=true`;
 

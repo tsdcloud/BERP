@@ -15,7 +15,9 @@ export default function District() {
     const { handleFetch } = useFetch();
 
     const fetchDistrict = async () => {
-        const urlToShowAllDistrict = URLS.API_DISTRICT;
+        // const urlToShowAllDistrict = URLS.API_DISTRICT;
+        const urlToShowAllDistrict =  `${URLS.ENTITY_API}/districts`;
+       
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllDistrict);

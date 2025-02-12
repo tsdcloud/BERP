@@ -15,18 +15,21 @@ export default function Application() {
     const { handleFetch } = useFetch();
 
     const fetchApplication = async () => {
-        const urlToShowAllApp = URLS.API_APPLICATION_ENTITY;
+        // const urlToShowAllApp = URLS.API_APPLICATION_ENTITY;
+        const urlToShowAllApp =  `${URLS.ENTITY_API}/applications`;
+       
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllApp);
             
                 if (response && response?.status === 200) {
                         const results = response?.data;
+                        // console.log("Res App", results);
                         const filteredApp = results?.map(item => {
                         const { createdBy, updateAt, ...rest } = item;
-                        console.log("appp",filteredApp);
                         return rest;
-                        });
+                         });
+                        //  console.log("appp",filteredApp);
                         setApplications(filteredApp);
                 }
                 else{

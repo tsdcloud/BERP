@@ -15,7 +15,8 @@ export default function Function() {
     const { handleFetch } = useFetch();
 
     const fetchFunction = async () => {
-        const urlToShowAllFunctions = URLS.API_FUNCTION;
+        // const urlToShowAllFunctions = URLS.API_FUNCTION;
+        const urlToShowAllFunctions = `${URLS.ENTITY_API}/functions`;
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllFunctions);

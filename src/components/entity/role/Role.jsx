@@ -15,7 +15,8 @@ export default function Role() {
     const { handleFetch } = useFetch();
 
     const fetchRole = async () => {
-        const urlToShowAllRole = URLS.API_ROLE_ENTITY;
+        // const urlToShowAllRole = URLS.API_ROLE_ENTITY;
+        const urlToShowAllRole =  `${URLS.ENTITY_API}/roles`;
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllRole);
@@ -50,7 +51,7 @@ export default function Role() {
                 <h1 className='text-sm my-3 font-semibold'>Gestion des Rôles</h1>
                 <div className='space-y-2'>
                     <CreateRole setOpen={setOpen} onSubmit={fetchRole} />
-                    { columnsRole && roles.length >= 0 && (
+                    { columnsRole && roles?.length >= 0 && (
                         <DataTable
                             className="rounded-md border w-[800px] text-xs"
                             columns={columnsRole}

@@ -15,7 +15,9 @@ export default function Customer() {
     const { handleFetch } = useFetch();
 
     const fetchCustomer = async () => {
-        const urlToShowAllCustomers = URLS.API_CUSTOMER;
+        // const urlToShowAllCustomers = URLS.API_CUSTOMER;
+        const urlToShowAllCustomers = `${URLS.ENTITY_API}/clients`;
+        
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllCustomers);

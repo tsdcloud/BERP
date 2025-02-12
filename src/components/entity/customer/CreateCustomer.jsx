@@ -63,12 +63,13 @@ export default function CreateCustomer({setOpen, onSubmit}) {
 
 
     const handleSubmitDataFormCustomer = async (data) => {
-      console.log(data);
-      const urlToCreateCustomer = URLS.API_CUSTOMER;
-      console.log(data);
+      // console.log(data);
+      // const urlToCreateCustomer = URLS.API_CUSTOMER;
+      const urlToCreateCustomer = `${URLS.ENTITY_API}/clients`;
+      
       try {
         const response = await handlePost(urlToCreateCustomer, data, true);
-        console.log("response crea", response);
+        // console.log("response crea", response);
         if (response && response.status === 201) {
           toast.success("client crée avec succès", { duration:2000 });
           setOpen(false);

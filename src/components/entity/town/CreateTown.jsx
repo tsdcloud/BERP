@@ -43,20 +43,20 @@ export default function CreateTown({setOpen, onSubmit}) {
   
 
   const fetchDistricts = async () => {
-    const getDistrict = URLS.API_DISTRICT;
+    const getDistrict = `${URLS.ENTITY_API}/districts`;
     try {
         setIsLoading(true);
         const response = await handleFetch(getDistrict);
         
             if (response && response?.status === 200) {
                     const results = response?.data;
-                    console.log("res", results);
+                    // console.log("res", results);
 
                     const filteredDistricts = results?.map(item => {
                     const { updateAt, ...rest } = item;
                     return rest;
                 });
-                    console.log("districts",filteredDistricts);
+                    // console.log("districts",filteredDistricts);
                     setShowDistricts(filteredDistricts);
             }
             else{
@@ -90,11 +90,11 @@ export default function CreateTown({setOpen, onSubmit}) {
 
 
   const handleSubmitDataFormTown = async(data) => {
-    const urlToCreateTown = URLS.API_TOWN;
-      console.log(data);
+    const urlToCreateTown = `${URLS.ENTITY_API}/towns`;
+      // console.log(data);
       try {
         const response = await handlePost(urlToCreateTown, data, true);
-        console.log("response crea", response);
+        // console.log("response crea", response);
         if (response && response.status === 201) {
           toast.success("district crée avec succès", { duration:2000 });
           setOpen(false);

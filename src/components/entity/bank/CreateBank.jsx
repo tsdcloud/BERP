@@ -63,9 +63,10 @@ export default function CreateBank({setOpen, onSubmit}) {
 
 
     const handleSubmitDataFormBank = async (data) => {
-      console.log(data);
-      const urlToCreateBank = URLS.API_BANK;
-      console.log(data);
+      // console.log(data);
+      // const urlToCreateBank = URLS.API_BANK;
+      const urlToCreateBank = `${URLS.ENTITY_API}/banks`;
+      // console.log(data);
       try {
         const response = await handlePost(urlToCreateBank, data, true);
         // console.log("response crea", response);

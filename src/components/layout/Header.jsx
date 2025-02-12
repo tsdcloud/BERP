@@ -21,7 +21,8 @@ export default function Header() {
         const dropdownRef = useRef(null);
 
         const logout = async () => {
-                const urlToLogout = URLS.LOGOUT;
+                // const urlToLogout = URLS.LOGOUT;
+                const urlToLogout = `${URLS.API_USER_ABILITY}/logout/`;
             
                 const data = {
                     refresh : refresh
@@ -79,7 +80,7 @@ export default function Header() {
 
         const toggleDropdown = () => {
                 setDropdownOpen(!dropdownOpen);
-                console.log("Je clique");
+                // console.log("Je clique");
         };
 
   return (

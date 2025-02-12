@@ -17,7 +17,9 @@ export default function Users() {
     const { handleFetch } = useFetch();
 
     const fetchUsers = async () => {
-        const urlToShowAllUsers = URLS.API_USER;
+        // const urlToShowAllUsers = URLS.API_USER;
+        const urlToShowAllUsers = `${URLS.USER_API}/users/`;
+        
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllUsers);

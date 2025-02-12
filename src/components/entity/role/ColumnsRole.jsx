@@ -63,10 +63,11 @@ export const RoleAction = () => {
   }, [tokenUser]);
 
     const onSubmit = async (data) => {
-
         // console.log("data role", data);
 
-        const urlToUpdate = `${URLS.API_ROLE_ENTITY}/${selectedRole?.id}`;
+        // const urlToUpdate = `${URLS.API_ROLE_ENTITY}/${selectedRole?.id}`;
+        const urlToUpdate =  `${URLS.ENTITY_API}/roles/${selectedRole?.id}`;
+       
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -107,7 +108,9 @@ export const RoleAction = () => {
     const disabledRole = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver ce rôle ?");
         if (confirmation) {
-            const urlToDisabledRole = `${URLS.API_ROLE_ENTITY}/${id}`;
+            // const urlToDisabledRole = `${URLS.API_ROLE_ENTITY}/${id}`;
+            const urlToDisabledRole =  `${URLS.ENTITY_API}/roles/${id}`;
+           
 
                     try {
                             const response = await handlePatch(urlToDisabledRole, { isActive:false });
@@ -146,7 +149,8 @@ export const RoleAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver ce rôle ?");
 
         if (confirmation) {
-            const urlToDisabledRole = `${URLS.API_ROLE_ENTITY}/${id}`;
+            // const urlToDisabledRole = `${URLS.API_ROLE_ENTITY}/${id}`;
+            const urlToDisabledRole =  `${URLS.ENTITY_API}/roles/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledRole, {isActive:true});
@@ -180,7 +184,8 @@ export const RoleAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer ce rôle ?");
 
         if (confirmation) {
-            const urlToDisabledRole = `${URLS.API_ROLE_ENTITY}/${id}`;
+            // const urlToDisabledRole = `${URLS.API_ROLE_ENTITY}/${id}`;
+            const urlToDisabledRole =  `${URLS.ENTITY_API}/roles/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledRole, {isActive:false});

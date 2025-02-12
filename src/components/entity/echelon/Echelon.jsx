@@ -15,7 +15,9 @@ export default function Echelon() {
     const { handleFetch } = useFetch();
 
     const fetchEchelon = async () => {
-        const urlToShowAllEchelon = URLS.API_ECHELON;
+        // const urlToShowAllEchelon = URLS.API_ECHELON;
+        const urlToShowAllEchelon = `${URLS.ENTITY_API}/echelons`;
+        
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllEchelon);

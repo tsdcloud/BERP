@@ -60,14 +60,13 @@ export const EchelonAction = () => {
 
 
     const onSubmit = async (data) => {
-
-        console.log("data echelon", data);
-
-        const urlToUpdate = `${URLS.API_ECHELON}/${selectedEchelon?.id}`;
+        // console.log("data echelon", data);
+        // const urlToUpdate = `${URLS.API_ECHELON}/${selectedEchelon?.id}`;
+        const urlToUpdate = `${URLS.ENTITY_API}/echelons/${selectedEchelon?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            console.log("response echelon update", response);
+            // console.log("response echelon update", response);
                 if (response) {
                     setDialogOpen(false);
                         
@@ -102,7 +101,8 @@ export const EchelonAction = () => {
     const disabledEchelon = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette échelon ?");
         if (confirmation) {
-            const urlToDisabledEchelon = `${URLS.API_ECHELON}/${id}`;
+            // const urlToDisabledEchelon = `${URLS.API_ECHELON}/${id}`;
+            const urlToDisabledEchelon = `${URLS.ENTITY_API}/echelons/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledEchelon, {isActive:false});
@@ -136,7 +136,8 @@ export const EchelonAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cet échelon ?");
 
         if (confirmation) {
-            const urlToDisabledEchelon = `${URLS.API_ECHELON}/${id}`;
+            // const urlToDisabledEchelon = `${URLS.API_ECHELON}/${id}`;
+            const urlToDisabledEchelon = `${URLS.ENTITY_API}/echelons/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledEchelon, {isActive:true});
@@ -170,7 +171,8 @@ export const EchelonAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cet échelon ?");
 
         if (confirmation) {
-            const urlToDisabledEchelon = `${URLS.API_ECHELON}/${id}`;
+            // const urlToDisabledEchelon = `${URLS.API_ECHELON}/${id}`;
+            const urlToDisabledEchelon = `${URLS.ENTITY_API}/echelons/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledEchelon, {isActive:false});

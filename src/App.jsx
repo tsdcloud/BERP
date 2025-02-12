@@ -47,6 +47,10 @@ import ApplicationEntity from './Pages/entity/Application';
 import PermissionEntity from './Pages/entity/Permission';
 import District from './Pages/entity/District';
 import Town from './Pages/entity/Town';
+import CustomerBankAccount from './Pages/entity/CustomerBankAccount';
+import EntityBankAccount from './Pages/entity/EntityBankAccount';
+import Site from './Pages/entity/Site';
+import Supplier from './Pages/entity/Supplier';
 
 
 
@@ -81,7 +85,6 @@ function App() {
                <Route path="departments" element={<Department />} />
                <Route path="employees" element={<Employee />} />
                <Route path="services" element={<Service />} />
-
                <Route path="functions" element={<Function />} />
                <Route path="grades" element={<Grade />} />
                <Route path="echelons" element={<Echelon />} />
@@ -90,10 +93,16 @@ function App() {
                <Route path="customers" element={<Customer />} />
                <Route path="countries" element={<Country />} />
                <Route path="roles" element={<RoleEntity/>} />
+
                <Route path="applications" element={<ApplicationEntity/>} />
+               
                <Route path="permissions" element={<PermissionEntity/>} />
                <Route path="districts" element={<District/>} />
                <Route path="towns" element={<Town/>} />
+               <Route path="customer_bank_accounts" element={<CustomerBankAccount/>} />
+               <Route path="entity_bank_accounts" element={<EntityBankAccount/>} />
+               <Route path="sites" element={<Site/>} />
+               <Route path="suppliers" element={<Supplier/>} />
 
 
 

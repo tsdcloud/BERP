@@ -12,18 +12,18 @@ import { useFetch } from '../../../hooks/useFetch';
 
 import toast, { Toaster } from 'react-hot-toast';
 
-import mock_data from "../../../helpers/mock_data.json";
+import { jwtDecode } from 'jwt-decode';
 
 // Définition du schéma avec Zod
 const employeeSchema = z.object({
 
-    first_name: z.string()
-    .nonempty("Ce champs 'Prénom' est réquis.")
-    .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'prénom' conforme."),
+    // first_name: z.string()
+    // .nonempty("Ce champs 'Prénom' est réquis.")
+    // .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
+    // .max(100)
+    // .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'prénom' conforme."),
 
-    last_name: z.string()
+    name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
     .max(100)
@@ -39,133 +39,340 @@ const employeeSchema = z.object({
     .length(9, "La valeur de ce champs doit contenir 9 caractères.")
     .regex(/^[0-9]+$/),
 
-    address: z.string()
-    .nonempty("Ce champs 'Adresse' est réquis")
-    .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champs doit être une 'adresse' conforme"),
+    // address: z.string()
+    // .nonempty("Ce champs 'Adresse' est réquis")
+    // .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
+    // .max(100)
+    // .regex(/^[a-zA-Z ,]+$/, "Ce champs doit être une 'adresse' conforme"),
 
-    date_of_birth : z.string()
-    .nonempty("Ce champs 'Date de naissance' est réquis")
-    .max(20)
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Le champs doit être une 'date de naissance' conforme"),
+    // date_of_birth : z.string()
+    // .nonempty("Ce champs 'Date de naissance' est réquis")
+    // .max(20)
+    // .regex(/^\d{4}-\d{2}-\d{2}$/, "Le champs doit être une 'date de naissance' conforme"),
 
-    picture : z.string().regex(/^[a-zA-Z0-9_-]+\.(jpg|jpeg|png|gif|bmp|webp)$/i, "Ce champs doit avoir l'extension attendue"),
+    // picture : z.string().regex(/^[a-zA-Z0-9_-]+\.(jpg|jpeg|png|gif|bmp|webp)$/i, 
+    // "Ce champs doit avoir l'extension attendue"),
 
-    id_function: z.string()
+    functionId: z.string()
     .nonempty('Ce champs "Nom de la fonction" est réquis')
     .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
-    .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom de la fonction' Conforme."),
+    .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/, 
+    "Ce champs doit être un 'nom de fonction' Conforme."),
     
-    id_entity: z.string()
+    entityId: z.string()
     .nonempty('Ce champs "Nom de l\'entité" est réquis')
     .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
-    .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom de l\'entité' Conforme."),
+    .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/,
+    "Ce champs doit être un 'nom de l\'entité' Conforme."),
     
-    id_grade: z.string()
+    gradeId: z.string()
     .nonempty('Ce champs "Nom du grade" est réquis')
     .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
-    .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom du grade' Conforme."),
+    .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/,
+    "Ce champs doit être un 'nom du grade' Conforme."),
     
-    id_echelon: z.string()
+    echelonId: z.string()
     .nonempty('Ce champs "Nom de l\'echelon" est réquis')
     .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
-    .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom de l\'echelon' Conforme."),
+    .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/,
+    "Ce champs doit être un 'nom de l\'echelon' Conforme."),
     
-    id_category: z.string()
+    categoryId: z.string()
     .nonempty('Ce champs "Nom de la catégorie" est réquis')
     .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
-    .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom de la catégorie' Conforme."),
+    .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/, 
+    "Ce champs doit être un 'nom de la catégorie' Conforme."),
     
-    id_user: z.string()
+    userId: z.string()
     .nonempty('Ce champs "Nom de l\'utilisateur" est réquis')
     .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
-    .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom de l\'utilisateur' Conforme."),
+    .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/,
+    "Ce champs doit être un 'nom de l\'utilisateur' Conforme."),
+
+    createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
 
 });
 
 export default function CreateEmployee({setOpen, onSubmit}) {
 
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState();
+    const [tokenUser, setTokenUser] = useState();
 
-  const [selectedEmployee, setSelectedEmployee] = useState([]);
-  const [fetchEmployee, setFetchEmployee] = useState([]);
+    const [step, setStep] = useState(0);
+    
+    // States of functions
+    const [showFunction, setShowFunction] = useState([]);
+    const [selectedFunction, setSelectedFunction] = useState([]);
+    
+    // States of grades
+    const [showGrade, setShowGrade] = useState([]);
+    const [selectedGrade, setSelectedGrade] = useState([]);
+    
+    // States of echelons
+    const [showEchelon, setShowEchelon] = useState([]);
+    const [selectedEchelon, setSelectedEchelon] = useState([]);
+    
+    // States of Categories
+    const [showCategories, setShowCategories] = useState([]);
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    
+    // States of Users
+    const [showUsers, setShowUsers] = useState([]);
+    const [selectedUsers, setSelectedUsers] = useState([]);
+    
+    // States of Entities
+    const [showEntities, setShowEntities] = useState([]);
+    const [selectedEntities, setSelectedEntities] = useState([]);
 
-  const [step, setStep] = useState(0);
 
-  const handleNextStep = () => {
-    if (step < 2) setStep(step + 1);
-  };
 
-  const handlePrevStep = () => {
-    if (step > 0) setStep(step - 1);
-  };
+    const handleNextStep = () => {
+         (step < 2) && setStep(step + 1);
+    };
+
+    const handlePrevStep = () => {
+         (step > 0) && setStep(step - 1);
+    };
     
     // const navigateToDashboard = useNavigate();
     const { handlePost, handleFetch } = useFetch();
-    
 
-    const showEmployee = async () => {
 
-      setFetchEmployee(mock_data);
 
-        // const urlToCreateEmployee = "";
-        // try {
-        //     const response = await handleFetch(urlToCreateEmployee);
-        //     // console.log("response crea", response);
-        //     if (response && response?.success) {
-        //       toast.success("service crée avec succès", {duration:2000});
-        //       console.log("entity created", response?.success);
-  
-        //     }
-        //     else {
-        //       toast.error(response.error, { duration: 5000});
-        //     }
+    const fetchGrade = async () => {
+        const getGrade = `${URLS.ENTITY_API}/grades`;
+        try {
+            setIsLoading(true);
+            const response = await handleFetch(getGrade);
             
-        //   } catch (error) {
-        //     console.error("Error during creating",error);
-        //     toast.error("Erreur lors de la récupération des villes", { duration: 5000 });
-        //   }
-    };
+                if (response && response?.status === 200) {
+                        const results = response?.data;
+                        // console.log("results", results);
+    
+                        const filteredGrade = results?.map(item => {
+                        const { createdBy, updateAt, ...rest } = item;
+                        return { ...rest };
+                    });
+                    setShowGrade(filteredGrade);
+                }
+                else{
+                    throw new Error('Erreur lors de la récupération des grades');
+                }
+        } catch (error) {
+            setError(error.message);
+        }
+        finally {
+            setIsLoading(false);
+          }
+        };
 
-    useEffect(() => {
-        showEmployee();
-    }, []);
+    const fetchFunction = async () => {
+        const getFunction = `${URLS.ENTITY_API}/functions`;
+        try {
+            setIsLoading(true);
+            const response = await handleFetch(getFunction);
+            
+                if (response && response?.status === 200) {
+                        const results = response?.data;
+                        // console.log("results", results);
+    
+                        const filteredFunctions = results?.map(item => {
+                        const { createdBy, updateAt, ...rest } = item;
+                        return { ...rest };
+                    });
+                        setShowFunction(filteredFunctions);
+                }
+                else{
+                    throw new Error('Erreur lors de la récupération des fonctions');
+                }
+        } catch (error) {
+            setError(error.message);
+        }
+        finally {
+            setIsLoading(false);
+          }
+        };
 
 
-    const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm({
+    const fetchEchelon = async () => {
+        const getEchelon = `${URLS.ENTITY_API}/echelons`;
+        try {
+            setIsLoading(true);
+            const response = await handleFetch(getEchelon);
+            
+                if (response && response?.status === 200) {
+                        const results = response?.data;
+                        // console.log("results", results);
+    
+                        const filteredEchelons = results?.map(item => {
+                        const { createdBy, updateAt, ...rest } = item;
+                        return { ...rest };
+                    });
+                    setShowEchelon(filteredEchelons);
+                }
+                else{
+                    throw new Error('Erreur lors de la récupération des échelons');
+                }
+        } catch (error) {
+            setError(error.message);
+        }
+        finally {
+            setIsLoading(false);
+          }
+        };
+
+
+    const fetchCategories = async () => {
+        const getCategories = `${URLS.ENTITY_API}/categories`;
+        try {
+            setIsLoading(true);
+            const response = await handleFetch(getCategories);
+            
+                if (response && response?.status === 200) {
+                        const results = response?.data;
+                        // console.log("results", results);
+    
+                        const filteredCategories = results?.map(item => {
+                        const { createdBy, updateAt, ...rest } = item;
+                        return { ...rest };
+                    });
+                    setShowCategories(filteredCategories);
+                }
+                else{
+                    throw new Error('Erreur lors de la récupération des catégories');
+                }
+        } catch (error) {
+            setError(error.message);
+        }
+        finally {
+            setIsLoading(false);
+          }
+        };
+
+    const fetchUsers = async () => {
+        const getUsers = `${URLS.USER_API}/users/`;
+        try {
+            setIsLoading(true);
+            const response = await handleFetch(getUsers);
+            
+                if (response && response?.status === 200) {
+                        const results = response?.data?.results;
+                        // console.log("results user", results);
+    
+                        const filteredUsers = results?.map(item => {
+                        const { createdBy, updateAt, ...rest } = item;
+                        return { 
+                                // id:rest.id, 
+                                // name:rest.name,
+                                ...rest
+                                 };
+                    });
+                    setShowUsers(filteredUsers);
+                    // console.log("user", filteredUsers);
+                }
+                else{
+                    throw new Error('Erreur lors de la récupération des utilisateurs');
+                }
+        } catch (error) {
+            setError(error.message);
+        }
+        finally {
+            setIsLoading(false);
+          }
+        };
+
+
+    const fetchEntities = async () => {
+        const getEntities = `${URLS.ENTITY_API}/entities`;
+        try {
+            setIsLoading(true);
+            const response = await handleFetch(getEntities);
+            
+                if (response && response?.status === 200) {
+                        const results = response?.data;
+                        // console.log("results", results);
+    
+                        const filteredEntities = results?.map(item => {
+                        const { createdBy, updateAt, ...rest } = item;
+                        return { ...rest };
+                    });
+                    setShowEntities(filteredEntities);
+                }
+                else{
+                    throw new Error('Erreur lors de la récupération des entités');
+                }
+        } catch (error) {
+            setError(error.message);
+        }
+        finally {
+            setIsLoading(false);
+          }
+        };
+  
+      useEffect(() => {
+        fetchFunction();
+        fetchGrade();
+        fetchEchelon();
+        fetchCategories();
+        fetchUsers();
+        fetchEntities();
+      }, []);
+  
+
+
+      useEffect(()=>{
+        const token = localStorage.getItem("token");
+        if(token){
+            const decode = jwtDecode(token);
+            setTokenUser(decode.user_id);
+            // console.log("var", tokenUser);
+        }
+      }, [tokenUser]);
+
+
+
+    const { register, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
         resolver: zodResolver(employeeSchema),
     });
 
 
     const handleSubmitDataFormEmployee = async (data) => {
-      console.log(data);
-      // const urlToCreateEmployee = "http://127.0.0.1:8000/api_gateway/api/user/";
-      // const urlToCreateEmployee = URLS.API_USER;
-      //   // console.log(data);
-      //   try {
-      //     const response = await handlePost(urlToCreateEmployee, data, true);
-      //     // console.log("response crea", response);
-      //     if (response && response?.success && response.status === 201) {
-      //       toast.success("service crée avec succès", {duration:2000});
-      //       console.log("entity created", response?.success);
-      //       setOpen(false);
-      //       onSubmit();
-
-      //     }
-      //     else {
-      //       toast.error(response.error, { duration: 5000});
-      //     }
-          
-      //   } catch (error) {
-      //     console.error("Error during creating",error);
-      //     toast.error("Erreur lors de la création du service", { duration: 5000 });
-      //   }
+        // console.log("data form",data);
+        // const urlToCreateEmployee = URLS.API_EMPLOYEE;
+        const urlToCreateEmployee = `${URLS.ENTITY_API}/employees`;
+  
+          try {
+            const response = await handlePost(urlToCreateEmployee, data, true);
+            // console.log("response crea", response);
+            if (response && response.status === 201) {
+              toast.success("employee crée avec succès", { duration : 2000 });
+            //   console.log("employee created", response?.success);
+              setOpen(false);
+              onSubmit();
+              reset();
+  
+            }
+            else {
+                  if (Array.isArray(response.errors)) {
+                    const errorMessages = response.errors.map(error => error.msg).join(', ');
+                    toast.error(errorMessages, { duration: 5000 });
+                  } else {
+                    toast.error(response.errors.msg, { duration: 5000 });
+                  }
+  
+            }
+            
+          } catch (error) {
+            console.error("Error during creating",error);
+            toast.error("Erreur lors de la création de l'employée", { duration: 5000 });
+          }
     };
 
 
@@ -185,7 +392,7 @@ export default function CreateEmployee({setOpen, onSubmit}) {
                 {
                     step === 0 && (
                     <>
-                        <div className='mb-1'>
+                        {/* <div className='mb-1'>
                         <label htmlFor="first_name" className="block text-xs font-medium mb-0">
                             Prénom <sup className='text-red-500'>*</sup>
                         </label>
@@ -200,64 +407,79 @@ export default function CreateEmployee({setOpen, onSubmit}) {
                         {errors.first_name && (
                             <p className="text-red-500 text-[9px] mt-1">{errors.first_name.message}</p>
                         )}
-                        </div>
+                        </div> */}
 
                         <div className='mb-1'>
-                        <label htmlFor="last_name" className="block text-xs font-medium mb-0">
-                            Nom de famille <sup className='text-red-500'>*</sup>
-                        </label>
-                        <input
-                            id='last_name'
-                            type="text"
-                            {...register('last_name', { required: "Le nom de famille est obligatoire." })}
-                            className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                            errors.last_name ? "border-red-500" : "border-gray-300"
-                            }`}
-                        />
-                        {errors.last_name && (
-                            <p className="text-red-500 text-[9px] mt-1">{errors.last_name.message}</p>
-                        )}
+                            <label htmlFor="name" className="block text-xs font-medium mb-0">
+                                Nom de l'employée <sup className='text-red-500'>*</sup>
+                            </label>
+                            <input
+                                id='name'
+                                type="text"
+                                {...register('name', { required: "Le nom de famille est obligatoire." })}
+                                className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                errors.name ? "border-red-500" : "border-gray-300"
+                                }`}
+                            />
+                            {errors.name && (
+                                <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
+                            )}
                         </div>
 
+                        
                         <div className='mb-1'>
-                        <label htmlFor="email" className="block text-xs font-medium mb-0">
-                            Adresse mail <sup className='text-red-500'>*</sup>
-                        </label>
-                        <input
-                            id='email'
-                            type="text"
-                            {...register('email', {
-                            required: "L'adresse email est obligatoire.",
-                            pattern: {
-                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                message: "Adresse email invalide.",
-                            },
-                            })}
-                            className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                            errors.email ? "border-red-500" : "border-gray-300"
-                            }`}
-                        />
-                        {errors.email && (
-                            <p className="text-red-500 text-[9px] mt-1">{errors.email.message}</p>
-                        )}
-                        </div>
+                                <label htmlFor="userId" className="block text-xs font-medium mb-1">
+                                    Nom de l'utilisateur <sup className='text-red-500'>*</sup>
+                                </label>
+                                <select
+                                    onChange={(e) => {
+                                        const nameUserSelected = showUsers.find(item => item.id === e.target.value);
+                                        setSelectedUsers(nameUserSelected);
+                                    }}
+                                    {...register('userId')}
+                                    className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                        errors.userId ? "border-red-500" : "border-gray-300"
+                                    }`}
+                                >
+                                    <option value="">Désigner un utilisateur </option>
+                                    {showUsers.map((item) => (
+                                        <option key={item.id} value={item.id}>
+                                            {item.last_name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.userId && (
+                                    <p className="text-red-500 text-[9px] mt-1">{errors?.userId?.message}</p>
+                                )}
+                            </div>
+
+                      
 
                         <div className='mb-1'>
-                        <label htmlFor="phone" className="block text-xs font-medium mb-0">
-                            Téléphone <sup className='text-red-500'>*</sup>
-                        </label>
-                        <input
-                            id='phone'
-                            type="text"
-                            {...register('phone', { required: "Le numéro de téléphone est obligatoire." })}
-                            className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                            errors.phone ? "border-red-500" : "border-gray-300"
-                            }`}
-                        />
-                        {errors.phone && (
-                            <p className="text-red-500 text-[9px] mt-1">{errors.phone.message}</p>
-                        )}
-                        </div>
+                                <label htmlFor="entityId" className="block text-xs font-medium mb-1">
+                                    Attribuer une entité<sup className='text-red-500'>*</sup>
+                                </label>
+                                <select
+                                    onChange={(e) => {
+                                        const nameEntitiesSelected = showEntities.find(item => item.id === e.target.value);
+                                        setSelectedEntities(nameEntitiesSelected);
+                                    }}
+                                    {...register('entityId')}
+                                    className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                        errors.entityId ? "border-red-500" : "border-gray-300"
+                                    }`}
+                                >
+                                    <option value="">Selectionner une entité</option>
+                                    {showEntities.map((item) => (
+                                        <option key={item.id} value={item.id}>
+                                            {item.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.entityId && (
+                                    <p className="text-red-500 text-[9px] mt-1">{errors?.entityId?.message}</p>
+                                )}
+                            </div>
                     </>
                     )
                 }
@@ -266,21 +488,21 @@ export default function CreateEmployee({setOpen, onSubmit}) {
                 {
                     step === 1 && (
                     <>
-                        <div className='mb-1'>
-                        <label htmlFor="address" className="block text-xs font-medium mb-0">
-                            Adresse ou localisation <sup className='text-red-500'>*</sup>
-                        </label>
-                        <input
-                            id='address'
-                            type="text"
-                            {...register('address', { required: "L'adresse est obligatoire." })}
-                            className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                            errors.address ? "border-red-500" : "border-gray-300"
-                            }`}
-                        />
-                        {errors.address && (
-                            <p className="text-red-500 text-[9px] mt-1">{errors.address.message}</p>
-                        )}
+                        {/* <div className='mb-1'>
+                            <label htmlFor="address" className="block text-xs font-medium mb-0">
+                                Adresse ou localisation <sup className='text-red-500'>*</sup>
+                            </label>
+                            <input
+                                id='address'
+                                type="text"
+                                {...register('address', { required: "L'adresse est obligatoire." })}
+                                className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                errors.address ? "border-red-500" : "border-gray-300"
+                                }`}
+                            />
+                            {errors.address && (
+                                <p className="text-red-500 text-[9px] mt-1">{errors.address.message}</p>
+                            )}
                         </div>
 
                         <div className='mb-1'>
@@ -321,7 +543,102 @@ export default function CreateEmployee({setOpen, onSubmit}) {
                             {errors.picture && (
                                 <p className="text-red-500 text-[9px] mt-1">{errors.picture.message}</p>
                             )}
+                        </div> */}
+
+                           
+
+                            <div className='mb-1'>
+                            <label htmlFor="email" className="block text-xs font-medium mb-0">
+                                Adresse Email Professionnelle <sup className='text-red-500'>*</sup>
+                            </label>
+                            <input
+                                id='email'
+                                type="text"
+                                {...register('email', {
+                                required: "L'adresse email est obligatoire.",
+                                pattern: {
+                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                    message: "Adresse email invalide.",
+                                },
+                                })}
+                                className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                errors.email ? "border-red-500" : "border-gray-300"
+                                }`}
+                            />
+                            {errors.email && (
+                                <p className="text-red-500 text-[9px] mt-1">{errors.email.message}</p>
+                            )}
                         </div>
+
+                        <div className='mb-1'>
+                            <label htmlFor="phone" className="block text-xs font-medium mb-0">
+                                Numéro de téléphone professionnel <sup className='text-red-500'>*</sup>
+                            </label>
+                            <input
+                                id='phone'
+                                type="text"
+                                {...register('phone', { required: "Le numéro de téléphone est obligatoire." })}
+                                className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                errors.phone ? "border-red-500" : "border-gray-300"
+                                }`}
+                            />
+                            {errors.phone && (
+                                <p className="text-red-500 text-[9px] mt-1">{errors.phone.message}</p>
+                            )}
+                        </div>
+
+                            <div className='mb-1'>
+                                <label htmlFor="gradeId" className="block text-xs font-medium mb-1">
+                                    Nom du grade <sup className='text-red-500'>*</sup>
+                                </label>
+                                <select
+                                    onChange={(e) => {
+                                        const nameGradeSelected = showGrade.find(item => item.id === e.target.value);
+                                        setSelectedGrade(nameGradeSelected);
+                                    }}
+                                    {...register('gradeId')}
+                                    className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                        errors.gradeId ? "border-red-500" : "border-gray-300"
+                                    }`}
+                                >
+                                    <option value="">Selectionner un grade </option>
+                                    {showGrade.map((item) => (
+                                        <option key={item.id} value={item.id}>
+                                            {item.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.gradeId && (
+                                    <p className="text-red-500 text-[9px] mt-1">{errors?.gradeId?.message}</p>
+                                )}
+                            </div>
+
+                            <div className='mb-1'>
+                                <label htmlFor="echelonId" className="block text-xs font-medium mb-1">
+                                    Nom de l'échelon <sup className='text-red-500'>*</sup>
+                                </label>
+                                <select
+                                    onChange={(e) => {
+                                        const nameEchelonSelected = showEchelon.find(item => item.id === e.target.value);
+                                        setSelectedEchelon(nameEchelonSelected);
+                                    }}
+                                    {...register('echelonId')}
+                                    className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                        errors.echelonId ? "border-red-500" : "border-gray-300"
+                                    }`}
+                                >
+                                    <option value="">Selectionner un échelon </option>
+                                    {showEchelon.map((item) => (
+                                        <option key={item.id} value={item.id}>
+                                            {item.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.echelonId && (
+                                    <p className="text-red-500 text-[9px] mt-1">{errors?.echelonId?.message}</p>
+                                )}
+                            </div>
+
                     </>
                     )
                 }
@@ -330,134 +647,82 @@ export default function CreateEmployee({setOpen, onSubmit}) {
                 {
                     step === 2 && (
                         <>
-                            <div className='mb-1'>
-                                <label htmlFor="id_function" className="block text-xs font-medium mb-1">
-                                    Nom de la fonction<sup className='text-red-500'>*</sup>
-                                </label>
-                                <select
-                                    onChange={(e) => {
-                                        const nameCitySelected = fetchEmployee.find(item => item.id === e.target.value);
-                                        setSelectedEmployee(nameCitySelected);
-                                    }}
-                                    {...register('id_function')}
-                                    className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                        errors.id_function ? "border-red-500" : "border-gray-300"
-                                    }`}
-                                >
-                                    <option value="">Selectionner une fonction pour cet(te) employé(e)</option>
-                                    {fetchEmployee.map((item) => (
-                                        <option key={item.id} value={item.id}>
-                                            {item.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errors.id_function && (
-                                    <p className="text-red-500 text-[9px] mt-1">{errors?.id_function?.message}</p>
-                                )}
-                            </div>
+                          
 
                             <div className='mb-1'>
-                                <label htmlFor="id_grade" className="block text-xs font-medium mb-1">
-                                    Nom du grade <sup className='text-red-500'>*</sup>
-                                </label>
-                                <select
-                                    onChange={(e) => {
-                                        const nameCitySelected = fetchEmployee.find(item => item.id === e.target.value);
-                                        setSelectedEmployee(nameCitySelected);
-                                    }}
-                                    {...register('id_grade')}
-                                    className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                        errors.id_grade ? "border-red-500" : "border-gray-300"
-                                    }`}
-                                >
-                                    <option value="">Selectionner un grade pour cet(te) employé(e)</option>
-                                    {fetchEmployee.map((item) => (
-                                        <option key={item.id} value={item.id}>
-                                            {item.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errors.id_grade && (
-                                    <p className="text-red-500 text-[9px] mt-1">{errors?.id_grade?.message}</p>
-                                )}
-                            </div>
-
-                            <div className='mb-1'>
-                                <label htmlFor="id_echelon" className="block text-xs font-medium mb-1">
-                                    Nom de l'échelon <sup className='text-red-500'>*</sup>
-                                </label>
-                                <select
-                                    onChange={(e) => {
-                                        const nameCitySelected = fetchEmployee.find(item => item.id === e.target.value);
-                                        setSelectedEmployee(nameCitySelected);
-                                    }}
-                                    {...register('id_echelon')}
-                                    className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                        errors.id_echelon ? "border-red-500" : "border-gray-300"
-                                    }`}
-                                >
-                                    <option value="">Selectionner un échelon pour cet(te) employé(e)</option>
-                                    {fetchEmployee.map((item) => (
-                                        <option key={item.id} value={item.id}>
-                                            {item.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                {errors.id_echelon && (
-                                    <p className="text-red-500 text-[9px] mt-1">{errors?.id_echelon?.message}</p>
-                                )}
-                            </div>
-
-                            <div className='mb-1'>
-                                <label htmlFor="id_category" className="block text-xs font-medium mb-1">
+                                <label htmlFor="categoryId" className="block text-xs font-medium mb-1">
                                     Nom de la catégorie <sup className='text-red-500'>*</sup>
                                 </label>
                                 <select
                                     onChange={(e) => {
-                                        const nameCitySelected = fetchEmployee.find(item => item.id === e.target.value);
-                                        setSelectedEmployee(nameCitySelected);
+                                        const nameCategoriesSelected = showCategories.find(item => item.id === e.target.value);
+                                        setSelectedCategories(nameCategoriesSelected);
                                     }}
-                                    {...register('id_category')}
+                                    {...register('categoryId')}
                                     className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                        errors.id_category ? "border-red-500" : "border-gray-300"
+                                        errors.categoryId ? "border-red-500" : "border-gray-300"
                                     }`}
                                 >
-                                    <option value="">Selectionner une catégorie pour cet(te) employé(e)</option>
-                                    {fetchEmployee.map((item) => (
+                                    <option value="">Selectionner une catégorie</option>
+                                    {showCategories.map((item) => (
                                         <option key={item.id} value={item.id}>
                                             {item.name}
                                         </option>
                                     ))}
                                 </select>
-                                {errors.id_category && (
-                                    <p className="text-red-500 text-[9px] mt-1">{errors?.id_category?.message}</p>
+                                {errors.categoryId && (
+                                    <p className="text-red-500 text-[9px] mt-1">{errors?.categoryId?.message}</p>
                                 )}
                             </div>
 
                             <div className='mb-1'>
-                                <label htmlFor="id_user" className="block text-xs font-medium mb-1">
-                                    Nom de l'utilisateur <sup className='text-red-500'>*</sup>
+                                <label htmlFor="functionId" className="block text-xs font-medium mb-1">
+                                    Nom de la fonction<sup className='text-red-500'>*</sup>
                                 </label>
                                 <select
                                     onChange={(e) => {
-                                        const nameCitySelected = fetchEmployee.find(item => item.id === e.target.value);
-                                        setSelectedEmployee(nameCitySelected);
+                                        const nameFunctionSelected = showFunction.find(item => item.id === e.target.value);
+                                        setSelectedFunction(nameFunctionSelected);
                                     }}
-                                    {...register('id_user')}
+                                    {...register('functionId')}
                                     className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                        errors.id_user ? "border-red-500" : "border-gray-300"
+                                        errors.functionId ? "border-red-500" : "border-gray-300"
                                     }`}
                                 >
-                                    <option value="">Désigner un utilisateur pour cet(te) employé(e)</option>
-                                    {fetchEmployee.map((item) => (
+                                    <option value="">Selectionner une fonction</option>
+                                    {showFunction.map((item) => (
                                         <option key={item.id} value={item.id}>
                                             {item.name}
                                         </option>
                                     ))}
                                 </select>
-                                {errors.id_user && (
-                                    <p className="text-red-500 text-[9px] mt-1">{errors?.id_user?.message}</p>
+                                {errors.functionId && (
+                                    <p className="text-red-500 text-[9px] mt-1">{errors?.functionId?.message}</p>
                                 )}
+                            </div>
+
+                           
+
+                            <div className='mb-1 hidden'>
+                                <label htmlFor="createdBy" className="block text-xs font-medium mb-0">
+                                        créer par<sup className='text-red-500'>*</sup>
+                                    </label>
+                                    <input 
+                                        id='createdBy'
+                                        type="text"
+                                        defaultValue={tokenUser}
+                                        {...register('createdBy')}
+                                        className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                                            ${
+                                            errors.createdBy ? "border-red-500" : "border-gray-300"
+                                            }`}
+                                    />
+
+                                    {
+                                        errors.createdBy && (
+                                        <p className="text-red-500 text-[9px] mt-1">{errors.createdBy.message}</p>
+                                        )
+                                    }
                             </div>
                         </>
                     )
@@ -465,37 +730,37 @@ export default function CreateEmployee({setOpen, onSubmit}) {
 
                 {/* Button */}
                 <div className='flex justify-end space-x-2 mt-4'>
-                {
-                    step > 0 && (
-                        <Button
-                        type="button"
-                        onClick={handlePrevStep}
-                        className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md bg-transparent hover:bg-gray-700 hover:text-white transition"
-                        >
-                        Précédent
-                        </Button>
-                    )
-                }
-                {
-                    step < 2 ? (
-                        <Button
-                        type="button"
-                        onClick={handleNextStep}
-                        className="border-2 border-green-600 outline-green-700 text-green-700 text-xs shadow-md bg-transparent hover:bg-secondary hover:text-white transition"
-                        >
-                        Suivant
-                        </Button>
-                    ) : (
-                        <Button 
-                        className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md bg-transparent hover:bg-primary hover:text-white transition" 
-                        type="submit"
-                        disabled={isSubmitting}
-                    
-                        >
-                        {isSubmitting ? "Création en cours..." : "Créer un(e) employé(e)"}
-                        </Button>
-                    )
-                }
+                    {
+                        step > 0 && (
+                            <Button
+                            type="button"
+                            onClick={handlePrevStep}
+                            className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md bg-transparent hover:bg-gray-700 hover:text-white transition"
+                            >
+                            Précédent
+                            </Button>
+                        )
+                    }
+                    {
+                        step < 2 ? (
+                            <Button
+                            type="button"
+                            onClick={handleNextStep}
+                            className="border-2 border-green-600 outline-green-700 text-green-700 text-xs shadow-md bg-transparent hover:bg-secondary hover:text-white transition"
+                            >
+                            Suivant
+                            </Button>
+                        ) : (
+                            <Button 
+                            className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md bg-transparent hover:bg-primary hover:text-white transition" 
+                            type="submit"
+                            disabled={isSubmitting}
+                        
+                            >
+                            {isSubmitting ? "Création en cours..." : "Créer un(e) employé(e)"}
+                            </Button>
+                        )
+                    }
                 </div>
           </form>
         </div>

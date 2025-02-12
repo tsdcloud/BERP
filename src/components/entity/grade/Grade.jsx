@@ -15,7 +15,8 @@ export default function Grade() {
     const { handleFetch } = useFetch();
 
     const fetchGrade = async () => {
-        const urlToShowAllGrades = URLS.API_GRADE;
+        // const urlToShowAllGrades = URLS.API_GRADE;
+        const urlToShowAllGrades =  `${URLS.ENTITY_API}/grades`;
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllGrades);

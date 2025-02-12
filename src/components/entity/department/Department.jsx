@@ -17,18 +17,25 @@ export default function Department() {
     const { handleFetch } = useFetch();
 
     const fetchDepartment = async () => {
-        const urlToShowAllDepartment = URLS.API_DEPARTMENT;
+        // const urlToShowAllDepartment = URLS.API_DEPARTMENT;
+        const urlToShowAllDepartment =  `${URLS.ENTITY_API}/departments`;
+       
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllDepartment);
-            console.log("respoDepartment",response);
+            // console.log("respoDepartment",response);
             
-                if (response && response?.data?.results) {
+                if (response && response?.status === 200) {
                     
-                        const results = response?.data?.results;
+                        const results = response?.data;
                         const filteredDepartment = results?.map(item => {
-                        const { department_created_by, department_updated_by, ...rest } = item;
-                        return rest;
+                            const { createdBy, updateAt, ...rest } = item;
+                            return { id: rest.id, 
+                                     name:rest.name,
+                                     entityId:rest.entity.name,
+                                     createdAt:rest.createdAt,
+                                     isActive:rest.isActive,
+                                    };
 
                         });
                         setDepartment(filteredDepartment);

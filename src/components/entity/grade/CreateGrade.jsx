@@ -51,8 +51,9 @@ export default function CreateGrade({setOpen, onSubmit}) {
 
 
     const handleSubmitDataFormGrade = async (data) => {
-      console.log(data);
-      const urlToCreateGrade = URLS.API_GRADE;
+      // console.log(data);
+      // const urlToCreateGrade = URLS.API_GRADE;
+      const urlToCreateGrade =  `${URLS.ENTITY_API}/grades`;
         // console.log(data);
         try {
           const response = await handlePost(urlToCreateGrade, data, true);

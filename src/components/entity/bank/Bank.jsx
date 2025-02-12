@@ -15,7 +15,9 @@ export default function Bank() {
     const { handleFetch } = useFetch();
 
     const fetchBank = async () => {
-        const urlToShowAllBank = URLS.API_BANK;
+        // const urlToShowAllBank = URLS.API_BANK;
+        const urlToShowAllBank = `${URLS.ENTITY_API}/banks`;
+        
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllBank);

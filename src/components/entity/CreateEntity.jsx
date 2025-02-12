@@ -11,8 +11,7 @@ import PropTypes from 'prop-types';
 import { useFetch } from '../../hooks/useFetch';
 
 import toast, { Toaster } from 'react-hot-toast';
-
-import mock_data from "../../helpers/mock_data.json";
+import { jwtDecode } from 'jwt-decode';
 
 // Définition du schéma avec Zod
 const entitySchema = z.object({
@@ -36,50 +35,72 @@ const entitySchema = z.object({
     ,
 
     townId: z.string()
-    .nonempty('Ce champs "Nom de la ville" est réquis')
+    .nonempty('Ce champs "Nom du district est réquis')
     .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
-    .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom de la ville' Conforme.")
-    ,
+    .regex(/^(?:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|[a-zA-Z0-9 ,]+)$/,
+       "Ce champs doit être un 'nom de la ville Conforme."),
+
+    createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
   
   });
 
 export default function CreateEntity({setOpen, onSubmit}) {
 
 
-  const [selectedCity, setSelectedCity] = useState([]);
-  const [fetchCities, setFetchCities] = useState([]);
-    
-    // const navigateToDashboard = useNavigate();
+  const [selectedTowns, setSelectedTowns] = useState([]);
+  const [showTowns, setShowTowns] = useState([]);
+  const [tokenUser, setTokenUser] = useState();
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
+
+
     const { handlePost, handleFetch } = useFetch();
     
 
-    const showCities = async () => {
-
-      setFetchCities(mock_data);
-
-        // const urlToCreateEntity = "";
-        // try {
-        //     const response = await handleFetch(urlToCreateEntity);
-        //     // console.log("response crea", response);
-        //     if (response && response?.success) {
-        //       toast.success("Entité crée avec succès", {duration:2000});
-        //       console.log("entity created", response?.success);
+    const fetchTowns = async () => {
+      // const getTown = URLS.API_TOWN;
+      const getTown = `${URLS.ENTITY_API}/towns`;
+      
+      try {
+          setIsLoading(true);
+          const response = await handleFetch(getTown);
+          
+              if (response && response?.status === 200) {
+                      const results = response?.data;
+                      // console.log("results", results);
   
-        //     }
-        //     else {
-        //       toast.error(response.error, { duration: 5000});
-        //     }
-            
-        //   } catch (error) {
-        //     console.error("Error during creating",error);
-        //     toast.error("Erreur lors de la récupération des villes", { duration: 5000 });
-        //   }
-    };
+                      const filteredTowns = results?.map(item => {
+                      const { createdBy, updateAt, ...rest } = item;
+                      return { ...rest };
+                  });
+                      // console.log("districts - Town",filteredTowns);
+                      setShowTowns(filteredTowns);
+              }
+              else{
+                  throw new Error('Erreur lors de la récupération des villes');
+              }
+      } catch (error) {
+          setError(error.message);
+      }
+      finally {
+          setIsLoading(false);
+        }
+       };
 
     useEffect(() => {
-        showCities();
+      fetchTowns();
     }, []);
+
+    useEffect(()=>{
+      const token = localStorage.getItem("token");
+      if(token){
+          const decode = jwtDecode(token);
+          setTokenUser(decode.user_id);
+          // console.log("var", tokenUser);
+      }
+    }, [tokenUser]);
 
 
     const { register, handleSubmit, reset,  formState: { errors, isSubmitting }} = useForm({
@@ -89,8 +110,8 @@ export default function CreateEntity({setOpen, onSubmit}) {
 
     const handleSubmitDataFormEntity = async(data) => {
       console.log(data);
-      // const urlToCreateEntity = "http://127.0.0.1:8000/api_gateway/api/user/";
-      const urlToCreateEntity = URLS.API_ENTITY;
+      // const urlToCreateEntity = URLS.API_ENTITY;
+      const urlToCreateEntity = `${URLS.ENTITY_API}/entities`;
         // console.log(data);
         try {
           const response = await handlePost(urlToCreateEntity, data, true);
@@ -183,8 +204,8 @@ export default function CreateEntity({setOpen, onSubmit}) {
                             <select
                                         // value={showCities}
                                         onChange={(e) => {
-                                            const nameCitySelected = fetchCities.find(item => item.id === e.target.value);
-                                            setSelectedCity(nameCitySelected);
+                                            const nameCitySelected = showTowns.find(item => item.id === e.target.value);
+                                            setSelectedTowns(nameCitySelected);
                                         }}
                                         {...register('townId')} 
                                         className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
@@ -193,9 +214,9 @@ export default function CreateEntity({setOpen, onSubmit}) {
                                         }`}
                                     >
                                         <option value="">Selectionner une ville</option>
-                                            {fetchCities.map((item) => (
+                                            {showTowns.map((item) => (
                                                 <option key={item.id} value={item.id}>
-                                                        {item.city}
+                                                        {item.name}
                                                 </option>
                                             ))}
                             </select>
@@ -227,6 +248,27 @@ export default function CreateEntity({setOpen, onSubmit}) {
                                 <p className="text-red-500 text-[9px] mt-1">{errors.phone.message}</p>
                               )
                             }
+                  </div>
+                  <div className='mb-1 hidden'>
+                        <label htmlFor="createdBy" className="block text-xs font-medium mb-0">
+                                  créer par<sup className='text-red-500'>*</sup>
+                              </label>
+                              <input 
+                                  id='createdBy'
+                                  type="text"
+                                  defaultValue={tokenUser}
+                                  {...register('createdBy')}
+                                  className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                                    ${
+                                      errors.createdBy ? "border-red-500" : "border-gray-300"
+                                    }`}
+                              />
+
+                              {
+                                errors.createdBy && (
+                                  <p className="text-red-500 text-[9px] mt-1">{errors.createdBy.message}</p>
+                                )
+                              }
                   </div>
 
                   <div className='flex justify-end space-x-2 mt-2'>

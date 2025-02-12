@@ -68,15 +68,15 @@ export const CustomerAction = () => {
     }
   }, [tokenUser]);
 
+
     const onSubmit = async (data) => {
-
-        console.log("data bank", data);
-
-        const urlToUpdate = `${URLS.API_CUSTOMER}/${selectedCustomer?.id}`;
+        // console.log("data bank", data);
+        // const urlToUpdate = `${URLS.API_CUSTOMER}/${selectedCustomer?.id}`;
+        const urlToUpdate =  `${URLS.ENTITY_API}/clients/${selectedCustomer?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            console.log("response customer update", response);
+            // console.log("response customer update", response);
                 if (response) {
                     setDialogOpen(false);
                         
@@ -111,7 +111,8 @@ export const CustomerAction = () => {
     const disabledCustomer = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver ce client ?");
         if (confirmation) {
-            const urlToDisabledCustomer = `${URLS.API_CUSTOMER}/${id}`;
+            // const urlToDisabledCustomer = `${URLS.API_CUSTOMER}/${id}`;
+            const urlToDisabledCustomer = `${URLS.ENTITY_API}/clients/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledCustomer, {isActive:false});
@@ -145,11 +146,12 @@ export const CustomerAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver ce client ?");
 
         if (confirmation) {
-            const urlToDisabledCustomer = `${URLS.API_CUSTOMER}/${id}`;
+            // const urlToDisabledCustomer = `${URLS.API_CUSTOMER}/${id}`;
+            const urlToDisabledCustomer = `${URLS.ENTITY_API}/clients/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledCustomer, {isActive:true});
-                            console.log("response for deleted", response);
+                            // console.log("response for deleted", response);
                                 if (response) {
                                     setTimeout(()=>{
                                         toast.success("client enabled successfully", { duration: 5000});
@@ -179,7 +181,8 @@ export const CustomerAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer ce client ?");
 
         if (confirmation) {
-            const urlToDisabledCustomer = `${URLS.API_CUSTOMER}/${id}`;
+            // const urlToDisabledCustomer = `${URLS.API_CUSTOMER}/${id}`;
+            const urlToDisabledCustomer = `${URLS.ENTITY_API}/clients/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledCustomer, {isActive:false});

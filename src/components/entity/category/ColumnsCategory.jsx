@@ -59,9 +59,12 @@ export const CategoryAction = () => {
 
     const onSubmit = async (data) => {
 
-        console.log("data category", data);
+        // console.log("data category", data);
 
-        const urlToUpdate = `${URLS.API_CATEGORY}/${selectedCategory?.id}`;
+        // const urlToUpdate = `${URLS.API_CATEGORY}/${selectedCategory?.id}`;
+        const urlToUpdate = `${URLS.ENTITY_API}/categories/${selectedCategory?.id}`;
+        
+       
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -100,7 +103,9 @@ export const CategoryAction = () => {
     const disabledCategory = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette catégorie ?");
         if (confirmation) {
-            const urlToDisabledCategory = `${URLS.API_CATEGORY}/${id}`;
+            // const urlToDisabledCategory = `${URLS.API_CATEGORY}/${id}`;
+            const urlToDisabledCategory =  `${URLS.ENTITY_API}/categories/${id}`;
+           
 
                     try {
                             const response = await handlePatch(urlToDisabledCategory, {isActive:false});
@@ -134,7 +139,8 @@ export const CategoryAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette catégorie ?");
 
         if (confirmation) {
-            const urlToDisabledCategory = `${URLS.API_CATEGORY}/${id}`;
+            // const urlToDisabledCategory = `${URLS.API_CATEGORY}/${id}`;
+            const urlToDisabledCategory = `${URLS.ENTITY_API}/categories/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledCategory, {isActive:true});
@@ -168,7 +174,8 @@ export const CategoryAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette catégorie ?");
 
         if (confirmation) {
-            const urlToDisabledCategory = `${URLS.API_CATEGORY}/${id}`;
+            // const urlToDisabledCategory = `${URLS.API_CATEGORY}/${id}`;
+            const urlToDisabledCategory =  `${URLS.ENTITY_API}/categories/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledCategory, {isActive:false});

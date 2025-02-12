@@ -17,7 +17,8 @@ export default function AsignPermRole() {
     const { handleFetch } = useFetch();
 
     const fetchAsignPermRole = async () => {
-        const urlToShowAllAsignPermRole = URLS.API_ASIGN_PERM_ROLE;
+        // const urlToShowAllAsignPermRole = URLS.API_ASIGN_PERM_ROLE;
+        const urlToShowAllAsignPermRole = `${URLS.USER_API}/grant_permission_role/`;
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllAsignPermRole);

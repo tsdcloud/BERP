@@ -59,7 +59,7 @@ export const TownAction = () => {
    
 
    const fetchDistricts = async () => {
-    const getDistrict = URLS.API_DISTRICT;
+    const getDistrict = `${URLS.ENTITY_API}/districts`;
     try {
         setIsLoading(true);
         const response = await handleFetch(getDistrict);
@@ -102,28 +102,27 @@ export const TownAction = () => {
 
     const onSubmit = async (data) => {
         // console.log("data role", data);
-
-        const urlToUpdate = `${URLS.API_TOWN}/${selectedTown?.id}`;
-      
-        try {
-            const response = await handlePatch(urlToUpdate, data);
-            // console.log("response role update", response);
-                if (response) {
-                    setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("town modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
-                }
-                else {
-                    setDialogOpen(false);
-                    toast.error("Erreur lors de la modification de la ville", { duration: 5000 });
-                }
-            
-          } catch (error) {
-            console.error("Error during updated",error);
-          }
+        // const urlToUpdate = `${URLS.API_TOWN}/${selectedTown?.id}`;
+        const urlToUpdate = `${URLS.ENTITY_API}/towns/${selectedTown?.id}`;
+            try {
+                const response = await handlePatch(urlToUpdate, data);
+                // console.log("response role update", response);
+                    if (response) {
+                        setDialogOpen(false);
+                            
+                        setTimeout(()=>{
+                            toast.success("town modified successfully", { duration: 900 });
+                            window.location.reload();
+                        },[200]);
+                    }
+                    else {
+                        setDialogOpen(false);
+                        toast.error("Erreur lors de la modification de la ville", { duration: 5000 });
+                    }
+                
+            } catch (error) {
+                console.error("Error during updated",error);
+            }
     };
 
 
@@ -145,11 +144,13 @@ export const TownAction = () => {
     const disabledTown = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette ville ?");
         if (confirmation) {
-            const urlToDisabledTown = `${URLS.API_TOWN}/${id}`;
+            // const urlToDisabledTown = `${URLS.API_TOWN}/${id}`;
+            const urlToDisabledTown = `${URLS.ENTITY_API}/towns/${id}`;
+            
 
                     try {
                             const response = await handlePatch(urlToDisabledTown, { isActive:false });
-                            console.log("response for disabled", response);
+                            // console.log("response for disabled", response);
                                 if (response.errors) {
                                     if (Array.isArray(response.errors)) {
                                         const errorMessages = response.errors.map(error => error.msg).join(', ');
@@ -161,7 +162,7 @@ export const TownAction = () => {
                                 else {
                                     setTimeout(()=>{
                                         toast.success("town disabled successfully", { duration: 5000 });
-                                        // window.location.reload();
+                                        window.location.reload();
                                     },[200]);
                                 }
                             isDialogOpen && setDialogOpen(false);
@@ -184,11 +185,12 @@ export const TownAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette ville?");
 
         if (confirmation) {
-            const urlToDisabledTown = `${URLS.API_TOWN}/${id}`;
+            // const urlToDisabledTown = `${URLS.API_TOWN}/${id}`;
+            const urlToDisabledTown = `${URLS.ENTITY_API}/towns/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledTown, {isActive:true});
-                            console.log("response for deleted", response);
+                            // console.log("response for deleted", response);
                                 if (response) {
                                     setTimeout(()=>{
                                         toast.success("town enabled successfully", { duration: 5000});
@@ -218,7 +220,8 @@ export const TownAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette ville ?");
 
         if (confirmation) {
-            const urlToDisabledTown = `${URLS.API_TOWN}/${id}`;
+            // const urlToDisabledTown = `${URLS.API_TOWN}/${id}`;
+            const urlToDisabledTown = `${URLS.ENTITY_API}/towns/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledTown, {isActive:false});

@@ -53,7 +53,9 @@ export const RoleAction = ( { actRole, desRole, updateData } ) => {
    
 
     const onSubmit = async (data) => {
-        const urlToUpdate = `${URLS.API_ROLE}${selectedRole?.id}`;
+        // const urlToUpdate = `${URLS.API_ROLE}${selectedRole?.id}`;
+        const urlToUpdate =  `${URLS.USER_API}/roles/${selectedRole?.id}`;
+       
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -64,7 +66,7 @@ export const RoleAction = ( { actRole, desRole, updateData } ) => {
 
                 toast.success("role modified successfully", { duration: 1000 });
 
-                updateData(response.data.id, response.data)
+                updateData(response.data.id, response.data);
             }
             else {
                 setDialogOpen(false);
@@ -93,7 +95,9 @@ export const RoleAction = ( { actRole, desRole, updateData } ) => {
     const disabledRole = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver ce rôle ?");
             if (confirmation) {
-                const urlToDisabledRole = `${URLS.API_ROLE}${id}/`;
+                // const urlToDisabledRole = `${URLS.API_ROLE}${id}/`;
+                const urlToDisabledRole = `${URLS.USER_API}/roles/${id}/`;
+                
 
                         try {
                                 const response = await handlePatch(urlToDisabledRole, {is_active:false});
@@ -130,7 +134,8 @@ export const RoleAction = ( { actRole, desRole, updateData } ) => {
     const enableRole = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir activer ce rôle ?");
 
-        const urlToDisabledRole = `${URLS.API_ROLE}${id}/`
+        // const urlToDisabledRole = `${URLS.API_ROLE}${id}/`;
+        const urlToDisabledRole = `${URLS.USER_API}/roles/${id}/`;
 
         if (confirmation) {
               try{
@@ -161,8 +166,9 @@ export const RoleAction = ( { actRole, desRole, updateData } ) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer ce rôle ?");
 
         if (confirmation) {
-            const urlToDeleteRole = `${URLS.API_ROLE}${id}/`;
-            console.log("url delete role ",urlToDeleteRole);
+            // const urlToDeleteRole = `${URLS.API_ROLE}${id}/`;
+            const urlToDeleteRole = `${URLS.USER_API}/roles/${id}/`;
+            // console.log("url delete role ",urlToDeleteRole);
             // const urlToDeleteRole = URLS.API_ROLE`${id}/?delete=true`;
 
                     try {
@@ -171,7 +177,7 @@ export const RoleAction = ( { actRole, desRole, updateData } ) => {
                             if (response.success) {
                                 toast.success("role disabled successfully", { duration: 1000});
                                 isDialogOpen && setDialogOpen(false);
-                                desRole(id)
+                                desRole(id);
                                 // window.location.reload();
                             }
 

@@ -17,14 +17,16 @@ export default function AsignRoleUser() {
     const { handleFetch } = useFetch();
 
     const fetchAsignRoleUser = async () => {
-        const urlToShowAllAsignRoleUser = URLS.API_ASIGN_ROLE_USER;
+        // const urlToShowAllAsignRoleUser = URLS.API_ASIGN_ROLE_USER;
+        const urlToShowAllAsignRoleUser =  `${URLS.USER_API}/assign_role_user/`;
+        
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllAsignRoleUser);
-            console.log("respoasignRoleUser",response);
+            // console.log("respoasignRoleUser",response);
                 if (response && response?.data?.results) {
                         const results = response?.data?.results;
-                        console.log("rest asign role user", results);
+                        // console.log("rest asign role user", results);
                         const filteredAsignRoleUser = results?.map(item => {
                             const { role_assigned_by, date_assigned,  ...rest } = item;
                             return {

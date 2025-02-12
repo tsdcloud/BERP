@@ -49,7 +49,8 @@ export default function CreateEchelon({setOpen, onSubmit}) {
 
     const handleSubmitDataFormEchelon = async (data) => {
       console.log(data);
-      const urlToCreateEchelon = URLS.API_ECHELON;
+      // const urlToCreateEchelon = URLS.API_ECHELON;
+      const urlToCreateEchelon = `${URLS.ENTITY_API}/echelons`;
       // console.log(data);
       try {
         const response = await handlePost(urlToCreateEchelon, data, true);

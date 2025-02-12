@@ -60,7 +60,8 @@ export default function CreatePermission({setOpen, onSubmit}) {
 
 
   const handleSubmitDataFormPermission = async(data) => {
-    const urlToCreatePermission = URLS.API_PERMISSION_ENTITY;
+    // const urlToCreatePermission = URLS.API_PERMISSION_ENTITY;
+    const urlToCreatePermission = `${URLS.ENTITY_API}/permissions`;
       console.log(data);
       try {
         const response = await handlePost(urlToCreatePermission, data, true);

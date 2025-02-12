@@ -29,17 +29,17 @@ const countrySchema = z.object({
     .max(100)
     .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme."),
 
-    email: z.string()
-    .nonempty("Ce champs 'Email' est réquis.")
-    .email("Adresse mail invalide")
-    .max(255)
-    ,
+    // email: z.string()
+    // .nonempty("Ce champs 'Email' est réquis.")
+    // .email("Adresse mail invalide")
+    // .max(255)
+    // ,
 
-    phone: z.string()
-    .nonempty("Ce champs 'Téléphone' est réquis.")
-    .length(9, "La valeur de ce champs doit contenir 9 caractères.")
-    .regex(/^[0-9]+$/)
-    ,
+    // phone: z.string()
+    // .nonempty("Ce champs 'Téléphone' est réquis.")
+    // .length(9, "La valeur de ce champs doit contenir 9 caractères.")
+    // .regex(/^[0-9]+$/)
+    // ,
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
     });
@@ -72,7 +72,8 @@ export const CountryAction = () => {
 
         console.log("data country", data);
 
-        const urlToUpdate = `${URLS.API_COUNTRY}/${selectedCountry?.id}`;
+        // const urlToUpdate = `${URLS.API_COUNTRY}/${selectedCountry?.id}`;
+        const urlToUpdate = `${URLS.ENTITY_API}/countries/${selectedCountry?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -111,7 +112,8 @@ export const CountryAction = () => {
     const disabledCountry = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver ce pays ?");
         if (confirmation) {
-            const urlToDisabledCountry = `${URLS.API_COUNTRY}/${id}`;
+            // const urlToDisabledCountry = `${URLS.API_COUNTRY}/${id}`;
+            const urlToDisabledCountry = `${URLS.ENTITY_API}/countries/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledCountry, { isActive:false });
@@ -145,7 +147,8 @@ export const CountryAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver ce pays ?");
 
         if (confirmation) {
-            const urlToDisabledCountry = `${URLS.API_COUNTRY}/${id}`;
+            // const urlToDisabledCountry = `${URLS.API_COUNTRY}/${id}`;
+            const urlToDisabledCountry = `${URLS.ENTITY_API}/countries/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledCountry, {isActive:true});
@@ -179,7 +182,8 @@ export const CountryAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer ce pays ?");
 
         if (confirmation) {
-            const urlToDisabledCountry = `${URLS.API_COUNTRY}/${id}`;
+            // const urlToDisabledCountry = `${URLS.API_COUNTRY}/${id}`;
+            const urlToDisabledCountry = `${URLS.ENTITY_API}/countries/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledCountry, {isActive:false});
@@ -364,9 +368,7 @@ export const CountryAction = () => {
 
     const columnsCountry = useMemo(() => [
         { accessorKey: 'name', header: 'Nom du pays' },
-        // { accessorKey: 'email', header: 'Adresse mail' },
-        // { accessorKey: 'phone', header: 'Téléphone' },
-        { accessorKey: 'createdAt', header: 'Date de création' },
+        // { accessorKey: 'createdAt', header: 'Date de création' },
         { accessorKey: 'isActive', header: 'Statut' },
         {
             accessorKey: "action",

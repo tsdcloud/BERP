@@ -72,7 +72,8 @@ export const BankAction = () => {
 
         // console.log("data bank", data);
 
-        const urlToUpdate = `${URLS.API_BANK}/${selectedBank?.id}`;
+        // const urlToUpdate = `${URLS.API_BANK}/${selectedBank?.id}`;
+        const urlToUpdate = `${URLS.ENTITY_API}/banks/${selectedBank?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -111,7 +112,8 @@ export const BankAction = () => {
     const disabledBank = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette banque ?");
         if (confirmation) {
-            const urlToDisabledBank = `${URLS.API_BANK}/${id}`;
+            // const urlToDisabledBank = `${URLS.API_BANK}/${id}`;
+            const urlToDisabledBank = `${URLS.ENTITY_API}/banks/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledBank, {isActive:false});
@@ -145,7 +147,8 @@ export const BankAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette banque ?");
 
         if (confirmation) {
-            const urlToDisabledBank = `${URLS.API_BANK}/${id}`;
+            // const urlToDisabledBank = `${URLS.API_BANK}/${id}`;
+            const urlToDisabledBank = `${URLS.ENTITY_API}/banks/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledBank, {isActive:true});
@@ -179,7 +182,8 @@ export const BankAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette banque ?");
 
         if (confirmation) {
-            const urlToDisabledBank = `${URLS.API_BANK}/${id}`;
+            // const urlToDisabledBank = `${URLS.API_BANK}/${id}`;
+            const urlToDisabledBank = `${URLS.ENTITY_API}/banks/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledBank, {isActive:false});

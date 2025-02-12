@@ -61,7 +61,9 @@ export const FunctionAction = () => {
 
     const onSubmit = async (data) => {
         // console.log("data function", data);
-        const urlToUpdate = `${URLS.API_FUNCTION}/${selectedFunction?.id}`;
+        // const urlToUpdate = `${URLS.API_FUNCTION}/${selectedFunction?.id}`;
+        const urlToUpdate = `${URLS.ENTITY_API}/functions/${selectedFunction?.id}`;
+        
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -101,42 +103,8 @@ export const FunctionAction = () => {
     const disabledFunction = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette fonction ?");
 
-            // if (confirmation) {
-            //     const urlToDisabledFunction = `${URLS.API_FUNCTION}/${id}`;
-
-            //             try {
-            //                     const response = await handlePatch(urlToDisabledFunction, {isActive:false});
-            //                     console.log("response for disabled", response);
-            //                         if (response) {
-            //                             setTimeout(()=>{
-            //                                 toast.success("function disabled successfully", { duration: 5000});
-            //                                 // isDialogOpen && setDialogOpen(false);
-            //                                 window.location.reload();
-            //                             },[200]);
-
-            //                         }
-            //                         else {
-            //                             toast.error("Erreur lors de la désactivation de la  fonction", { duration: 5000 });
-                                    
-            //                         }
-            //                     isDialogOpen && setDialogOpen(false);
-            //             }
-            //             catch(error){
-            //                 console.error("Erreur lors de la désactivation de la  fonction :", error);
-            //             }
-
-            //             finally{
-            //                 setIsLoading(false);
-                            
-            //                 }
-
-            //     } 
-            //     else {
-            //         console.log("La désactivation a été annulée.");
-            //     }
-
             if (confirmation) {
-                const urlToDisabledFunction = `${URLS.API_FUNCTION}/${id}`;
+                const urlToDisabledFunction =  `${URLS.ENTITY_API}/functions/${id}`;
     
                         try {
                                 const response = await handlePatch(urlToDisabledFunction, {isActive:false});
@@ -170,7 +138,7 @@ export const FunctionAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir réactiver cette fonction ?");
 
         if (confirmation) {
-            const urlToDisabledFunction = `${URLS.API_FUNCTION}/${id}`;
+            const urlToDisabledFunction =  `${URLS.ENTITY_API}/functions/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledFunction, {isActive:true});
@@ -202,39 +170,8 @@ export const FunctionAction = () => {
     
     const deletedFunction = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette fonction ?");
-
-        // if (confirmation) {
-        //     const urlToDeleteFunction = `${URLS.API_FUNCTION}${id}/`;
-        //     console.log("url delete function ",urlToDeleteFunction);
-        //     // const urlToDeleteFunction = URLS.API_FUNCTION`${id}/?delete=true`;
-
-        //             try {
-        //                     const response = await handleDelete(urlToDeleteFunction);
-        //                     console.log("response for deleting", response);
-        //                     if (response.success) {
-        //                         toast.success("function disabled successfully", { duration: 5000});
-        //                         isDialogOpen && setDialogOpen(false);
-        //                         window.location.reload();
-        //                     }
-
-        //                     setDialogOpen(false);
-        //             }
-        //             catch(error){
-        //                 console.error("Erreur lors de la suppression de cette fonction:", error);
-        //                 toast.error("Erreur lors de la suppression de la fonction", { duration: 5000 });
-        //             }
-
-        //             finally{
-        //                 setIsLoading(false);
-                        
-        //                 }
-
-        //     } 
-        //     else {
-        //         console.log("La suppression a été annulée.");
-        //     }
         if (confirmation) {
-            const urlToDisabledFunction = `${URLS.API_FUNCTION}/${id}`;
+            const urlToDisabledFunction =  `${URLS.ENTITY_API}/functions/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledFunction, {isActive:false});

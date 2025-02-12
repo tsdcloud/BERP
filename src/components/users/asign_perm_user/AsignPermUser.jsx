@@ -17,14 +17,16 @@ export default function AsignPermUser() {
     const { handleFetch } = useFetch();
 
     const fetchAsignPermUser = async () => {
-        const urlToShowAllAsignPermUser = URLS.API_ASIGN_PERM_USER;
+        // const urlToShowAllAsignPermUser = URLS.API_ASIGN_PERM_USER;
+        const urlToShowAllAsignPermUser = `${URLS.USER_API}/grant_permission_user/`;
+        
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllAsignPermUser);
-            console.log("respoasignPermUser",response);
+            // console.log("respoasignPermUser",response);
                 if (response.success && response?.data?.results) {
                         const results = response?.data?.results;
-                        console.log("rest asign perm user", results);
+                        // console.log("rest asign perm user", results);
                         const filteredAsignPermUser = results?.map(item => {
                             const { perm_assigned_by, date_assigned,  ...rest } = item;
                             return {

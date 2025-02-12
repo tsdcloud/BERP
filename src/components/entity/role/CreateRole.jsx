@@ -58,10 +58,11 @@ export default function CreateRole({setOpen, onSubmit}) {
 
     const handleSubmitDataFormRole = async (data) => {
       console.log(data);
-      const urlToCreateRole = URLS.API_ROLE_ENTITY;
+      // const urlToCreateRole = URLS.API_ROLE_ENTITY;
+      const urlToCreateRole = `${URLS.ENTITY_API}/roles`;
       try {
         const response = await handlePost(urlToCreateRole, data, true);
-        console.log("response crea", response);
+        // console.log("response crea", response);
         if (response && response.status === 201) {
           toast.success("rôle crée avec succès", { duration:2000 });
           setOpen(false);

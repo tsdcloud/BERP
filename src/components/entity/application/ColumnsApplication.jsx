@@ -70,7 +70,8 @@ export const ApplicationAction = () => {
 
         // console.log("data role", data);
 
-        const urlToUpdate = `${URLS.API_APPLICATION_ENTITY}/${selectedApplication?.id}`;
+        // const urlToUpdate = `${URLS.API_APPLICATION_ENTITY}/${selectedApplication?.id}`;
+        const urlToUpdate =  `${URLS.ENTITY_API}/applications/${selectedApplication?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -108,10 +109,13 @@ export const ApplicationAction = () => {
         setDialogOpen(true);
     };
 
-    const disabledRole = async (id) => {
+    const disabledApplication = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette application ?");
         if (confirmation) {
-            const urlToDisabledApp = `${URLS.API_APPLICATION_ENTITY}/${id}`;
+            // const urlToDisabledApp = `${URLS.API_APPLICATION_ENTITY}/${id}`;
+            const urlToDisabledApp =  `${URLS.ENTITY_API}/applications/${id}`;
+           
+           
 
                     try {
                             const response = await handlePatch(urlToDisabledApp, { isActive:false });
@@ -146,11 +150,12 @@ export const ApplicationAction = () => {
             }
     };
 
-    const enabledRole = async (id) => {
+    const enabledApplication = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette application ?");
 
         if (confirmation) {
-            const urlToDisabledApp = `${URLS.API_APPLICATION_ENTITY}/${id}`;
+            // const urlToDisabledApp = `${URLS.API_APPLICATION_ENTITY}/${id}`;
+            const urlToDisabledApp =  `${URLS.ENTITY_API}/applications/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledApp, {isActive:true});
@@ -180,11 +185,12 @@ export const ApplicationAction = () => {
             }
     };
     
-    const deletedRole = async (id) => {
+    const deletedApplication = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette application ?");
 
         if (confirmation) {
-            const urlToDisabledApp = `${URLS.API_APPLICATION_ENTITY}/${id}`;
+            // const urlToDisabledApp = `${URLS.API_APPLICATION_ENTITY}/${id}`;
+            const urlToDisabledApp =  `${URLS.ENTITY_API}/applications/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledApp, {isActive:false});
@@ -331,12 +337,20 @@ export const ApplicationAction = () => {
                                         </div>
 
                                         <div>
-                                            <p className="text-xs">Nom du rôle</p>
+                                            <p className="text-xs">Nom de l'application</p>
                                             <h3 className="font-bold text-sm">{selectedApplication?.name}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Description</p>
                                             <h3 className="font-bold text-sm">{selectedApplication?.description}</h3>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs">Lien de l'application</p>
+                                            <h3 className="font-bold text-sm">{selectedApplication?.url}</h3>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs">Icône de l'application</p>
+                                            <h3 className="font-bold text-sm">{selectedApplication?.image}</h3>
                                         </div>
                                        
                                         <div>
@@ -365,7 +379,7 @@ export const ApplicationAction = () => {
                                                         (
                                                                 <AlertDialogAction
                                                                     className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md bg-transparent hover:bg-blue-600 hover:text-white transition"
-                                                                    onClick={() => enabledRole(selectedApplication.id)}>
+                                                                    onClick={() => enabledApplication(selectedApplication.id)}>
                                                                         Activer
                                                                 </AlertDialogAction>
 
@@ -373,7 +387,7 @@ export const ApplicationAction = () => {
 
                                                                 <AlertDialogAction 
                                                                     className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md bg-transparent hover:bg-gray-600 hover:text-white transition"
-                                                                    onClick={() => disabledRole(selectedApplication.id)}>
+                                                                    onClick={() => disabledApplication(selectedApplication.id)}>
                                                                         Désactiver
                                                                 </AlertDialogAction>
                                                         )
@@ -383,7 +397,7 @@ export const ApplicationAction = () => {
                                            </div> */}
                                             <AlertDialogAction 
                                                 className="border-2 border-red-900 outline-red-700 text-red-900 text-xs shadow-md bg-transparent hover:bg-red-600 hover:text-white transition"
-                                                onClick={() => deletedRole(selectedApplication.id)}>
+                                                onClick={() => deletedApplication(selectedApplication.id)}>
                                                     Supprimer
                                             </AlertDialogAction>
                                             <AlertDialogCancel
@@ -404,10 +418,11 @@ export const ApplicationAction = () => {
     };
 
 
-    const columnsRole = useMemo(() => [
-        { accessorKey: 'name', header: 'Nom du rôle' },
+    const columnsApplication = useMemo(() => [
+        { accessorKey: 'name', header: "Nom de l'application" },
         { accessorKey: 'description', header: 'Description' },
-        // { accessorKey: 'phone', header: 'Téléphone' },
+        { accessorKey: 'url', header: 'Lien' },
+        { accessorKey: 'image', header: 'Icône' },
         // { accessorKey: 'createdAt', header: 'Date de création' },
         { accessorKey: 'isActive', header: 'Statut' },
         {
@@ -417,8 +432,8 @@ export const ApplicationAction = () => {
                 <div className="flex justify-center">
                     <EyeIcon className="h-4 w-4 text-green-500" onClick={() => handleShowApplication(row.original)} />
                     <PencilSquareIcon className="h-4 w-4 text-blue-500" onClick={() => handleEditedApplication(row.original)} />
-                    {/* <NoSymbolIcon className="h-4 w-4 text-gray-500" onClick={() => disabledRole(row.original.id)} /> */}
-                    <TrashIcon className="h-4 w-4 text-red-500" onClick={() => deletedRole(row.original.id)} />
+                    {/* <NoSymbolIcon className="h-4 w-4 text-gray-500" onClick={() => disabledApplication(row.original.id)} /> */}
+                    <TrashIcon className="h-4 w-4 text-red-500" onClick={() => deletedApplication(row.original.id)} />
                 </div>
             )
         },
@@ -428,7 +443,7 @@ export const ApplicationAction = () => {
     return {
 
                 showDialogApplication,
-                columnsRole,
+                columnsApplication,
                 handleShowApplication,
                 handleEditedApplication,
              

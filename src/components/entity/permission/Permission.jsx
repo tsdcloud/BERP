@@ -15,20 +15,22 @@ export default function Permission() {
     const { handleFetch } = useFetch();
 
     const fetchPermission = async () => {
-        const urlToShowAllPerm = URLS.API_PERMISSION_ENTITY;
+        // const urlToShowAllPerm = URLS.API_PERMISSION_ENTITY;
+        const urlToShowAllPerm = `${URLS.ENTITY_API}/permissions`;
+        
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllPerm);
             
                 if (response && response?.status === 200) {
                         const results = response?.data;
-                        console.log("res", results);
+                        // console.log("res", results);
 
                         const filteredPerm = results?.map(item => {
                         const { createdBy, updateAt, ...rest } = item;
                         return { id: item.id, ...rest};
                     });
-                        console.log("perm",filteredPerm);
+                        // console.log("perm",filteredPerm);
                         setPermissions(filteredPerm);
                 }
                 else{

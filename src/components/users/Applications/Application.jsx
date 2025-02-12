@@ -18,7 +18,9 @@ export default function Application() {
     const { handleFetch } = useFetch();
 
     const fetchApplication = async () => {
-        const urlToShowAllApplication = URLS.API_APPLICATION;
+        // const urlToShowAllApplication = URLS.API_APPLICATION;
+        const urlToShowAllApplication =  `${URLS.USER_API}/applications/`;
+       
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllApplication);
@@ -49,22 +51,22 @@ export default function Application() {
     }, []);
     
     const upDateTable = (newRecord) => {
-        setApplications((prev) => [newRecord, ...prev,])
-    }
+        setApplications((prev) => [newRecord, ...prev,]);
+    };
 
     const actApp = (id) => {
         setApplications((prev) =>
             prev.map((app) =>
                 app.id === id ? { ...app, is_active: true } : app
         ));
-    }
+    };
 
     const desApp = (id) => {
         setApplications((prev) =>
             prev.map((app) =>
                 app.id === id ? { ...app, is_active: false } : app
         ));
-    }
+    };
 
     const updateData = (id, updatedApp) => {
         setApplications((prev) =>

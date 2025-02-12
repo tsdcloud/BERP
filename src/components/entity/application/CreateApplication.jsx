@@ -58,13 +58,14 @@ export default function CreateApplication({setOpen, onSubmit}) {
 
 
   const handleSubmitDataFormApplication = async(data) => {
-    const urlToCreateApplication = URLS.API_APPLICATION_ENTITY;
-      console.log(data);
+    // const urlToCreateApplication = URLS.API_APPLICATION_ENTITY;
+    const urlToCreateApplication =  `${URLS.ENTITY_API}/applications`;
+      // console.log(data);
       try {
         const response = await handlePost(urlToCreateApplication, data, true);
-        console.log("response crea", response);
+        // console.log("response crea", response);
         if (response && response.status === 201) {
-          toast.success("APPLICATION crée avec succès", { duration:2000 });
+          toast.success("Application crée avec succès", { duration:2000 });
           setOpen(false);
           onSubmit();
           reset();

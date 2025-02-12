@@ -15,14 +15,15 @@ export default function Town() {
     const { handleFetch } = useFetch();
 
     const fetchTown = async () => {
-        const urlToShowAllTown = URLS.API_TOWN;
+        // const urlToShowAllTown = URLS.API_TOWN;
+        const urlToShowAllTown = `${URLS.ENTITY_API}/towns`;
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllTown);
             
                 if (response && response?.status === 200) {
                         const results = response?.data;
-                        console.log("resTown", results);
+                        // console.log("resTown", results);
 
                         const filteredTown = results?.map(item => {
                         const { createdBy, updateAt, ...rest } = item;
@@ -33,7 +34,7 @@ export default function Town() {
                                  isActive:rest.isActive,
                                 };
                     });
-                        console.log("Town",filteredTown);
+                        // console.log("Town",filteredTown);
                         setTowns(filteredTown);
                 }
                 else{

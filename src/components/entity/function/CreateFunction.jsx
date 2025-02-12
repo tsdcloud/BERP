@@ -42,31 +42,6 @@ export default function CreateFunction({setOpen, onSubmit}) {
     
 
     const { handlePost } = useFetch();
-    
-
-    // const showFunction = async () => {
-    //   const urlToCreateFunction = URLS.API_FUNCTION;
-    //   try {
-    //     const response = await handleFetch(urlToCreateFunction);
-    //     console.log("response fetch", response);
-    //     if (response && response?.data) {
-    //           setFetchFunction(response);
-  
-    //         }
-    //         else {
-    //           if (Array.isArray(response.errors)) {
-    //             const errorMessages = response.errors.map(error => error.msg).join(', ');
-    //             toast.error(errorMessages, { duration: 5000 });
-    //           } else {
-    //             toast.error(response.errors.msg, { duration: 5000 });
-    //           }
-    //         }
-            
-    //       } catch (error) {
-    //         console.error("Error during creating",error);
-    //         toast.error("Erreur lors de la récupération des fonctions", { duration: 5000 });
-    //       }
-    // };
 
 
     useEffect(()=>{
@@ -78,11 +53,6 @@ export default function CreateFunction({setOpen, onSubmit}) {
       }
     }, [tokenUser]);
 
-    // useEffect(() => {
-    //     showFunction();
-    // }, []);
-
-
     const { register, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
         resolver: zodResolver(functionSchema),
     });
@@ -90,7 +60,7 @@ export default function CreateFunction({setOpen, onSubmit}) {
 
     const handleSubmitDataFormFunction = async(data) => {
       // console.log(data);
-      const urlToCreateFunction = URLS.API_FUNCTION;
+      const urlToCreateFunction = `${URLS.ENTITY_API}/functions`;
         // console.log(data);
         try {
           const response = await handlePost(urlToCreateFunction, data, true);

@@ -43,7 +43,8 @@ export default function CreateDistrict({setOpen, onSubmit}) {
   
 
   const fetchCountries = async () => {
-    const getCountries = URLS.API_COUNTRY;
+    // const getCountries = URLS.API_COUNTRY;
+    const getCountries =  `${URLS.ENTITY_API}/countries`;
     try {
         setIsLoading(true);
         const response = await handleFetch(getCountries);
@@ -90,11 +91,12 @@ export default function CreateDistrict({setOpen, onSubmit}) {
 
 
   const handleSubmitDataFormDisctrict = async(data) => {
-    const urlToCreateDistrict = URLS.API_DISTRICT;
+    // const urlToCreateDistrict = URLS.API_DISTRICT;
+    const urlToCreateDistrict =  `${URLS.ENTITY_API}/districts`;
       console.log(data);
       try {
         const response = await handlePost(urlToCreateDistrict, data, true);
-        console.log("response crea", response);
+        // console.log("response crea", response);
         if (response && response.status === 201) {
           toast.success("district crée avec succès", { duration:2000 });
           setOpen(false);

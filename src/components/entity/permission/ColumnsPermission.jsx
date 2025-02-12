@@ -71,7 +71,8 @@ export const PermissionAction = () => {
     const onSubmit = async (data) => {
         // console.log("data role", data);
 
-        const urlToUpdate = `${URLS.API_PERMISSION_ENTITY}/${selectedPermission?.id}`;
+        // const urlToUpdate = `${URLS.API_PERMISSION_ENTITY}/${selectedPermission?.id}`;
+        const urlToUpdate =  `${URLS.ENTITY_API}/permissions/${selectedPermission?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -113,7 +114,9 @@ export const PermissionAction = () => {
     const disabledRole = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette application ?");
         if (confirmation) {
-            const urlToDisabledPerm = `${URLS.API_PERMISSION_ENTITY}/${id}`;
+            // const urlToDisabledPerm = `${URLS.API_PERMISSION_ENTITY}/${id}`;
+            const urlToDisabledPerm =  `${URLS.ENTITY_API}/permissions/${id}`;
+           
 
                     try {
                             const response = await handlePatch(urlToDisabledPerm, { isActive:false });
@@ -152,7 +155,8 @@ export const PermissionAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette application ?");
 
         if (confirmation) {
-            const urlToDisabledPerm = `${URLS.API_PERMISSION_ENTITY}/${id}`;
+            // const urlToDisabledPerm = `${URLS.API_PERMISSION_ENTITY}/${id}`;
+            const urlToDisabledPerm =  `${URLS.ENTITY_API}/permissions/${id}`;
 
                     try {
                             const response = await handlePatch(urlToDisabledPerm, {isActive:true});
@@ -186,7 +190,8 @@ export const PermissionAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette permission ?");
 
         if (confirmation) {
-            const urlToDisabledPerm = `${URLS.API_PERMISSION_ENTITY}/${id}`;
+            // const urlToDisabledPerm = `${URLS.API_PERMISSION_ENTITY}/${id}`;
+            const urlToDisabledPerm =  `${URLS.ENTITY_API}/permissions/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledPerm, {isActive:false});
