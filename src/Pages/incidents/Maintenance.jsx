@@ -3,7 +3,7 @@ import Header from '../../components/layout/Header';
 import Dialogue from '../../components/incidents/Dialogue';
 import InitiateForm from '../../components/incidents/Maintenance/InitiateForm';
 import Tabs from '../../components/incidents/Tabs';
-import Datalist from '../../components/incidents/maintenance/Datalist';
+import Datalist from '../../components/incidents/Maintenance/Datalist';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
 import { Pagination } from 'antd';

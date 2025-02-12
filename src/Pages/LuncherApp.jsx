@@ -17,6 +17,7 @@ import EntityEntryPoint from './entity/EntityEntryPoint';
 import IncidentEntryPoint from './incidents/IncidentEntryPoint';
 import { ArrowLeftEndOnRectangleIcon  } from "@heroicons/react/24/outline";
 import WPOEnteryPoint from './wpo/WPOEnteryPoint';
+import verifyPermission from '../utils/verifyPermission'
 
 
 export default function LuncherApp() {
@@ -73,11 +74,18 @@ export default function LuncherApp() {
 
                     <div className='flex flex-wrap space-x-1 justify-center sm:justify-normal'>
                         {/* Ajoutez ici le reste de votre contenu */}
-                        <EntityEntryPoint/>
-                        <UserEntryPoint/>
-                        <IncidentEntryPoint/>
-                        <WPOEnteryPoint />
-
+                        <verifyPermission expected={["application__can_view_entities"]} functions={[""]}>
+                          <EntityEntryPoint/>
+                        </verifyPermission>
+                        <verifyPermission  expected={["application__can_view_users"]} functions={[]}>
+                          <UserEntryPoint/>
+                        </verifyPermission>
+                        <verifyPermission expected={["application__can_view_incidents"]} functions={[]}>
+                          <IncidentEntryPoint/>
+                        </verifyPermission>
+                        <verifyPermission expected={["application__can_view_wpo"]} functions={[]}>
+                          <WPOEnteryPoint />
+                        </verifyPermission>
                     </div>
 
 

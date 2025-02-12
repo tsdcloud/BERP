@@ -4,7 +4,7 @@ const verifyPermission = ({children, expected=[], roles=[], functions=[], isExcl
     if(expected instanceof Array){
 
         if(isExclude){
-          if((!expected.includes(roles) || !expected.includes(functions)) && (roles === null || functions ===null)){
+          if((!expected.includes(roles) || !expected.includes(functions))){
             return <>{children}</>
           }
           return null;
