@@ -197,7 +197,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       title:"Action",
       dataIndex:"",
       fixed:"right",
-      width:"100px",
+      width:"75px",
       render:(value, record)=>
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
