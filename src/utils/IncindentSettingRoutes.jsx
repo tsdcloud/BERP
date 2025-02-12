@@ -1,21 +1,22 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import { Outlet, Navigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { getEmployee } from './entity.utils';
 import Preloader from '../components/Preloader';
 import Header from '../components/layout/Header';
-
+import { AUTHCONTEXT } from '../contexts/AuthProvider';
 const IncidentSettingRoutes = ({permissions=[], roles=[]}) => {
     
     const [isLoading, setIsLoading] = useState(true);
     const [hasPermissions, setHasPermissions] = useState(false);
     const [hasRoles, setHasRoles] = useState(false);
 
+    // Context
+
     useEffect(()=>{
         
         const handleCheckPermissions = async () =>{
             const employee = await getEmployee();
-            console.log(employee)
             if(!employee){
                setHasPermissions(false);
                setIsLoading(false);

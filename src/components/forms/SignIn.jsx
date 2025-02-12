@@ -20,14 +20,15 @@ import { AUTHCONTEXT } from '../../contexts/AuthProvider';
 // Définir un schéma Zod
 const formSignInSchema = z.object({
   login: z.string().nonempty("Ce champ est requis")
-    .refine(
-      (value) => /\S+@\S+\.\S+/.test(value) || /^[a-zA-Z0-9_]{3,}$/.test(value),
-      "ce champ doit être un email valide ou un nom d'utilisateur valide. (minimum 3 caractères)"
-    ),
+    // .refine(
+    //   (value) => /\S+@\S+\.\S+/.test(value) || /^[a-zA-Z0-9_]{3,}$/.test(value),
+    //   "ce champ doit être un email valide ou un nom d'utilisateur valide. (minimum 3 caractères)"
+    // )
+    ,
     password: z.string()
     .nonempty("Ce champs 'Mot de passe' est réquis.")
-    .regex(/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@]).{8,}/, 
-    "Le mot de passe saisie doit avoir au moins une lettre majuscule, une minuscule, un caractère spécial (@), un chiffre et doit contenir au moins 8 caractères."),
+    // .regex(/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@]).{8,}/, 
+    // "Le mot de passe saisie doit avoir au moins une lettre majuscule, une minuscule, un caractère spécial (@), un chiffre et doit contenir au moins 8 caractères."),
 });
 
 export default function SignIn() {
