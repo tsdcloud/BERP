@@ -10,14 +10,22 @@ export const getEmployee = async () =>{
     if(!token || token === null) return null;
 
     const decodedToken = jwtDecode(token);
+    console.log(decodedToken)
     const userId = decodedToken?.user_id;
+    
     
     if(!userId) return null
 
     try {
-        let response = await fetch(`${URLS.ENTITY_API}/employees/?userId=${userId}`);
+        let response = await fetch(`${URLS.ENTITY_API}/employees/?userId=${userId}`,{
+            headers:{
+                'authorization':`Bearer ${token}`,
+                'Content-Type':'application/json'
+            }
+        });
         if(response.status === 200){
             let result = await response.json();
+            console.log(result)
             if(result?.data.length > 0){
                 return result?.data[0];
             }
@@ -27,5 +35,10 @@ export const getEmployee = async () =>{
         console.error(error);
     }
 } 
+
+
+const getRoles = async()=>{
+
+}
 
 
