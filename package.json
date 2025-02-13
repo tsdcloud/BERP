@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "vite --host 192.168.1.154"
+    "start": "vite --host localhost"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
