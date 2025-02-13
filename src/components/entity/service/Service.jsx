@@ -15,24 +15,31 @@ export default function Service() {
     const { handleFetch } = useFetch();
 
     const fetchService = async () => {
-        // const urlToShowAllServices = "http://127.0.0.1:8000/api_gateway/api/user/";
-        const urlToShowAllServices = "";
+        // const urlToShowAllService = URLS.API_SERVICE;
+        const urlToShowAllService =  `${URLS.ENTITY_API}/services`;
         try {
             setIsLoading(true);
-            const response = await handleFetch(urlToShowAllServices);
-            // console.log("respo",response);
+            const response = await handleFetch(urlToShowAllService);
+            // console.log("respo Service",response);
             
-                if (response && response?.data?.results) {
-                        const results = response?.data?.results;
-                        const filteredEntity = results?.map(item => {
-                        const { user_created_by, user_updated_by, is_staff, is_superuser, ...rest } = item;
-                        return rest;
+                if (response && response?.status === 200) {
+                    
+                        const results = response?.data;
+                        const filteredService = results?.map(item => {
+                            const { createdBy, updateAt, ...rest } = item;
+                            return { id: rest.id, 
+                                     name:rest.name,
+                                     departmentId:rest.department.name,
+                                     createdAt:rest.createdAt,
+                                     isActive:rest.isActive,
+                                    };
+
                         });
-                        // console.log("services", filteredEntity);
-                        setServices(filteredEntity);
+                        setServices(filteredService);
                 }
                 else{
                     throw new Error('Erreur lors de la récupération des services');
+                    
                 }
         } catch (error) {
             setError(error.message);
@@ -59,7 +66,6 @@ export default function Service() {
                             columns={columnsService}
                             data={services} 
                         />
-                        // <div>Je ne pas là.</div>
                     )}
                 </div>
                 {showDialogService()}

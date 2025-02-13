@@ -42,7 +42,8 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
 
 
     const showUser = async () => {
-        const urlToGetUser = `${URLS.API_USER}`;
+        // const urlToGetUser = `${URLS.API_USER}`;
+        const urlToGetUser = `${URLS.USER_API}/users/`;
         try {
             const response = await handleFetch(urlToGetUser);
             console.log("response show user", response);
@@ -71,7 +72,8 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
 
 
     const showRole = async () => {
-        const urlToGetRole = `${URLS.API_ROLE}`;
+        // const urlToGetRole = `${URLS.API_ROLE}`;
+        const urlToGetRole = `${URLS.USER_API}/roles/`;
         try {
             const response = await handleFetch(urlToGetRole);
             console.log("response show role", response);
@@ -134,13 +136,15 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
       const getUserName = (id) =>{
         const permName = fetchUser.filter((user)=>(user.id === id))?.[0]?.first_name || ''
 
-        return permName
-      }
+        return permName;
+      };
 
 
       const onSubmitDataFormAsignRoleUser = async (data) => {
         // console.log("Données du formulaire :", data);
-        const urlToCreateAsignRoleUser = URLS.API_ASIGN_ROLE_USER;
+        // const urlToCreateAsignRoleUser = URLS.API_ASIGN_ROLE_USER;
+        const urlToCreateAsignRoleUser = `${URLS.USER_API}/assign_role_user/`;
+        
 
         try {
             const { role_id, user_id } = data;
@@ -149,16 +153,16 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
             const successfullUsers = [];
             const failedUsers = [];
     
-            console.log("this is the userId :", [user_id])
+            console.log("this is the userId :", [user_id]);
           
             for (const userId of user_id) {
-                const userName = getUserName(userId)
+                const userName = getUserName(userId);
               try {
                 // Envoyer la requête pour chaque `user_id`
                 const response = await handlePost(urlToCreateAsignRoleUser, { role_id, user_id: userId }, true);
           
                 if (!response || response.status !== 201) {
-                    failedUsers.push(userName)
+                    failedUsers.push(userName);
                     allSuccess = false;
                     // break; // Stop the loop
                   } else {
@@ -174,7 +178,7 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
                 toast.success("Role assigned successfully !", { duration: 2000 });
                 onSubmit();
                 reset();
-                setCheckedUser([])
+                setCheckedUser([]);
                 // setTimeout(() => {
                 //   window.location.reload();
                 // }, 2000);
@@ -183,7 +187,7 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
                     toast.success(`Le role a été assigné avec succès aux utilisateurs : ${successfullUsers.join(', ')}`, { duration: 2000 });
                     onSubmit();
                     reset();
-                    setCheckedUser([])
+                    setCheckedUser([]);
                 }
                 if (failedUsers.length > 0) {
                     if (successfullUsers.length > 0){

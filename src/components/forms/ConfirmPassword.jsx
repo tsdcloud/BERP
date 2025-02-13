@@ -21,6 +21,7 @@ import {  AlertDialog,
 } from "../ui/alert-dialog";
 
 import SignInLayout from '../layout/SignInLayout';
+import { URLS } from '../../../configUrl';
 
 
 const confirmPasswordSchema = z.object({
@@ -82,7 +83,9 @@ export default function ConfirmPassword() {
     });
 
   const handleSubmitConfirmPassword = async(data) => {
-      const urlToSetPassword = `http://127.0.0.1:8000/gateway/api/users/set_password/?token=${token}`;
+      // const urlToSetPassword = `http://127.0.0.1:8000/gateway/api/users/set_password/?token=${token}`;
+      const urlToSetPassword = `${URLS.USER_API}/users/set_password/?token=${token}`;
+      
       try {
         const response = await handlePatchPassword(urlToSetPassword, data);
         // console.log("rio",response);

@@ -63,7 +63,8 @@ export default function CreateUser({setOpen, onSubmit}) {
 
     const handleSubmitDataFormUser = async(data) => {
       // const urlToCreateUser = "http://127.0.0.1:8000/api_gateway/api/user/";
-      const urlToCreateUser = URLS.API_USER;
+      // const urlToCreateUser = URLS.API_USER;
+      const urlToCreateUser = `${URLS.USER_API}/users/`;
         // console.log(data);
         try {
           const response = await handlePost(urlToCreateUser, data, true);

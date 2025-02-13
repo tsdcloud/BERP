@@ -60,7 +60,8 @@ export const ApplicationAction = ( { actApp, desApp, updateData }) => {
    
 
     const onSubmit = async (data) => {
-        const urlToUpdate = `${URLS.API_APPLICATION}${selectedApplication?.id}`;
+        // const urlToUpdate = `${URLS.API_APPLICATION}${selectedApplication?.id}`;
+        const urlToUpdate =  `${URLS.USER_API}/applications/${selectedApplication?.id}/`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -70,7 +71,7 @@ export const ApplicationAction = ( { actApp, desApp, updateData }) => {
                 setDialogOpen(false);
                 toast.success("application modified successfully", { duration: 2000});
                 // window.location.reload();
-                updateData(response.data.id, response.data)
+                updateData(response.data.id, response.data);
             }
             else {
                 setDialogOpen(false);
@@ -99,7 +100,9 @@ export const ApplicationAction = ( { actApp, desApp, updateData }) => {
     const disabledApplication = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette application ?");
             if (confirmation) {
-                const urlToDisabledApplication = `${URLS.API_APPLICATION}${id}/`;
+                // const urlToDisabledApplication = `${URLS.API_APPLICATION}${id}/`;
+                const urlToDisabledApplication = `${URLS.USER_API}/applications/${id}/`;
+                
 
                         try {
                                 const response = await handlePatch(urlToDisabledApplication, {is_active:false});
@@ -136,7 +139,8 @@ export const ApplicationAction = ( { actApp, desApp, updateData }) => {
     const activedApplication = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette application ?");
 
-        const urlToEnabledApplication = `${URLS.API_APPLICATION}${id}/`;
+        // const urlToEnabledApplication = `${URLS.API_APPLICATION}${id}/`;
+        const urlToEnabledApplication = `${URLS.USER_API}/applications/${id}/`;
 
         if (confirmation) {
               try{
@@ -170,8 +174,9 @@ export const ApplicationAction = ( { actApp, desApp, updateData }) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette application ?");
 
         if (confirmation) {
-            const urlToDeleteApplication = `${URLS.API_APPLICATION}${id}/`;
-            console.log("url delete application ",urlToDeleteApplication);
+            // const urlToDeleteApplication = `${URLS.API_APPLICATION}${id}/`;
+            const urlToDeleteApplication = `${URLS.USER_API}/applications/${id}/`;
+            // console.log("url delete application ",urlToDeleteApplication);
             // const urlToDeleteApplication = URLS.API_APPLICATION`${id}/?delete=true`;
 
                     try {

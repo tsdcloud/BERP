@@ -53,7 +53,8 @@ export const AsignPermRoleAction = ( { upDateTable } ) => {
    
 
     const onSubmit = async (data) => {
-        const urlToUpdate = `${URLS.API_ASIGN_PERM_ROLE}${selectedAsignPermRole?.id}`;
+        // const urlToUpdate = `${URLS.API_ASIGN_PERM_ROLE}${selectedAsignPermRole?.id}`;
+        const urlToUpdate = `${URLS.USER_API}/grant_permission_role/${selectedAsignPermRole?.id}/`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -90,7 +91,9 @@ export const AsignPermRoleAction = ( { upDateTable } ) => {
     const disabledAsignPermRole = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette asignation permission - rôle ?");
             if (confirmation) {
-                const urlToDisabledAsignPermRole = `${URLS.API_ASIGN_PERM_ROLE}${id}/`;
+                // const urlToDisabledAsignPermRole = `${URLS.API_ASIGN_PERM_ROLE}${id}/`;
+                const urlToDisabledAsignPermRole = `${URLS.USER_API}/grant_permission_role/${id}/`;
+                
 
                         try {
                                 const response = await handlePatch(urlToDisabledAsignPermRole, {is_active:false});
@@ -149,7 +152,8 @@ export const AsignPermRoleAction = ( { upDateTable } ) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette asignation permission - rôle ?");
 
         if (confirmation) {
-            const urlToDeleteAsignPermRole = `${URLS.API_ASIGN_PERM_ROLE}${id}/`;
+            // const urlToDeleteAsignPermRole = `${URLS.API_ASIGN_PERM_ROLE}${id}/`;
+            const urlToDeleteAsignPermRole = `${URLS.USER_API}/grant_permission_role/${id}/`;
             console.log("url delete role ",urlToDeleteAsignPermRole);
             // const urlToDeleteAsignPermRole = URLS.API_ASIGN_PERM_ROLE`${id}/?delete=true`;
 

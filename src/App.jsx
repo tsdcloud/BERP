@@ -36,7 +36,7 @@ import AsignPermUser from './Pages/users/AsignPermUser';
 import AsignRoleUser from './Pages/users/AsignRoleUser';
 
 
-//entités
+//entities
 import Entity from './Pages/entity/index';
 import Department from './Pages/entity/Department';
 import Service from './Pages/entity/Service';
@@ -47,6 +47,18 @@ import Category from './Pages/entity/Category';
 import Employee from './Pages/entity/Employee';
 import Dashboard from './Pages/incidents/Dashboard';
 import OffBridge from './Pages/incidents/OffBridge';
+import Bank from './Pages/entity/Bank';
+import Customer from './Pages/entity/Customer';
+import Country from './Pages/entity/Country';
+import RoleEntity from './Pages/entity/Role';
+import ApplicationEntity from './Pages/entity/Application';
+import PermissionEntity from './Pages/entity/Permission';
+import District from './Pages/entity/District';
+import Town from './Pages/entity/Town';
+import CustomerBankAccount from './Pages/entity/CustomerBankAccount';
+import EntityBankAccount from './Pages/entity/EntityBankAccount';
+import Site from './Pages/entity/Site';
+import Supplier from './Pages/entity/Supplier';
 
 
 
@@ -76,19 +88,34 @@ function App() {
             </Route>
 
               {/* Entités */}
-            <Route path="/entités">
+            <Route path="/entities">
                 <Route path="" element={<Entity />} />
-               <Route path="department" element={<Department />} />
-               <Route path="service" element={<Service />} />
-               <Route path="function" element={<Function />} />
-               <Route path="grade" element={<Grade />} />
-               <Route path="echelon" element={<Echelon />} />
-               <Route path="category" element={<Category />} />
-               <Route path="employee" element={<Employee />} />
+               <Route path="departments" element={<Department />} />
+               <Route path="employees" element={<Employee />} />
+               <Route path="services" element={<Service />} />
+               <Route path="functions" element={<Function />} />
+               <Route path="grades" element={<Grade />} />
+               <Route path="echelons" element={<Echelon />} />
+               <Route path="categories" element={<Category />} />
+               <Route path="banks" element={<Bank />} />
+               <Route path="customers" element={<Customer />} />
+               <Route path="countries" element={<Country />} />
+               <Route path="roles" element={<RoleEntity/>} />
 
-                {/* 
-                <Route path="asign_role_user" element={<AsignRoleUser />} /> 
-                */}
+               <Route path="applications" element={<ApplicationEntity/>} />
+               
+               <Route path="permissions" element={<PermissionEntity/>} />
+               <Route path="districts" element={<District/>} />
+               <Route path="towns" element={<Town/>} />
+               <Route path="customer_bank_accounts" element={<CustomerBankAccount/>} />
+               <Route path="entity_bank_accounts" element={<EntityBankAccount/>} />
+               <Route path="sites" element={<Site/>} />
+               <Route path="suppliers" element={<Supplier/>} />
+
+
+
+
+                
             </Route>
 
             {/* Incident */}

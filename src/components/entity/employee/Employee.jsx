@@ -15,31 +15,48 @@ export default function Employee() {
     const { handleFetch } = useFetch();
 
     const fetchEmployee = async () => {
-        // const urlToShowAllEmployee = "http://127.0.0.1:8000/api_gateway/api/user/";
-        const urlToShowAllEmployee = "";
+        const urlToShowAllEmployee = `${URLS.ENTITY_API}/employees`;
+       
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllEmployee);
-            // console.log("respo",response);
+            console.log("respoEmp", response);
             
-                if (response && response?.data?.results) {
-                        const results = response?.data?.results;
-                        const filteredEmployee = results?.map(item => {
-                        const { user_created_by, user_updated_by, is_staff, is_superuser, ...rest } = item;
-                        return rest;
-                        });
-                        // console.log("Employees", filteredEmployee);
-                        setEmployees(filteredEmployee);
+            if (response && response?.status === 200) {
+                const results = response?.data;
+                console.log("RES", results);
+                // Vérification si results est un tableau
+                if (Array.isArray(results)) {
+                    const filteredEmployee = results.map(item => {
+                        const { createdBy, updateAt, ...rest } = item;
+                        return { 
+                            id: rest.id || null, 
+                            name: rest.name || 'Inconnu',
+                            email: rest.email || 'Non renseigné',
+                            phone: rest.phone || 'Non renseigné',
+                            functionId: rest.function?.name || 'Non renseigné',
+                            entityId: rest.entity?.name || 'Non renseigné',
+                            gradeId: rest.grade?.name || 'Non renseigné',
+                            echelonId: rest.echelon?.name || 'Non renseigné',
+                            categoryId: rest.category?.name || 'Non renseigné',
+                            userId: rest.name || 'Inconnu',
+                            createdAt: rest.createdAt || 'Non renseigné',
+                            isActive: rest.isActive || "Non défini",
+                        };
+                    });
+                    console.log("fil", filteredEmployee);
+                    setEmployees(filteredEmployee);
+                } else {
+                    throw new Error('Les données récupérées ne sont pas un tableau');
                 }
-                else {
-                    throw new Error('Erreur lors de la récupération des employées');
-                }
+            } else {
+                throw new Error('Erreur lors de la récupération des employées');
+            }
         } catch (error) {
             setError(error.message);
-        }
-        finally {
+        } finally {
             setIsLoading(false);
-          }
+        }
     };
 
     useEffect(() => {
@@ -59,7 +76,6 @@ export default function Employee() {
                             columns={columnsEmployee}
                             data={Employees} 
                         />
-                        // <div>Je ne pas là.</div>
                     )}
                 </div>
                 {showDialogEmployee()}

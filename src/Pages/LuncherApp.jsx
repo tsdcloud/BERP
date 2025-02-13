@@ -6,6 +6,7 @@ import Footer from '../components/layout/Footer';
 import Preloader from '../components/Preloader';
 import { Link, useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
+import { FaWeightHanging } from 'react-icons/fa';
 
 import '../App.css'; 
 import { Button } from 'antd';
@@ -83,7 +84,7 @@ export default function LuncherApp() {
                 <div className="flex-grow relative z-10 p-8">
 
                   <div className='flex justify-between'>
-                      <h1 className="text-white text-3xl font-bold">Mes applications</h1>
+                      <h1 className="text-white text-xl md:text-3xl font-bold">Mes applications</h1>
                       <Button
                           type="submit"
                           className="absolute top-0 right-6 my-9 mx-4 w-auto bg-red-500 text-white px-2 text-xs rounded-3xl shadow-md hover:bg-blue-700 transition "
@@ -93,7 +94,7 @@ export default function LuncherApp() {
                       </Button>
                   </div>
 
-                    <div className='flex flex-wrap space-x-1 justify-center sm:justify-normal'>
+                    <div className='m-3 flex flex-wrap space-x-1 justify-center items-center sm:justify-normal'>
                         {/* Ajoutez ici le reste de votre contenu */}
                         <VerifyPermission expected={["application__can_view_entities"]} functions={userPermissions} roles={userRoles}>
                           <EntityEntryPoint/>

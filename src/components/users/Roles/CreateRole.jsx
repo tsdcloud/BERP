@@ -46,7 +46,8 @@ export default function CreateRole({setOpen, onSubmit}) {
 
   const handleSubmitDataFormRole = async(data) => {
     // const urlToCreateUser = "http://127.0.0.1:8000/api_gateway/api/user/";
-    const urlToCreateRole = URLS.API_ROLE;
+    // const urlToCreateRole = URLS.API_ROLE;
+    const urlToCreateRole = `${URLS.USER_API}/roles/`;
       // console.log(data);
       try {
         const response = await handlePost(urlToCreateRole, data, true);

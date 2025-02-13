@@ -13,10 +13,13 @@ export default function ProtectedRoutes() {
   const [isReconnecting, setIsReconnecting] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const urlCheckTokenValidity = URLS.API_VERIFY_TOKEN
-  const urlGetNewToken = URLS.API_REFRESH_TOKEN
+  // const urlCheckTokenValidity = URLS.API_VERIFY_TOKEN;
+  const urlCheckTokenValidity = `${URLS.CHECK_TOKEN_API}/verify/`;
 
-  const { handlePost } = useFetch()
+  // const urlGetNewToken = URLS.API_REFRESH_TOKEN;
+  const urlGetNewToken = `${URLS.CHECK_TOKEN_API}/refresh/`;
+
+  const { handlePost } = useFetch();
 
   const location = useLocation();
   const navigateToLogin = useNavigate();
@@ -33,16 +36,16 @@ export default function ProtectedRoutes() {
         } 
         else if (response.status === 401) {
           // retrieving a new token from refresh token
-          const responseGetNewToken = await handlePost(urlGetNewToken, { refresh: refresh }, false)
+          const responseGetNewToken = await handlePost(urlGetNewToken, { refresh: refresh }, false);
           if (responseGetNewToken.status === 200) {
 
-            setIsReconnecting(true)
+            setIsReconnecting(true);
             setToken(responseGetNewToken.access);
             
             setTimeout(()=>{
-              setIsReconnecting(false)
-              navigateToLogin("/utilisateurs")
-            }, [3000])
+              setIsReconnecting(false);
+              navigateToLogin("/utilisateurs");
+            }, [3000]);
 
 
             // setRefresh(responseGetNewToken.refresh);
@@ -55,7 +58,7 @@ export default function ProtectedRoutes() {
             localStorage.removeItem("isAuth");
             localStorage.removeItem("refresh");
             localStorage.removeItem("token");
-            navigateToLogin("/signIn")
+            navigateToLogin("/signIn");
           }
         }
       } catch (error) {

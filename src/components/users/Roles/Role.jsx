@@ -17,7 +17,9 @@ export default function Role() {
     const { handleFetch } = useFetch();
 
     const fetchRole = async () => {
-        const urlToShowAllRole = URLS.API_ROLE;
+        // const urlToShowAllRole = URLS.API_ROLE;
+        const urlToShowAllRole = `${URLS.USER_API}/roles/`;
+        
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllRole);

@@ -53,7 +53,10 @@ export const AsignPermUserAction = ( { upDateTable } ) => {
    
 
     const onSubmit = async (data) => {
-        const urlToUpdate = `${URLS.API_ASIGN_PERM_USER}${selectedAsignPermUser?.id}`;
+        // const urlToUpdate = `${URLS.API_ASIGN_PERM_USER}${selectedAsignPermUser?.id}`;
+        const urlToUpdate = `${URLS.USER_API}/grant_permission_user/${selectedAsignPermUser?.id}`;
+        
+       
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -90,7 +93,10 @@ export const AsignPermUserAction = ( { upDateTable } ) => {
     const disabledAsignPermUser = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette asignation permission - utilisateur ?");
             if (confirmation) {
-                const urlToDisabledAsignPermUser = `${URLS.API_ASIGN_PERM_USER}${id}/`;
+                // const urlToDisabledAsignPermUser = `${URLS.API_ASIGN_PERM_USER}${id}/`;
+                const urlToDisabledAsignPermUser = `${URLS.USER_API}/grant_permission_user/${id}/`;
+               
+                
 
                         try {
                                 const response = await handlePatch(urlToDisabledAsignPermUser, {is_active:false});
@@ -150,7 +156,8 @@ export const AsignPermUserAction = ( { upDateTable } ) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette asignation permission - user ?");
 
         if (confirmation) {
-            const urlToDeleteAsignPermUser = `${URLS.API_ASIGN_PERM_USER}${id}/`;
+            // const urlToDeleteAsignPermUser = `${URLS.API_ASIGN_PERM_USER}${id}/`;
+            const urlToDeleteAsignPermUser = `${URLS.USER_API}/grant_permission_user/${id}/`;
             console.log("url delete user ",urlToDeleteAsignPermUser);
             // const urlToDeleteAsignPermUser = URLS.API_ASIGN_PERM_ROLE`${id}/?delete=true`;
 

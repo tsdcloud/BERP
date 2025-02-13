@@ -73,17 +73,19 @@ export const UserAction = ({ actUser, desUser, updateData }) => {
 
     const handleRoleClick = (role) => {
         setSelectedRole((prev) => (prev?.id === role.id ? null : role));
-        setSelectedPermission(null)
+        setSelectedPermission(null);
     };
 
     const handlePermissionClick = (permission) => {
         setSelectedPermission((prev) => (prev?.id === permission.id ? null : permission));
-        setSelectedRole(null)
+        setSelectedRole(null);
     };
 
 
     const onSubmit = async (data) => {
-        const urlToUpdate = `${URLS.API_USER}${selectedUser?.id}`;
+        // const urlToUpdate = `${URLS.API_USER}${selectedUser?.id}`;
+        const urlToUpdate = `${URLS.USER_API}/users/${selectedUser?.id}`;
+        
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -97,7 +99,7 @@ export const UserAction = ({ actUser, desUser, updateData }) => {
 
                 toast.success("user modified successfully", { duration: 1000});
 
-                updateData(response.data.id, response.data)
+                updateData(response.data.id, response.data);
             }
             else {
                 setDialogOpen(false);
@@ -126,17 +128,18 @@ export const UserAction = ({ actUser, desUser, updateData }) => {
     const disabledUser = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cet utilisateur ?");
             if (confirmation) {
-                const urlToDisabledUser = `${URLS.API_USER}${id}`;
+                // const urlToDisabledUser = `${URLS.API_USER}${id}`;
+                const urlToDisabledUser = `${URLS.USER_API}/users/${id}`;
 
                         try {
                                 const response = await handleDelete(urlToDisabledUser);
-                                console.log("response for disabled", response);
+                                // console.log("response for disabled", response);
                                 if (response && response?.message) {
                                     console.log("User diabled", response);
                                     console.log("L'utilisateur a été désactivé.", id);
                                     toast.success(response?.message, { duration: 1000});
                                     isDialogOpen && setDialogOpen(false);
-                                    desUser(id)
+                                    desUser(id);
                                 }
                                 else {
                                 toast.error(response.error, { duration: 2000});
@@ -161,7 +164,9 @@ export const UserAction = ({ actUser, desUser, updateData }) => {
 
     const activedUser = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cet utilisateur ?");
-        const urlToDisabledUser = `${URLS.API_USER}${id}`;
+        // const urlToDisabledUser = `${URLS.API_USER}${id}`;
+        const urlToDisabledUser = `${URLS.USER_API}/users/${id}`;
+        
         if (confirmation) {
               try{
                     const response = await handlePatch(urlToDisabledUser, {is_active: true})
@@ -194,7 +199,9 @@ export const UserAction = ({ actUser, desUser, updateData }) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?");
 
         if (confirmation) {
-            const urlToDeleteUser = `${URLS.API_USER}${id}/?delete=true`;
+            // const urlToDeleteUser = `${URLS.API_USER}${id}/?delete=true`;
+            const urlToDeleteUser = `${URLS.USER_API}/users/${id}/?delete=true`;
+            
 
                     try {
                             const response = await handleDelete(urlToDeleteUser);
