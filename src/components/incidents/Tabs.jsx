@@ -17,6 +17,7 @@ const Tabs = () => {
         const handleCheckPermissions = async () =>{
             try {
                 let employee = await getEmployee();
+                console.log(employee)
                 if(employee != null){
                     let permissions = employee?.employeePermissions.map(permission=>permission?.permission.permissionName);
                     setUserPermissions(permissions || []);

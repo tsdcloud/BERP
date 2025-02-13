@@ -17,9 +17,15 @@ export const getEmployee = async () =>{
     if(!userId) return null
 
     try {
-        let response = await fetch(`${URLS.ENTITY_API}/employees/?userId=${userId}`);
+        let response = await fetch(`${URLS.ENTITY_API}/employees/?userId=${userId}`,{
+            headers:{
+                'authorization':`Bearer ${token}`,
+                'Content-Type':'application/json'
+            }
+        });
         if(response.status === 200){
             let result = await response.json();
+            console.log(result)
             if(result?.data.length > 0){
                 return result?.data[0];
             }
