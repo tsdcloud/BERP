@@ -10,7 +10,9 @@ export const getEmployee = async () =>{
     if(!token || token === null) return null;
 
     const decodedToken = jwtDecode(token);
+    console.log(decodedToken)
     const userId = decodedToken?.user_id;
+    
     
     if(!userId) return null
 
