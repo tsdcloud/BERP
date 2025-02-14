@@ -53,7 +53,8 @@ export default function SignIn() {
       const submitDataSignIn = async(data) => {
         // console.log("data", data);
         // const urlToLogin = "http://127.0.0.1:8000/api_gateway/token/";
-        const urlToLogin = URLS.LOGIN;
+        const urlToLogin = `${URLS.API_USER_ABILITY}/login/`;
+        // const urlToLogin = URLS.LOGIN;
         // console.log(urlToLogin);
         try {
               const response = await handlePost(urlToLogin, data, false);
@@ -62,7 +63,7 @@ export default function SignIn() {
                   const token = response?.data?.access;
                   const refresh = response?.data?.refresh;
                   setToken(token);
-                  setRefresh(refresh)
+                  setRefresh(refresh);
                   const decoded = jwtDecode(token);
                   setIsAuth(true);
                   setUserData(decoded);

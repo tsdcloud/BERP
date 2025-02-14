@@ -20,11 +20,13 @@ export default function Permission() {
 
     const fetchPermissions = async () => {
         // const urlToShowAllUsers = "http://127.0.0.1:8000/api_gateway/api/user/";
-        const urlToShowAllPermissions = URLS.API_PERMISSION;
+        // const urlToShowAllPermissions = URLS.API_PERMISSION;
+        const urlToShowAllPermissions =  `${URLS.USER_API}/permissions/`;
+       
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllPermissions);
-            console.log("respoPermissions",response);
+            // console.log("respoPermissions",response);
             
                 if (response && response?.data?.results) {
                         const results = response?.data?.results;

@@ -15,21 +15,29 @@ export default function Entity() {
     const { handleFetch } = useFetch();
 
     const fetchEntities = async () => {
-        // const urlToShowAllEntities = "http://127.0.0.1:8000/api_gateway/api/user/";
-        const urlToShowAllEntities = "";
+        // const urlToShowAllEntities = URLS.API_ENTITY;
+        const urlToShowAllEntities =  `${URLS.ENTITY_API}/entities`;
+       
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllEntities);
-            // console.log("respo",response);
             
-                if (response && response?.data?.results) {
-                        const results = response?.data?.results;
-                        const filteredEntity = results?.map(item => {
-                        const { user_created_by, user_updated_by, is_staff, is_superuser, ...rest } = item;
-                        return rest;
-                        });
-                        // console.log("Entities", filteredEntity);
-                        setEntities(filteredEntity);
+                if (response && response?.status === 200) {
+                        const results = response?.data;
+                        // console.log("res Entities", results);
+                        const filteredEntities = results?.map(item => {
+                        const { createdBy, updateAt, ...rest } = item;
+                        return { id: rest.id,
+                                 name:rest.name,
+                                 localisation : rest.localisation,
+                                 townId:rest.towns.name,
+                                 phone : rest.phone,
+                                 createdAt:rest.createdAt,
+                                 isActive:rest.isActive,
+                                };
+                    });
+                        // console.log("Entities",filteredEntities);
+                        setEntities(filteredEntities);
                 }
                 else{
                     throw new Error('Erreur lors de la récupération des entités');
@@ -59,7 +67,6 @@ export default function Entity() {
                             columns={columnsEntity}
                             data={entities} 
                         />
-                        // <div>Je ne pas là.</div>
                     )}
                 </div>
                 {showDialogEntity()}

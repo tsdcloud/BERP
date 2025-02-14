@@ -35,9 +35,9 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
     };
 
     const getPermName = (id) =>{
-        const permName = fetchPermission.filter((perm)=>(perm.id === id))?.[0]?.display_name || ''
+        const permName = fetchPermission.filter((perm)=>(perm.id === id))?.[0]?.display_name || '';
 
-        return permName
+        return permName;
     }
 
     const { handleFetch, handlePost } = useFetch();
@@ -45,10 +45,12 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
 
 
     const showPermission = async () => {
-        const urlToGetPermission = `${URLS.API_PERMISSION}`;
+        // const urlToGetPermission = `${URLS.API_PERMISSION}`;
+        const urlToGetPermission = `${URLS.USER_API}/permissions/`;
+        
         try {
             const response = await handleFetch(urlToGetPermission);
-            console.log("response show permission", response);
+            // console.log("response show permission", response);
 
                 if (response && response.data.results) {
                     const filteredPermission = response?.data?.results.map(item => {
@@ -56,7 +58,7 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
                     return rest;
                     });
                         setFetchPermission(filteredPermission);
-                        console.log("fetchPermission", fetchPermission);
+                        // console.log("fetchPermission", fetchPermission);
                 
                     }
                 else {
@@ -68,11 +70,13 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
             toast.error("Erreur lors de la récupération des permissions", { duration: 2000 });
         }
     };
+
     const showApp = async () => {
-        const urlToGetApp = `${URLS.API_APPLICATION}`;
+        // const urlToGetApp = `${URLS.API_APPLICATION}`;
+        const urlToGetApp = `${URLS.USER_API}/applications/`;
         try {
             const response = await handleFetch(urlToGetApp);
-            console.log("response show role", response);
+            // console.log("response show role", response);
 
                 if (response && response.data.results) {
                         const results = response?.data?.results;
@@ -81,7 +85,7 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
                         return rest;
                     });
                         setFetchApp(filteredApp);
-                        console.log("fetchApp", fetchApp);
+                        // console.log("fetchApp", fetchApp);
                 
                     }
                 else {
@@ -131,7 +135,8 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
 
       const onSubmitDataFormAsignPermApp = async (data) => {
         // console.log("Données du formulaire :", data);
-        const urlToCreateAsignPermApp = URLS.API_ASIGN_PERM_APP;
+        // const urlToCreateAsignPermApp = URLS.API_ASIGN_PERM_APP;
+        const urlToCreateAsignPermApp = `${URLS.USER_API}/grant_permission_application/`;
 
         try {
             const { application_id, permission_id } = data;
@@ -139,10 +144,10 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
             const successfulPermissions = [];
             const failedPermissions = [];
     
-            console.log("this is the permissions :", [permission_id])
+            console.log("this is the permissions :", [permission_id]);
           
             for (const permId of permission_id) {
-                const permName = getPermName(permId)
+                const permName = getPermName(permId);
                 try {
                     // Envoyer la requête pour chaque `permission_id`
                     const response = await handlePost(urlToCreateAsignPermApp, { application_id, permission_id: permId }, true);
@@ -150,7 +155,7 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
             
                     if (!response || response.status !== 201) {
                         //   toast.error(`${response.errors.non_field_errors}`, { duration: 3000 });
-                        failedPermissions.push(permName)
+                        failedPermissions.push(permName);
                         allSuccess = false;
                         // break; // Stop the loop
                     } else {
@@ -169,7 +174,7 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
                 toast.success("Permissions assigned successfully !", { duration: 2000 });
                 onSubmit();
                 reset();
-                setCheckedPermissions([])
+                setCheckedPermissions([]);
                 // setTimeout(() => {
                 //   window.location.reload();
                 // }, 2000);
@@ -178,7 +183,7 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
                     toast.success(`Les permissions suivantes ont été assignées avec succès : ${successfulPermissions.join(', ')}`, { duration: 2000 });
                     onSubmit();
                     reset();
-                    setCheckedPermissions([])
+                    setCheckedPermissions([]);
                 }
                 if (failedPermissions.length > 0) {
                     if (successfulPermissions.length > 0){

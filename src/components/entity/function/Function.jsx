@@ -7,7 +7,7 @@ import CreateFunction from './CreateFunction';
 
 export default function Function() {
     const { showDialogFunction, columnsFunction } = FunctionAction();
-    const [Functions, setFunctions] = useState([]);
+    const [functions, setFunctions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -15,17 +15,17 @@ export default function Function() {
     const { handleFetch } = useFetch();
 
     const fetchFunction = async () => {
-        // const urlToShowAllFunctions = "http://127.0.0.1:8000/api_gateway/api/user/";
-        const urlToShowAllFunctions = "";
+        // const urlToShowAllFunctions = URLS.API_FUNCTION;
+        const urlToShowAllFunctions = `${URLS.ENTITY_API}/functions`;
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllFunctions);
             // console.log("respo",response);
             
-                if (response && response?.data?.results) {
-                        const results = response?.data?.results;
+                if (response && response?.status === 200) {
+                        const results = response?.data;
                         const filteredEntity = results?.map(item => {
-                        const { user_created_by, user_updated_by, is_staff, is_superuser, ...rest } = item;
+                        const { createdBy, updateAt, ...rest } = item;
                         return rest;
                         });
                         // console.log("Functions", filteredEntity);
@@ -50,16 +50,15 @@ export default function Function() {
 
   return (
             <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des Functions</h1>
+                <h1 className='text-sm my-3 font-semibold'>Gestion des Fonctions</h1>
                 <div className='space-y-2'>
                     <CreateFunction setOpen={setOpen} onSubmit={fetchFunction} />
-                    {columnsFunction && Functions.length >= 0 && (
+                    {columnsFunction && functions.length >= 0 && (
                         <DataTable
                             className="rounded-md border w-[800px] text-xs"
                             columns={columnsFunction}
-                            data={Functions} 
+                            data={functions} 
                         />
-                        // <div>Je ne pas là.</div>
                     )}
                 </div>
                 {showDialogFunction()}

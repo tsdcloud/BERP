@@ -26,7 +26,9 @@ export default function CreatePermissionForm({ handleCancel, onSubmit }) {
     });
 
     const handleSubmitDataFormPermission = async (data) => {
-        const urlToCreatePermission = URLS.API_PERMISSION;
+        // const urlToCreatePermission = URLS.API_PERMISSION;
+        const urlToCreatePermission = `${URLS.USER_API}/permissions/`;
+        
         try {
             const response = await handlePost(urlToCreatePermission, data, true);
             if (response && response.status === 201) {

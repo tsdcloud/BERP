@@ -56,12 +56,12 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
     
       // Fonction pour gérer la sélection d'un item
       const handleSelect = (value) => {
-        console.log('Selected:', value);
+        // console.log('Selected:', value);
         const roleSelected = fetchRole.find((item) => item.display_name === value);
 
-        setSelectedRoleValue(roleSelected?.display_name)
+        setSelectedRoleValue(roleSelected?.display_name);
         
-        console.log("Selected Role id:", roleSelected?.id);
+        // console.log("Selected Role id:", roleSelected?.id);
 
         // Mettre à jour le champ `permission_id` dans le formulaire
         setValue('role_id', roleSelected?.id, { shouldValidate : true });
@@ -106,10 +106,11 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
 
 
     const showPermission = async () => {
-        const urlToGetPermission = `${URLS.API_PERMISSION}`;
+        // const urlToGetPermission = `${URLS.API_PERMISSION}`;
+        const urlToGetPermission = `${URLS.USER_API}/applications/`;
         try {
             const response = await handleFetch(urlToGetPermission);
-            console.log("response show permission", response);
+            // console.log("response show permission", response);
 
                 if (response && response?.data?.results) {
                     const filteredPermission = response?.data?.results.map(item => {
@@ -117,7 +118,7 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
                     return rest;
                     });
                         setFetchPermission(filteredPermission);
-                        console.log("fetchPermission", fetchPermission);
+                        // console.log("fetchPermission", fetchPermission);
                 
                     }
                 else {
@@ -130,10 +131,11 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
         }
     };
     const showRole = async () => {
-        const urlToGetRole = `${URLS.API_ROLE}`;
+        // const urlToGetRole = `${URLS.API_ROLE}`;
+        const urlToGetRole = `${URLS.USER_API}/roles/`;
         try {
             const response = await handleFetch(urlToGetRole);
-            console.log("response show role", response);
+            // console.log("response show role", response);
 
                 if (response && response?.data?.results) {
                         const results = response?.data?.results;
@@ -142,7 +144,7 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
                         return rest;
                     });
                         setFetchRole(filteredRole);
-                        console.log("fetchRole", fetchRole);
+                        // console.log("fetchRole", fetchRole);
                 
                     }
                 else {
@@ -180,7 +182,9 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
 
       const onSubmitDataFormAsignPermRole = async (data) => {
         // console.log("Données du formulaire :", data);
-        const urlToCreateAsignPermRole = URLS.API_GRANT_PERMISSIONS_ROLE;
+        // const urlToCreateAsignPermRole = URLS.API_GRANT_PERMISSIONS_ROLE;
+        const urlToCreateAsignPermRole = `${URLS.USER_API}/grant_permission_role/`;
+        
       
     //     try {
     //       const { role_id, permission_id } = data;
@@ -214,7 +218,7 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
         const { role_id, permission_id } = data;
         let allSuccess = true;
 
-        console.log("this is the permissions :", [permission_id])
+        console.log("this is the permissions :", [permission_id]);
       
         // for (const permId of permission_id) {
         //   try {
@@ -239,12 +243,12 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
       
             if (response.success) {
               toast.success( "assigntion fais avec succès" , { duration: 2000 });
-              reset()
-              onSubmit()
-              setSelectedRole([])
-              setSelectedItems([])
-              setSelectedPerms([])
-              setSelectedRoleValue("")
+              reset();
+              onSubmit();
+              setSelectedRole([]);
+              setSelectedItems([]);
+              setSelectedPerms([]);
+              setSelectedRoleValue("");
 
               setTimeout(() => {
                 // window.location.reload(); 

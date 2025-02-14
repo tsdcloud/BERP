@@ -53,7 +53,10 @@ export const AsignRoleUserAction = ( { upDateTable } ) => {
    
 
     const onSubmit = async (data) => {
-        const urlToUpdate = `${URLS.API_ASIGN_ROLE_USER}${selectedAsignRoleUser?.id}`;
+        // const urlToUpdate = `${URLS.API_ASIGN_ROLE_USER}${selectedAsignRoleUser?.id}`;
+        const urlToUpdate = `${URLS.USER_API}/assign_role_user/${selectedAsignRoleUser?.id}`;
+        
+       
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -90,7 +93,9 @@ export const AsignRoleUserAction = ( { upDateTable } ) => {
     const disabledAsignRoleUser = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette asignation Rôle - Utilisateur ?");
             if (confirmation) {
-                const urlToDisabledAsignRoleUser = `${URLS.API_ASIGN_ROLE_USER}${id}/`;
+                // const urlToDisabledAsignRoleUser = `${URLS.API_ASIGN_ROLE_USER}${id}/`;
+                const urlToDisabledAsignRoleUser =  `${URLS.USER_API}/assign_role_user/${id}/`;
+               
 
                         try {
                                 const response = await handlePatch(urlToDisabledAsignRoleUser, {is_active:false});
@@ -150,8 +155,11 @@ export const AsignRoleUserAction = ( { upDateTable } ) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette asignation rôle - utilisateur ?");
 
         if (confirmation) {
-            const urlToDeleteAsignRoleUser = `${URLS.API_ASIGN_ROLE_USER}${id}/`;
-            console.log("url delete user ",urlToDeleteAsignRoleUser);
+            // const urlToDeleteAsignRoleUser = `${URLS.API_ASIGN_ROLE_USER}${id}/`;
+            const urlToDeleteAsignRoleUser =  `${URLS.USER_API}/assign_role_user/${id}/`;
+            
+           
+            // console.log("url delete user ",urlToDeleteAsignRoleUser);
             // const urlToDeleteAsignRoleUser = URLS.API_ASIGN_PERM_ROLE`${id}/?delete=true`;
 
                     try {
@@ -160,7 +168,7 @@ export const AsignRoleUserAction = ( { upDateTable } ) => {
                             if (response && response?.message) {
                                 toast.success(response?.message, { duration: 5000});
                                 isDialogOpen && setDialogOpen(false);
-                                upDateTable(id)
+                                upDateTable(id);
                             }
                             else {
                             toast.error(response.error, { duration: 5000});

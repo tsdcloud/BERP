@@ -20,7 +20,7 @@ export default function IncidentEntryPoint() {
                                     href="/incidents"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center justify-center w-[90px] h-[90px] bg-secondary text-white rounded-full shadow-lg hover:bg-orange-600 transition duration-300"
+                                    className="flex items-center justify-center w-[90px] h-[90px] bg-secondary text-white rounded-xl shadow-lg hover:bg-orange-600 transition duration-300"
                                 >
                                     <FaFire size={40} className='' />
                                 </a>

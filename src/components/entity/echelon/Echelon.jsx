@@ -7,7 +7,7 @@ import CreateEchelon from './CreateEchelon';
 
 export default function Echelon() {
     const { showDialogEchelon, columnsEchelon } = EchelonAction();
-    const [Echelons, setEchelons] = useState([]);
+    const [echelons, setEchelons] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -15,24 +15,25 @@ export default function Echelon() {
     const { handleFetch } = useFetch();
 
     const fetchEchelon = async () => {
-        // const urlToShowAllEchelons = "http://127.0.0.1:8000/api_gateway/api/user/";
-        const urlToShowAllEchelons = "";
+        // const urlToShowAllEchelon = URLS.API_ECHELON;
+        const urlToShowAllEchelon = `${URLS.ENTITY_API}/echelons`;
+        
         try {
             setIsLoading(true);
-            const response = await handleFetch(urlToShowAllEchelons);
+            const response = await handleFetch(urlToShowAllEchelon);
             // console.log("respo",response);
             
-                if (response && response?.data?.results) {
-                        const results = response?.data?.results;
-                        const filteredEchelon = results?.map(item => {
-                        const { user_created_by, user_updated_by, is_staff, is_superuser, ...rest } = item;
+                if (response && response?.status === 200) {
+                        const results = response?.data;
+                        const filteredEchelons = results?.map(item => {
+                        const { createdBy, updateAt, ...rest } = item;
                         return rest;
                         });
-                        // console.log("Echelons", filteredEchelon);
-                        setEchelons(filteredEchelon);
+                        // console.log("Echelons", filteredEchelons);
+                        setEchelons(filteredEchelons);
                 }
-                else {
-                    throw new Error('Erreur lors de la récupération des Echelons');
+                else{
+                    throw new Error('Erreur lors de la récupération des échelons');
                 }
         } catch (error) {
             setError(error.message);
@@ -53,13 +54,12 @@ export default function Echelon() {
                 <h1 className='text-sm my-3 font-semibold'>Gestion des Echelons</h1>
                 <div className='space-y-2'>
                     <CreateEchelon setOpen={setOpen} onSubmit={fetchEchelon} />
-                    {columnsEchelon && Echelons.length >= 0 && (
+                    {columnsEchelon && echelons.length >= 0 && (
                         <DataTable
                             className="rounded-md border w-[800px] text-xs"
                             columns={columnsEchelon}
-                            data={Echelons} 
+                            data={echelons} 
                         />
-                        // <div>Je ne pas là.</div>
                     )}
                 </div>
                 {showDialogEchelon()}

@@ -53,8 +53,9 @@ export const PermissionAction = ( {actPerm, desPerm, updateData}) => {
    
 
    const onSubmit = async (data) => {
-        const urlToUpdate = `${URLS.API_PERMISSION}${selectedPermission?.id}/`;
-
+        // const urlToUpdate = `${URLS.API_PERMISSION}${selectedPermission?.id}/`;
+        const urlToUpdate =  `${URLS.USER_API}/permissions/${selectedPermission?.id}/`;
+       
         try {
             const response = await handlePatch(urlToUpdate, data);
             
@@ -91,7 +92,9 @@ export const PermissionAction = ( {actPerm, desPerm, updateData}) => {
     const disabledPermission = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette permission ?");
             if (confirmation) {
-                const urlToDisabledPermission = `${URLS.API_PERMISSION}${id}/`;
+                // const urlToDisabledPermission = `${URLS.API_PERMISSION}${id}/`;
+                const urlToDisabledPermission = `${URLS.USER_API}/permissions/${id}/`;
+                
 
                         try {
                                 const response = await handlePatch(urlToDisabledPermission, {is_active:false});
@@ -128,7 +131,8 @@ export const PermissionAction = ( {actPerm, desPerm, updateData}) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette permission ?");
 
         if (confirmation) {
-            const urlToActivePermission = `${URLS.API_PERMISSION}${id}/`;
+            // const urlToActivePermission = `${URLS.API_PERMISSION}${id}/`;
+            const urlToActivePermission = `${URLS.USER_API}/permissions/${id}/`;
               try{
                 // setDialogOpen(false);
                 //   await handlePatch(url)
@@ -166,7 +170,8 @@ export const PermissionAction = ( {actPerm, desPerm, updateData}) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette permission ?");
 
         if (confirmation) {
-            const urlToDeletePermission = `${URLS.API_PERMISSION}${id}/`;
+            // const urlToDeletePermission = `${URLS.API_PERMISSION}${id}/`;
+            const urlToDeletePermission = `${URLS.USER_API}/permissions/${id}/`;
             console.log("url delete perm",urlToDeletePermission);
             // const urlToDeletePermission = URLS.API_PERMISSION`${id}/?delete=true`;
 

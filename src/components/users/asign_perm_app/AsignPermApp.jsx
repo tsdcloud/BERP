@@ -17,14 +17,17 @@ export default function AsignPermApp() {
     const { handleFetch } = useFetch();
 
     const fetchAsignPermApp = async () => {
-        const urlToShowAllAsignPermApp = URLS.API_ASIGN_PERM_APP;
+        // const urlToShowAllAsignPermApp = URLS.API_ASIGN_PERM_APP;
+        const urlToShowAllAsignPermApp = `${URLS.USER_API}/grant_permission_application/`;
+        
+        
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllAsignPermApp);
-            console.log("respoasignPermApp",response);
+            // console.log("respoasignPermApp",response);
                 if (response && response?.data?.results) {
                         const results = response?.data?.results;
-                        console.log("rest asign perm app", results);
+                        // console.log("rest asign perm app", results);
                         const filteredAsignPermApp = results?.map(item => {
                             const { perm_assigned_by, ...rest } = item;
                             return {

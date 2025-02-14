@@ -4,8 +4,8 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import CustomingModal from '../../modals/CustomingModal'; 
 import { Button } from '../../ui/button';
-import { useNavigate } from 'react-router-dom';
 import { URLS } from '../../../../configUrl';  
+import { jwtDecode } from 'jwt-decode';
 
 import PropTypes from 'prop-types';
 import { useFetch } from '../../../hooks/useFetch'; 
@@ -17,86 +17,67 @@ import mock_data from "../../../helpers/mock_data.json";
 // Définition du schéma avec Zod
 const gradeSchema = z.object({
 
-    grade_name: z.string()
+    name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
     .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme."),
 
-    // id_department: z.string()
-    // .nonempty('Ce champs "Nom du service" est réquis')
-    // .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
-    // .max(100)
-    // .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom du service' Conforme.")
-    // ,
+    createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
 });
 
 export default function CreateGrade({setOpen, onSubmit}) {
 
 
-  const [selectedGrade, setSelectedGrade] = useState([]);
-  const [fetchGrade, setFetchGrade] = useState([]);
+  const [tokenUser, setTokenUser] = useState();
     
     // const navigateToDashboard = useNavigate();
-    const { handlePost, handleFetch } = useFetch();
-    
+    const { handlePost } = useFetch();
 
-    const showGrade = async () => {
-
-      setFetchGrade(mock_data);
-
-        // const urlToCreateGrade = "";
-        // try {
-        //     const response = await handleFetch(urlToCreateGrade);
-        //     // console.log("response crea", response);
-        //     if (response && response?.success) {
-        //       toast.success("service crée avec succès", {duration:2000});
-        //       console.log("entity created", response?.success);
-  
-        //     }
-        //     else {
-        //       toast.error(response.error, { duration: 5000});
-        //     }
-            
-        //   } catch (error) {
-        //     console.error("Error during creating",error);
-        //     toast.error("Erreur lors de la récupération des villes", { duration: 5000 });
-        //   }
-    };
-
-    useEffect(() => {
-        showGrade();
-    }, []);
+    useEffect(()=>{
+      const token = localStorage.getItem("token");
+      if(token){
+          const decode = jwtDecode(token);
+          setTokenUser(decode.user_id);
+          // console.log("var", tokenUser);
+      }
+    }, [tokenUser]);
 
 
-    const { register, handleSubmit, formState: { errors, isSubmitting }} = useForm({
+
+    const { register, handleSubmit, reset, formState: { errors, isSubmitting }} = useForm({
         resolver: zodResolver(gradeSchema),
     });
 
 
     const handleSubmitDataFormGrade = async (data) => {
-      console.log(data);
-      // const urlToCreateGrade = "http://127.0.0.1:8000/api_gateway/api/user/";
-      // const urlToCreateGrade = URLS.API_USER;
-      //   // console.log(data);
-      //   try {
-      //     const response = await handlePost(urlToCreateGrade, data, true);
-      //     // console.log("response crea", response);
-      //     if (response && response?.success && response.status === 201) {
-      //       toast.success("service crée avec succès", {duration:2000});
-      //       console.log("entity created", response?.success);
-      //       setOpen(false);
-      //       onSubmit();
+      // console.log(data);
+      // const urlToCreateGrade = URLS.API_GRADE;
+      const urlToCreateGrade =  `${URLS.ENTITY_API}/grades`;
+        // console.log(data);
+        try {
+          const response = await handlePost(urlToCreateGrade, data, true);
+          // console.log("response crea", response);
+          if (response && response.status === 201) {
+            toast.success("grade crée avec succès", { duration:2000 });
+            setOpen(false);
+            onSubmit();
+            reset();
 
-      //     }
-      //     else {
-      //       toast.error(response.error, { duration: 5000});
-      //     }
+          }
+          else {
+            if (Array.isArray(response.errors)) {
+              const errorMessages = response.errors.map(error => error.msg).join(', ');
+              toast.error(errorMessages, { duration: 5000 });
+            } else {
+              toast.error(response.errors.msg, { duration: 5000 });
+            }
+          }
           
-      //   } catch (error) {
-      //     console.error("Error during creating",error);
-      //     toast.error("Erreur lors de la création du service", { duration: 5000 });
-      //   }
+        } catch (error) {
+          console.error("Error during creating", error);
+          toast.error("Erreur lors de la création du grade", { duration: 5000 });
+        }
     };
 
 
@@ -112,58 +93,46 @@ export default function CreateGrade({setOpen, onSubmit}) {
                 <form onSubmit={handleSubmit(handleSubmitDataFormGrade)} className='sm:bg-blue-200 md:bg-transparent'>
 
                   <div className='mb-1'>
-                      <label htmlFor="grade_name" className="block text-xs font-medium mb-0">
+                      <label htmlFor="name" className="block text-xs font-medium mb-0">
                           Nom du grade<sup className='text-red-500'>*</sup>
                       </label>
 
                       <input 
-                        id='grade_name'
+                        id='name'
                         type="text"
-                        {...register('grade_name')} 
+                        {...register('name')} 
                         className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
                         ${
-                            errors.grade_name ? "border-red-500" : "border-gray-300"
+                            errors.name ? "border-red-500" : "border-gray-300"
                           }`}
                       />
                       {
-                        errors.grade_name && (
-                          <p className="text-red-500 text-[9px] mt-1">{errors.grade_name.message}</p>
+                        errors.name && (
+                          <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
                         )
                       }
                   </div>
+                  <div className='mb-1 hidden'>
+                        <label htmlFor="createdBy" className="block text-xs font-medium mb-0">
+                                  créer par<sup className='text-red-500'>*</sup>
+                              </label>
+                              <input 
+                                  id='createdBy'
+                                  type="text"
+                                  defaultValue={tokenUser}
+                                  {...register('createdBy')}
+                                  className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                                    ${
+                                      errors.createdBy ? "border-red-500" : "border-gray-300"
+                                    }`}
+                              />
 
-                  {/* <div className='mb-4'>
-                            <label htmlFor="id_department" className="block text-xs font-medium mb-1">
-                                Nom de la ville<sup className='text-red-500'>*</sup>
-                            </label>
-
-                        
-                            <select
-                                        // value={showGrade}
-                                        onChange={(e) => {
-                                            const nameCitySelected = fetchGrade.find(item => item.id === e.target.value);
-                                            setSelectedGrade(nameCitySelected);
-                                        }}
-                                        {...register('id_department')} 
-                                        className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
-                                        ${
-                                            errors.id_department ? "border-red-500" : "border-gray-300"
-                                        }`}
-                                    >
-                                        <option value="">Selectionner un departement</option>
-                                            {fetchGrade.map((item) => (
-                                                <option key={item.id} value={item.id}>
-                                                        {item.name}
-                                                </option>
-                                            ))}
-                            </select>
-                            {
-                                errors.id_department && (
-                                <p className="text-red-500 text-[9px] mt-1">{errors?.id_department?.message}</p>
+                              {
+                                errors.createdBy && (
+                                  <p className="text-red-500 text-[9px] mt-1">{errors.createdBy.message}</p>
                                 )
-                            }
-                    
-                  </div> */}
+                              }
+                  </div>
 
                   <div className='flex justify-end space-x-2 mt-2'>
                     <Button 

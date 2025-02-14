@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { z } from 'zod';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -17,11 +17,12 @@ import { Button } from '../ui/button';
 import { useFetch } from '../../hooks/useFetch';
 import toast, { Toaster } from 'react-hot-toast';
 import { URLS } from '../../../configUrl';
+import { jwtDecode } from 'jwt-decode';
 
 // Schéma de validation avec Zod
 const entitySchema = z.object({
 
-    entity_name: z.string()
+    name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
@@ -39,12 +40,14 @@ const entitySchema = z.object({
     .regex(/^[0-9]+$/)
     ,
 
-    id_ville: z.string()
-    .nonempty('Ce champs "Nom de la ville" est réquis')
+    townId: z.string()
+    .nonempty('Ce champs "Nom du district est réquis')
     .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
-    .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom de la ville' Conforme.")
-    ,
+    .regex(/^(?:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|[a-zA-Z0-9 ,]+)$/,
+       "Ce champs doit être un 'nom de la ville Conforme."),
+
+    createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
 
     });
 
@@ -55,34 +58,94 @@ export const EntityAction = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
     const [selectedEntity, setSelectedEntity] = useState({});
+    const [tokenUser, setTokenUser] = useState();
+    const [showTowns, setShowTowns] = useState([]);
+    const [error, setError] = useState();
+    const [selectedTowns, setSelectedTowns] = useState([]);
+
+
+   
 
     const { register, handleSubmit, reset, formState:{errors, isSubmitting} } = useForm({
         resolver: zodResolver(entitySchema),
     });
 
-   const { handlePatch, handleDelete } = useFetch();
+   const { handlePatch, handleDelete, handleFetch } = useFetch();
+
+
+   const fetchTowns = async () => {
+    // const getTown = URLS.API_TOWN;
+    const getTown = `${URLS.ENTITY_API}/towns`;
+    
+    try {
+        setIsLoading(true);
+        const response = await handleFetch(getTown);
+        
+            if (response && response?.status === 200) {
+                    const results = response?.data;
+                    // console.log("results", results);
+
+                    const filteredTowns = results?.map(item => {
+                    const { createdBy, updateAt, ...rest } = item;
+                    return { 
+                        id:rest.id, 
+                        ...rest
+                    };
+                });
+                    // console.log("districts - Town",filteredTowns);
+                    setShowTowns(filteredTowns);
+            }
+            else{
+                throw new Error('Erreur lors de la récupération des villes');
+            }
+    } catch (error) {
+        setError(error.message);
+    }
+    finally {
+        setIsLoading(false);
+      }
+     };
+
+  useEffect(()=>{
+    fetchTowns();
+  },[]);
+
+useEffect(()=>{
+    const token = localStorage.getItem("token");
+    if(token){
+        const decode = jwtDecode(token);
+        setTokenUser(decode.user_id);
+        // console.log("var", tokenUser);
+    }
+  }, [tokenUser]);
+
 
     const onSubmit = async (data) => {
-        const urlToUpdate = `${URLS.API_USER}${selectedEntity?.id}`;
+        // const urlToUpdate = `${URLS.API_ENTITY}/${selectedEntity?.id}`;
+        const urlToUpdate =  `${URLS.ENTITY_API}/entities/${selectedEntity?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            console.log("response update", response);
-            if (response ) {
-  
-              console.log("entity updated", response);
-                setDialogOpen(false);
-                window.location.reload();
-            }
-            else {
-              toast.error(response.error, { duration: 5000});
-            }
+            // console.log("response role update", response);
+                if (response) {
+                    setDialogOpen(false);
+                        
+                    setTimeout(()=>{
+                        toast.success("town modified successfully", { duration: 900 });
+                        window.location.reload();
+                    },[200]);
+                }
+                else {
+                    setDialogOpen(false);
+                    toast.error("Erreur lors de la modification de la ville", { duration: 5000 });
+                }
             
           } catch (error) {
             console.error("Error during updated",error);
-            toast.error("Erreur lors de la modification de l'entité", { duration: 5000 });
           }
     };
+
+
 
     const handleShowEntity = (entity) => {
         setSelectedEntity(entity);
@@ -99,90 +162,107 @@ export const EntityAction = () => {
 
     const disabledEntity = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette entité ?");
-            if (confirmation) {
-                const urlToDisabledEntity = `${URLS.API_USER}${id}`;
+        if (confirmation) {
+            // const urlToDisabledEntity = `${URLS.API_ENTITY}/${id}`;
+            const urlToDisabledEntity = `${URLS.ENTITY_API}/entities/${id}`;
+            
+            
 
-                        try {
-                                const response = await handleDelete(urlToDisabledEntity);
-                                console.log("response for disabled", response);
-                                if (response && response?.message) {
-                                    console.log("User diabled", response);
-                                    console.log("L'utilisateur a été désactivé.", id);
-                                    toast.success(response?.message, { duration: 5000});
-                                    isDialogOpen && setDialogOpen(false);
-                                    window.location.reload();
+                    try {
+                            const response = await handlePatch(urlToDisabledEntity, { isActive:false });
+                            console.log("response for disabled", response);
+                                if (response.errors) {
+                                    if (Array.isArray(response.errors)) {
+                                        const errorMessages = response.errors.map(error => error.msg).join(', ');
+                                        toast.error(errorMessages, { duration: 5000 });
+                                      } else {
+                                        toast.error(response.errors.msg, { duration: 5000 });
+                                      }
                                 }
                                 else {
-                                toast.error(response.error, { duration: 5000});
+                                    setTimeout(()=>{
+                                        toast.success("entity disabled successfully", { duration: 5000 });
+                                        // window.location.reload();
+                                    },[200]);
                                 }
-                                isDialogOpen && setDialogOpen(false);
-                        }
-                        catch(error){
-                            console.error("Erreur lors de la désactivation de cette entité :", error);
-                            toast.error("Erreur lors de la désactivation de l'entité", { duration: 5000 });
+                            isDialogOpen && setDialogOpen(false);
+                    }
+                    catch(error){
+                        console.error("Erreur lors de la désactivation entiy :", error);
+                    }
+
+                    finally{
+                        setIsLoading(false);
                         }
 
-                        finally{
-                            setIsLoading(false);
-                            
-                            }
-
-                } 
-                else {
-                    console.log("La désactivation a été annulée.");
-                }
+            } 
+            else {
+                console.log("La suppression a été annulée.");
+            }
     };
 
     const activedEntity = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette entité ?");
 
         if (confirmation) {
-              try{
-                setDialogOpen(false);
-                //   await handlePatch(url)
-                //   navigateToMyEvent(`/events/${eventId}`)
-              }
-              catch(error){
-                  console.error("Erreur lors de la désactivation de cette entité :", error);
-              }
-              finally{
-                // setIsLoading(false);
-                console.log("okay");
-                }
+            // const urlToDisabledEntity = `${URLS.API_ENTITY}/${id}`;
+            const urlToDisabledEntity = `${URLS.ENTITY_API}/entities/${id}`;
 
-                console.log("L'entité a été désactivé.", id);
-                } else {
-                console.log("La désactivation a été annulée.");
-                }
+                    try {
+                            const response = await handlePatch(urlToDisabledEntity, {isActive:true});
+                            console.log("response for deleted", response);
+                                if (response) {
+                                    setTimeout(()=>{
+                                        toast.success("entity enabled successfully", { duration: 5000});
+                                        window.location.reload();
+                                    },[200]);
+                                }
+                                else {
+                                  toast.error("Erreur lors de la réactivation entity", { duration: 5000 });
+                                }
+                            isDialogOpen && setDialogOpen(false);
+                    }
+                    catch(error){
+                        console.error("Erreur lors de la réactivation entity :", error);
+                    }
+
+                    finally{
+                        setIsLoading(false);
+                        }
+
+            } 
+            else {
+                console.log("La suppression a été annulée.");
+            }
     };
     
     const deletedEntity = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette entité ?");
 
         if (confirmation) {
-            const urlToDeleteEntity = `${URLS.API_USER}${id}/?delete=true`;
-
+            // const urlToDisabledEntity = `${URLS.API_ENTITY}/${id}`;
+            const urlToDisabledEntity = `${URLS.ENTITY_API}/entities/${id}`;
+            
                     try {
-                            const response = await handleDelete(urlToDeleteEntity);
-                            if (response && response?.message) {
-                                // console.log("User deleted", response);
-                                toast.success(response?.message, { duration: 5000});
-                                isDialogOpen && setDialogOpen(false);
-                                window.location.reload();
-                            }
-                            else {
-                            toast.error(response.error, { duration: 5000});
-                            }
-                            setDialogOpen(false);
+                            const response = await handleDelete(urlToDisabledEntity, {isActive:false});
+                            // console.log("response for deleted", response);
+                                if (response) {
+                                    setTimeout(()=>{
+                                        toast.success("entity disabled successfully", { duration: 5000});
+                                        window.location.reload();
+                                    },[200]);
+                                }
+                                else {
+                                  toast.error("Erreur lors de la désactivation entity", { duration: 5000 });
+                                }
+                            isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la suppression de cette entité:", error);
-                        toast.error("Erreur lors de la suppression de l'entité", { duration: 5000 });
+                        console.error("Erreur lors de la désactivation entity :", error);
                     }
 
                     finally{
                         setIsLoading(false);
-                        
                         }
 
             } 
@@ -206,20 +286,20 @@ export const EntityAction = () => {
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
                                     <div>
-                                            <label htmlFor='entity_name' className="text-xs mt-2">
+                                            <label htmlFor='name' className="text-xs mt-2">
                                                 Nom de l'entité <sup className='text-red-500'>*</sup>
                                             </label>
                                             <Input
-                                                id="entity_name"
+                                                id="name"
                                                 type="text"
-                                                defaultValue={selectedEntity?.entity_name}
-                                                {...register("entity_name")}
+                                                defaultValue={selectedEntity?.name}
+                                                {...register("name")}
                                                 className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                                    errors.entity_name ? "border-red-500" : "border-gray-300"
+                                                    errors.name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
-                                                {errors.entity_name && (
-                                                <p className="text-red-500 text-[9px] mt-1">{errors.entity_name.message}</p>
+                                                {errors.name && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
                                                 )}
                                     </div>
                                     <div>
@@ -240,23 +320,31 @@ export const EntityAction = () => {
                                                 )}
                                     </div>
                                    
-                                    <div>
-                                             <label htmlFor='id_ville' className="text-xs">
+                                    <div className=' flex flex-col'>
+                                            <label htmlFor='townId' className="text-xs mt-2">
                                                 Nom de la ville <sup className='text-red-500'>*</sup>
                                             </label>
-                                            <Input
-                                                id="id_ville"
-                                                type="text"
-                                                defaultValue={selectedEntity?.id_ville}
-                                                disabled
-                                                {...register("id_ville")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                                    errors.id_ville ? "border-red-500" : "border-gray-300"
-                                                }`}
-                                            />
-                                            {errors.id_ville && (
-                                                <p className="text-red-500 text-[9px] mt-1">{errors.id_ville.message}</p>
-                                            )}
+                                                    <select
+                                                    onChange={(e) => {
+                                                        const nameTownSelected = showTowns.find(item => item.id === e.target.value);
+                                                        setSelectedTowns(nameTownSelected);
+                                                    }}
+                                                    defaultValue={selectedEntity?.townId}
+                                                    {...register('townId')}
+                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                        errors.townId ? "border-red-500" : "border-gray-300"
+                                                    }`}
+                                                >
+                                                    <option value="">Selectionner une ville</option>
+                                                    {showTowns.map((item) => (
+                                                        <option key={item.id} value={item.id}>
+                                                            {item.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                {errors.townId && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.townId.message}</p>
+                                                )}
                                     </div>
 
 
@@ -276,6 +364,28 @@ export const EntityAction = () => {
                                            {errors.phone && (
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.phone.message}</p>
                                             )}
+                                    </div>
+
+                                    <div className='mb-1 hidden'>
+                                            <label htmlFor="createdBy" className="block text-xs font-medium mb-0">
+                                                    créer par<sup className='text-red-500'>*</sup>
+                                                </label>
+                                                <input 
+                                                    id='createdBy'
+                                                    type="text"
+                                                    defaultValue={tokenUser}
+                                                    {...register('createdBy')}
+                                                    className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                                                        ${
+                                                        errors.createdBy ? "border-red-500" : "border-gray-300"
+                                                        }`}
+                                                />
+
+                                                {
+                                                    errors.createdBy && (
+                                                    <p className="text-red-500 text-[9px] mt-1">{errors.createdBy.message}</p>
+                                                    )
+                                                }
                                     </div>
 
                                     
@@ -305,25 +415,25 @@ export const EntityAction = () => {
                                             <h3 className="font-bold text-sm">{selectedEntity?.id}</h3>
                                         </div>
                                         <div>
-                                            <p className="text-xs">Nom</p>
-                                            <h3 className="font-bold text-sm">{selectedEntity?.entity_name}</h3>
+                                            <p className="text-xs">Nom de l'entité</p>
+                                            <h3 className="font-bold text-sm">{selectedEntity?.name}</h3>
                                         </div>
                                         <div>
-                                            <p className="text-xs">Prénom</p>
+                                            <p className="text-xs">Localisation</p>
                                             <h3 className="font-bold text-sm">{selectedEntity?.localisation}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Nom de la ville</p>
-                                            <h3 className="font-bold text-sm">{selectedEntity?.id_ville}</h3>
+                                            <h3 className="font-bold text-sm">{selectedEntity?.townId}</h3>
                                         </div>
                                         <div>
-                                            <p className="text-xs">Téléphone</p>
-                                            <h3 className="font-bold text-sm">{selectedEntity?.phone}</h3>
+                                            <p className="text-xs">Date de création</p>
+                                            <h3 className="font-bold text-sm">{selectedEntity?.createdAt.split("T")[0]}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Statut</p>
                                             <h3 className="font-bold text-sm">
-                                                {selectedEntity?.is_active ? "Actif" : "Désactivé"}
+                                                {selectedEntity?.isActive ? "Actif" : "Désactivé"}
                                             </h3>
                                         </div>
                                     </div>
@@ -337,7 +447,7 @@ export const EntityAction = () => {
                         isEdited === false ? (
                             <div className='flex space-x-2'>
                                             <div className='flex space-x-2'>
-                                            { 
+                                            {/* { 
                                                 selectedEntity?.is_active == false ? 
                                                     (
                                                             <AlertDialogAction 
@@ -355,7 +465,7 @@ export const EntityAction = () => {
                                                             </AlertDialogAction>
                                                     )
                                             
-                                            }
+                                            } */}
                                             
                                            </div>
                                             <AlertDialogAction 
@@ -382,11 +492,10 @@ export const EntityAction = () => {
 
 
     const columnsEntity = useMemo(() => [
-        { accessorKey: 'entity_name', header: 'Nom de l\'entité' },
+        { accessorKey: 'name', header: 'Nom de l\'entité' },
         { accessorKey: 'localisation', header: 'Localisation' },
-        { accessorKey: 'id_ville', header: 'Nom de la ville' },
-        { accessorKey: 'phone', header: 'Téléphone' },
-        { accessorKey: 'is_active', header: 'Statut' },
+        { accessorKey: 'townId', header: 'Nom de la ville' },
+        { accessorKey: 'isActive', header: 'Statut' },
         {
             accessorKey: "action",
             header: "Actions",
@@ -394,7 +503,7 @@ export const EntityAction = () => {
                 <div className="flex justify-center">
                     <EyeIcon className="h-4 w-4 text-green-500" onClick={() => handleShowEntity(row.original)} />
                     <PencilSquareIcon className="h-4 w-4 text-blue-500" onClick={() => handleEditEntity(row.original)} />
-                    <NoSymbolIcon className="h-4 w-4 text-gray-500" onClick={() => disabledEntity(row.original.id)} />
+                    {/* <NoSymbolIcon className="h-4 w-4 text-gray-500" onClick={() => disabledEntity(row.original.id)} /> */}
                     <TrashIcon className="h-4 w-4 text-red-500" onClick={() => deletedEntity(row.original.id)} />
                 </div>
             )

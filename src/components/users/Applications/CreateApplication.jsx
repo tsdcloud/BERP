@@ -50,7 +50,9 @@ export default function CreateApplication({setOpen, onSubmit}) {
 
   const handleSubmitDataFormApplication = async(data) => {
     // const urlToCreateUser = "http://127.0.0.1:8000/api_gateway/api/user/";
-    const urlToCreateApplication = URLS.API_APPLICATION;
+    // const urlToCreateApplication = URLS.API_APPLICATION;
+    const urlToCreateApplication = `${URLS.USER_API}/applications/`;
+    
       // console.log(data);
       try {
         const response = await handlePost(urlToCreateApplication, data, true);
