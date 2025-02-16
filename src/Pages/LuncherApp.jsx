@@ -30,7 +30,7 @@ export default function LuncherApp() {
   const { handlePost } = useFetch();
 
   const logout = async () => {
-    const urlToLogout = URLS.LOGOUT;
+    const urlToLogout = URLS.API_USER_ABILITY + "/logout/";
 
     const data = {
         refresh : refresh
@@ -57,17 +57,20 @@ export default function LuncherApp() {
     const handleCheckPermissions = async () =>{
       try {
           let employee = await getEmployee();
-          if(employee != null){
-              let permissions = employee?.employeePermissions.map(permission=>permission?.permission.permissionName);
-              setUserPermissions(permissions || []);
 
-              let roles = employee?.employeeRoles.map(role => role?.role.roleName);
-              setUserRoles(roles || []);
+          if(employee != null){
+            let permissions = employee?.employeePermissions?.map(permission=>permission?.permission.permissionName);
+            console.log(permissions);
+            
+            setUserPermissions(permissions || []);
+
+            let roles = employee?.employeeRoles?.map(role => role?.role.roleName);
+            setUserRoles(roles || []);
           }
       } catch (error) {
           console.log(error)
       }
-  }
+    }
   handleCheckPermissions();
   }, []);
 
