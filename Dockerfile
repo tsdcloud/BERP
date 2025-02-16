@@ -39,7 +39,7 @@ COPY package*.json ./
 RUN npm install
 
 # Copy the rest of the application code to the container
-COPY . .
+COPY . app
 
 
 # Build the React app
@@ -52,7 +52,7 @@ FROM nginx:1.21.0-alpine
 
 COPY --from=build /app/build /usr/share/nginx/html
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx-conf/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
