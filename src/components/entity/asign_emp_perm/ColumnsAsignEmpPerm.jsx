@@ -25,66 +25,100 @@ import { jwtDecode } from 'jwt-decode';
 
 
 // Schéma de validation avec Zod
-const departmentSchema = z.object({
-    name: z.string()
-    .nonempty("Ce champs 'Nom' est réquis.")
-    .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme."),
+const asignEmpPermSchema = z.object({
 
-    entityId: z.string()
-    .nonempty('Ce champs "Nom de la ville" est réquis')
+    
+    employeeId: z.string()
+    .nonempty('Ce champs "Nom de employé" est réquis')
     .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
     .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/, 
-      "Ce champs doit être un 'nom de entité' Conforme.")
-    ,
-
+        "Ce champs doit être un 'nom de employé' Conforme."),
+        
+    permissionId: z.string()
+    .nonempty('Ce champs "Nom de la permission" est réquis')
+    .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
+    .max(100)
+    .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/, 
+        "Ce champs doit être un 'nom de la permission' Conforme."),
+    
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
 
     });
 
 // Fonction principale pour gérer les actions utilisateur
-export const DepartmentAction = () => {
+export const AsignEmpPermAction = () => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
-    const [selectedDepartment, setSelectedDepartment] = useState({});
-    const [selectedEntities, setSelectedEntities] = useState([]);
-    const [showEntities, setShowEntities] = useState([]);
+    const [selectedAsignEmpPerm, setSelectedAsignEmpPerm] = useState({});
+    const [selectedPermission, setSelectedPermission] = useState([]);
+    const [selectedEmployee, setSelectedEmployee] = useState([]);
+    const [showPermission, setShowPermission] = useState([]);
+    const [showEmployee, setShowEmployee] = useState([]);
     const [tokenUser, setTokenUser] = useState();
     const [error, setError] = useState();
 
     const { register, handleSubmit, reset, formState:{errors, isSubmitting} } = useForm({
-        resolver: zodResolver(departmentSchema),
+        resolver: zodResolver(asignEmpPermSchema),
     });
 
    const { handlePatch, handleDelete, handleFetch } = useFetch();
    
 
-   const fetchEntites = async () => {
-    // const getTown = URLS.API_ENTITY;
-    const getEntities =  `${URLS.ENTITY_API}/entities`;
+   const fetchPermission = async () => {
+    const getPermission =  `${URLS.ENTITY_API}/permissions`;
     try {
         setIsLoading(true);
-        const response = await handleFetch(getEntities);
+        const response = await handleFetch(getPermission);
         
             if (response && response?.status === 200) {
                     const results = response?.data;
                     // console.log("results", results);
 
-                    const filteredEntities = results?.map(item => {
+                    const filteredPermission = results?.map(item => {
                     const { createdBy, updateAt, ...rest } = item;
                     return { 
                         id:rest.id, 
                         ...rest
                     };
                 });
-                    // console.log("districts - Town",filteredEntities);
-                    setShowEntities(filteredEntities);
+                    // console.log("districts - Town",filteredPermission);
+                    setShowPermission(filteredPermission);
             }
             else{
-                throw new Error('Erreur lors de la récupération des entités');
+                throw new Error('Erreur lors de la récupération des permission');
+            }
+    } catch (error) {
+        setError(error.message);
+    }
+    finally {
+        setIsLoading(false);
+      }
+     };
+     
+   const fetchEmployee = async () => {
+    const getEmployee =  `${URLS.ENTITY_API}/employees`;
+    try {
+        setIsLoading(true);
+        const response = await handleFetch(getEmployee);
+        
+            if (response && response?.status === 200) {
+                    const results = response?.data;
+                    // console.log("results", results);
+
+                    const filteredEmployee = results?.map(item => {
+                    const { createdBy, updateAt, ...rest } = item;
+                    return { 
+                        id:rest.id, 
+                        ...rest
+                    };
+                });
+                    // console.log("districts - Town",filteredEmployee);
+                    setShowEmployee(filteredEmployee);
+            }
+            else{
+                throw new Error('Erreur lors de la récupération des employés');
             }
     } catch (error) {
         setError(error.message);
@@ -95,7 +129,8 @@ export const DepartmentAction = () => {
      };
 
   useEffect(()=>{
-    fetchEntites();
+    fetchPermission();
+    fetchEmployee();
   },[]);
 
    useEffect(()=>{
@@ -110,8 +145,7 @@ export const DepartmentAction = () => {
 
 
     const onSubmit = async (data) => {
-        // const urlToUpdate = `${URLS.API_DEPARTMENT}/${selectedDepartment?.id}`;
-        const urlToUpdate = `${URLS.ENTITY_API}/departments/${selectedDepartment?.id}`;
+        const urlToUpdate = `${URLS.ENTITY_API}/employee-permissions/${selectedAsignEmpPerm?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
@@ -120,13 +154,13 @@ export const DepartmentAction = () => {
                     setDialogOpen(false);
                         
                     setTimeout(()=>{
-                        toast.success("department modified successfully", { duration: 900 });
+                        toast.success("Emp - Perm modified successfully", { duration: 900 });
                         window.location.reload();
                     },[200]);
                 }
                 else {
                     setDialogOpen(false);
-                    toast.error("Erreur lors de la modification du département", { duration: 5000 });
+                    toast.error("Erreur lors de la modification de Emp - Perm", { duration: 5000 });
                 }
             
           } catch (error) {
@@ -134,28 +168,27 @@ export const DepartmentAction = () => {
           }
     };
 
-    const handleShowDepartment = (department) => {
-        setSelectedDepartment(department);
+    const handleShowAsignEmpPerm = (item) => {
+        setSelectedAsignEmpPerm(item);
         setIsEdited(false);
         setDialogOpen(true);
     };
 
-    const handleEditDepartment = (department) => {
-        setSelectedDepartment(department);
-        reset(department);
+    const handleEditAsignEmpPerm = (item) => {
+        setSelectedAsignEmpPerm(item);
+        reset(item);
         setIsEdited(true);
         setDialogOpen(true);
     };
 
-    const disabledDepartment = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver ce departement ?");
+    const disabledAsignEmpPerm = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette asignation ?");
         if (confirmation) {
-            // const urlToDisabledDepartment = `${URLS.API_DEPARTMENT}/${id}`;
-            const urlToDisabledDepartment =  `${URLS.ENTITY_API}/departments/${id}`;
+            const urlToDisabledAsignEmpPerm =  `${URLS.ENTITY_API}/employee-permissions/${id}`;
 
                     try {
-                            const response = await handlePatch(urlToDisabledDepartment, { isActive:false });
-                            console.log("response for disabled", response);
+                            const response = await handlePatch(urlToDisabledAsignEmpPerm, { isActive:false });
+                            // console.log("response for disabled", response);
                                 if (response.errors) {
                                     if (Array.isArray(response.errors)) {
                                         const errorMessages = response.errors.map(error => error.msg).join(', ');
@@ -166,14 +199,14 @@ export const DepartmentAction = () => {
                                 }
                                 else {
                                     setTimeout(()=>{
-                                        toast.success("department disabled successfully", { duration: 5000 });
+                                        toast.success("asign Emp - Perm disabled successfully", { duration: 5000 });
                                         // window.location.reload();
                                     },[200]);
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la désactivation entiy :", error);
+                        console.error("Erreur lors de la désactivation asign Emp - Perm :", error);
                     }
 
                     finally{
@@ -186,29 +219,28 @@ export const DepartmentAction = () => {
             }
     };
 
-    const enableDepartment = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver ce departement ?");
+    const AsignEmpPerm = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir désactiver cette asignation ?");
 
         if (confirmation) {
-            // const urlToEnabledDepartment = `${URLS.API_DEPARTMENT}/${id}`;
-            const urlToEnabledDepartment =  `${URLS.ENTITY_API}/departments/${id}`;
+            const urlToEnabledEmpPerm =  `${URLS.ENTITY_API}/employee-permissions/${id}`;
 
                     try {
-                            const response = await handlePatch(urlToEnabledDepartment, {isActive:true});
-                            console.log("response for deleted", response);
+                            const response = await handlePatch(urlToEnabledEmpPerm, {isActive:true});
+                            // console.log("response for deleted", response);
                                 if (response) {
                                     setTimeout(()=>{
-                                        toast.success("department enabled successfully", { duration: 5000});
+                                        toast.success("asign Emp - Perm enabled successfully", { duration: 5000});
                                         window.location.reload();
                                     },[200]);
                                 }
                                 else {
-                                  toast.error("Erreur lors de la réactivation department", { duration: 5000 });
+                                  toast.error("Erreur lors de la réactivation asign Emp - Perm", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la réactivation department :", error);
+                        console.error("Erreur lors de la réactivation asign Emp - Perm :", error);
                     }
 
                     finally{
@@ -221,29 +253,28 @@ export const DepartmentAction = () => {
             }
     };
     
-    const deletedDepartment = async (id) => {
-        const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer ce departement ?");
+    const deletedAsignEmpPerm = async (id) => {
+        const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette asignation ?");
 
         if (confirmation) {
-            // const urlToDeletedDepartment = `${URLS.API_DEPARTMENT}/${id}`;
-            const urlToDeletedDepartment =  `${URLS.ENTITY_API}/departments/${id}`;
+            const urlToDeletedAsignEmpPerm =  `${URLS.ENTITY_API}/employee-permissions/${id}`;
 
                     try {
-                            const response = await handleDelete(urlToDeletedDepartment, {isActive:false});
+                            const response = await handleDelete(urlToDeletedAsignEmpPerm, {isActive:false});
                             // console.log("response for deleted", response);
                                 if (response) {
                                     setTimeout(()=>{
-                                        toast.success("department disabled successfully", { duration: 5000});
+                                        toast.success("asign Emp - Perm disabled successfully", { duration: 5000});
                                         window.location.reload();
                                     },[200]);
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation department", { duration: 5000 });
+                                  toast.error("Erreur lors de la désactivation asign Emp - Perm", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la désactivation department :", error);
+                        console.error("Erreur lors de la désactivation asign Emp - Perm :", error);
                     }
 
                     finally{
@@ -257,27 +288,27 @@ export const DepartmentAction = () => {
     };
 
 
-    const showDialogDepartment = () => {
+    const showDialogAsignEmpPerm = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? "Modifier les informations" : "Détails du departement" }
+                            { isEdited ? "Modifier les informations" : "Détails de l'assignation des rôles - permissions" }
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    {/* <div>
                                             <label htmlFor='name' className="text-xs mt-2">
                                                 Nom du departement <sup className='text-red-500'>*</sup>
                                             </label>
                                             <Input
                                                 id="name"
                                                 type="text"
-                                                defaultValue={selectedDepartment?.name}
+                                                defaultValue={selectedAsignEmpPerm?.name}
                                                 {...register("name")}
                                                 className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
@@ -286,31 +317,60 @@ export const DepartmentAction = () => {
                                                 {errors.name && (
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
                                                 )}
-                                    </div>
+                                    </div> */}
                                     <div className=' flex flex-col'>
-                                            <label htmlFor='entityId' className="text-xs mt-2">
-                                                Nom de l'entité <sup className='text-red-500'>*</sup>
+                                            <label htmlFor='employeeId' className="text-xs mt-2">
+                                                Nom de l'employée <sup className='text-red-500'>*</sup>
+                                            </label>
+                                                    <select
+                                                        onChange={(e) => {
+                                                            const nameEmployeeSelected = showEmployee.find(item => item.id === e.target.value);
+                                                            setSelectedEmployee(nameEmployeeSelected);
+                                                        }}
+                                                        defaultValue={selectedAsignEmpPerm?.employeeId}
+                                                        {...register('employeeId')}
+                                                        className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                            errors.employeeId ? "border-red-500" : "border-gray-300"
+                                                        }`}
+                                                    >
+                                                     <option value="">Selectionner un employée</option>
+                                                        {
+                                                            showEmployee.map((item) => (
+                                                                <option key={item.id} value={item.id}>
+                                                                    {item.name}
+                                                                </option>
+                                                            ))
+                                                        }
+                                                </select>
+                                                {errors.employeeId && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.employeeId.message}</p>
+                                                )}
+                                    </div>
+
+                                    <div className=' flex flex-col'>
+                                            <label htmlFor='permissionId' className="text-xs mt-2">
+                                                Nom de la permission <sup className='text-red-500'>*</sup>
                                             </label>
                                                     <select
                                                     onChange={(e) => {
-                                                        const nameEntitiesSelected = showEntities.find(item => item.id === e.target.value);
-                                                        setSelectedEntities(nameEntitiesSelected);
+                                                        const namePermissionSelected = showPermission.find(item => item.id === e.target.value);
+                                                        setSelectedPermission(namePermissionSelected);
                                                     }}
-                                                    defaultValue={selectedDepartment?.entityId}
-                                                    {...register('entityId')}
+                                                    defaultValue={selectedAsignEmpPerm?.permissionId}
+                                                    {...register('permissionId')}
                                                     className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                                        errors.entityId ? "border-red-500" : "border-gray-300"
+                                                        errors.permissionId ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 >
-                                                    <option value="">Selectionner une entité</option>
-                                                    {showEntities.map((item) => (
+                                                    <option value="">Selectionner une permission</option>
+                                                    {showPermission.map((item) => (
                                                         <option key={item.id} value={item.id}>
-                                                            {item.name}
+                                                            {item.displayName}
                                                         </option>
                                                     ))}
                                                 </select>
-                                                {errors.entityId && (
-                                                <p className="text-red-500 text-[9px] mt-1">{errors.entityId.message}</p>
+                                                {errors.permissionId && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.permissionId.message}</p>
                                                 )}
                                     </div>
 
@@ -354,28 +414,28 @@ export const DepartmentAction = () => {
                                 <Toaster/>
                                 </form>
                             ) : (
-                                selectedDepartment && (
+                                selectedAsignEmpPerm && (
                                     <div className='flex flex-col text-black space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
-                                            <h3 className="font-bold text-sm">{selectedDepartment?.id}</h3>
+                                            <h3 className="font-bold text-sm">{selectedAsignEmpPerm?.id}</h3>
                                         </div>
                                         <div>
-                                            <p className="text-xs">Nom du departement</p>
-                                            <h3 className="font-bold text-sm">{selectedDepartment?.name}</h3>
+                                            <p className="text-xs">Nom de l'employé(e)</p>
+                                            <h3 className="font-bold text-sm">{selectedAsignEmpPerm?.roldeId}</h3>
                                         </div>
                                         <div>
-                                            <p className="text-xs">Nom de l'entité</p>
-                                            <h3 className="font-bold text-sm">{selectedDepartment?.entityId}</h3>
+                                            <p className="text-xs">Nom de la permission</p>
+                                            <h3 className="font-bold text-sm">{selectedAsignEmpPerm?.permissionId}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Date de création</p>
-                                            <h3 className="font-bold text-sm">{selectedDepartment?.createdAt.split("T")[0]}</h3>
+                                            <h3 className="font-bold text-sm">{selectedAsignEmpPerm?.createdAt.split("T")[0]}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Statut</p>
                                             <h3 className="font-bold text-sm">
-                                                {selectedDepartment?.isActive ? "Actif" : "Désactivé"}
+                                                {selectedAsignEmpPerm?.isActive ? "Actif" : "Désactivé"}
                                             </h3>
                                         </div>
                                     </div>
@@ -390,11 +450,11 @@ export const DepartmentAction = () => {
                             <div className='flex space-x-2'>
                                             <div className='flex space-x-2'>
                                                 {/* { 
-                                                    selectedDepartment?.is_active == false ? 
+                                                    selectedAsignEmpPerm?.is_active == false ? 
                                                         (
                                                                 <AlertDialogAction
                                                                     className="border-2 border-blue-600 outline-blue-700 text-blue-700 text-xs shadow-md bg-transparent hover:bg-blue-600 hover:text-white transition"
-                                                                    onClick={() => enableDepartment(selectedDepartment.id)}>
+                                                                    onClick={() => AsignEmpPerm(selectedAsignEmpPerm.id)}>
                                                                         Activer
                                                                 </AlertDialogAction>
 
@@ -402,7 +462,7 @@ export const DepartmentAction = () => {
 
                                                                 <AlertDialogAction 
                                                                     className="border-2 border-gray-600 outline-gray-700 text-gray-700 text-xs shadow-md bg-transparent hover:bg-gray-600 hover:text-white transition"
-                                                                    onClick={() => disabledDepartment(selectedDepartment.id)}>
+                                                                    onClick={() => disabledAsignEmpPerm(selectedAsignEmpPerm.id)}>
                                                                         Désactiver
                                                                 </AlertDialogAction>
                                                         )
@@ -412,7 +472,7 @@ export const DepartmentAction = () => {
                                            </div>
                                             <AlertDialogAction 
                                                 className="border-2 border-red-900 outline-red-700 text-red-900 text-xs shadow-md bg-transparent hover:bg-red-600 hover:text-white transition"
-                                                onClick={() => deletedDepartment(selectedDepartment.id)}>
+                                                onClick={() => deletedAsignEmpPerm(selectedAsignEmpPerm.id)}>
                                                     Supprimer
                                             </AlertDialogAction>
                                             <AlertDialogCancel 
@@ -433,19 +493,19 @@ export const DepartmentAction = () => {
     };
 
 
-    const columnsDepartment = useMemo(() => [
-        { accessorKey: 'name', header: 'Nom du departement' },
-        { accessorKey: 'entityId', header: 'Nom de l\'entité' },
+    const ColumnsAsignEmpPerm = useMemo(() => [
+        { accessorKey: 'employeeId', header: 'Nom de l\'employé' },
+        { accessorKey: 'permissionId', header: 'Nom de la permission' },
         { accessorKey: 'isActive', header: 'Statut' },
         {
             accessorKey: "action",
             header: "Actions",
             cell: ({ row }) => (
                 <div className="flex justify-center">
-                    <EyeIcon className="h-4 w-4 text-green-500" onClick={() => handleShowDepartment(row.original)} />
-                    <PencilSquareIcon className="h-4 w-4 text-blue-500" onClick={() => handleEditDepartment(row.original)} />
-                    {/* <NoSymbolIcon className="h-4 w-4 text-gray-500" onClick={() => disabledDepartment(row.original.id)} /> */}
-                    <TrashIcon className="h-4 w-4 text-red-500" onClick={() => deletedDepartment(row.original.id)} />
+                    <EyeIcon className="h-4 w-4 text-green-500" onClick={() => handleShowAsignEmpPerm(row.original)} />
+                    {/* <PencilSquareIcon className="h-4 w-4 text-blue-500" onClick={() => handleEditAsignEmpPerm(row.original)} /> */}
+                    {/* <NoSymbolIcon className="h-4 w-4 text-gray-500" onClick={() => disabledAsignEmpPerm(row.original.id)} /> */}
+                    <TrashIcon className="h-4 w-4 text-red-500" onClick={() => deletedAsignEmpPerm(row.original.id)} />
                 </div>
             )
         },
@@ -454,10 +514,10 @@ export const DepartmentAction = () => {
 
     return {
 
-                showDialogDepartment,
-                columnsDepartment,
-                handleShowDepartment,
-                handleEditDepartment,
+                showDialogAsignEmpPerm,
+                ColumnsAsignEmpPerm,
+                handleShowAsignEmpPerm,
+                handleEditAsignEmpPerm,
              
     };
 };

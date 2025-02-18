@@ -27,19 +27,21 @@ export default function Supplier() {
                 if (response && response?.status === 200) {
                     
                         const results = response?.data;
+                        // console.log("res",results);
                         const filteredSupplier = results?.map(item => {
                             const { createdBy, updateAt, ...rest } = item;
                             return { id: rest.id, 
-                                     name:rest.name,
-                                     address:rest.address,
-                                     phone:rest.phone,
-                                     email:rest.email,
-                                     entityId:rest.entity.name,
+                                     name:rest.name || "non défini",
+                                     address:rest.address || "non défini",
+                                     phone:rest.phone || "non défini",
+                                     email:rest.email || "non défini",
+                                     entityId:rest.entity.name || "non défini",
                                      createdAt:rest.createdAt,
                                      isActive:rest.isActive,
                                     };
 
                         });
+                        // console.log("fil",filteredSupplier);
                         setSupplier(filteredSupplier);
                 }
                 else{

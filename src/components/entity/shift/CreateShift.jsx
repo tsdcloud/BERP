@@ -15,21 +15,29 @@ import { jwtDecode } from 'jwt-decode';
 // Définition du schéma avec Zod
 const shiftSchema = z.object({
 
-    name: z.string()
-    .nonempty("Ce champs 'Nom' est réquis.")
-    .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme."),
+  name: z.string()
+  .nonempty("Ce champs 'Nom' est réquis.")
+  .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
+  .max(100)
+  .regex(/^[a-zA-Z0-9 ,() -]+$/, "Ce champ doit être un 'nom' conforme."),
 
-    entityId: z.string()
-    .nonempty('Ce champs "Nom de la ville" est réquis')
-    .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
-    .max(100)
-    .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/, 
-      "Ce champs doit être un 'nom de entité' Conforme.")
-    ,
+  startTime: z.string()
+  .nonempty("Ce champs 'Heure de début' est réquis.")
+  .regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/, "Ce champ doit être au format HH:MM."),
 
-    createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
+  endTime: z.string()
+  .nonempty("Ce champs 'Heure de fin' est réquis.")
+  .regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/, "Ce champ doit être au format HH:MM."),
+
+  entityId: z.string()
+  .nonempty('Ce champs "Nom de la ville" est réquis')
+  .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
+  .max(100)
+  .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/, 
+    "Ce champs doit être un 'nom de entité' Conforme.")
+  ,
+
+  createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
 });
 
 export default function CreateShift({setOpen, onSubmit}) {
@@ -92,14 +100,14 @@ export default function CreateShift({setOpen, onSubmit}) {
 
 
     const handleSubmitDataFormShift = async(data) => {
-      console.log("data form",data);
+      // console.log("data form",data);
       const urlToCreateShift =  `${URLS.ENTITY_API}/shifts`;
         try {
           const response = await handlePost(urlToCreateShift, data, true);
-          console.log("response crea", response);
+          // console.log("response crea", response);
           if (response && response.status === 201) {
             toast.success("shift crée avec succès", { duration : 2000 });
-            console.log("shift created", response?.success);
+            // console.log("shift created", response?.success);
             setOpen(false);
             onSubmit();
             reset();
@@ -131,7 +139,7 @@ export default function CreateShift({setOpen, onSubmit}) {
 
           <div className='space-y-0'>
                 <p className='text-[12px] mb-2'>Veuillez correctement renseigner les informations du shift.</p>
-                <form onSubmit={handleSubmit(handleSubmitDataFormShift)} className='sm:bg-blue-200 md:bg-transparent'>
+                <form onSubmit={handleSubmit(handleSubmitDataFormShift)} className='sm:bg-blue-200 md:bg-transparent space-y-2'>
 
                     <div className='mb-1'>
                         <label htmlFor="name" className="block text-xs font-medium mb-0">
@@ -150,6 +158,47 @@ export default function CreateShift({setOpen, onSubmit}) {
                         {
                           errors.name && (
                             <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
+                          )
+                        }
+                    </div>
+
+                    <div className='mb-1'>
+                        <label htmlFor="startTime" className="block text-xs font-medium mb-0">
+                            Date de début du shift<sup className='text-red-500'>*</sup>
+                        </label>
+
+                        <input 
+                          id='startTime'
+                          type="time"
+                          {...register('startTime')} 
+                          className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                          ${
+                              errors.startTime ? "border-red-500" : "border-gray-300"
+                            }`}
+                        />
+                        {
+                          errors.startTime && (
+                            <p className="text-red-500 text-[9px] mt-1">{errors.startTime.message}</p>
+                          )
+                        }
+                    </div>
+                    <div className='mb-1'>
+                        <label htmlFor="endTime" className="block text-xs font-medium mb-0">
+                           Date de fin du shift<sup className='text-red-500'>*</sup>
+                        </label>
+
+                        <input 
+                          id='endTime'
+                          type="time"
+                          {...register('endTime')} 
+                          className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                          ${
+                              errors.endTime ? "border-red-500" : "border-gray-300"
+                            }`}
+                        />
+                        {
+                          errors.endTime && (
+                            <p className="text-red-500 text-[9px] mt-1">{errors.endTime.message}</p>
                           )
                         }
                     </div>

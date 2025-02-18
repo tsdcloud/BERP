@@ -31,6 +31,8 @@ export default function Shift() {
                             const { createdBy, updateAt, ...rest } = item;
                             return { id: rest.id, 
                                      name:rest.name,
+                                     startTime:rest.startTime,
+                                     endTime:rest.endTime,
                                      entityId:rest.entity.name,
                                      createdAt:rest.createdAt,
                                      isActive:rest.isActive,
@@ -53,24 +55,23 @@ export default function Shift() {
 
     useEffect(() => {
         fetchShift();
-        
     }, []);
 
   return (
     <div className='m-1 space-y-3 my-10 '>
-    <h1 className='text-sm mb-2'>Gestion des shifts</h1>
-    <div className='space-y-2'>
-        <CreateShift setOpen={setOpen} onSubmit={fetchShift}/>
-        {columnsShift && shift?.length >= 0 && (
-            <DataTable
-                className="rounded-md border w-[800px] text-xs"
-                columns={columnsShift}
-                data={shift} 
-            />
-        )}
-    </div>
-    {showDialogShift()}
-</div> 
+        <h1 className='text-sm mb-2'>Gestion des shifts</h1>
+        <div className='space-y-2'>
+            <CreateShift setOpen={setOpen} onSubmit={fetchShift}/>
+            {columnsShift && shift?.length >= 0 && (
+                <DataTable
+                    className="rounded-md border w-[800px] text-xs"
+                    columns={columnsShift}
+                    data={shift} 
+                />
+            )}
+        </div>
+        {showDialogShift()}
+    </div> 
   );
 };
 
