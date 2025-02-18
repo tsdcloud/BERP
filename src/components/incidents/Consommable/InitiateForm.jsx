@@ -1,29 +1,18 @@
-import React, {useState} from 'react'
+import React from 'react'
 import {useForm} from 'react-hook-form';
 import { useFetch } from '../../../hooks/useFetch';
 import { Input } from '../../ui/input';
 import { Button } from '../../ui/button';
 import { URLS } from '../../../../configUrl';
-import { toast } from "sonner"
-import { useToast } from "../../../hooks/use-toast"
-import { cn } from "../../../lib/utils";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "../../ui/command"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../../ui/popover"
+import { useToast } from "../../../hooks/use-toast";
 
 const InitiateForm = ({onSucess}) => {
   
-  const { register, handleSubmit, formState:{errors} } = useForm();
+  const { register, handleSubmit, formState:{errors} } = useForm({
+    defaultValues:{
+      name:""
+    }
+  });
   const { handlePost } = useFetch();
   const { toast } = useToast();
 
@@ -39,6 +28,7 @@ const InitiateForm = ({onSucess}) => {
       onSucess();
     } catch (error) {
       console.log(error);
+      alert("Erreur. Une erreur est survenue lors de la création.");
     }
   }
   return (

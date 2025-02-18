@@ -4,6 +4,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import ProtectedRoutes from './hooks/ProtectedRoutes';
+import IncidenSettingRoutes from './utils/IncindentSettingRoutes';
 import SignIn from './components/forms/SignIn';
 import LuncherApp from './Pages/LuncherApp';
 
@@ -18,6 +19,11 @@ import NotFoundPage from './components/NotFoundPage';
 // Incident
 import Incident from './Pages/incidents/index';
 import Consommable from './Pages/incidents/Consommable';
+import Maintenance from './Pages/incidents/Maintenance';
+import Equipement from './Pages/incidents/Equipement';
+import TypeMaintenance from './Pages/incidents/MaintenanceType';
+import IncidentCauses from './Pages/incidents/IncidentCauses';
+import IncidentType from './Pages/incidents/IncidentType';
 
 //user
 import User from './Pages/users/index';
@@ -39,6 +45,8 @@ import Grade from './Pages/entity/Grade';
 import Echelon from './Pages/entity/Echelon';
 import Category from './Pages/entity/Category';
 import Employee from './Pages/entity/Employee';
+import Dashboard from './Pages/incidents/Dashboard';
+import OffBridge from './Pages/incidents/OffBridge';
 import Bank from './Pages/entity/Bank';
 import Customer from './Pages/entity/Customer';
 import Country from './Pages/entity/Country';
@@ -118,24 +126,33 @@ function App() {
                 
             </Route>
 
+            {/* Incident */}
+           <Route path="/incidents">
+              <Route path="" element={<Incident />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="maintenance" element={<Maintenance />} />
+              <Route path="off-bridge" element={<OffBridge />} />
+              <Route element={<IncidenSettingRoutes permissions={["incident__view_incident_types"]}/>}>
+                <Route path="incident-type" element={<IncidentType />} />
+              </Route>
+              <Route element={<IncidenSettingRoutes permissions={["incident__view_incident_causes"]}/>}>
+                <Route path="incident-cause" element={<IncidentCauses />} />
+              </Route>
+              <Route element={<IncidenSettingRoutes permissions={["incident__view_maintenance-types"]}/>}>
+                <Route path="maintenance-type" element={<TypeMaintenance />} />
+              </Route>
+              <Route element={<IncidenSettingRoutes permissions={["incident__view_equipements"]}/>}>
+                <Route path="equipement" element={<Equipement />} />
+              </Route>
+                {/* <Route path="consommable" element={<Consommable />} /> */}
+           </Route>
+
           </Route>
           
           <Route path='/signIn' element={<SignIn/>}/>
           <Route path='/forgetPassword' element={<ForgetPassword/>} exact/>
           <Route path='/confirmPassword' element={<ConfirmPassword/>} exact/>
           <Route path='*' element={<NotFoundPage/>} exact/>
-
-
-          
-
-
-           {/* Incident */}
-           <Route path="/incidents">
-              <Route path="" element={<Incident />} />
-              <Route path="maintenance" element={<Consommable />} />
-              <Route path="consommable" element={<Consommable />} />
-              <Route path="equipement" element={<Consommable />} />
-           </Route>
         </Routes>
       </Router>
       <Toaster/>

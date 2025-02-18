@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
 import toast, { Toaster } from 'react-hot-toast';
-import { ArrowLeftEndOnRectangleIcon  } from "@heroicons/react/24/outline";
+import { ArrowLeftEndOnRectangleIcon, Bars3Icon  } from "@heroicons/react/24/outline";
 
 
 export default function Header() {
@@ -57,11 +57,9 @@ export default function Header() {
                         // console.log("user",userDataDecoded);
                     } catch (error) {
                         console.error("Failed to decode token:", error);
-                        // Gérer l'erreur, par exemple, en réinitialisant l'état ou en affichant un message d'erreur
                     }
                 } else {
                     console.error("Invalid token: must be a string", userData);
-                    // Gérer l'erreur, par exemple, en réinitialisant l'état ou en affichant un message d'erreur
                 }
 
                 const handleClickOutside = (event) => {
@@ -87,8 +85,8 @@ export default function Header() {
     <div className='m-6'>
         <div className='bg-blue-900 w-full h-[55px] rounded-sm flex justify-between'>
 
-                <h1 className='text-white text-xs font-mono text-md p-5'>
-                        BERP. Business Entreprise Resource Planning
+                <h1 className='text-white text-xs font-console text-md p-5 flex items-center gap-2'>
+                        <span className='text-xl'>BERP</span>
                 </h1>
                        
                 <div className="relative" ref={dropdownRef}>

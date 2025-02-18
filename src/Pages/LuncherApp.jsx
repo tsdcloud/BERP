@@ -1,9 +1,8 @@
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import UserEntryPoint from './users/UserEntryPoint';
 
 import {Input} from "../components/ui/input";
 import Footer from '../components/layout/Footer';
-import { useState } from "react";
 import Preloader from '../components/Preloader';
 import { Link, useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
@@ -17,16 +16,21 @@ import { useFetch } from '../hooks/useFetch';
 import EntityEntryPoint from './entity/EntityEntryPoint';
 import IncidentEntryPoint from './incidents/IncidentEntryPoint';
 import { ArrowLeftEndOnRectangleIcon  } from "@heroicons/react/24/outline";
-
+import WPOEnteryPoint from './wpo/WPOEnteryPoint';
+import VerifyPermission from '../utils/verifyPermission'
+import { getEmployee } from '../utils/entity.utils';
 
 export default function LuncherApp() {
   const { disconnect, refresh } = useContext(AUTHCONTEXT);
+  const [userPermissions, setUserPermissions] = useState([]);
+  const [userRoles, setUserRoles] = useState([]);
+
   const navigateToLogin = useNavigate();
 
   const { handlePost } = useFetch();
 
   const logout = async () => {
-    const urlToLogout = URLS.LOGOUT;
+    const urlToLogout = `${URLS.API_USER_ABILITY}/logout/`;
 
     const data = {
         refresh : refresh
@@ -46,7 +50,29 @@ export default function LuncherApp() {
         } catch (error) {
           // toast.error("Erreur lors de la déconnexion", { duration: 5000 });
         }
-      };
+  };
+
+
+  useEffect(()=>{
+    const handleCheckPermissions = async () =>{
+      try {
+          let employee = await getEmployee();
+
+          if(employee != null){
+            let permissions = employee?.employeePermissions?.map(permission=>permission?.permission.permissionName);
+            console.log(permissions);
+            
+            setUserPermissions(permissions || []);
+
+            let roles = employee?.employeeRoles?.map(role => role?.role.roleName);
+            setUserRoles(roles || []);
+          }
+      } catch (error) {
+          console.log(error)
+      }
+    }
+  handleCheckPermissions();
+  }, []);
 
 
 
@@ -73,25 +99,18 @@ export default function LuncherApp() {
 
                     <div className='m-3 flex flex-wrap space-x-1 justify-center items-center sm:justify-normal'>
                         {/* Ajoutez ici le reste de votre contenu */}
-                        <EntityEntryPoint/>
-                        <UserEntryPoint/>
-                        <IncidentEntryPoint/>
-                          <div className='flex justify-center items-center m-0 lg:m-4'>
-
-                                <div className='m-9 flex flex-col items-center space-y-2'>
-                                        <a
-                                            href="https://dex.zukulufeg.com/"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center justify-center w-[90px] h-[90px] bg-secondary text-white rounded-xl shadow-lg hover:bg-orange-600 transition duration-300"
-                                        >
-                                            <FaWeightHanging size={40} />
-                                        </a>
-                                        <p className='text-white text-xs'>WPO</p>
-                              </div>
-                              
-                          </div>
-
+                        <VerifyPermission expected={["application__can_view_entities"]} functions={userPermissions} roles={userRoles}>
+                          <EntityEntryPoint/>
+                        </VerifyPermission>
+                        <VerifyPermission  expected={["application__can_view_users"]} functions={userPermissions} roles={userRoles}>
+                          <UserEntryPoint/>
+                        </VerifyPermission>
+                        <VerifyPermission expected={["application__can_view_incidents"]} functions={userPermissions} roles={userRoles}>
+                          <IncidentEntryPoint/>
+                        </VerifyPermission>
+                        <VerifyPermission expected={["application__can_view_wpo"]} functions={userPermissions} roles={userRoles}>
+                          <WPOEnteryPoint />
+                        </VerifyPermission>
                     </div>
 
 

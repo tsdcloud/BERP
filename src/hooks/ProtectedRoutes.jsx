@@ -75,8 +75,6 @@ export default function ProtectedRoutes() {
       setIsLoading(false);
       setIsAuthenticated(false);
     }
-
-    // console.log("test 1 2 1 2", {isAuthenticated: isAuthenticated});
     
   }, [location.pathname]);
 

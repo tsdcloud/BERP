@@ -10,6 +10,10 @@ export default function AuthProvider({children}) {
     const [refresh, setRefresh] = useState(() => localStorage.getItem("refresh"));
     const [userData, setUserData] = useState(JSON.stringify(token));
 
+    // User's Roles and permissions
+    const [roles, setRoles] = useState([]);
+    const [permissions, setPermissions] = useState([]);
+
     const disconnect = () => {
       localStorage.removeItem("isAuth");
       localStorage.removeItem("refresh");
@@ -27,7 +31,21 @@ export default function AuthProvider({children}) {
     }, [isAuth, token, refresh]);
     
   return (
-    <AUTHCONTEXT.Provider value={{isAuth, setIsAuth, userData, setUserData, token, setToken, refresh, setRefresh, disconnect}}>
+    <AUTHCONTEXT.Provider value={{
+      isAuth, 
+      setIsAuth, 
+      userData, 
+      setUserData, 
+      token, 
+      setToken, 
+      refresh, 
+      setRefresh, 
+      disconnect,
+      roles,
+      setRoles,
+      permissions,
+      setPermissions
+      }}>
         {children}
     </AUTHCONTEXT.Provider>
   );
