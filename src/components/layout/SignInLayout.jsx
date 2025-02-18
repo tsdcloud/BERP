@@ -19,7 +19,7 @@ export default function SignInLayout({children}) {
                         <h1 className='text-3xl font-bold'>Rapprochez-vous <br/>de l&apos;essentiel.</h1>
                         <h4 className='text-xs'>Accéder à vos applications métiers dans un même endroit.</h4>   
                 </div>
-                <img src={illustrationHuman} className="mt-9 sm:bg-purple-400 md:bg-transparent w-[400px] h-[350px]" alt='Mascotte'/>
+                <img src={illustrationHuman} className="hidden mt-9 sm:bg-purple-400 md:bg-transparent w-[400px] h-[350px]" alt='Mascotte'/>
               </div>
 
 
