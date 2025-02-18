@@ -20,11 +20,11 @@ export default function Employee() {
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllEmployee);
-            console.log("respoEmp", response);
+            // console.log("respoEmp", response);
             
             if (response && response?.status === 200) {
                 const results = response?.data;
-                console.log("RES", results);
+                // console.log("RES", results);
                 // Vérification si results est un tableau
                 if (Array.isArray(results)) {
                     const filteredEmployee = results.map(item => {
@@ -44,7 +44,7 @@ export default function Employee() {
                             isActive: rest.isActive || "Non défini",
                         };
                     });
-                    console.log("fil", filteredEmployee);
+                    // console.log("fil", filteredEmployee);
                     setEmployees(filteredEmployee);
                 } else {
                     throw new Error('Les données récupérées ne sont pas un tableau');

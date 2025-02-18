@@ -19,15 +19,21 @@ const siteSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,][0-9]+$/, "Ce champ doit être un 'nom' conforme."),
+    .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme."),
 
     entityId: z.string()
     .nonempty('Ce champs "Nom de la ville" est réquis')
     .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
     .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/, 
-      "Ce champs doit être un 'nom de entité' Conforme.")
-    ,
+      "Ce champs doit être un 'nom de entité' Conforme."),
+
+    
+    typeSite: z.string()
+    .nonempty("Ce champs 'Nom' est réquis.")
+    .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
+    .max(100)
+    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'type de site' conforme."),
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
 });
@@ -35,6 +41,7 @@ const siteSchema = z.object({
 export default function CreateSite({setOpen, onSubmit}) {
   const [tokenUser, setTokenUser] = useState();
   const [selectedEntities, setSelectedEntities] = useState([]);
+  const [selectedTypeOfSite, setSelectedTypeOfSite] = useState([]);
   const [showEntities, setShowEntities] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -77,6 +84,17 @@ export default function CreateSite({setOpen, onSubmit}) {
     }, []);
 
 
+    const getTypeOfSite = [
+        {
+            id: "HEADQUARTER",
+            name : "À la direction"
+        },
+        {
+            id: "FIELD",
+            name : "Sur le terrain"
+        }
+    ];
+
     useEffect(()=>{
       const token = localStorage.getItem("token");
       if(token){
@@ -93,14 +111,14 @@ export default function CreateSite({setOpen, onSubmit}) {
 
 
     const handleSubmitDataFormSite = async(data) => {
-      console.log("data form",data);
+    //   console.log("data form",data);
       const urlToCreateSite =  `${URLS.ENTITY_API}/sites`;
         try {
           const response = await handlePost(urlToCreateSite, data, true);
-          console.log("response crea", response);
+        //   console.log("response crea", response);
           if (response && response.status === 201) {
             toast.success("site crée avec succès", { duration : 2000 });
-            console.log("site created", response?.success);
+            // console.log("site created", response?.success);
             setOpen(false);
             onSubmit();
             reset();
@@ -182,6 +200,37 @@ export default function CreateSite({setOpen, onSubmit}) {
                               {
                                   errors.entityId && (
                                   <p className="text-red-500 text-[9px] mt-1">{errors?.entityId?.message}</p>
+                                  )
+                              }
+                      
+                    </div>
+                    <div className='mb-4'>
+                              <label htmlFor="typeSite" className="block text-xs font-medium mb-1">
+                                  Type de site <sup className='text-red-500'>*</sup>
+                              </label>
+
+                          
+                              <select
+                                          onChange={(e) => {
+                                              const nameTypeOfSiteSelected = getTypeOfSite.find(item => item.id === e.target.value);
+                                              setSelectedTypeOfSite(nameTypeOfSiteSelected);
+                                          }}
+                                          {...register('typeSite')} 
+                                          className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                                          ${
+                                              errors.typeSite ? "border-red-500" : "border-gray-300"
+                                          }`}
+                                      >
+                                          <option value="">Selectionner un type</option>
+                                              {getTypeOfSite.map((item) => (
+                                                  <option key={item.id} value={item.id}>
+                                                          {item.name}
+                                                  </option>
+                                              ))}
+                              </select>
+                              {
+                                  errors.typeSite && (
+                                  <p className="text-red-500 text-[9px] mt-1">{errors?.typeSite?.message}</p>
                                   )
                               }
                       

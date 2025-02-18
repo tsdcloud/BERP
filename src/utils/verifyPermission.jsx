@@ -34,11 +34,22 @@ const VerifyPermission = ({children, expected=[], roles=[], functions=[], isExcl
           }
           return null;
         }
-    
-        if(expected.includes(roles) || expected.includes(functions)){
-          console.log(isExclude)
+
+        let includeRoles = roles.filter((item) => expected.includes(item))
+        let includePerms = functions.filter((item) => expected.includes(item))
+
+        console.log("includeRoles", includeRoles)
+        console.log("includePerms", includePerms)
+
+        if(includeRoles.length !== 0 || includePerms.length !== 0){
+          console.log("is exclude", isExclude)
           return <>{children}</>
         }
+
+        // if(expected.includes(roles) || expected.includes(functions)){
+        //   console.log("is exclude", isExclude)
+        //   return <>{children}</>
+        // }
         return null;
     }
     return null

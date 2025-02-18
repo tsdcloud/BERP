@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import DataTable from '../../DataTable'; 
+import DataTable from '../../DataTable';
 import { BankAction } from './ColumnsBank';
 import { useFetch } from '../../../hooks/useFetch';
-import { URLS } from '../../../../configUrl'; 
+import { URLS } from '../../../../configUrl';
 import CreateBank from './CreateBank';
 
 export default function Bank() {
@@ -15,7 +15,6 @@ export default function Bank() {
     const { handleFetch } = useFetch();
 
     const fetchBank = async () => {
-        // const urlToShowAllBank = URLS.API_BANK;
         const urlToShowAllBank = `${URLS.ENTITY_API}/banks`;
         
         try {

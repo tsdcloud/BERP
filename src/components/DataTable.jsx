@@ -109,6 +109,10 @@ export default function DataTable({ columns, data, className }) {
                                                         
                                                         cell.column.columnDef.accessorKey === "createdAt" ?
                                                         cell.row.original.createdAt.split("T")[0]
+                                                        :
+                                                        
+                                                        cell.column.columnDef.accessorKey === "typeSite" ?
+                                                        cell.row.original.typeSite === "HEADQUARTER" ? "À la direction" : "Sur le terrain"
                                                         
                                                     :
                                                     flexRender(cell.column.columnDef.cell, cell.getContext()) 

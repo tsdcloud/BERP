@@ -25,20 +25,28 @@ import { jwtDecode } from 'jwt-decode';
 // Schéma de validation avec Zod
 const shiftSchema = z.object({
     name: z.string()
-    .nonempty("Ce champs 'Nom' est réquis.")
-    .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme."),
+  .nonempty("Ce champs 'Nom' est réquis.")
+  .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
+  .max(100)
+  .regex(/^[a-zA-Z0-9 ,() -]+$/, "Ce champ doit être un 'nom' conforme."),
 
-    entityId: z.string()
-    .nonempty('Ce champs "Nom de la ville" est réquis')
-    .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
-    .max(100)
-    .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/, 
-      "Ce champs doit être un 'nom de entité' Conforme.")
-    ,
+  startTime: z.string()
+  .nonempty("Ce champs 'Heure de début' est réquis.")
+  .regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/, "Ce champ doit être au format HH:MM."),
 
-    createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
+  endTime: z.string()
+  .nonempty("Ce champs 'Heure de fin' est réquis.")
+  .regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/, "Ce champ doit être au format HH:MM."),
+
+  entityId: z.string()
+  .nonempty('Ce champs "Nom de la ville" est réquis')
+  .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
+  .max(100)
+  .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/, 
+    "Ce champs doit être un 'nom de entité' Conforme.")
+  ,
+
+  createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
 
     });
 
@@ -108,11 +116,10 @@ export const ShiftAction = () => {
 
     const onSubmit = async (data) => {
         const urlToUpdate = `${URLS.ENTITY_API}/shifts/${selectedShift?.id}`;
-      
         try {
             const response = await handlePatch(urlToUpdate, data);
             // console.log("response role update", response);
-                if (response) {
+                if (response ) {
                     setDialogOpen(false);
                         
                     setTimeout(()=>{
@@ -224,7 +231,7 @@ export const ShiftAction = () => {
                     try {
                             const response = await handleDelete(urlToDeletedShift, {isActive:false});
                             // console.log("response for deleted", response);
-                                if (response) {
+                                if (response && response.status === 200 || response.status === 204) {
                                     setTimeout(()=>{
                                         toast.success("shift disabled successfully", { duration: 5000});
                                         window.location.reload();
@@ -278,6 +285,40 @@ export const ShiftAction = () => {
                                                 />
                                                 {errors.name && (
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
+                                                )}
+                                    </div>
+                                    <div>
+                                            <label htmlFor='startTime' className="text-xs mt-2">
+                                                Date de début du shift <sup className='text-red-500'>*</sup>
+                                            </label>
+                                            <Input
+                                                id="startTime"
+                                                type="time"
+                                                defaultValue={selectedShift?.startTime}
+                                                {...register("startTime")}
+                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    errors.startTime ? "border-red-500" : "border-gray-300"
+                                                }`}
+                                                />
+                                                {errors.startTime && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.startTime.message}</p>
+                                                )}
+                                    </div>
+                                    <div>
+                                            <label htmlFor='endTime' className="text-xs mt-2">
+                                                Date de fin du shift <sup className='text-red-500'>*</sup>
+                                            </label>
+                                            <Input
+                                                id="endTime"
+                                                type="time"
+                                                defaultValue={selectedShift?.endTime}
+                                                {...register("endTime")}
+                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    errors.endTime ? "border-red-500" : "border-gray-300"
+                                                }`}
+                                                />
+                                                {errors.endTime && (
+                                                <p className="text-red-500 text-[9px] mt-1">{errors.endTime.message}</p>
                                                 )}
                                     </div>
                                     <div className=' flex flex-col'>
@@ -358,6 +399,14 @@ export const ShiftAction = () => {
                                             <h3 className="font-bold text-sm">{selectedShift?.name}</h3>
                                         </div>
                                         <div>
+                                            <p className="text-xs">Date de début</p>
+                                            <h3 className="font-bold text-sm">{selectedShift?.startTime}H</h3>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs">Date de fin</p>
+                                            <h3 className="font-bold text-sm">{selectedShift?.endTime}H</h3>
+                                        </div>
+                                        <div>
                                             <p className="text-xs">Nom de l'entité</p>
                                             <h3 className="font-bold text-sm">{selectedShift?.entityId}</h3>
                                         </div>
@@ -428,6 +477,8 @@ export const ShiftAction = () => {
 
     const columnsShift = useMemo(() => [
         { accessorKey: 'name', header: 'Nom du shift' },
+        { accessorKey: 'startTime', header: 'Date de début' },
+        { accessorKey: 'endTime', header: 'Date de fin' },
         { accessorKey: 'entityId', header: 'Nom de l\'entité' },
         { accessorKey: 'isActive', header: 'Statut' },
         {

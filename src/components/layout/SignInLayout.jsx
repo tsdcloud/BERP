@@ -9,34 +9,22 @@ export default function SignInLayout({children}) {
 
   return (
     
-    <div className='sm:bg-red-200 md:bg-transparent flex justify-between items-center h-screen min-h-screen relative w-full overflow-hidden'>
-        <img src={illustration} className="sm:bg-red-400 md:bg-transparent top-0 -right-10  w-[400px] h-[370px] absolute -z-10" alt='water frame'/>
-        <div className='flex h-full w-full'>
-
-              <div className='hidden sm:block md:w-1/2 h-full flex flex-col justify-between ml-9 p-8'>
-                <div className='sm:bg-pink-600 md:bg-transparent flex-col mt-9 space-y-1'>
-                        <h3 className='font-medium mb-10'>BERP.</h3>
-                        <h1 className='text-3xl font-bold'>Rapprochez-vous <br/>de l&apos;essentiel.</h1>
-                        <h4 className='text-xs'>Accéder à vos applications métiers dans un même endroit.</h4>   
-                </div>
-                <img src={illustrationHuman} className="mt-9 sm:bg-purple-400 md:bg-transparent w-[400px] h-[350px]" alt='Mascotte'/>
-              </div>
-
-
-              <div className='h-full w-full flex flex-col justify-center sm:justify-normal space-y-8 items-center sm:mt-[100px]'>
-                    <div className='sm:hidden flex flex-col items-center justify-center'>
-                      <h3 className='text-5xl font-bold mb-1'>BERP.</h3>
-                      <h1 className='font-medium text-xl'>Rapprochez-vous de l&apos;essentiel.</h1>  
-                    </div>
-                    <div className=' w-[360px] h-[370px] bg-white shadow-2xl relative rounded-sm '>
-                      <div className='sm:bg-blue-400 md:bg-transparent p-5 m-0'>
-                          {children}
-                      </div>
-                    </div>
-                    <div className='sm:bg-pink-500 md:bg-transparent relative'>
-                      <Footer className="text-center"/>
-                    </div>
-              </div>
+    <div className='md:bg-transparent flex justify-between items-center h-screen min-h-screen relative w-full overflow-hidden'>
+        <img src={illustration} className=" md:bg-transparent top-0 -right-10  w-[400px] h-[370px] absolute -z-10" alt='water frame'/>
+        <img src={illustration} className=" md:bg-transparent -bottom-10 -left-10 rotate-180  w-[400px] h-[370px] absolute -z-10" alt='water frame'/>
+        
+        <div className='flex flex-col lg:flex-row h-full w-full items-center justify-center lg:items-center sm:justify-center lg:justify-evenly lg:mt-0'>
+          <div className='flex flex-col mx-4 md:mx-0 md:gap-2 my-6'>
+              <h3 className='font-medium md:mb-10 text-lg font-mono absolute z-50 top-6 left-3 md:relative'>BERP.</h3>
+              <h1 className='text-4xl lg:text-6xl font-bold hidden md:block'>Rapprochez-vous <br/>de l&apos;essentiel.</h1>
+              <h4 className='lg:text-md hidden md:block'>Accéder à vos applications métiers dans un même endroit.</h4>
+          </div>
+          
+          <div className=' w-[360px] md:w-[500px] h-[370px] md:h-[500px] bg-white shadow-2xl relative rounded-sm md:m-0 px-4'>
+            <div className='md:bg-transparent p-5 m-0'>
+                {children}
+            </div>
+          </div>
         </div>
       
     </div>
