@@ -32,6 +32,7 @@ export default function Site() {
                             return { id: rest.id, 
                                      name:rest.name,
                                      entityId:rest.entity.name,
+                                     typeSite:rest.typeSite,
                                      createdAt:rest.createdAt,
                                      isActive:rest.isActive,
                                     };

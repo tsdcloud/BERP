@@ -28,15 +28,21 @@ const siteSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,][0-9]+$/, "Ce champ doit être un 'nom' conforme."),
+    .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom cv' conforme."),
 
     entityId: z.string()
     .nonempty('Ce champs "Nom de la ville" est réquis')
     .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
     .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/, 
-      "Ce champs doit être un 'nom de entité' Conforme.")
-    ,
+      "Ce champs doit être un 'nom de entité' Conforme."),
+
+    
+    typeSite: z.string()
+    .nonempty("Ce champs 'Nom' est réquis.")
+    .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
+    .max(100)
+    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'type de site' conforme."),
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
 
@@ -50,6 +56,7 @@ export const SiteAction = () => {
     const [selectedSite, setSelectedSite] = useState({});
     const [selectedEntities, setSelectedEntities] = useState([]);
     const [showEntities, setShowEntities] = useState([]);
+    const [selectedTypeOfSite, setSelectedTypeOfSite] = useState([]);
     const [tokenUser, setTokenUser] = useState();
     const [error, setError] = useState();
 
@@ -91,9 +98,22 @@ export const SiteAction = () => {
       }
      };
 
+
   useEffect(()=>{
     fetchEntites();
   },[]);
+
+
+  const getTypeOfSite = [
+    {
+        id: "HEADQUARTER",
+        name : "À la direction"
+    },
+    {
+        id: "FIELD",
+        name : "Sur le terrain"
+    }
+];
 
    useEffect(()=>{
     const token = localStorage.getItem("token");
@@ -117,7 +137,7 @@ export const SiteAction = () => {
                         
                     setTimeout(()=>{
                         toast.success("site modified successfully", { duration: 900 });
-                        // window.location.reload();
+                        window.location.reload();
                     },[200]);
                 }
                 else {
@@ -227,7 +247,7 @@ export const SiteAction = () => {
                                 if (response) {
                                     setTimeout(()=>{
                                         toast.success("site disabled successfully", { duration: 5000});
-                                        // window.location.reload();
+                                        window.location.reload();
                                     },[200]);
                                 }
                                 else {
@@ -306,6 +326,36 @@ export const SiteAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.entityId.message}</p>
                                                 )}
                                     </div>
+                                    <div className=' flex flex-col'>
+                                                    <label htmlFor="typeSite" className="block text-xs font-medium mb-1">
+                                                        Type de site <sup className='text-red-500'>*</sup>
+                                                    </label>
+
+                                        
+                                                    <select
+                                                                onChange={(e) => {
+                                                                    const nameTypeOfSiteSelected = getTypeOfSite.find(item => item.id === e.target.value);
+                                                                    setSelectedTypeOfSite(nameTypeOfSiteSelected);
+                                                                }}
+                                                                defaultValue={selectedSite?.typeSite}
+                                                                {...register('typeSite')} 
+                                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                                    errors.typeSite ? "border-red-500" : "border-gray-300"
+                                                                }`}
+                                                            >
+                                                                <option value="">Selectionner un type</option>
+                                                                    {getTypeOfSite.map((item) => (
+                                                                        <option key={item.id} value={item.id}>
+                                                                                {item.name}
+                                                                        </option>
+                                                                    ))}
+                                                    </select>
+                                                    {
+                                                        errors.typeSite && (
+                                                        <p className="text-red-500 text-[9px] mt-1">{errors?.typeSite?.message}</p>
+                                                        )
+                                                    }
+                                    </div>
 
                                     <div className='mb-1 hidden'>
                                             <label htmlFor="createdBy" className="block text-xs font-medium mb-0">
@@ -360,6 +410,10 @@ export const SiteAction = () => {
                                         <div>
                                             <p className="text-xs">Nom de l'entité</p>
                                             <h3 className="font-bold text-sm">{selectedSite?.entityId}</h3>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs">Type de site</p>
+                                            <h3 className="font-bold text-sm">{selectedSite?.typeSite === "HEADQUARTER" ? "À la direction" : "Sur le terrain"}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Date de création</p>
@@ -429,6 +483,7 @@ export const SiteAction = () => {
     const columnsSite = useMemo(() => [
         { accessorKey: 'name', header: 'Nom du site' },
         { accessorKey: 'entityId', header: 'Nom de l\'entité' },
+        { accessorKey: 'typeSite', header: 'Type de site' },
         { accessorKey: 'isActive', header: 'Statut' },
         {
             accessorKey: "action",

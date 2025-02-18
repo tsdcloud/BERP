@@ -51,6 +51,11 @@ import CustomerBankAccount from './Pages/entity/CustomerBankAccount';
 import EntityBankAccount from './Pages/entity/EntityBankAccount';
 import Site from './Pages/entity/Site';
 import Supplier from './Pages/entity/Supplier';
+import Shift from './Pages/entity/Shift';
+import AsignEmpRole from './Pages/entity/AsignEmpRole';
+import AsignAppPerm from './Pages/entity/AsignAppPerm';
+import AsignRolePerm from './Pages/entity/AsignRolePerm';
+import AsignEmpPerm from './Pages/entity/AsignEmpPerm';
 
 
 
@@ -93,9 +98,7 @@ function App() {
                <Route path="customers" element={<Customer />} />
                <Route path="countries" element={<Country />} />
                <Route path="roles" element={<RoleEntity/>} />
-
                <Route path="applications" element={<ApplicationEntity/>} />
-               
                <Route path="permissions" element={<PermissionEntity/>} />
                <Route path="districts" element={<District/>} />
                <Route path="towns" element={<Town/>} />
@@ -103,6 +106,11 @@ function App() {
                <Route path="entity_bank_accounts" element={<EntityBankAccount/>} />
                <Route path="sites" element={<Site/>} />
                <Route path="suppliers" element={<Supplier/>} />
+               <Route path="shifts" element={<Shift/>} />
+               <Route path="asign_emp_roles" element={<AsignEmpRole/>} />
+               <Route path="asign_app_perms" element={<AsignAppPerm/>} />
+               <Route path="asign_role_perms" element={<AsignRolePerm/>} />
+               <Route path="asign_emp_perms" element={<AsignEmpPerm/>} />
 
 
 

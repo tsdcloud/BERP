@@ -126,7 +126,7 @@ export default function CreateAsignPermApp({setOpen, onSubmit}) {
       });
 
 
-      const { register, handleSubmit, setValue, reset,  formState: { errors, isSubmitting }} = useForm({
+      const { register, handleSubmit, setValue, reset, formState: { errors, isSubmitting }} = useForm({
           resolver: zodResolver(asignPermAppSchema),
       });
 

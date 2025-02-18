@@ -53,12 +53,12 @@ export const URLS = {
   // API_ROLE_ENTITY: import.meta.env.VITE_API_ROLE_ENTITY,
   // API_TOWN: import.meta.env.VITE_API_TOWN,
   // API_SERVICE: import.meta.env.VITE_API_SERVICE,
+  // API_SHIFT: import.meta.env.VITE_API_SHIFT,
+  // API_SITE: import.meta.env.VITE_API_SITE,
+  // API_SUPPLIER: import.meta.env.VITE_API_SUPPLIER,
   
 
   
-  API_SHIFT: import.meta.env.VITE_API_SHIFT,
-  API_SITE: import.meta.env.VITE_API_SITE,
-  API_SUPPLIER: import.meta.env.VITE_API_SUPPLIER,
 
   
 };
