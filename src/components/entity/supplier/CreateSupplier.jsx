@@ -19,13 +19,7 @@ const supplierSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme."),
-
-    address: z.string()
-    .nonempty("Ce champs 'Adresse' est réquis")
-    .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champs doit être une 'Adresse' conforme"),
+    .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme."),
 
     phone: z.string()
     .nonempty("Ce champs 'Téléphone' est réquis.")
@@ -202,27 +196,6 @@ export default function CreateSupplier({setOpen, onSubmit}) {
                               }
                       
                     </div>
-
-                    <div className='mb-1'>
-                      <label htmlFor="address" className="block text-xs font-medium mb-0">
-                          Adresse du prestataire <sup className='text-red-500'>*</sup>
-                      </label>
-
-                      <input 
-                        id='address'
-                        type="text"
-                        {...register('address')} 
-                        className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
-                        ${
-                            errors.address ? "border-red-500" : "border-gray-300"
-                          }`}
-                      />
-                      {
-                        errors.address && (
-                          <p className="text-red-500 text-[9px] mt-1">{errors.address.message}</p>
-                        )
-                      }
-                  </div>
 
                   <div className='mb-1'>
                       <label htmlFor="phone" className="block text-xs font-medium mb-0">

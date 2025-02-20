@@ -28,13 +28,7 @@ const supplierSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,][0-9]+$/, "Ce champ doit être un 'nom' conforme."),
-
-    address: z.string()
-    .nonempty("Ce champs 'Adresse' est réquis")
-    .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champs doit être une 'Adresse' conforme"),
+    .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme."),
 
     phone: z.string()
     .nonempty("Ce champs 'Téléphone' est réquis.")
@@ -46,13 +40,13 @@ const supplierSchema = z.object({
     .email("Adresse mail invalide")
     .max(255),
 
-    // entityId: z.string()
-    // .nonempty('Ce champs "Nom de la ville" est réquis')
-    // .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
-    // .max(100)
-    // .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/, 
-    //   "Ce champs doit être un 'nom de entité' Conforme.")
-    // ,
+    entityId: z.string()
+    .nonempty('Ce champs "Nom de la ville" est réquis')
+    .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
+    .max(100)
+    .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/, 
+      "Ce champs doit être un 'nom de entité' Conforme.")
+    ,
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
 
@@ -76,40 +70,40 @@ export const SupplierAction = () => {
    const { handlePatch, handleDelete, handleFetch } = useFetch();
    
 
-//    const fetchEntites = async () => {
-//     const getEntities =  `${URLS.ENTITY_API}/entities`;
-//     try {
-//         setIsLoading(true);
-//         const response = await handleFetch(getEntities);
-        
-//             if (response && response?.status === 200) {
-//                     const results = response?.data;
-//                     // console.log("results", results);
+   const fetchEntites = async () => {
+        const getEntities =  `${URLS.ENTITY_API}/entities`;
+        try {
+            setIsLoading(true);
+            const response = await handleFetch(getEntities);
+            
+                if (response && response?.status === 200) {
+                        const results = response?.data;
+                        // console.log("results", results);
 
-//                     const filteredEntities = results?.map(item => {
-//                     const { createdBy, updateAt, ...rest } = item;
-//                     return { 
-//                         id:rest.id, 
-//                         ...rest
-//                     };
-//                 });
-//                     // console.log("districts - Town",filteredEntities);
-//                     setShowEntities(filteredEntities);
-//             }
-//             else{
-//                 throw new Error('Erreur lors de la récupération des entités');
-//             }
-//     } catch (error) {
-//         setError(error.message);
-//     }
-//     finally {
-//         setIsLoading(false);
-//       }
-//      };
+                        const filteredEntities = results?.map(item => {
+                        const { createdBy, updateAt, ...rest } = item;
+                        return { 
+                            id:rest.id, 
+                            ...rest
+                        };
+                    });
+                        // console.log("districts - Town",filteredEntities);
+                        setShowEntities(filteredEntities);
+                }
+                else{
+                    throw new Error('Erreur lors de la récupération des entités');
+                }
+        } catch (error) {
+            setError(error.message);
+        }
+        finally {
+            setIsLoading(false);
+        }
+        };
 
-//   useEffect(()=>{
-//     fetchEntites();
-//   },[]);
+    useEffect(()=>{
+        fetchEntites();
+    },[]);
 
    useEffect(()=>{
     const token = localStorage.getItem("token");
@@ -128,12 +122,12 @@ export const SupplierAction = () => {
         try {
             const response = await handlePatch(urlToUpdate, data);
             console.log("response supplier update", response);
-                if (response) {
+                if (response && response.status === 200) {
                     setDialogOpen(false);
                         
                     setTimeout(()=>{
                         toast.success("supplier modified successfully", { duration: 900 });
-                        // window.location.reload();
+                        window.location.reload();
                     },[200]);
                 }
                 else {
@@ -240,10 +234,10 @@ export const SupplierAction = () => {
                     try {
                             const response = await handleDelete(urlToDeletedSupplier, {isActive:false});
                             console.log("response for deleting", response);
-                                if (response) {
+                                if (response & response.status === 204 || response.status === 200) {
                                     setTimeout(()=>{
                                         toast.success("supplier disabled successfully", { duration: 5000});
-                                        // window.location.reload();
+                                        window.location.reload();
                                     },[200]);
                                 }
                                 else {
@@ -296,27 +290,7 @@ export const SupplierAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
                                                 )}
                                     </div>
-                                    <div className='mb-1'>
-                                    <label htmlFor="address" className="block text-xs font-medium mb-0">
-                                        Adresse du prestataire <sup className='text-red-500'>*</sup>
-                                    </label>
-
-                                    <input 
-                                        id='address'
-                                        type="text"
-                                        defaultValue={selectedSupplier?.address}
-                                        {...register('address')} 
-                                        className={`w-2/3 font-semibold px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
-                                        ${
-                                            errors.address ? "border-red-500" : "border-gray-300"
-                                        }`}
-                                    />
-                                    {
-                                        errors.address && (
-                                        <p className="text-red-500 text-[9px] mt-1">{errors.address.message}</p>
-                                        )
-                                    }
-                                </div>
+                                    
 
                                 <div className='mb-1'>
                                     <label htmlFor="phone" className="block text-xs font-medium mb-0">
@@ -357,7 +331,7 @@ export const SupplierAction = () => {
                                                 )}
 
                                     </div>
-                                    {/* <div className=' flex flex-col'>
+                                    <div className=' flex flex-col'>
                                             <label htmlFor='entityId' className="text-xs mt-2">
                                                 Nom de l'entité <sup className='text-red-500'>*</sup>
                                             </label>
@@ -382,7 +356,7 @@ export const SupplierAction = () => {
                                                 {errors.entityId && (
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.entityId.message}</p>
                                                 )}
-                                    </div> */}
+                                    </div>
 
                                     <div className='mb-1 hidden'>
                                             <label htmlFor="createdBy" className="block text-xs font-medium mb-0">
@@ -433,10 +407,6 @@ export const SupplierAction = () => {
                                         <div>
                                             <p className="text-xs">Nom du prestataire</p>
                                             <h3 className="font-bold text-sm">{selectedSupplier?.name}</h3>
-                                        </div>
-                                        <div>
-                                            <p className="text-xs">Adresse du prestataire</p>
-                                            <h3 className="font-bold text-sm">{selectedSupplier?.address}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Téléphone du prestataire</p>
@@ -517,7 +487,6 @@ export const SupplierAction = () => {
 
     const columnsSupplier = useMemo(() => [
         { accessorKey: 'name', header: 'Nom du prestataire' },
-        { accessorKey: 'address', header: 'Adresse du prestataire' },
         { accessorKey: 'phone', header: 'Téléphone du prestataire' },
         { accessorKey: 'email', header: 'Email du prestataire' },
         { accessorKey: 'entityId', header: "Nom de l'entité" },

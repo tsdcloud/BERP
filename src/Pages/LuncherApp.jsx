@@ -30,7 +30,7 @@ export default function LuncherApp() {
   const { handlePost } = useFetch();
 
   const logout = async () => {
-    const urlToLogout = URLS.API_USER_ABILITY + "/logout/";
+    const urlToLogout = `${URLS.API_USER_ABILITY}/logout/`;
 
     const data = {
         refresh : refresh

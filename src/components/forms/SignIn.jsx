@@ -81,7 +81,7 @@ export default function SignIn() {
 
   return (
    <SignInLayout>
-    <div className='text-center'>
+    <div className='text-center my-3'>
         <h3 className='font-semibold text-xs'>Connectez-vous à votre compte</h3>
         <p className='text-xs'>Renseignez correctement vos identifiants.</p>
      </div>
