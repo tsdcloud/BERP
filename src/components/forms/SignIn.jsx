@@ -26,11 +26,7 @@ const formSignInSchema = z.object({
     // )
     ,
     password: z.string()
-<<<<<<< HEAD
     .nonempty("Ce champs 'Mot de passe' est réquis."),
-=======
-    .nonempty("Ce champs 'Mot de passe' est réquis.")
->>>>>>> 1f00e2d56102ddf3cbafeda80edb1b33ab4ed821
     // .regex(/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@]).{8,}/, 
     // "Le mot de passe saisie doit avoir au moins une lettre majuscule, une minuscule, un caractère spécial (@), un chiffre et doit contenir au moins 8 caractères."),
 });
