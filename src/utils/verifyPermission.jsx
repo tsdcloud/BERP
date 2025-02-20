@@ -7,7 +7,6 @@ const VerifyPermission = ({children, expected=[], roles=[], functions=[], isExcl
   const [isSuperAdmin, setIsSuperAdmin] = useState(false)
   useEffect(()=>{
       const isSuperAdmin =()=>{
-        
         try {
           let decodedToken = jwtDecode(token)
           if(decodedToken){
@@ -28,7 +27,6 @@ const VerifyPermission = ({children, expected=[], roles=[], functions=[], isExcl
     if(expected instanceof Array){
 
         if(isExclude){
-          console.log(isExclude)
           if((!expected.includes(roles) || !expected.includes(functions))){
             return <>{children}</>
           }
