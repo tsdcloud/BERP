@@ -79,38 +79,42 @@ export default function LuncherApp() {
   //Cette page va representer la page présentante toutes les app de l'erp.
 
   return (
-                <div className="flex flex-col min-h-screen bg-primary">
+                <div className="flex flex-col min-h-screen">
                 {/* Effet nuageux avec animation */}
-                <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-60 blur-lg animate-gradient"></div>
-              
+                <div className="absolute inset-0 opacity-30 blur-xl animate-gradient w-full h-full flex items-center justify-center">
+                  <img src="/logo-placeholder.png" alt=""/>
+                </div>
+
                 {/* Contenu principal */}
-                <div className="flex-grow relative z-10 p-8">
+                <div className="flex-grow relative z-10 p-8 w-full h-[80vh] md:px-[100px] overflow-hidden">
 
                   <div className='flex justify-between'>
-                      <h1 className="text-white text-xl md:text-3xl font-bold">Mes applications</h1>
                       <Button
                           type="submit"
                           className="absolute top-0 right-6 my-9 mx-4 w-auto bg-red-500 text-white px-2 text-xs rounded-3xl shadow-md hover:bg-blue-700 transition "
                           onClick={logout}
                       >
+                        <span className='sm:hidden md:block'>Deconnexion</span>
                         <ArrowLeftEndOnRectangleIcon className="h-6 w-6 rotate-180" />
                       </Button>
                   </div>
-
-                    <div className='m-3 flex flex-wrap space-x-1 justify-center items-center sm:justify-normal'>
+                    <h1 className="text-xl md:text-3xl font-semibold font-poppins">Mes applications</h1>
+                    <div className='flex flex-wrap space-x-5 justify-center items-start gap-2 xs:mt-[60px] mt-[100px] md:gap-5 w-full h-full overflow-y-auto'>
                         {/* Ajoutez ici le reste de votre contenu */}
-                        <VerifyPermission expected={["application__can_view_entities"]} functions={userPermissions} roles={userRoles}>
-                          <EntityEntryPoint/>
-                        </VerifyPermission>
-                        <VerifyPermission  expected={["application__can_view_users"]} functions={userPermissions} roles={userRoles}>
-                          <UserEntryPoint/>
-                        </VerifyPermission>
-                        <VerifyPermission expected={["application__can_view_incidents"]} functions={userPermissions} roles={userRoles}>
-                          <IncidentEntryPoint/>
-                        </VerifyPermission>
-                        <VerifyPermission expected={["application__can_view_wpo"]} functions={userPermissions} roles={userRoles}>
-                          <WPOEnteryPoint />
-                        </VerifyPermission>
+                        <div className='flex justify-center items-start md:gap-4 flex-row flex-wrap mx-auto md:space-x-4'>
+                          <VerifyPermission expected={["application__can_view_entities"]} functions={userPermissions} roles={userRoles}>
+                            <EntityEntryPoint/>
+                          </VerifyPermission>
+                          <VerifyPermission  expected={["application__can_view_users"]} functions={userPermissions} roles={userRoles}>
+                            <UserEntryPoint/>
+                          </VerifyPermission>
+                          <VerifyPermission expected={["application__can_view_incidents"]} functions={userPermissions} roles={userRoles}>
+                            <IncidentEntryPoint/>
+                          </VerifyPermission>
+                          <VerifyPermission expected={["application__can_view_wpo"]} functions={userPermissions} roles={userRoles}>
+                            <WPOEnteryPoint />
+                          </VerifyPermission>
+                        </div>
                     </div>
 
 
