@@ -158,11 +158,17 @@ const RapportIncidentForm = ({onSubmit}) => {
         try {
             let response = await fetch(url, requestOptions);
             if(response.status === 200){
+                
                 const result = await response.json();
-                const link = document.getElementById('download');
+                const link = document.createElement('a');
                 link.href = result?.downloadLink;
-                link.download = "incidents_report.xlsx";
+                link.download = 'export.xlsx';
                 link.click();
+
+                // const link = document.getElementById('download');
+                // link.href = result?.downloadLink;
+                // link.download = "incidents_report.xlsx";
+                // link.click();
                 onSubmit()
                 return;
             }

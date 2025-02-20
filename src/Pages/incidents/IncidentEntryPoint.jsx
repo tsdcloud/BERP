@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { FaFire } from 'react-icons/fa';
 import Preloader from '../../components/Preloader';
+import { ShieldExclamationIcon } from '@heroicons/react/24/solid';
 
 export default function IncidentEntryPoint() {
     
     const [isLoading, setIsLoading] = useState(false);
     return (
-        <div className='flex sm:justify-normal justify-center sm:items-start items-center m-0 lg:m-4 mb-7'>
+        <div className='flex justify-normal md:justify-center items-start md:items-center m-4'>
             {
 
                 isLoading ? (
@@ -15,16 +16,16 @@ export default function IncidentEntryPoint() {
                         <h6>Chargement...</h6>
                     </div>
                 ) : (
-                    <div className='flex flex-col items-center m-7 space-y-2'>
+                    <div className='flex flex-col items-center space-y-2'>
                                 <a
                                     href="/incidents"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center justify-center w-[90px] h-[90px] bg-secondary text-white rounded-xl shadow-lg hover:bg-orange-600 transition duration-300"
+                                    className="flex items-center justify-center transition-all w-[70px] hover:w-[80px] h-[70px] hover:h-[80px] bg-gradient-to-tr from-secondary to-green-500 hover:bg-gradient-to-tr text-white rounded-xl shadow-sm hover:shadow-2xl hover:from-orange-600 hover:to-orange-400"
                                 >
-                                    <FaFire size={40} className='' />
+                                    <ShieldExclamationIcon className='h-10 w-10 text-white' />
                                 </a>
-                                <p className='text-white text-xs'>Gestion des incidents</p>
+                                <p className='font-semibold text-xs text-center max-w-[70px]'>Gestion des incidents</p>
                     </div>
                 )
             }
