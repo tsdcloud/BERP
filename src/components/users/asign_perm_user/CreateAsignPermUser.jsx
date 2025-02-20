@@ -43,7 +43,7 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
         const urlToGetPermission = `${URLS.USER_API}/permissions/`;
         try {
             const response = await handleFetch(urlToGetPermission);
-            console.log("response show permission", response);
+            // console.log("response show permission", response);
 
                 if (response && response?.data?.results) {
                     const filteredPermission = response?.data?.results.map(item => {
@@ -51,7 +51,7 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
                     return rest;
                     });
                         setFetchPermission(filteredPermission);
-                        console.log("fetchPermission", fetchPermission);
+                        // console.log("fetchPermission", fetchPermission);
                 
                     }
                 else {
@@ -76,7 +76,7 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
                         return rest;
                     });
                         setFetchUser(filteredUsers);
-                        console.log("fetchUser", fetchUser);
+                        // console.log("fetchUser", fetchUser);
                 
                     }
                 else {

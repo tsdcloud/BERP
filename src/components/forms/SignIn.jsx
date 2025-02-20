@@ -26,7 +26,11 @@ const formSignInSchema = z.object({
     // )
     ,
     password: z.string()
+<<<<<<< HEAD
+    .nonempty("Ce champs 'Mot de passe' est réquis."),
+=======
     .nonempty("Ce champs 'Mot de passe' est réquis.")
+>>>>>>> 1f00e2d56102ddf3cbafeda80edb1b33ab4ed821
     // .regex(/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@]).{8,}/, 
     // "Le mot de passe saisie doit avoir au moins une lettre majuscule, une minuscule, un caractère spécial (@), un chiffre et doit contenir au moins 8 caractères."),
 });
@@ -82,12 +86,12 @@ export default function SignIn() {
   return (
    <SignInLayout>
     <div className='text-center my-3'>
-        <h3 className='font-semibold text-xs'>Connectez-vous à votre compte</h3>
+        <h3 className='font-semibold text-xl'>Connectez-vous à votre compte</h3>
         <p className='text-xs'>Renseignez correctement vos identifiants.</p>
      </div>
 
       <form onSubmit={handleSubmit(submitDataSignIn)}  
-        className='text-xs'>
+        className='text-xs m-10'>
 
               {/* Champ Identifier (Email ou Username) */}
           <div className="mb-5">

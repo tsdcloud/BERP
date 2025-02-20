@@ -67,12 +67,10 @@ export default function ForgetPassword() {
     });
 
   const handleSubmitEmailForReseting = async(data) => {
-      // const urlToResetPassword = "http://127.0.0.1:8000/gateway/api/reset_password_email/";
-      // const urlToResetPassword = URLS.FORGOT_PASSWORD;
       const urlToResetPassword = `${URLS.API_USER_ABILITY}/forgot_password/`;
       try {
         const response = await handlePost(urlToResetPassword, data, false);
-        console.log("reset",response);
+        // console.log("reset",response);
         if (response && response?.success ) {
           setDialogOpen(true);
         }
@@ -91,14 +89,14 @@ export default function ForgetPassword() {
 
   return (
     <SignInLayout>
-          <div className='text-center py-3'>
+          <div className='text-center py-3 my-6'>
               <h3 className='font-semibold mb-3 text-lg'>Réinitialiser votre mot de passe</h3>
-              <p className='text-[13px] mb-5'>
+              <p className='text-xs md:text-[13px] mb-5'>
                 Renseigner votre adresse mail afin de reçevoir un code de Réinitialisation.
               </p>
           </div>
           <form onSubmit={handleSubmit(handleSubmitEmailForReseting)} 
-            className='sm:bg-blue-200 mb-5 md:bg-transparent'>
+            className=' flex flex-col items-center'>
 
                     <div className='mb-4'>
                             <label htmlFor="email" className="block text-xs font-medium mb-0">
@@ -127,14 +125,14 @@ export default function ForgetPassword() {
                           >
                             {isSubmitting ? "Envoi en cours..." : "Envoyez moi un mail"}
                           </Button>
-                          <div className=' flex justify-center mt-6 text-[8px]'>
+
+          </form>
+                          <div className=' flex justify-center mt-6 text-[8px] sm:text-[9px]'>
                               Par cette action, vous acceptez nos 
                               <p className='text-green-900 underline cursor-pointer'>
                                 Conditions de confidentialités.
                               </p>
                         </div>
-
-          </form>
           {returnDialog()}
           <Toaster/>
      </SignInLayout>

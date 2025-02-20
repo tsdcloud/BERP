@@ -25,13 +25,15 @@ const userSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     first_name: z.string()
     .nonempty("Ce champs 'Pénom' est réquis")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z]+$/, "Ce champs doit être un 'prénom' conforme"),
+    // .regex(/^[a-zA-Z]+$/, "Ce champs doit être un 'prénom' conforme")
+    ,
 
     email: z.string()
     .nonempty("Ce champs 'Email' est réquis.")
@@ -42,14 +44,14 @@ const userSchema = z.object({
     phone: z.string()
     .nonempty("Ce champs 'Téléphone' est réquis.")
     .length(9, "La valeur de ce champs doit contenir 9 caractères.")
-    .regex(/^[0-9]+$/)
+    // .regex(/^[0-9]+$/)
     ,
 
     username: z.string()
     .nonempty('Ce champs "Nom d utilisateur" est réquis')
     // .min(5, "La valeur de ce champs doit contenir au moins 5 caractères.")
     .max(100)
-    .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom d utilisateur' Conforme.")
+    // .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom d utilisateur' Conforme.")
 
     });
 

@@ -51,14 +51,16 @@ export default function ConfirmPassword() {
   const queryParams = new URLSearchParams(location.search);
   const token = queryParams.get('token');
 
+  // console.log("tokn", token);
+
 
   const { handlePatchPassword } = useFetch();
 
   const returnDialog = () =>{
 
     return(
-      <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-      <AlertDialogContent>
+      <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen} >
+      <AlertDialogContent className="sm:w-[90px] md:w-full rounded-sm">
         <AlertDialogHeader>
           <AlertDialogTitle>Réinitialisation réussie.</AlertDialogTitle>
           <AlertDialogDescription>
@@ -83,12 +85,11 @@ export default function ConfirmPassword() {
     });
 
   const handleSubmitConfirmPassword = async(data) => {
-      // const urlToSetPassword = `http://127.0.0.1:8000/gateway/api/users/set_password/?token=${token}`;
       const urlToSetPassword = `${URLS.USER_API}/users/set_password/?token=${token}`;
       
       try {
         const response = await handlePatchPassword(urlToSetPassword, data);
-        // console.log("rio",response);
+        // console.log("confirm", response);
         if (response && response?.success ) {
           setDialogOpen(true);
         }
@@ -114,7 +115,7 @@ export default function ConfirmPassword() {
               </p>
           </div>
           <form onSubmit={handleSubmit(handleSubmitConfirmPassword)} 
-            className='sm:bg-blue-200 text-xs md:bg-transparent'>
+            className=' text-xs m-1 sm:m-9'>
 
                 <div className="relative mb-3">
                             <label htmlFor="password" className="block text-gray-700 font-medium mb-1">
@@ -170,20 +171,23 @@ export default function ConfirmPassword() {
                             )}
                             
                 </div>
-                        <Button
-                            type="submit"
-                            disabled={isSubmitting}
-                            className="w-[320px] bg-blue-900 text-white py-2 px-4 text-xs rounded-3xl shadow-md hover:bg-blue-700 transition"
-                          >
-                            {isSubmitting ? "Confirmation en cours..." : "Je confirme mon mot de passe"}
-                          </Button>
-                          <div className=' flex justify-center mt-2 text-[8px]'>
-                              Par cette action, vous acceptez nos 
-                              <p className='text-green-900 underline cursor-pointer'>
-                                Conditions de confidentialités.
-                              </p>
-                        </div>
 
+                <div className=' flex flex-col items-center text-[8px]'>
+                    <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full sm:w-[320px] bg-blue-900 text-white py-2 px-4 text-xs rounded-3xl shadow-md hover:bg-blue-700 transition"
+                      >
+                        {isSubmitting ? "Confirmation en cours..." : "Je confirme mon mot de passe"}
+                      </Button>
+                      <div className='flex m-2'>
+                        Par cette action, vous acceptez nos 
+                        <p className='text-green-900 underline cursor-pointer'>
+                          Conditions de confidentialités.
+                        </p>
+
+                      </div>
+              </div>
           </form>
           {returnDialog()}
           <Toaster/>

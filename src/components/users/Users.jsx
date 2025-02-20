@@ -23,7 +23,7 @@ export default function Users() {
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllUsers);
-            console.log("respo",response);
+            // console.log("respo",response);
             
                 if (response && response?.data?.results) {
                     const results = response?.data?.results;

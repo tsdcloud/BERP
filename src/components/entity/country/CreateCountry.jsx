@@ -20,7 +20,8 @@ const countrySchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
 });
@@ -51,8 +52,6 @@ export default function CreateCountry({setOpen, onSubmit}) {
 
 
     const handleSubmitDataFormCountry = async (data) => {
-      // console.log(data);
-      // const urlToCreateCountry = URLS.API_COUNTRY;
       const urlToCreateCountry =  `${URLS.ENTITY_API}/countries`;
       // console.log(data);
       try {

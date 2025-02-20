@@ -40,13 +40,12 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
     const { handleFetch, handlePost } = useFetch();
 
 
-
     const showUser = async () => {
         // const urlToGetUser = `${URLS.API_USER}`;
         const urlToGetUser = `${URLS.USER_API}/users/`;
         try {
             const response = await handleFetch(urlToGetUser);
-            console.log("response show user", response);
+            // console.log("response show user", response);
 
                 if (response && response?.data?.results) {
                     const results = response?.data?.results;
@@ -57,7 +56,7 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
                     return rest;
                     });
                         setFetchUser(filteredUser);
-                        console.log("fetchUser", fetchUser);
+                        // console.log("fetchUser", fetchUser);
                 
                     }
                 else {
