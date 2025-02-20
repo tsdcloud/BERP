@@ -28,7 +28,7 @@ import { ApplicationDialog } from './ApplicationDialog';
 const applicationSchema = z.object({
     application_name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
-    .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
+    // .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
     .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
 

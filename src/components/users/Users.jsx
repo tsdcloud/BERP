@@ -91,7 +91,7 @@ export default function Users() {
                             columns={columnsUser}
                             data={users} 
                         />    
-                    ) : <Preloader size={40} />}
+                    ) : isLoading ? <Preloader size={40} /> : <div className='flex justify-center text-xl font-bold text-gray-300'> No data</div>}
                 </div>
                 {showDialogUser()}
             </div>

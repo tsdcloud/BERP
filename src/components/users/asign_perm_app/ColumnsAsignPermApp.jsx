@@ -54,7 +54,7 @@ export const AsignPermAppAction = ( { upDateTable } ) => {
 
     const onSubmit = async (data) => {
         // const urlToUpdate = `${URLS.API_ASIGN_PERM_APP}${selectedAsignPermApp?.id}`;
-        const urlToUpdate = `${URLS.USER_API}/grant_permission_application/${selectedAsignPermApp?.id}`;
+        const urlToUpdate = `${URLS.USER_API}/grant_permission_application/${selectedAsignPermApp?.id}/`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);

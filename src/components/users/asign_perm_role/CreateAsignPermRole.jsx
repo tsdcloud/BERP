@@ -107,7 +107,7 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
 
     const showPermission = async () => {
         // const urlToGetPermission = `${URLS.API_PERMISSION}`;
-        const urlToGetPermission = `${URLS.USER_API}/applications/`;
+        const urlToGetPermission = `${URLS.USER_API}/permissions/`;
         try {
             const response = await handleFetch(urlToGetPermission);
             // console.log("response show permission", response);
@@ -183,7 +183,7 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
       const onSubmitDataFormAsignPermRole = async (data) => {
         // console.log("Données du formulaire :", data);
         // const urlToCreateAsignPermRole = URLS.API_GRANT_PERMISSIONS_ROLE;
-        const urlToCreateAsignPermRole = `${URLS.USER_API}/grant_permission_role/`;
+        const urlToCreateAsignPermRole = `${URLS.USER_API}/grant_permissions_role/`;
         
       
     //     try {
@@ -280,7 +280,7 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
           <div className='space-y-0'>
                 <p className='text-[12px] mb-2'>Veuillez correctement renseigner les informations de l'asignation permission - rôle.</p>
                 <form onSubmit={handleSubmit(onSubmitDataFormAsignPermRole)} 
-                    className='sm:bg-blue-200 md:bg-transparent'>
+                    className='md:bg-transparent'>
 
                         {/* <div className='mb-4'>
                             <label htmlFor="role_id" className="block text-xs font-medium mb-1">
@@ -363,7 +363,7 @@ export default function CreateAsignPermRole({setOpen, onSubmit}) {
                                 mode="multiple"
                                 allowClear
                                 style={{ width: '100%' }}
-                                placeholder="Recherchez et sélectionnez des technologies"
+                                placeholder="Recherchez et sélectionnez des permissions"
                                 onSearch={handleMultiSearch}
                                 // onSelect={handleMultiSelect}
                                 onChange={handleMultiSelect}

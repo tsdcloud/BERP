@@ -97,7 +97,7 @@ export default function LuncherApp() {
                       </Button>
                   </div>
 
-                    <div className='m-3 flex flex-wrap space-x-1 justify-center items-center sm:justify-normal'>
+                    <div className='m-3 flex flex-wrap space-x-1 justify-center sm:justify-normal'>
                         {/* Ajoutez ici le reste de votre contenu */}
                         <VerifyPermission expected={["application__can_view_entities"]} functions={userPermissions} roles={userRoles}>
                           <EntityEntryPoint/>
