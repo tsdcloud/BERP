@@ -15,7 +15,6 @@ export default function Country() {
     const { handleFetch } = useFetch();
 
     const fetchCountry = async () => {
-        // const urlToShowAllCountries = URLS.API_COUNTRY;
         const urlToShowAllCountries = `${URLS.ENTITY_API}/countries`;
         
         try {

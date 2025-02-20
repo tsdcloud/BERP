@@ -27,19 +27,8 @@ const countrySchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme."),
-
-    // email: z.string()
-    // .nonempty("Ce champs 'Email' est réquis.")
-    // .email("Adresse mail invalide")
-    // .max(255)
-    // ,
-
-    // phone: z.string()
-    // .nonempty("Ce champs 'Téléphone' est réquis.")
-    // .length(9, "La valeur de ce champs doit contenir 9 caractères.")
-    // .regex(/^[0-9]+$/)
-    // ,
+    // .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
     });
@@ -70,14 +59,14 @@ export const CountryAction = () => {
 
     const onSubmit = async (data) => {
 
-        console.log("data country", data);
+        // console.log("data country", data);
 
         // const urlToUpdate = `${URLS.API_COUNTRY}/${selectedCountry?.id}`;
         const urlToUpdate = `${URLS.ENTITY_API}/countries/${selectedCountry?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            console.log("response country update", response);
+            // console.log("response country update", response);
                 if (response) {
                     setDialogOpen(false);
                         

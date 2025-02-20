@@ -30,7 +30,7 @@ export default function Role() {
                     <RoleComponent/>
                     </div>
                 </div>
-                <Footer className="flex py-1 my-[22px] space-x-2 justify-center"/>
+                <Footer className="flex xs:flex-col flex-row xs:bg-red-200 py-1 my-[22px] space-x-2 justify-center"/>
             
             </>
         )

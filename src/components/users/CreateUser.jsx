@@ -17,32 +17,31 @@ const userSchema = z.object({
     last_name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z]+$/, "Ce champ doit être un 'nom' conforme."),
+    .max(100),
+    // .regex(/^[a-zA-Z]+$/, "Ce champ doit être un 'nom' conforme."),
 
     first_name: z.string()
     .nonempty("Ce champs 'Pénom' est réquis")
     .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z]+$/, "Ce champs doit être un 'prénom' conforme"),
+    .max(100),
+    // .regex(/^[a-zA-Z]+$/, "Ce champs doit être un 'prénom' conforme"),
 
     email: z.string()
     .nonempty("Ce champs 'Email' est réquis.")
     .email("Adresse mail invalide")
-    .max(255)
-    ,
+    .max(255),
 
     phone: z.string()
     .nonempty("Ce champs 'Téléphone' est réquis.")
     .length(9, "La valeur de ce champs doit contenir 9 caractères.")
-    .regex(/^[0-9]+$/)
+    // .regex(/^[0-9]+$/)
     ,
 
     username: z.string()
     .nonempty('Ce champs "Nom d utilisateur" est réquis')
     .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
-    .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom d utilisateur' Conforme.")
+    // .regex(/^[a-zA-Z0-9_.]+$/, "Ce champs doit être un 'nom d utilisateur' Conforme.")
     ,
 
     // password: z.string()
@@ -62,8 +61,6 @@ export default function CreateUser({setOpen, onSubmit}) {
 
 
     const handleSubmitDataFormUser = async(data) => {
-      // const urlToCreateUser = "http://127.0.0.1:8000/api_gateway/api/user/";
-      // const urlToCreateUser = URLS.API_USER;
       const urlToCreateUser = `${URLS.USER_API}/users/`;
         // console.log(data);
         try {
@@ -71,7 +68,7 @@ export default function CreateUser({setOpen, onSubmit}) {
           // console.log("response crea", response);
           if (response && response?.success && response.status === 201) {
             toast.success("Utilisateur crée avec succès", {duration:2000});
-            console.log("User created", response?.success);
+            // console.log("User created", response?.success);
             // setOpen(false);
             onSubmit(response.data);
             reset()

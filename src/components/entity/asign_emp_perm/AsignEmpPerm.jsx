@@ -16,6 +16,7 @@ export default function AsignEmpPerm() {
 
     const fetchEmpPerm = async () => {
         const urlToGetAsignEmpPerm = `${URLS.ENTITY_API}/employee-permissions`;
+        // const urlToGetAsignEmpPerm = `https://entity.bfcgroupsa.com/api/employee-permissions`;
         
         try {
             setIsLoading(true);
@@ -34,7 +35,7 @@ export default function AsignEmpPerm() {
                             isActive:rest.isActive
                         };
                         });
-                        console.log("respEmpPerm", filteredEmpPerm);
+                        // console.log("respEmpPerm", filteredEmpPerm);
                         setAsignEmpPerm(filteredEmpPerm);
                 }
                 else{

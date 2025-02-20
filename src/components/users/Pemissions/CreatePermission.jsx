@@ -15,6 +15,7 @@ export default function CreatePermission({ setOpen, onSubmit }) {
             .nonempty("Ce champs 'Nom' est réquis.")
             .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
             .max(100),
+            
         description: z.string()
             .nonempty("Ce champs 'description' est réquis")
             .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")

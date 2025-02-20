@@ -29,13 +29,15 @@ const asignRoleUserSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     description: z.string()
     .nonempty("Ce champs 'description' est réquis")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z\s,]+$/, "Ce champs doit être un 'description' conforme"),
+    // .regex(/^[a-zA-Z\s,]+$/, "Ce champs doit être un 'description' conforme")
+    ,
     });
 
 // Fonction principale pour gérer les actions utilisateur
