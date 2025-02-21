@@ -6,7 +6,6 @@ import { URLS } from '../../../../configUrl';
 import CreateCategory from './CreateCategory';
 
 export default function Category() {
-    const { showDialogCategory, columnsCategory } = CategoryAction();
     const [categories, setCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -48,15 +47,30 @@ export default function Category() {
         
     }, []);
 
+    const updateData = (id, updatedCategory) => {
+        setCategories((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedCategory } : item
+            )
+        );
+    };
+
+    const delCategory = (id) => {
+        setCategories((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+    const { showDialogCategory, columnsCategory } = CategoryAction({ updateData, delCategory });
 
   return (
-            <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des Categories</h1>
-                <div className='space-y-2'>
+            <div className='m-1 space-y-3 my-10 w-full'>
+                <h1 className='text-sm mb-2 font-semibold'>Gestion des Categories</h1>
+                <div className='space-y-2 w-full'>
                     <CreateCategory setOpen={setOpen} onSubmit={fetchCategory} />
                     {columnsCategory && categories.length >= 0 && (
                         <DataTable
-                            className="rounded-md border w-[800px] text-xs"
+                            className="rounded-md border w-[700px] max-w-full text-xs sm:text-sm"
                             columns={columnsCategory}
                             data={categories} 
                         />

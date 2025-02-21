@@ -54,7 +54,6 @@ export default function CreateCustomerBankAccount({setOpen, onSubmit}) {
   
 
   const fetchBanks = async () => {
-    // const getBanks = URLS.API_BANK;
     const getBanks = `${URLS.ENTITY_API}/banks`;
     try {
         setIsLoading(true);
@@ -62,13 +61,10 @@ export default function CreateCustomerBankAccount({setOpen, onSubmit}) {
         
             if (response && response?.status === 200) {
                     const results = response?.data;
-                    // console.log("res bank", results);
-
                     const filteredBanks = results?.map(item => {
                     const { updateAt, ...rest } = item;
                     return rest;
                 });
-                    // console.log("banques",filteredBanks);
                     setShowBanks(filteredBanks);
             }
             else{
@@ -83,7 +79,6 @@ export default function CreateCustomerBankAccount({setOpen, onSubmit}) {
      };
 
   const fetchCustomers = async () => {
-    // const getCustomers = URLS.API_CUSTOMER;
     const getCustomers = `${URLS.ENTITY_API}/clients`;
     try {
         setIsLoading(true);
@@ -91,13 +86,10 @@ export default function CreateCustomerBankAccount({setOpen, onSubmit}) {
         
             if (response && response?.status === 200) {
                     const results = response?.data;
-                    // console.log("res customers", results);
-
                     const filteredCustomers = results?.map(item => {
                     const { updateAt, ...rest } = item;
                     return rest;
                 });
-                    // console.log("customers",filteredCustomers);
                     setShowCustomers(filteredCustomers);
             }
             else{

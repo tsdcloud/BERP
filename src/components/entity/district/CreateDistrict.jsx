@@ -22,7 +22,8 @@ export default function CreateDistrict({setOpen, onSubmit}) {
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(1, "le champs doit avoir une valeur de 1 caractère au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     countryId: z.string()
     .nonempty('Ce champs "Nom du pays est réquis')

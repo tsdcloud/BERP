@@ -25,15 +25,16 @@ import { jwtDecode } from 'jwt-decode';
 const gradeSchema = z.object({
     name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
-    .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
+    // .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
     });
 
 // fonction principale pour gérer les actions utilisateur
-export const GradeAction = () => {
+export const GradeAction = ({ delGrade, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -52,25 +53,17 @@ export const GradeAction = () => {
     if(token){
         const decode = jwtDecode(token);
         setTokenUser(decode.user_id);
-        // console.log("var", tokenUser);
     }
   }, [tokenUser]);
 
     const onSubmit = async (data) => {
-        // console.log("data grade", data);
-        // const urlToUpdate = `${URLS.API_GRADE}/${selectedGrade?.id}`;
         const urlToUpdate = `${URLS.ENTITY_API}/grades/${selectedGrade?.id}`;
-      
         try {
             const response = await handlePatch(urlToUpdate, data);
-            // console.log("response function update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("grade modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("grade modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -167,23 +160,20 @@ export const GradeAction = () => {
 
         if (confirmation) {
             const urlToDisabledGrade = `${URLS.ENTITY_API}/grades/${id}`;
-
                     try {
                             const response = await handleDelete(urlToDisabledGrade, {isActive:false});
-                            // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("grade disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                    await delGrade(id);
+                                    toast.success("Grade supprimé avec succès", { duration: 5000});
+                             
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation du grade", { duration: 5000 });
+                                  toast.error("Erreur lors de la suppression du grade", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la désactivation du grade :", error);
+                        console.error("Erreur lors de la suppression du grade :", error);
                     }
 
                     finally{
@@ -200,17 +190,21 @@ export const GradeAction = () => {
     const showDialogGrade = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? "Modifier les informations" : "Détails du grade" }
+                             <span className='flex text-left'>
+                                  { isEdited ? "Modifier les informations" : "Détails du grade" }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='name' className="text-xs mt-2">
                                                 Nom du grade <sup className='text-red-500'>*</sup>
                                             </label>
@@ -219,7 +213,7 @@ export const GradeAction = () => {
                                                 type="text"
                                                 defaultValue={selectedGrade?.name}
                                                 {...register("name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -270,7 +264,7 @@ export const GradeAction = () => {
                                 </form>
                             ) : (
                                 selectedGrade && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-black text-left space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedGrade?.id}</h3>
@@ -346,7 +340,7 @@ export const GradeAction = () => {
 
     const columnsGrade = useMemo(() => [
         { accessorKey: 'name', header: 'Nom du grade' },
-        { accessorKey: 'createdAt', header: 'Date de création' },
+        // { accessorKey: 'createdAt', header: 'Date de création' },
         { accessorKey: 'isActive', header: 'Statut' },
         {
             accessorKey: "action",

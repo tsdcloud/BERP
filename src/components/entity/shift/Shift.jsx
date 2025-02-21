@@ -6,8 +6,6 @@ import DataTable from '../../DataTable';
 import CreateShift from './CreateShift';
 
 export default function Shift() {
-
-    const { showDialogShift, columnsShift } = ShiftAction();
     const [shift, setShift] = useState([]);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -22,8 +20,6 @@ export default function Shift() {
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllShift);
-            // console.log("respoShift",response);
-            
                 if (response && response?.status === 200) {
                     
                         const results = response?.data;
@@ -57,14 +53,30 @@ export default function Shift() {
         fetchShift();
     }, []);
 
+
+    const updateData = (id, updatedShift) => {
+        setShift((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedShift } : item
+            ));
+            fetchShift();
+    };
+
+    const delShift = (id) => {
+        setShift((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+    const { showDialogShift, columnsShift } = ShiftAction({ delShift, updateData });
   return (
-    <div className='m-1 space-y-3 my-10 '>
+    <div className='m-1 space-y-3 my-10 w-full'>
         <h1 className='text-sm mb-2'>Gestion des shifts</h1>
-        <div className='space-y-2'>
+        <div className='space-y-2 w-full'>
             <CreateShift setOpen={setOpen} onSubmit={fetchShift}/>
             {columnsShift && shift?.length >= 0 && (
                 <DataTable
-                    className="rounded-md border w-[800px] text-xs"
+                    className="rounded-md border w-[700px] max-w-full text-xs sm:text-sm"
                     columns={columnsShift}
                     data={shift} 
                 />

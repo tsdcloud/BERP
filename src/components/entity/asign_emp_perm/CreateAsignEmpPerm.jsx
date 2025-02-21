@@ -60,8 +60,8 @@ export default function CreateAsignEmpPerm({setOpen, onSubmit}) {
     };
 
     const fetchPermission = async () => {
-        // const urlToShowAllPermission =  `${URLS.ENTITY_API}/permissions`;
-        const urlToShowAllPermission =  `https://entity.bfcgroupsa.com/api/permissions`;
+        const urlToShowAllPermission =  `${URLS.ENTITY_API}/permissions`;
+        // const urlToShowAllPermission =  `https://entity.bfcgroupsa.com/api/permissions`;
        
         try {
             setIsLoading(true);
@@ -91,8 +91,8 @@ export default function CreateAsignEmpPerm({setOpen, onSubmit}) {
     };
 
     const fetchEmployee = async() => {
-        // const urlToShowAllEmployee =  `${URLS.ENTITY_API}/employees`;
-        const urlToShowAllEmployee =  `https://entity.bfcgroupsa.com/api/employees`;
+        const urlToShowAllEmployee =  `${URLS.ENTITY_API}/employees`;
+        // const urlToShowAllEmployee =  `https://entity.bfcgroupsa.com/api/employees`;
        
         try {
             setIsLoading(true);
@@ -139,8 +139,8 @@ export default function CreateAsignEmpPerm({setOpen, onSubmit}) {
 
       const handleSubmitDataFormAsignEmpPerm = async(data) => {
         // console.log("data form",data);
-        // const urlToCreateAsignEmpPerm =  `${URLS.ENTITY_API}/employee-permissions`;
-        const urlToCreateAsignEmpPerm =  `https://entity.bfcgroupsa.com/api/employee-permissions`;
+        const urlToCreateAsignEmpPerm =  `${URLS.ENTITY_API}/employee-permissions`;
+        // const urlToCreateAsignEmpPerm =  `https://entity.bfcgroupsa.com/api/employee-permissions`;
     
             try {
                     const { employeeId, permissionId, createdBy } = data;

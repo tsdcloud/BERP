@@ -6,7 +6,6 @@ import { URLS } from '../../../../configUrl';
 import CreateBank from './CreateBank';
 
 export default function Bank() {
-    const { showDialogBank, columnsBank } = BankAction();
     const [banks, setBanks] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -47,15 +46,30 @@ export default function Bank() {
         
     }, []);
 
+    const updateData = (id, updatedBank) => {
+        setBanks((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedBank } : item
+            )
+        );
+    };
 
+    const delBank = (id) => {
+        setBanks((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+
+    const { showDialogBank, columnsBank } = BankAction({ updateData, delBank});
   return (
-            <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des Banques</h1>
-                <div className='space-y-2'>
+            <div className='m-1 space-y-3 my-10 w-full'>
+                <h1 className='text-sm mb-2 font-semibold'>Gestion des Banques</h1>
+                <div className='space-y-2 w-full'>
                     <CreateBank setOpen={setOpen} onSubmit={fetchBank} />
                     {columnsBank && banks.length >= 0 && (
                         <DataTable
-                            className="rounded-md border w-[800px] text-xs"
+                            className="rounded-md border w-[700px] max-w-full text-xs sm:text-sm"
                             columns={columnsBank}
                             data={banks} 
                         />

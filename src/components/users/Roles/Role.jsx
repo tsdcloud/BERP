@@ -23,7 +23,7 @@ export default function Role() {
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllRole);
-            console.log("respoRoles",response);
+            // console.log("respoRoles",response);
             
                 if (response && response?.data?.results) {
                         const results = response?.data?.results;

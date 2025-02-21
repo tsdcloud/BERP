@@ -6,7 +6,6 @@ import { URLS } from '../../../../configUrl';
 import CreateTown from './CreateTown';
 
 export default function Town() {
-    const { showDialogTown, columnsTown } = TownAction();
     const [towns, setTowns] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -15,7 +14,6 @@ export default function Town() {
     const { handleFetch } = useFetch();
 
     const fetchTown = async () => {
-        // const urlToShowAllTown = URLS.API_TOWN;
         const urlToShowAllTown = `${URLS.ENTITY_API}/towns`;
         try {
             setIsLoading(true);
@@ -23,8 +21,6 @@ export default function Town() {
             
                 if (response && response?.status === 200) {
                         const results = response?.data;
-                        // console.log("resTown", results);
-
                         const filteredTown = results?.map(item => {
                         const { createdBy, updateAt, ...rest } = item;
                         return { id: rest.id, 
@@ -34,7 +30,6 @@ export default function Town() {
                                  isActive:rest.isActive,
                                 };
                     });
-                        // console.log("Town",filteredTown);
                         setTowns(filteredTown);
                 }
                 else{
@@ -54,14 +49,31 @@ export default function Town() {
     }, []);
 
 
+    const updateData = (id, updatedCountry) => {
+        setTowns((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedCountry } : item
+            )
+        );
+        fetchTown();
+    };
+
+    const delTown = (id) => {
+        setTowns((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+    const { showDialogTown, columnsTown } = TownAction({ delTown, updateData });
+
   return (
-            <div className='m-1 space-y-3 my-10'>
+            <div className='m-1 space-y-3 my-10 w-full'>
                 <h1 className='text-sm my-3 font-semibold'>Gestion des villes</h1>
-                <div className='space-y-2'>
+                <div className='space-y-2 w-full'>
                     <CreateTown setOpen={setOpen} onSubmit={fetchTown} />
                     { columnsTown && towns?.length >= 0 && (
                         <DataTable
-                            className="rounded-md border w-[800px] text-xs"
+                            className="rounded-md border w-[700px] max-w-full text-xs sm:text-sm"
                             columns={columnsTown}
                             data={towns} 
                         />

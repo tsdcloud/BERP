@@ -6,7 +6,6 @@ import { URLS } from '../../../../configUrl';
 import CreateAsignEmpRole from './CreateAsignEmpRole';
 
 export default function AsignEmpRole() {
-    const { showDialogAsignEmpRole, ColumnsAsignEmpRole } = AsignEmpRoleAction();
     const [asignEmpRole, setAsignEmpRole] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -52,14 +51,30 @@ export default function AsignEmpRole() {
         fetchEmpRole();
         
     }, []);
+
+    const updateData = (id, updatedAsignEmpRole) => {
+        setAsignEmpRole((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedAsignEmpRole } : item
+            )
+        );
+    };
+
+    const delAsignEmpRole = (id) => {
+        setAsignEmpRole((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+    const { showDialogAsignEmpRole, ColumnsAsignEmpRole } = AsignEmpRoleAction({ delAsignEmpRole, updateData});
   return (
-    <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des assignations Employées - Rôles</h1>
-                <div className='space-y-2'>
+    <div className='m-1 space-y-3 my-10 w-full'>
+                <h1 className='text-sm mb-2 font-semibold'>Gestion des assignations Employées - Rôles</h1>
+                <div className='space-y-2 w-full'>
                     <CreateAsignEmpRole setOpen={setOpen} onSubmit={fetchEmpRole} />
                     {ColumnsAsignEmpRole && asignEmpRole.length >= 0 && (
                         <DataTable
-                            className="rounded-md border w-[800px] text-xs"
+                            className="rounded-md border w-[700px] max-w-full text-xs sm:text-sm"
                             columns={ColumnsAsignEmpRole}
                             data={asignEmpRole} 
                         />

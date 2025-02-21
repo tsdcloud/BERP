@@ -28,12 +28,14 @@ const supplierSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     phone: z.string()
     .nonempty("Ce champs 'Téléphone' est réquis.")
     .length(9, "La valeur de ce champs doit contenir 9 caractères.")
-    .regex(/^[0-9]+$/),
+    // .regex(/^[0-9]+$/)
+    ,
 
     email: z.string()
     .nonempty("Ce champs 'Email' est réquis.")
@@ -53,7 +55,7 @@ const supplierSchema = z.object({
     });
 
 // Fonction principale pour gérer les actions utilisateur
-export const SupplierAction = () => {
+export const SupplierAction = ({ delSupplier, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -78,8 +80,6 @@ export const SupplierAction = () => {
             
                 if (response && response?.status === 200) {
                         const results = response?.data;
-                        // console.log("results", results);
-
                         const filteredEntities = results?.map(item => {
                         const { createdBy, updateAt, ...rest } = item;
                         return { 
@@ -87,7 +87,6 @@ export const SupplierAction = () => {
                             ...rest
                         };
                     });
-                        // console.log("districts - Town",filteredEntities);
                         setShowEntities(filteredEntities);
                 }
                 else{
@@ -110,7 +109,6 @@ export const SupplierAction = () => {
     if(token){
         const decode = jwtDecode(token);
         setTokenUser(decode.user_id);
-        // console.log("var", tokenUser);
     }
   }, [tokenUser]);
 
@@ -121,14 +119,10 @@ export const SupplierAction = () => {
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            console.log("response supplier update", response);
-                if (response && response.status === 200) {
+                if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("supplier modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("supplier modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -234,19 +228,18 @@ export const SupplierAction = () => {
                     try {
                             const response = await handleDelete(urlToDeletedSupplier, {isActive:false});
                             console.log("response for deleting", response);
-                                if (response & response.status === 204 || response.status === 200) {
-                                    setTimeout(()=>{
-                                        toast.success("supplier disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                if (response) {
+                                    await delSupplier(id);
+                                    toast.success("supplier supprimé avec succès", { duration: 5000});
+                             
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation supplier", { duration: 5000 });
+                                  toast.error("Erreur lors de la suppression supplier", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la désactivation supplier :", error);
+                        console.error("Erreur lors de la suppression supplier :", error);
                     }
 
                     finally{
@@ -263,17 +256,21 @@ export const SupplierAction = () => {
     const showDialogSupplier = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? "Modifier les informations" : "Détails du prestataire" }
+                             <span className='flex text-left'>
+                                { isEdited ? "Modifier les informations" : "Détails du prestataire" }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='name' className="text-xs mt-2">
                                                 Nom du prestataire <sup className='text-red-500'>*</sup>
                                             </label>
@@ -282,7 +279,7 @@ export const SupplierAction = () => {
                                                 type="text"
                                                 defaultValue={selectedSupplier?.name}
                                                 {...register("name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -292,7 +289,7 @@ export const SupplierAction = () => {
                                     </div>
                                     
 
-                                <div className='mb-1'>
+                                <div className='flex flex-col text-left'>
                                     <label htmlFor="phone" className="block text-xs font-medium mb-0">
                                                 Téléphone du prestataire <sup className='text-red-500'>*</sup>
                                             </label>
@@ -301,7 +298,7 @@ export const SupplierAction = () => {
                                                 type="phone"
                                                 defaultValue={selectedSupplier?.phone}
                                                 {...register('phone')}
-                                                className={`w-2/3 font-semibold px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                                                className={`w-[320px] sm:w-[400px] font-semibold px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
                                                 ${
                                                     errors.phone ? "border-red-500" : "border-gray-300"
                                                 }`}
@@ -322,7 +319,7 @@ export const SupplierAction = () => {
                                                     type="mail"
                                                     defaultValue={selectedSupplier?.email}
                                                     {...register("email")}
-                                                    className={`w-full sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.email ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 />
@@ -331,7 +328,7 @@ export const SupplierAction = () => {
                                                 )}
 
                                     </div>
-                                    <div className=' flex flex-col'>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='entityId' className="text-xs mt-2">
                                                 Nom de l'entité <sup className='text-red-500'>*</sup>
                                             </label>
@@ -342,7 +339,7 @@ export const SupplierAction = () => {
                                                     }}
                                                     defaultValue={selectedSupplier?.entityId}
                                                     {...register('entityId')}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.entityId ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 >
@@ -399,7 +396,7 @@ export const SupplierAction = () => {
                                 </form>
                             ) : (
                                 selectedSupplier && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-black text-left space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedSupplier?.id}</h3>
@@ -416,10 +413,10 @@ export const SupplierAction = () => {
                                             <p className="text-xs">Email du prestataire</p>
                                             <h3 className="font-bold text-sm">{selectedSupplier?.email}</h3>
                                         </div>
-                                        {/* <div>
+                                        <div>
                                             <p className="text-xs">Nom de l'entité</p>
                                             <h3 className="font-bold text-sm">{selectedSupplier?.entityId}</h3>
-                                        </div> */}
+                                        </div>
                                         <div>
                                             <p className="text-xs">Date de création</p>
                                             <h3 className="font-bold text-sm">{selectedSupplier?.createdAt.split("T")[0]}</h3>

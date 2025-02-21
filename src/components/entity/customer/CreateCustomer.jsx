@@ -20,7 +20,8 @@ const customerSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     email: z.string()
     .nonempty("Ce champs 'Email' est réquis.")
@@ -31,7 +32,7 @@ const customerSchema = z.object({
     phone: z.string()
     .nonempty("Ce champs 'Téléphone' est réquis.")
     .length(9, "La valeur de ce champs doit contenir 9 caractères.")
-    .regex(/^[0-9]+$/)
+    // .regex(/^[0-9]+$/)
     ,
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),

@@ -6,7 +6,7 @@ import { URLS } from '../../../../configUrl';
 import CreateCountry from './CreateCountry';
 
 export default function Country() {
-    const { showDialogCountry, columnsCountry } = CountryAction();
+   
     const [countries, setCountries] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -46,14 +46,30 @@ export default function Country() {
     }, []);
 
 
+    const updateData = (id, updatedCountry) => {
+        setCountries((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedCountry } : item
+            )
+        );
+    };
+
+    const delCountry = (id) => {
+        setCountries((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+    const { showDialogCountry, columnsCountry } = CountryAction({ updateData, delCountry });
+
   return (
-            <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des Pays</h1>
-                <div className='space-y-2'>
+            <div className='m-1 space-y-3 my-10 w-full'>
+                <h1 className='text-sm mb-2 font-semibold'>Gestion des Pays</h1>
+                <div className='space-y-2 w-full'>
                     <CreateCountry setOpen={setOpen} onSubmit={fetchCountry} />
                     { columnsCountry && countries.length >= 0 && (
                         <DataTable
-                            className="rounded-md border w-[800px] text-xs"
+                            className="rounded-md border w-[700px] max-w-full text-xs sm:text-sm"
                             columns={columnsCountry}
                             data={countries} 
                         />

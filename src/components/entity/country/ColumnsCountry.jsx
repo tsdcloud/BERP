@@ -34,7 +34,7 @@ const countrySchema = z.object({
     });
 
 // fonction principale pour gérer les actions utilisateur
-export const CountryAction = () => {
+export const CountryAction = ({ enableCountry, disCountry, delCountry, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -58,22 +58,15 @@ export const CountryAction = () => {
   }, [tokenUser]);
 
     const onSubmit = async (data) => {
-
-        // console.log("data country", data);
-
-        // const urlToUpdate = `${URLS.API_COUNTRY}/${selectedCountry?.id}`;
         const urlToUpdate = `${URLS.ENTITY_API}/countries/${selectedCountry?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            // console.log("response country update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("country modified successfully", { duration: 900 });
                     setDialogOpen(false);
                         
-                    setTimeout(()=>{
-                        toast.success("country modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -110,7 +103,7 @@ export const CountryAction = () => {
                                 if (response) {
                                     setTimeout(()=>{
                                         toast.success("pays disabled successfully", { duration: 5000 });
-                                        window.location.reload();
+                                        disCountry(id);
                                     },[200]);
                                 }
                                 else {
@@ -145,7 +138,7 @@ export const CountryAction = () => {
                                 if (response) {
                                     setTimeout(()=>{
                                         toast.success("pays enabled successfully", { duration: 5000});
-                                        window.location.reload();
+                                        enableCountry(id);
                                     },[200]);
                                 }
                                 else {
@@ -171,25 +164,21 @@ export const CountryAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer ce pays ?");
 
         if (confirmation) {
-            // const urlToDisabledCountry = `${URLS.API_COUNTRY}/${id}`;
             const urlToDisabledCountry = `${URLS.ENTITY_API}/countries/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledCountry, {isActive:false});
-                            // console.log("response for deleted", response);
-                                if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("customer disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                            if (response) {
+                                    await delCountry(id);
+                                     toast.success("Pays supprimé avec succès", { duration: 5000});
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation customer", { duration: 5000 });
+                                  toast.error("Erreur lors de la désactivation country", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la désactivation customer :", error);
+                        console.error("Erreur lors de la désactivation country :", error);
                     }
 
                     finally{
@@ -207,17 +196,21 @@ export const CountryAction = () => {
 
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? " Modifier les informations " : " Détails du pays " }
+                            <span className='flex text-left'>
+                                { isEdited ? " Modifier les informations " : " Détails du pays " }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs'
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='name' className="text-xs mt-2">
                                                 Nom du pays <sup className='text-red-500'>*</sup>
                                             </label>
@@ -226,7 +219,7 @@ export const CountryAction = () => {
                                                 type="text"
                                                 defaultValue={selectedCountry?.name}
                                                 {...register("name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -277,7 +270,7 @@ export const CountryAction = () => {
                                 </form>
                             ) : (
                                 selectedCountry && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-left text-black space-y-3'>
 
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>

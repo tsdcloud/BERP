@@ -20,7 +20,8 @@ const echelonSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(1, "le champs doit avoir une valeur de 1 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
 
@@ -48,11 +49,9 @@ export default function CreateEchelon({setOpen, onSubmit}) {
 
 
     const handleSubmitDataFormEchelon = async (data) => {
-      console.log(data);
-      // const urlToCreateEchelon = URLS.API_ECHELON;
-      const urlToCreateEchelon = `${URLS.ENTITY_API}/echelons`;
       // console.log(data);
-      try {
+      const urlToCreateEchelon = `${URLS.ENTITY_API}/echelons`;
+       try {
         const response = await handlePost(urlToCreateEchelon, data, true);
         // console.log("response crea", response);
         if (response && response.status === 201) {

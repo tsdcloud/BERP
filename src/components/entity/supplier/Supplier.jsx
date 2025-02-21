@@ -6,8 +6,6 @@ import DataTable from '../../DataTable';
 import CreateSupplier from './CreateSupplier';
 
 export default function Supplier() {
-
-    const { showDialogSupplier, columnsSupplier } = SupplierAction();
     const [supplier, setSupplier] = useState([]);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -22,12 +20,9 @@ export default function Supplier() {
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllSupplier);
-            // console.log("respoSupplier",response);
-            
                 if (response && response?.status === 200) {
                     
                         const results = response?.data;
-                        // console.log("res",results);
                         const filteredSupplier = results?.map(item => {
                             const { createdBy, updateAt, ...rest } = item;
                             return { id: rest.id, 
@@ -41,7 +36,6 @@ export default function Supplier() {
                                     };
 
                         });
-                        // console.log("fil",filteredSupplier);
                         setSupplier(filteredSupplier);
                 }
                 else{
@@ -61,14 +55,31 @@ export default function Supplier() {
         
     }, []);
 
+
+    const updateData = (id, updatedSupplier) => {
+        setSupplier((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedSupplier } : item
+            ));
+            fetchSupplier();
+    };
+
+    const delSupplier = (id) => {
+        setSupplier((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+    const { showDialogSupplier, columnsSupplier } = SupplierAction({ delSupplier, updateData });
+
   return (
-    <div className='m-1 space-y-3 my-10 '>
-    <h1 className='text-sm mb-2'>Gestion des Prestataires</h1>
-    <div className='space-y-2'>
+    <div className='m-1 space-y-3 my-10 w-full'>
+    <h1 className='text-sm mb-2 font-semibold'>Gestion des Prestataires</h1>
+    <div className='space-y-2 w-full'>
         <CreateSupplier setOpen={setOpen} onSubmit={fetchSupplier}/>
         {columnsSupplier && supplier?.length >= 0 && (
             <DataTable
-                className="rounded-md border w-[1000px] text-xs"
+                className="rounded-md border w-[1000px] max-w-full text-xs sm:text-sm"
                 columns={columnsSupplier}
                 data={supplier} 
             />

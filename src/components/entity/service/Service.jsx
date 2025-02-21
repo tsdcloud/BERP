@@ -6,7 +6,6 @@ import { URLS } from '../../../../configUrl';
 import CreateService from './CreateService';
 
 export default function Service() {
-    const { showDialogService, columnsService } = ServiceAction();
     const [services, setServices] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -15,13 +14,10 @@ export default function Service() {
     const { handleFetch } = useFetch();
 
     const fetchService = async () => {
-        // const urlToShowAllService = URLS.API_SERVICE;
         const urlToShowAllService =  `${URLS.ENTITY_API}/services`;
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllService);
-            // console.log("respo Service",response);
-            
                 if (response && response?.status === 200) {
                     
                         const results = response?.data;
@@ -54,15 +50,29 @@ export default function Service() {
         
     }, []);
 
+    const updateData = (id, updatedCountry) => {
+        setServices((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedCountry } : item
+            ));
+            fetchService();
+    };
 
+    const delService = (id) => {
+        setServices((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+    const { showDialogService, columnsService } = ServiceAction({ delService, updateData });
   return (
-            <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des services</h1>
-                <div className='space-y-2'>
+            <div className='m-1 space-y-3 my-10 w-full'>
+                <h1 className='text-sm mb-2 font-semibold'>Gestion des services</h1>
+                <div className='space-y-2 w-full'>
                     <CreateService setOpen={setOpen} onSubmit={fetchService} />
                     {columnsService && services.length >= 0 && (
                         <DataTable
-                            className="rounded-md border w-[800px] text-xs"
+                            className="rounded-md border w-[700px] max-w-full text-xs sm:text-sm"
                             columns={columnsService}
                             data={services} 
                         />

@@ -20,15 +20,17 @@ export default function CreateApplication({setOpen, onSubmit}) {
   const applicationSchema = z.object({
     name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
-    .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
+    // .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
   
     description: z.string()
     .nonempty("Ce champs 'description' est réquis")
-    .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
+    // .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champs doit être un 'description' conforme"),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champs doit être un 'description' conforme")
+    ,
 
     url: z.string()
     .nonempty("Ce champs 'URL' est réquis")

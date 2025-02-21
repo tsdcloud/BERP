@@ -28,7 +28,8 @@ const shiftSchema = z.object({
   .nonempty("Ce champs 'Nom' est réquis.")
   .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
   .max(100)
-  .regex(/^[a-zA-Z0-9 ,() -]+$/, "Ce champ doit être un 'nom' conforme."),
+//   .regex(/^[a-zA-Z0-9 ,() -]+$/, "Ce champ doit être un 'nom' conforme.")
+  ,
 
   startTime: z.string()
   .nonempty("Ce champs 'Heure de début' est réquis.")
@@ -51,7 +52,7 @@ const shiftSchema = z.object({
     });
 
 // Fonction principale pour gérer les actions utilisateur
-export const ShiftAction = () => {
+export const ShiftAction = ({delShift, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -76,8 +77,6 @@ export const ShiftAction = () => {
         
             if (response && response?.status === 200) {
                     const results = response?.data;
-                    // console.log("results", results);
-
                     const filteredEntities = results?.map(item => {
                     const { createdBy, updateAt, ...rest } = item;
                     return { 
@@ -85,7 +84,6 @@ export const ShiftAction = () => {
                         ...rest
                     };
                 });
-                    // console.log("districts - Town",filteredEntities);
                     setShowEntities(filteredEntities);
             }
             else{
@@ -108,24 +106,18 @@ export const ShiftAction = () => {
     if(token){
         const decode = jwtDecode(token);
         setTokenUser(decode.user_id);
-        // console.log("var", tokenUser);
     }
   }, [tokenUser]);
-
 
 
     const onSubmit = async (data) => {
         const urlToUpdate = `${URLS.ENTITY_API}/shifts/${selectedShift?.id}`;
         try {
             const response = await handlePatch(urlToUpdate, data);
-            // console.log("response role update", response);
                 if (response ) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("shift modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("shift modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -230,20 +222,17 @@ export const ShiftAction = () => {
 
                     try {
                             const response = await handleDelete(urlToDeletedShift, {isActive:false});
-                            // console.log("response for deleted", response);
-                                if (response && response.status === 200 || response.status === 204) {
-                                    setTimeout(()=>{
-                                        toast.success("shift disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                if (response) {
+                                    await delShift(id);
+                                    toast.success("Shift supprimé avec succès", { duration: 5000});
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation shift", { duration: 5000 });
+                                  toast.error("Erreur lors de la suppression shift", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la désactivation shift :", error);
+                        console.error("Erreur lors de la suppression shift :", error);
                     }
 
                     finally{
@@ -260,17 +249,21 @@ export const ShiftAction = () => {
     const showDialogShift = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? "Modifier les informations" : "Détails du shift" }
+                           <span className='flex text-left'>
+                                { isEdited ? "Modifier les informations" : "Détails du shift" }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='name' className="text-xs mt-2">
                                                 Nom du shift <sup className='text-red-500'>*</sup>
                                             </label>
@@ -279,7 +272,7 @@ export const ShiftAction = () => {
                                                 type="text"
                                                 defaultValue={selectedShift?.name}
                                                 {...register("name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -287,7 +280,7 @@ export const ShiftAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
                                                 )}
                                     </div>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='startTime' className="text-xs mt-2">
                                                 Date de début du shift <sup className='text-red-500'>*</sup>
                                             </label>
@@ -296,7 +289,7 @@ export const ShiftAction = () => {
                                                 type="time"
                                                 defaultValue={selectedShift?.startTime}
                                                 {...register("startTime")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.startTime ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -304,7 +297,7 @@ export const ShiftAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.startTime.message}</p>
                                                 )}
                                     </div>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='endTime' className="text-xs mt-2">
                                                 Date de fin du shift <sup className='text-red-500'>*</sup>
                                             </label>
@@ -313,7 +306,7 @@ export const ShiftAction = () => {
                                                 type="time"
                                                 defaultValue={selectedShift?.endTime}
                                                 {...register("endTime")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.endTime ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -321,7 +314,7 @@ export const ShiftAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.endTime.message}</p>
                                                 )}
                                     </div>
-                                    <div className=' flex flex-col'>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='entityId' className="text-xs mt-2">
                                                 Nom de l'entité <sup className='text-red-500'>*</sup>
                                             </label>
@@ -332,7 +325,7 @@ export const ShiftAction = () => {
                                                     }}
                                                     defaultValue={selectedShift?.entityId}
                                                     {...register('entityId')}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.entityId ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 >
@@ -389,7 +382,7 @@ export const ShiftAction = () => {
                                 </form>
                             ) : (
                                 selectedShift && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-black text-left space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedShift?.id}</h3>
