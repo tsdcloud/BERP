@@ -19,7 +19,8 @@ const siteSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     entityId: z.string()
     .nonempty('Ce champs "Nom de la ville" est réquis')
@@ -33,7 +34,8 @@ const siteSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'type de site' conforme."),
+    // .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'type de site' conforme.")
+    ,
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
 });
@@ -51,7 +53,6 @@ export default function CreateSite({setOpen, onSubmit}) {
     
 
     const fetchEntities = async () => {
-      // const getEntities = URLS.API_ENTITY;
       const getEntities = `${URLS.ENTITY_API}/entities`;
       try {
           setIsLoading(true);
@@ -59,13 +60,10 @@ export default function CreateSite({setOpen, onSubmit}) {
           
               if (response && response?.status === 200) {
                       const results = response?.data;
-                      // console.log("results", results);
-  
                       const filteredEntities = results?.map(item => {
                       const { createdBy, updateAt, ...rest } = item;
                       return { ...rest };
                   });
-                      // console.log("districts - Town",filteredEntities);
                       setShowEntities(filteredEntities);
               }
               else{
@@ -100,7 +98,6 @@ export default function CreateSite({setOpen, onSubmit}) {
       if(token){
           const decode = jwtDecode(token);
           setTokenUser(decode.user_id);
-          // console.log("var", tokenUser);
       }
     }, [tokenUser]);
 
@@ -111,14 +108,11 @@ export default function CreateSite({setOpen, onSubmit}) {
 
 
     const handleSubmitDataFormSite = async(data) => {
-    //   console.log("data form",data);
       const urlToCreateSite =  `${URLS.ENTITY_API}/sites`;
         try {
           const response = await handlePost(urlToCreateSite, data, true);
-        //   console.log("response crea", response);
           if (response && response.status === 201) {
             toast.success("site crée avec succès", { duration : 2000 });
-            // console.log("site created", response?.success);
             setOpen(false);
             onSubmit();
             reset();

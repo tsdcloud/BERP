@@ -27,25 +27,27 @@ const bankSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     address: z.string()
     .nonempty("Ce champs 'Adresse' est réquis")
     .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champs doit être une 'Adresse' conforme"),
+    // .regex(/^[a-zA-Z ,]+$/, "Ce champs doit être une 'Adresse' conforme")
+    ,
 
     phone: z.string()
     .nonempty("Ce champs 'Téléphone' est réquis.")
     .length(9, "La valeur de ce champs doit contenir 9 caractères.")
-    .regex(/^[0-9]+$/)
+    // .regex(/^[0-9]+$/)
     ,
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
     });
 
 // fonction principale pour gérer les actions utilisateur
-export const BankAction = () => {
+export const BankAction = ({ updateData, delBank}) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -69,22 +71,15 @@ export const BankAction = () => {
   }, [tokenUser]);
 
     const onSubmit = async (data) => {
-
-        // console.log("data bank", data);
-
-        // const urlToUpdate = `${URLS.API_BANK}/${selectedBank?.id}`;
         const urlToUpdate = `${URLS.ENTITY_API}/banks/${selectedBank?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
             // console.log("response bank update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("Bank modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("Bank modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -182,21 +177,17 @@ export const BankAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette banque ?");
 
         if (confirmation) {
-            // const urlToDisabledBank = `${URLS.API_BANK}/${id}`;
             const urlToDisabledBank = `${URLS.ENTITY_API}/banks/${id}`;
-
                     try {
                             const response = await handleDelete(urlToDisabledBank, {isActive:false});
                             // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("Banque disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
-                                }
-                                else {
-                                  toast.error("Erreur lors de la désactivation Banque", { duration: 5000 });
-                                }
+                                    await delBank(id);
+                                    toast.success("Banque supprimé avec succès", { duration: 5000});
+                                    }
+                                    else {
+                                    toast.error("Erreur lors de la désactivation Banque", { duration: 5000 });
+                                    }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
@@ -217,17 +208,21 @@ export const BankAction = () => {
     const showDialogBank = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                 className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
+                            <span className='flex text-left'>
                             { isEdited ? " Modifier les informations " : " Détails de la banque " }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='name' className="text-xs mt-2">
                                                 Nom de la banque <sup className='text-red-500'>*</sup>
                                             </label>
@@ -236,7 +231,7 @@ export const BankAction = () => {
                                                 type="text"
                                                 defaultValue={selectedBank?.name}
                                                 {...register("name")}
-                                                className={`w-2/3 font-semibold mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] font-semibold mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -245,7 +240,7 @@ export const BankAction = () => {
                                                 )}
                                     </div>
 
-                                    <div className='mb-1'>
+                                    <div className='mb-1 flex flex-col text-left'>
                                     <label htmlFor="address" className="block text-xs font-medium mb-0">
                                         Localisation de la banque <sup className='text-red-500'>*</sup>
                                     </label>
@@ -254,7 +249,7 @@ export const BankAction = () => {
                                         id='address'
                                         type="text"
                                         {...register('address')} 
-                                        className={`w-2/3 font-semibold px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                                        className={`w-[320px] sm:w-[400px] font-semibold px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
                                         ${
                                             errors.address ? "border-red-500" : "border-gray-300"
                                         }`}
@@ -266,7 +261,7 @@ export const BankAction = () => {
                                     }
                                 </div>
 
-                                <div className='mb-1'>
+                                <div className='mb-1 flex flex-col text-left'>
                                     <label htmlFor="phone" className="block text-xs font-medium mb-0">
                                                 Téléphone de la banque<sup className='text-red-500'>*</sup>
                                             </label>
@@ -275,7 +270,7 @@ export const BankAction = () => {
                                                 type="phone"
                                                 defaultValue={6}
                                                 {...register('phone')}
-                                                className={`w-2/3 font-semibold px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                                                className={`w-[320px] sm:w-[400px] font-semibold px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
                                                 ${
                                                     errors.phone ? "border-red-500" : "border-gray-300"
                                                 }`}
@@ -297,7 +292,7 @@ export const BankAction = () => {
                                                     type="text"
                                                     defaultValue={tokenUser}
                                                     {...register('createdBy')}
-                                                    className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                                                    className={`w-[320px] sm:w-[400px] px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
                                                         ${
                                                         errors.createdBy ? "border-red-500" : "border-gray-300"
                                                         }`}
@@ -330,7 +325,7 @@ export const BankAction = () => {
                                 </form>
                             ) : (
                                 selectedBank && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-left text-black space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedBank?.id}</h3>
@@ -347,10 +342,10 @@ export const BankAction = () => {
                                             <p className="text-xs">Numéro de téléphone de la banque</p>
                                             <h3 className="font-bold text-sm">{selectedBank?.phone}</h3>
                                         </div>
-                                        {/* <div>
+                                        <div>
                                             <p className="text-xs">Date de création</p>
                                             <h3 className="font-bold text-sm">{selectedBank?.createdAt.split("T")[0]}</h3>
-                                        </div> */}
+                                        </div>
                                         <div>
                                             <p className="text-xs">Statut</p>
                                             <h3 className="font-bold text-sm">

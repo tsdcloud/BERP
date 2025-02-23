@@ -6,7 +6,6 @@ import { URLS } from '../../../../configUrl';
 import CreatePermission from './CreatePermission';
 
 export default function Permission() {
-    const { showDialogPermission, columnsPermission } = PermissionAction();
     const [permissions, setPermissions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -15,22 +14,22 @@ export default function Permission() {
     const { handleFetch } = useFetch();
 
     const fetchPermission = async () => {
-        // const urlToShowAllPerm = URLS.API_PERMISSION_ENTITY;
         const urlToShowAllPerm = `${URLS.ENTITY_API}/permissions`;
-        
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllPerm);
             
                 if (response && response?.status === 200) {
                         const results = response?.data;
-                        // console.log("res", results);
-
                         const filteredPerm = results?.map(item => {
                         const { createdBy, updateAt, ...rest } = item;
-                        return { id: item.id, ...rest};
+                        return { id: item.id,
+                            displayName:rest.displayName || "non défini",
+                            permissionName:rest.permissionName || "non défini",
+                            description:rest.description || "non défini",
+                            createdAt:rest.createdAt
+                            };
                     });
-                        // console.log("perm",filteredPerm);
                         setPermissions(filteredPerm);
                 }
                 else{
@@ -49,15 +48,29 @@ export default function Permission() {
         
     }, []);
 
+    const updateData = (id, updatedPermission) => {
+        setPermissions((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedPermission } : item
+            )
+        );
+    };
 
+    const delPermission = (id) => {
+        setPermissions((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+    const { showDialogPermission, columnsPermission } = PermissionAction({ delPermission, updateData });
   return (
-            <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des Permissions de l'entité</h1>
-                <div className='space-y-2'>
+            <div className='m-1 space-y-3 my-10 w-full'>
+                <h1 className='text-sm mb-2 font-semibold'>Gestion des Permissions de l'entité</h1>
+                <div className='space-y-2 w-full'>
                     <CreatePermission setOpen={setOpen} onSubmit={fetchPermission} />
                     { columnsPermission && permissions?.length >= 0 && (
                         <DataTable
-                            className="rounded-md border w-[800px] text-xs"
+                             className="rounded-md border w-[700px] max-w-full text-xs sm:text-sm"
                             columns={columnsPermission}
                             data={permissions} 
                         />

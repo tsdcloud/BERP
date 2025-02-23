@@ -34,7 +34,7 @@ const categorySchema = z.object({
     });
 
 // fonction principale pour gérer les actions utilisateur
-export const CategoryAction = () => {
+export const CategoryAction = ({ delCategory, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -58,24 +58,15 @@ export const CategoryAction = () => {
   }, [tokenUser]);
 
     const onSubmit = async (data) => {
-
-        // console.log("data category", data);
-
-        // const urlToUpdate = `${URLS.API_CATEGORY}/${selectedCategory?.id}`;
         const urlToUpdate = `${URLS.ENTITY_API}/categories/${selectedCategory?.id}`;
-        
-       
       
         try {
             const response = await handlePatch(urlToUpdate, data);
             console.log("response category update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("Catégory modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("category modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -181,10 +172,8 @@ export const CategoryAction = () => {
                             const response = await handleDelete(urlToDisabledCategory, {isActive:false});
                             // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("category disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                    await delCategory(id);
+                                    toast.success("Catégorie supprimée avec succès", { duration: 5000});
                                 }
                                 else {
                                   toast.error("Erreur lors de la désactivation category", { duration: 5000 });
@@ -209,17 +198,21 @@ export const CategoryAction = () => {
     const showDialogCategory = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
+                            <span className='flex text-left'>
                             { isEdited ? " Modifier les informations " : " Détails de la catégorie " }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='name' className="text-xs mt-2">
                                                 Nom de la catégorie <sup className='text-red-500'>*</sup>
                                             </label>
@@ -228,7 +221,7 @@ export const CategoryAction = () => {
                                                 type="text"
                                                 defaultValue={selectedCategory?.name}
                                                 {...register("name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -279,7 +272,7 @@ export const CategoryAction = () => {
                                 </form>
                             ) : (
                                 selectedCategory && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-left text-black space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedCategory?.id}</h3>
@@ -355,7 +348,7 @@ export const CategoryAction = () => {
 
     const columnsCategory = useMemo(() => [
         { accessorKey: 'name', header: 'Nom de la catégorie' },
-        { accessorKey: 'createdAt', header: 'Date de création' },
+        // { accessorKey: 'createdAt', header: 'Date de création' },
         { accessorKey: 'isActive', header: 'Statut' },
         {
             accessorKey: "action",

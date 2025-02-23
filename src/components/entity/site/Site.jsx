@@ -6,8 +6,6 @@ import DataTable from '../../DataTable';
 import CreateSite from './CreateSite';
 
 export default function Site() {
-
-    const { showDialogSite, columnsSite } = SiteAction();
     const [Site, setSite] = useState([]);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -22,8 +20,6 @@ export default function Site() {
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllSite);
-            // console.log("respoSite",response);
-            
                 if (response && response?.status === 200) {
                     
                         const results = response?.data;
@@ -57,14 +53,30 @@ export default function Site() {
         
     }, []);
 
+    const updateData = (id, updatedSite) => {
+        setSite((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedSite } : item
+            ));
+            fetchSite();
+    };
+
+    const delSite = (id) => {
+        setSite((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+    const { showDialogSite, columnsSite } = SiteAction({ delSite, updateData });
+
   return (
-    <div className='m-1 space-y-3 my-10 '>
-    <h1 className='text-sm mb-2'>Gestion des Sites</h1>
-    <div className='space-y-2'>
+    <div className='m-1 space-y-3 my-10 w-full'>
+    <h1 className='text-sm mb-2 font-semibold'>Gestion des Sites</h1>
+    <div className='space-y-2 w-full'>
         <CreateSite setOpen={setOpen} onSubmit={fetchSite}/>
         {columnsSite && Site?.length >= 0 && (
             <DataTable
-                className="rounded-md border w-[800px] text-xs"
+               className="rounded-md border w-[700px] max-w-full text-xs sm:text-sm"
                 columns={columnsSite}
                 data={Site} 
             />

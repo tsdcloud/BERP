@@ -46,7 +46,7 @@ const asignAppPermSchema = z.object({
     });
 
 // Fonction principale pour gérer les actions utilisateur
-export const AsignAppPermAction = () => {
+export const AsignAppPermAction = ({ updateData, delAsignAppPerm}) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -151,12 +151,9 @@ export const AsignAppPermAction = () => {
             const response = await handlePatch(urlToUpdate, data);
             // console.log("response role update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("app - perm modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("app - perm modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -265,10 +262,10 @@ export const AsignAppPermAction = () => {
                             const response = await handleDelete(urlToDeletedAsignAppPerm, {isActive:false});
                             // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("asign app - perm disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+
+                                    await delAsignAppPerm(id);
+                                    toast.success("Asignation Application - Permission supprimé avec succès", { duration: 5000});
+                              
                                 }
                                 else {
                                   toast.error("Erreur lors de la désactivation asign app - perm", { duration: 5000 });
@@ -293,34 +290,21 @@ export const AsignAppPermAction = () => {
     const showDialogAsignAppPerm = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? "Modifier les informations" : "Détails de l'assignation des applications - Permissions " }
+                            <span className='flex text-left'>
+                                { isEdited ? "Modifier les informations" : "Détails de l'assignation des applications - Permissions " }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
-                                    className='flex flex-col space-y-3 mt-5 text-xs' 
+                                    className='flex flex-col space-y-3 mt-5 text-xs'
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    {/* <div>
-                                            <label htmlFor='name' className="text-xs mt-2">
-                                                Nom du departement <sup className='text-red-500'>*</sup>
-                                            </label>
-                                            <Input
-                                                id="name"
-                                                type="text"
-                                                defaultValue={selectedAsignAppPerm?.name}
-                                                {...register("name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                                    errors.name ? "border-red-500" : "border-gray-300"
-                                                }`}
-                                                />
-                                                {errors.name && (
-                                                <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
-                                                )}
-                                    </div> */}
-                                    <div className=' flex flex-col'>
+                                    <div className=' flex flex-col text-left'>
                                             <label htmlFor='applicationId' className="text-xs mt-2">
                                                 Nom de l'application <sup className='text-red-500'>*</sup>
                                             </label>
@@ -331,7 +315,7 @@ export const AsignAppPermAction = () => {
                                                         }}
                                                         defaultValue={selectedAsignAppPerm?.applicationId}
                                                         {...register('applicationId')}
-                                                        className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                        className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                             errors.applicationId ? "border-red-500" : "border-gray-300"
                                                         }`}
                                                     >
@@ -349,7 +333,7 @@ export const AsignAppPermAction = () => {
                                                 )}
                                     </div>
 
-                                    <div className=' flex flex-col'>
+                                    <div className=' flex flex-col text-left'>
                                             <label htmlFor='permissionId' className="text-xs mt-2">
                                                 Nom de la permission <sup className='text-red-500'>*</sup>
                                             </label>
@@ -360,7 +344,7 @@ export const AsignAppPermAction = () => {
                                                     }}
                                                     defaultValue={selectedAsignAppPerm?.permissionId}
                                                     {...register('permissionId')}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.permissionId ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 >
@@ -417,7 +401,7 @@ export const AsignAppPermAction = () => {
                                 </form>
                             ) : (
                                 selectedAsignAppPerm && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-left text-black space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedAsignAppPerm?.id}</h3>

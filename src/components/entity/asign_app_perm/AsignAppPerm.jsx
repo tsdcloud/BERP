@@ -6,7 +6,6 @@ import { URLS } from '../../../../configUrl';
 import CreateAsignAppPerm from './CreateAsignAppPerm';
 
 export default function AsignAppPerm() {
-    const { showDialogAsignAppPerm, ColumnsAsignAppPerm } = AsignAppPermAction();
     const [asignAppPerm, setAsignAppPerm] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -52,14 +51,30 @@ export default function AsignAppPerm() {
         fetchAppPerm();
         
     }, []);
+
+    const updateData = (id, updatedAsignAppPerm) => {
+        setAsignAppPerm((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedAsignAppPerm } : item
+            )
+        );
+    };
+
+    const delAsignAppPerm = (id) => {
+        setAsignAppPerm((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+    const { showDialogAsignAppPerm, ColumnsAsignAppPerm } = AsignAppPermAction({delAsignAppPerm, updateData});
   return (
-    <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des assignations Applications - Permissions</h1>
-                <div className='space-y-2'>
+    <div className='m-1 space-y-3 my-10 w-full'>
+                <h1 className='text-sm mb-2 font-semibold'>Gestion des assignations Applications - Permissions</h1>
+                <div className='space-y-2 w-full'>
                     <CreateAsignAppPerm setOpen={setOpen} onSubmit={fetchAppPerm} />
                     {ColumnsAsignAppPerm && asignAppPerm.length >= 0 && (
                         <DataTable
-                            className="rounded-md border w-[800px] text-xs"
+                            className="rounded-md border w-[700px] max-w-full text-xs sm:text-sm"
                             columns={ColumnsAsignAppPerm}
                             data={asignAppPerm} 
                         />

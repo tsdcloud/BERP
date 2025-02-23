@@ -27,7 +27,8 @@ const townSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     districtId: z.string()
     .nonempty('Ce champs "Nom du district" est réquis')
@@ -39,7 +40,7 @@ const townSchema = z.object({
   });
 
 // fonction principale pour gérer les actions utilisateur
-export const TownAction = () => {
+export const TownAction = ({ delTown, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -66,13 +67,10 @@ export const TownAction = () => {
         
             if (response && response?.status === 200) {
                     const results = response?.data;
-                    // console.log("results", results);
-
                     const filteredDistricts = results?.map(item => {
                     const { createdBy, updateAt, ...rest } = item;
                     return { id: item.id, ...rest};
                 });
-                    // console.log("districts - Town",filteredDistricts);
                     setShowDistricts(filteredDistricts);
             }
             else{
@@ -96,24 +94,18 @@ export const TownAction = () => {
     if(token){
         const decode = jwtDecode(token);
         setTokenUser(decode.user_id);
-        // console.log("var", tokenUser);
     }
   }, [tokenUser]);
 
     const onSubmit = async (data) => {
-        // console.log("data role", data);
-        // const urlToUpdate = `${URLS.API_TOWN}/${selectedTown?.id}`;
         const urlToUpdate = `${URLS.ENTITY_API}/towns/${selectedTown?.id}`;
             try {
                 const response = await handlePatch(urlToUpdate, data);
-                // console.log("response role update", response);
                     if (response) {
-                        setDialogOpen(false);
-                            
-                        setTimeout(()=>{
-                            toast.success("town modified successfully", { duration: 900 });
-                            window.location.reload();
-                        },[200]);
+                    
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("town modified successfully", { duration: 900 });
+                    setDialogOpen(false);
                     }
                     else {
                         setDialogOpen(false);
@@ -130,7 +122,6 @@ export const TownAction = () => {
         setSelectedTown(item);
         setIsEdited(false);
         setDialogOpen(true);
-        // console.log("item", item);
     };
 
     const handleEditedTown = (item) => {
@@ -220,17 +211,14 @@ export const TownAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette ville ?");
 
         if (confirmation) {
-            // const urlToDisabledTown = `${URLS.API_TOWN}/${id}`;
             const urlToDisabledTown = `${URLS.ENTITY_API}/towns/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledTown, {isActive:false});
-                            // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("town disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                    await delTown(id);
+                                    toast.success("town supprimé avec succès", { duration: 5000});
+                             
                                 }
                                 else {
                                   toast.error("Erreur lors de la désactivation town", { duration: 5000 });
@@ -256,17 +244,21 @@ export const TownAction = () => {
         
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                 className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? " Modifier les informations " : " Détails de la ville" }
+                           <span className='flex text-left'>
+                                { isEdited ? " Modifier les informations " : " Détails de la ville" }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs'
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='name' className="text-xs mt-2">
                                                 Nom de la ville <sup className='text-red-500'>*</sup>
                                             </label>
@@ -275,7 +267,7 @@ export const TownAction = () => {
                                                 type="text"
                                                 defaultValue={selectedTown?.name}
                                                 {...register("name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -283,7 +275,7 @@ export const TownAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
                                                 )}
                                     </div>
-                                    <div className=' flex flex-col'>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='districtId' className="text-xs mt-2">
                                                 Nom du district <sup className='text-red-500'>*</sup>
                                             </label>
@@ -294,7 +286,7 @@ export const TownAction = () => {
                                                     }}
                                                     defaultValue={selectedTown?.districtId}
                                                     {...register('districtId')}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.districtId ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 >
@@ -353,7 +345,7 @@ export const TownAction = () => {
                                 </form>
                             ) : (
                                 selectedTown && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-black text-left space-y-3'>
 
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
@@ -438,8 +430,6 @@ export const TownAction = () => {
     const columnsTown = useMemo(() => [
         { accessorKey: 'name', header: 'Nom de la ville' },
         { accessorKey: 'districtId', header: 'Nom du district' },
-        // { accessorKey: 'phone', header: 'Téléphone' },
-        // { accessorKey: 'createdAt', header: 'Date de création' },
         { accessorKey: 'isActive', header: 'Statut' },
         {
             accessorKey: "action",

@@ -27,25 +27,28 @@ const permissionSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     permissionName: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/, "Ce champ doit être un 'permissionName' conforme."),
+    // .regex(/^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/, "Ce champ doit être un 'permissionName' conforme.")
+    ,
   
     description: z.string()
     .nonempty("Ce champs 'description' est réquis")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champs doit être un 'description' conforme"),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champs doit être un 'description' conforme")
+    ,
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
   });
 
 // fonction principale pour gérer les actions utilisateur
-export const PermissionAction = () => {
+export const PermissionAction = ({ delPermission, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -64,26 +67,18 @@ export const PermissionAction = () => {
     if(token){
         const decode = jwtDecode(token);
         setTokenUser(decode.user_id);
-        // console.log("var", tokenUser);
     }
   }, [tokenUser]);
 
     const onSubmit = async (data) => {
-        // console.log("data role", data);
-
-        // const urlToUpdate = `${URLS.API_PERMISSION_ENTITY}/${selectedPermission?.id}`;
         const urlToUpdate =  `${URLS.ENTITY_API}/permissions/${selectedPermission?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            // console.log("response role update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("Permission modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("perm modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -100,7 +95,6 @@ export const PermissionAction = () => {
         setSelectedPermission(item);
         setIsEdited(false);
         setDialogOpen(true);
-        console.log("item", item);
     };
 
     const handleEditedPermission = (item) => {
@@ -190,17 +184,14 @@ export const PermissionAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette permission ?");
 
         if (confirmation) {
-            // const urlToDisabledPerm = `${URLS.API_PERMISSION_ENTITY}/${id}`;
             const urlToDisabledPerm =  `${URLS.ENTITY_API}/permissions/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledPerm, {isActive:false});
-                            // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("perm disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                    await delPermission(id);
+                                    toast.success("Permission supprimée avec succès", { duration: 5000});
+                              
                                 }
                                 else {
                                   toast.error("Erreur lors de la désactivation perm", { duration: 5000 });
@@ -226,17 +217,21 @@ export const PermissionAction = () => {
         
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? " Modifier les informations " : " Détails de la permission " }
+                           <span className='flex text-left'>
+                                 { isEdited ? " Modifier les informations " : " Détails de la permission " }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs'
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='displayName' className="text-xs mt-2">
                                                 Nom de la permission <sup className='text-red-500'>*</sup>
                                             </label>
@@ -245,7 +240,7 @@ export const PermissionAction = () => {
                                                 type="text"
                                                 defaultValue={selectedPermission?.displayName}
                                                 {...register("displayName")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.displayName ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -253,7 +248,7 @@ export const PermissionAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.displayName.message}</p>
                                                 )}
                                     </div>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='permissionName' className="text-xs mt-2">
                                                 Nom attribué <sup className='text-red-500'>*</sup>
                                             </label>
@@ -262,7 +257,7 @@ export const PermissionAction = () => {
                                                 type="text"
                                                 defaultValue={selectedPermission?.permissionName}
                                                 {...register("permissionName")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.permissionName ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -270,7 +265,7 @@ export const PermissionAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.permissionName.message}</p>
                                                 )}
                                     </div>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='description' className="text-xs mt-2">
                                                 Description <sup className='text-red-500'>*</sup>
                                             </label>
@@ -279,7 +274,7 @@ export const PermissionAction = () => {
                                                 type="text"
                                                 defaultValue={selectedPermission?.description}
                                                 {...register("description")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.description ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -331,7 +326,7 @@ export const PermissionAction = () => {
                                 </form>
                             ) : (
                                 selectedPermission && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-black text-left space-y-3'>
 
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
@@ -420,8 +415,6 @@ export const PermissionAction = () => {
     const columnsPermission = useMemo(() => [
         { accessorKey: 'displayName', header: 'Nom de la permission' },
         { accessorKey: 'description', header: 'Description' },
-        // { accessorKey: 'phone', header: 'Téléphone' },
-        // { accessorKey: 'createdAt', header: 'Date de création' },
         { accessorKey: 'isActive', header: 'Statut' },
         {
             accessorKey: "action",

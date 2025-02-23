@@ -28,14 +28,15 @@ const echelonSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(1, "le champs doit avoir une valeur de 1 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
 
     });
 
 // fonction principale pour gérer les actions utilisateur
-export const EchelonAction = () => {
+export const EchelonAction = ({ delEchelon, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -60,20 +61,14 @@ export const EchelonAction = () => {
 
 
     const onSubmit = async (data) => {
-        // console.log("data echelon", data);
-        // const urlToUpdate = `${URLS.API_ECHELON}/${selectedEchelon?.id}`;
         const urlToUpdate = `${URLS.ENTITY_API}/echelons/${selectedEchelon?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            // console.log("response echelon update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("Echelon modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("echelon modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -171,17 +166,14 @@ export const EchelonAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cet échelon ?");
 
         if (confirmation) {
-            // const urlToDisabledEchelon = `${URLS.API_ECHELON}/${id}`;
             const urlToDisabledEchelon = `${URLS.ENTITY_API}/echelons/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledEchelon, {isActive:false});
-                            // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("echelon disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                    await delEchelon(id);
+                                    toast.success("Echelon supprimé avec succès", { duration: 5000});
+                             
                                 }
                                 else {
                                   toast.error("Erreur lors de la désactivation echelon", { duration: 5000 });
@@ -206,17 +198,21 @@ export const EchelonAction = () => {
     const showDialogEchelon = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? " Modifier les informations " : " Détails de l'échelon " }
+                            <span className='flex text-left'>
+                                 { isEdited ? " Modifier les informations " : " Détails de l'échelon " }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='name' className="text-xs mt-2">
                                                 Nom de l'échelon <sup className='text-red-500'>*</sup>
                                             </label>
@@ -225,7 +221,7 @@ export const EchelonAction = () => {
                                                 type="text"
                                                 defaultValue={selectedEchelon?.name}
                                                 {...register("name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -276,7 +272,7 @@ export const EchelonAction = () => {
                                 </form>
                             ) : (
                                 selectedEchelon && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-black text-left space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedEchelon?.id}</h3>
@@ -352,7 +348,7 @@ export const EchelonAction = () => {
 
     const columnsEchelon = useMemo(() => [
         { accessorKey: 'name', header: 'Nom de l\'échelon' },
-        { accessorKey: 'createdAt', header: 'Date de création' },
+        // { accessorKey: 'createdAt', header: 'Date de création' },
         { accessorKey: 'isActive', header: 'Statut' },
         {
             accessorKey: "action",

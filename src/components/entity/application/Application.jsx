@@ -6,7 +6,6 @@ import { URLS } from '../../../../configUrl';
 import CreateApplication from './CreateApplication';
 
 export default function Application() {
-    const { showDialogApplication, columnsApplication } = ApplicationAction();
     const [Applications, setApplications] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -48,15 +47,30 @@ export default function Application() {
         
     }, []);
 
+    const updateData = (id, updatedApplication) => {
+        setApplications((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedApplication } : item
+            )
+        );
+    };
+
+    const delApp = (id) => {
+        setApplications((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+    const { showDialogApplication, columnsApplication } = ApplicationAction({ updateData, delApp });
 
   return (
-            <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des Applications de l'entité</h1>
-                <div className='space-y-2'>
+            <div className='m-1 space-y-3 my-10 w-full'>
+                <h1 className='text-sm mb-2 font-semibold'>Gestion des Applications de l'entité</h1>
+                <div className='space-y-2 w-full'>
                     <CreateApplication setOpen={setOpen} onSubmit={fetchApplication} />
                     { columnsApplication && Applications?.length >= 0 && (
                         <DataTable
-                            className="rounded-md border w-[800px] text-xs"
+                            className="rounded-md border w-full max-w-full text-xs sm:text-sm"
                             columns={columnsApplication}
                             data={Applications} 
                         />

@@ -79,7 +79,7 @@ export default function LuncherApp() {
   //Cette page va representer la page présentante toutes les app de l'erp.
 
   return (
-                <div className="flex flex-col min-h-screen">
+                <div className="flex flex-col min-h-screen container">
                 {/* Effet nuageux avec animation */}
                 <div className="absolute inset-0 opacity-30 blur-xl animate-gradient w-full h-full flex items-center justify-center">
                   <img src="/logo-placeholder.png" alt=""/>

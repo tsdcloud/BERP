@@ -27,13 +27,15 @@ const applicationSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
   
     description: z.string()
     .nonempty("Ce champs 'description' est réquis")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champs doit être un 'description' conforme"),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champs doit être un 'description' conforme")
+    ,
 
     url: z.string()
     .nonempty("Ce champs 'URL' est réquis")
@@ -43,7 +45,7 @@ const applicationSchema = z.object({
   });
 
 // fonction principale pour gérer les actions utilisateur
-export const ApplicationAction = () => {
+export const ApplicationAction = ( { delApp, updateData}) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -67,22 +69,14 @@ export const ApplicationAction = () => {
   }, [tokenUser]);
 
     const onSubmit = async (data) => {
-
-        // console.log("data role", data);
-
-        // const urlToUpdate = `${URLS.API_APPLICATION_ENTITY}/${selectedApplication?.id}`;
         const urlToUpdate =  `${URLS.ENTITY_API}/applications/${selectedApplication?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            // console.log("response role update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("application modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("app modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -189,20 +183,16 @@ export const ApplicationAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette application ?");
 
         if (confirmation) {
-            // const urlToDisabledApp = `${URLS.API_APPLICATION_ENTITY}/${id}`;
             const urlToDisabledApp =  `${URLS.ENTITY_API}/applications/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledApp, {isActive:false});
-                            // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("app disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                    await delApp(id);
+                                     toast.success("Application supprimé avec succès", { duration: 5000});
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation app", { duration: 5000 });
+                                  toast.error("Erreur lors de la suppression app", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
@@ -225,17 +215,21 @@ export const ApplicationAction = () => {
         
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
+                        <span className='flex text-left'>
                             { isEdited ? " Modifier les informations " : " Détails de l'application " }
+                        </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs'
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='name' className="text-xs mt-2">
                                                 Nom de l'application <sup className='text-red-500'>*</sup>
                                             </label>
@@ -244,7 +238,7 @@ export const ApplicationAction = () => {
                                                 type="text"
                                                 defaultValue={selectedApplication?.name}
                                                 {...register("name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={` w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -252,7 +246,7 @@ export const ApplicationAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
                                                 )}
                                     </div>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='description' className="text-xs mt-2">
                                                 Description <sup className='text-red-500'>*</sup>
                                             </label>
@@ -261,7 +255,7 @@ export const ApplicationAction = () => {
                                                 type="text"
                                                 defaultValue={selectedApplication?.description}
                                                 {...register("description")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.description ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -269,7 +263,7 @@ export const ApplicationAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.description.message}</p>
                                                 )}
                                     </div>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='url' className="text-xs mt-2">
                                                 Lien de l'application <sup className='text-red-500'>*</sup>
                                             </label>
@@ -278,7 +272,7 @@ export const ApplicationAction = () => {
                                                 type="text"
                                                 defaultValue={selectedApplication?.url}
                                                 {...register("url")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.url ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -329,7 +323,7 @@ export const ApplicationAction = () => {
                                 </form>
                             ) : (
                                 selectedApplication && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-left text-black space-y-3'>
 
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
@@ -337,16 +331,16 @@ export const ApplicationAction = () => {
                                         </div>
 
                                         <div>
-                                            <p className="text-xs">Nom de l'application</p>
-                                            <h3 className="font-bold text-sm">{selectedApplication?.name}</h3>
+                                            <p className="text-xs md:w-[440px] w-[300px]">Nom de l'application</p>
+                                            <h3 className="font-bold text-sm break-words">{selectedApplication?.name}</h3>
                                         </div>
                                         <div>
-                                            <p className="text-xs">Description</p>
-                                            <h3 className="font-bold text-sm">{selectedApplication?.description}</h3>
+                                            <p className="text-xs md:w-[440px] w-[300px]">Description</p>
+                                            <h3 className="font-bold text-sm break-words">{selectedApplication?.description}</h3>
                                         </div>
-                                        <div>
+                                        <div className='md:w-[440px] w-[300px]'>
                                             <p className="text-xs">Lien de l'application</p>
-                                            <h3 className="font-bold text-sm">{selectedApplication?.url}</h3>
+                                            <h3 className="font-bold text-sm break-words">{selectedApplication?.url}</h3>
                                         </div>
                                         <div>
                                             <p className="text-xs">Icône de l'application</p>

@@ -28,7 +28,8 @@ const serviceSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     departmentId: z.string()
     .nonempty('Ce champs "Nom de la ville" est réquis')
@@ -42,7 +43,7 @@ const serviceSchema = z.object({
     });
 
 // Fonction principale pour gérer les actions utilisateur
-export const ServiceAction = () => {
+export const ServiceAction = ({ delService, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -58,11 +59,8 @@ export const ServiceAction = () => {
         try {
             setIsLoading(true);
             const response = await handleFetch(getDepartment);
-            
                 if (response && response?.status === 200) {
                         const results = response?.data;
-                        // console.log("results", results);
-    
                         const filteredDepartment = results?.map(item => {
                         const { createdBy, updateAt, ...rest } = item;
                         return { 
@@ -70,7 +68,6 @@ export const ServiceAction = () => {
                             ...rest
                         };
                     });
-                        // console.log("districts - Town",filteredDepartment);
                         setShowDepartments(filteredDepartment);
                 }
                 else{
@@ -94,7 +91,6 @@ export const ServiceAction = () => {
         if(token){
             const decode = jwtDecode(token);
             setTokenUser(decode.user_id);
-            // console.log("var", tokenUser);
         }
       }, [tokenUser]);
 
@@ -107,21 +103,13 @@ export const ServiceAction = () => {
 
 
     const onSubmit = async (data) => {
-        // console.log("data", data);
-        //  const urlToUpdate = `${URLS.API_SERVICE}/${selectedService?.id}`;
          const urlToUpdate =  `${URLS.ENTITY_API}/services/${selectedService?.id}`;
-       
-      
         try {
             const response = await handlePatch(urlToUpdate, data);
-            // console.log("response role update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("Service modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("service modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -225,25 +213,22 @@ export const ServiceAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer ce service ?");
 
         if (confirmation) {
-            // const urlToDeletedService = `${URLS.API_SERVICE}/${id}`;
             const urlToDeletedService = `${URLS.ENTITY_API}/services/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDeletedService, {isActive:false});
-                            // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("service disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                    await delService(id);
+                                    toast.success("service supprimé avec succès", { duration: 5000});
+                              
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation service", { duration: 5000 });
+                                  toast.error("Erreur lors de la suppression service", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la désactivation service :", error);
+                        console.error("Erreur lors de la suppression service :", error);
                     }
 
                     finally{
@@ -260,17 +245,21 @@ export const ServiceAction = () => {
     const showDialogService = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? "Modifier les informations" : "Détails du service" }
+                            <span className='flex text-left'>
+                                { isEdited ? "Modifier les informations" : "Détails du service" }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='name' className="text-xs mt-2">
                                                 Nom du service <sup className='text-red-500'>*</sup>
                                             </label>
@@ -279,7 +268,7 @@ export const ServiceAction = () => {
                                                 type="text"
                                                 defaultValue={selectedService?.name}
                                                 {...register("name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -287,7 +276,7 @@ export const ServiceAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
                                                 )}
                                     </div>
-                                    <div className=' flex flex-col'>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='departmentId' className="text-xs mt-2">
                                                 Nom du département <sup className='text-red-500'>*</sup>
                                             </label>
@@ -298,11 +287,11 @@ export const ServiceAction = () => {
                                                     }}
                                                     defaultValue={selectedService?.departmentId}
                                                     {...register('departmentId')}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.departmentId ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 >
-                                                    <option value="">Selectionner une ville</option>
+                                                    <option value="">Selectionner un département</option>
                                                     {showDepartments.map((item) => (
                                                         <option key={item.id} value={item.id}>
                                                             {item.name}
@@ -355,7 +344,7 @@ export const ServiceAction = () => {
                                 </form>
                             ) : (
                                 selectedService && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-black text-left space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedService?.id}</h3>

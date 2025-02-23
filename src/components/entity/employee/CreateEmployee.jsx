@@ -27,7 +27,8 @@ const employeeSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     email: z.string()
     .nonempty("Ce champs 'Email' est réquis.")

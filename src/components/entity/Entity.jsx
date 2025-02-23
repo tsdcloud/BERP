@@ -6,7 +6,6 @@ import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl'; 
 
 export default function Entity() {
-    const { showDialogEntity, columnsEntity } = EntityAction();
     const [entities, setEntities] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -15,7 +14,6 @@ export default function Entity() {
     const { handleFetch } = useFetch();
 
     const fetchEntities = async () => {
-        // const urlToShowAllEntities = URLS.API_ENTITY;
         const urlToShowAllEntities =  `${URLS.ENTITY_API}/entities`;
        
         try {
@@ -24,7 +22,6 @@ export default function Entity() {
             
                 if (response && response?.status === 200) {
                         const results = response?.data;
-                        // console.log("res Entities", results);
                         const filteredEntities = results?.map(item => {
                         const { createdBy, updateAt, ...rest } = item;
                         return { id: rest.id,
@@ -36,7 +33,6 @@ export default function Entity() {
                                  isActive:rest.isActive,
                                 };
                     });
-                        // console.log("Entities",filteredEntities);
                         setEntities(filteredEntities);
                 }
                 else{
@@ -55,15 +51,31 @@ export default function Entity() {
         
     }, []);
 
+    const updateData = (id, updatedEntity) => {
+        setEntities((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedEntity } : item
+            )
+        );
+        fetchEntities();
+    };
+
+    const delEntity = (id) => {
+        setEntities((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+    const { showDialogEntity, columnsEntity } = EntityAction({ delEntity, updateData });
 
   return (
-            <div className='m-1 space-y-3 my-10'>
+            <div className='m-1 space-y-3 my-10 w-full'>
                 <h1 className='text-sm my-3 font-semibold'>Gestion des entités</h1>
-                <div className='space-y-2'>
+                <div className='space-y-2 w-full'>
                     <CreateEntity setOpen={setOpen} onSubmit={fetchEntities} />
                     {columnsEntity && entities.length >= 0 && (
                         <DataTable
-                            className="rounded-md border w-[800px] text-xs"
+                            className="rounded-md border w-[700px] max-w-full text-xs sm:text-sm"
                             columns={columnsEntity}
                             data={entities} 
                         />

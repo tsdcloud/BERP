@@ -51,11 +51,7 @@ export default function SignIn() {
 
   
       const submitDataSignIn = async(data) => {
-        // console.log("data", data);
-        // const urlToLogin = "http://127.0.0.1:8000/api_gateway/token/";
         const urlToLogin = `${URLS.API_USER_ABILITY}/login/`;
-        // const urlToLogin = URLS.LOGIN;
-        // console.log(urlToLogin);
         try {
               const response = await handlePost(urlToLogin, data, false);
 
@@ -81,13 +77,13 @@ export default function SignIn() {
 
   return (
    <SignInLayout>
-    <div className='text-center my-3'>
-        <h3 className='font-semibold text-xl'>Connectez-vous à votre compte</h3>
+    <div className='text-center my-0 sm:my-3'>
+        <h3 className='font-semibold text-md sm:text-xl'>Connectez-vous à votre compte</h3>
         <p className='text-xs'>Renseignez correctement vos identifiants.</p>
      </div>
 
       <form onSubmit={handleSubmit(submitDataSignIn)}  
-        className='text-xs m-10'>
+        className='text-xs m-0 my-5 sm:m-10'>
 
               {/* Champ Identifier (Email ou Username) */}
           <div className="mb-5">
@@ -141,7 +137,6 @@ export default function SignIn() {
               </Link>
             </div>
           </div>
-          {/* <Button className="w-full bg-blue-900 text-white py-2 px-4 rounded-3xl shadow-md hover:bg-blue-700 transition">Something</Button> */}
 
           {/* Bouton de soumission */}
           <Button
@@ -151,7 +146,7 @@ export default function SignIn() {
           >
             { isSubmitting ? "Connexion en cours..." : "Je me connecte" }
           </Button>
-          <div className=' flex justify-center mt-2 text-[8px]'>
+          <div className='flex justify-center mt-2 text-[8px]'>
                 En vous connectant, vous acceptez nos 
                 <p className='text-green-900 underline cursor-pointer'>
                   Conditions de confidentialités.

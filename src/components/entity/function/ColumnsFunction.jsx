@@ -28,14 +28,15 @@ const functionSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
     });
 
 
 // Fonction principale pour gérer les actions utilisateur
-export const FunctionAction = () => {
+export const FunctionAction = ({ delFunction, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -60,21 +61,15 @@ export const FunctionAction = () => {
 
 
     const onSubmit = async (data) => {
-        // console.log("data function", data);
-        // const urlToUpdate = `${URLS.API_FUNCTION}/${selectedFunction?.id}`;
         const urlToUpdate = `${URLS.ENTITY_API}/functions/${selectedFunction?.id}`;
         
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            // console.log("response function update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("Function modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("function modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -105,15 +100,14 @@ export const FunctionAction = () => {
 
             if (confirmation) {
                 const urlToDisabledFunction =  `${URLS.ENTITY_API}/functions/${id}`;
-    
                         try {
                                 const response = await handlePatch(urlToDisabledFunction, {isActive:false});
-                                // console.log("response for deleted", response);
                                     if (response) {
                                         setTimeout(()=>{
                                             toast.success("function disabled successfully", { duration: 5000});
                                             window.location.reload();
                                         },[200]);
+                                 
                                     }
                                     else {
                                       toast.error("Erreur lors de la désactivation de la  fonction", { duration: 5000 });
@@ -175,15 +169,12 @@ export const FunctionAction = () => {
 
                     try {
                             const response = await handleDelete(urlToDisabledFunction, {isActive:false});
-                            // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("function disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                    await delFunction(id);
+                                    toast.success("Fonction supprimée avec succès", { duration: 5000});
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation de la  fonction", { duration: 5000 });
+                                  toast.error("Erreur lors de la désactivation de la fonction", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
@@ -205,17 +196,21 @@ export const FunctionAction = () => {
     const showDialogFunction = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? "Modifier les informations" : "Détails de la fonction" }
+                             <span className='flex text-left'>
+                                 { isEdited ? "Modifier les informations" : "Détails de la fonction" }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='name' className="text-xs mt-2 font-bold">
                                                 Nom de la fonction <sup className='text-red-500'>*</sup>
                                             </label>
@@ -224,7 +219,7 @@ export const FunctionAction = () => {
                                                 type="text"
                                                 defaultValue={selectedFunction?.name}
                                                 {...register("name")}
-                                                className={`w-[400px] mb-2 text-sm px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-sm px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -275,7 +270,7 @@ export const FunctionAction = () => {
                                 </form>
                             ) : (
                                 selectedFunction && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-black text-left space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedFunction?.id}</h3>
@@ -351,7 +346,7 @@ export const FunctionAction = () => {
 
     const columnsFunction = useMemo(() => [
         { accessorKey: 'name', header: 'Nom de la fonction' },
-        { accessorKey: 'createdAt', header: 'Date de création' },
+        // { accessorKey: 'createdAt', header: 'Date de création' },
         { accessorKey: 'isActive', header: 'Statut' },
         {
             accessorKey: "action",
