@@ -4,9 +4,10 @@ import { jwtDecode } from 'jwt-decode';
 import { getEmployee } from './entity.utils';
 import Preloader from '../components/Preloader';
 import Header from '../components/layout/Header';
-import { AUTHCONTEXT } from '../contexts/AuthProvider';
+import { PERMISSION_CONTEXT } from '../contexts/PermissionsProvider';
 const IncidentSettingRoutes = ({permissions=[], roles=[]}) => {
     
+    const { setPermissions, setRoles } = useContext(PERMISSION_CONTEXT)
     const [isLoading, setIsLoading] = useState(true);
     const [hasPermissions, setHasPermissions] = useState(false);
     const [hasRoles, setHasRoles] = useState(false);
@@ -24,22 +25,40 @@ const IncidentSettingRoutes = ({permissions=[], roles=[]}) => {
             }
             const requiredPermissions = [...permissions];
             const userPermissions = employee?.employeePermissions.map(permission=>permission?.permission.permissionName) || [];
-            
+            setPermissions(userPermissions);
             
             const requiredRoles = [...roles];
-            const userRoles = employee?.employeeRoles.map(role=>role?.role.roleName) || [];
-
+            const userRoles = employee?.employeeRoles.map(role=>role?.role?.roleName) || [];
+            setRoles(userRoles);
 
             const hasRequiredPermissions = requiredPermissions.some(permission => userPermissions.includes(permission));
             const hasRequiredRoles = requiredRoles.some(role => userRoles.includes(role));
 
             setHasPermissions(hasRequiredPermissions);
             setHasRoles(hasRequiredRoles);
-            console.log(hasRequiredPermissions, hasRequiredRoles)
 
             setIsLoading(false);
         }
         handleCheckPermissions();
+
+        // const handleCheckPermissions = async () =>{
+        //     try {
+        //         let employee = await getEmployee();
+      
+        //         if(employee != null){
+        //           let permissions = employee?.employeePermissions?.map(permission=>permission?.permission.permissionName);
+        //           setPermissions(permissions || []);
+        //           setUserPermissions(permissions || []);
+      
+        //           let roles = employee?.employeeRoles?.map(role => role?.role.roleName);
+        //           setRoles(roles || []);
+        //           setUserRoles(roles || []);
+        //         }
+        //     } catch (error) {
+        //         console.log(error)
+        //     }
+        //   }
+        //   handleCheckPermissions();
     }, []);
 
     if (isLoading) {

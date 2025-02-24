@@ -94,8 +94,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       dataIndex:"numRef",
       width:"100px",
       render:(value, record)=>
-        editingRow == record.id ?
-        <input />:
         <p className='text-sm'>{highlightText(value)}</p>
     },
     {
@@ -129,7 +127,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
         </p>
     },
     {
-      title:"Chef de guerite",
+      title:"Utilisateur",
       dataIndex:"createdBy",
       width:"200px",
       render:(value)=>

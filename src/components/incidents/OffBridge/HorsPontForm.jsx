@@ -9,14 +9,15 @@ import AutoComplete from '../../common/AutoComplete';
 
 const HorsPontForm = ({onSucess}) =>{
     // Hooks
-    const {handleSubmit, formState:{errors}, register, setValue, getValues} = useForm();
+    const {handleSubmit, formState:{errors}, register, setValue, getValues, watch} = useForm();
     const {handleFetch, handlePost} = useFetch();
 
     // States
-    const [declarationType, setDeclarationType] = useState("")
+    // const [declarationType, setDeclarationType] = useState("")
     const [incidentCauses, setIncidentCauses] = useState([]);
     const [sites, setSites] = useState([]);
 
+    const declarationType = watch("declarationType");
 
     // Handles
     const fetchIncidentCauses = async(url)=>{
@@ -109,7 +110,7 @@ const HorsPontForm = ({onSucess}) =>{
                     <label htmlFor="incidentCausesid" className='text-sm font-semibold px-2'>Choisir le site <span className='text-red-500'>*</span></label>
                     <AutoComplete 
                         dataList={sites}
-                        onSearch={(value)=>fetchIncidentCauses(`${URLS.ENTITY_API}/sites?search=${value}`)}
+                        onSearch={(value)=>fetchSites(`${URLS.ENTITY_API}/sites?search=${value}`)}
                         onSelect={(value)=>{
                             if(value){
                                 setValue("siteId", value?.id)
@@ -131,7 +132,7 @@ const HorsPontForm = ({onSucess}) =>{
                     {errors.tier && <small className='text-xs text-red-500'>{errors.tier.message}</small>}
                 </div>
                 {
-                    getValues(["declarationType"]) === "CONTAINER" &&
+                    declarationType === "CONTAINER" &&
                     <>
                         <div className='flex flex-col w-full px-2'>
                             <label htmlFor="" className='text-sm font-semibold'>Conteneur 1 <span className='text-red-500'>*</span>:</label>

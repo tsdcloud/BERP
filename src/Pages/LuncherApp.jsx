@@ -60,8 +60,6 @@ export default function LuncherApp() {
 
           if(employee != null){
             let permissions = employee?.employeePermissions?.map(permission=>permission?.permission.permissionName);
-            console.log(permissions);
-            
             setUserPermissions(permissions || []);
 
             let roles = employee?.employeeRoles?.map(role => role?.role.roleName);

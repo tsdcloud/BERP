@@ -90,6 +90,7 @@ const RapportOffBridgeForm = ({onSubmit}) => {
     const generateReport=async(data)=>{
         setError("");
         let {startDate, endDate, value} = data;
+        console.log(data);
         let url =`${URLS.INCIDENT_API}/off-bridges/file?criteria=${criteria}&condition=${condition}&value=${value}&start=${startDate ? new Date(startDate).toISOString():''}&end=${endDate?new Date(endDate).toISOString():''}`;
         if(criteria==="" || condition === "" || !value){
             setError("tous les champs (*) sont requis");
@@ -105,10 +106,9 @@ const RapportOffBridgeForm = ({onSubmit}) => {
             let response = await fetch(url, requestOptions);
             if(response.status === 200){
                 const result = await response.json();
-                console.log(result)
-                const link = document.getElementById('download');
+                const link = document.createElement('a');
                 link.href = result?.downloadLink;
-                link.download = `off-bridge_report_${new Date().toISOString()}.xlsx`;
+                link.download = 'hors-pont-export.xlsx';
                 link.click();
                 onSubmit()
                 return;
@@ -156,7 +156,7 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                             }}
                             onSelect={(value)=>{
                                 if(value){
-                                    setValue('value', value?.id)
+                                    setValue('value', value?.value)
                                 }else{
                                     setValue('value', null)
                                 }

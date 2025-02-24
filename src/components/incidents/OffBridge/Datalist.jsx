@@ -153,10 +153,10 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       render:(value)=><p className='text-sm capitalize'>{highlightText(value) || "--"}</p>
     },
     {
-      title:"Chef de guerrite",
-      dataIndex:"userId",
+      title:"Utilisateur",
+      dataIndex:"createdBy",
       width:"200px",
-      render:(value)=><p className='text-sm'>{employees.find(site => site.value === value)?.name || "N/A"}</p>
+      render:(value)=><p className='text-sm'>{employees.find(employee => employee.value === value)?.name || "N/A"}</p>
     },
     {
       title:"Date de création",

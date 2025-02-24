@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { FaFire } from 'react-icons/fa';
 import Preloader from '../../components/Preloader';
 import { ShieldExclamationIcon } from '@heroicons/react/24/solid';
+import { TrafficConeIcon } from 'lucide-react';
 
 export default function IncidentEntryPoint() {
     
@@ -23,7 +24,7 @@ export default function IncidentEntryPoint() {
                                     rel="noopener noreferrer"
                                     className="flex items-center justify-center transition-all w-[70px] hover:w-[80px] h-[70px] hover:h-[80px] bg-gradient-to-tr from-secondary to-green-500 hover:bg-gradient-to-tr text-white rounded-xl shadow-sm hover:shadow-2xl hover:from-orange-600 hover:to-orange-400"
                                 >
-                                    <ShieldExclamationIcon className='h-10 w-10 text-white' />
+                                    <TrafficConeIcon className='h-10 w-10 text-white' />
                                 </a>
                                 <p className='font-semibold text-xs text-center max-w-[70px]'>Gestion des incidents</p>
                     </div>

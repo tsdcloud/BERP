@@ -176,10 +176,9 @@ const RapportMaintenanceForm = ({onSubmit}) => {
             let response = await fetch(url, requestOptions);
             if(response.status === 200){
                 const result = await response.json();
-                console.log(result)
-                const link = document.getElementById('download');
+                const link = document.createElement('a');
                 link.href = result?.downloadLink;
-                link.download = "incidents_report.xlsx";
+                link.download = 'maintenances-export.xlsx';
                 link.click();
                 onSubmit()
                 return;
@@ -242,7 +241,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                             }}
                             onSelect={(value)=>{
                                 if(value){
-                                    setValue('value', value?.id)
+                                    setValue('value', value?.value)
                                 }else{
                                     setValue('value', null)
                                 }

@@ -162,13 +162,8 @@ const RapportIncidentForm = ({onSubmit}) => {
                 const result = await response.json();
                 const link = document.createElement('a');
                 link.href = result?.downloadLink;
-                link.download = 'export.xlsx';
+                link.download = 'incidents-export.xlsx';
                 link.click();
-
-                // const link = document.getElementById('download');
-                // link.href = result?.downloadLink;
-                // link.download = "incidents_report.xlsx";
-                // link.click();
                 onSubmit()
                 return;
             }
@@ -249,7 +244,7 @@ const RapportIncidentForm = ({onSubmit}) => {
                             }}
                             onSelect={(value)=>{
                                 if(value){
-                                    setValue('value', value?.id)
+                                    setValue('value', value?.value)
                                 }else{
                                     setValue('value', null)
                                 }

@@ -10,7 +10,6 @@ export const getEmployee = async () =>{
     if(!token || token === null) return null;
 
     const decodedToken = jwtDecode(token);
-    console.log(decodedToken)
     const userId = decodedToken?.user_id;
     
     
@@ -25,7 +24,6 @@ export const getEmployee = async () =>{
         });
         if(response.status === 200){
             let result = await response.json();
-            console.log(result)
             if(result?.data.length > 0){
                 return result?.data[0];
             }
