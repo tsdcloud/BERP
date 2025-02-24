@@ -6,7 +6,7 @@ export default function EntityEntryPoint() {
     
     const [isLoading, setIsLoading] = useState(false);
     return (
-        <div className='flex justify-normal md:justify-center flex-shrink md:items-center m-4'>
+        <div className='flex justify-normal md:justify-center flex-shrink md:items-center md:mr-0 m-4'>
             {
 
                 isLoading ? (

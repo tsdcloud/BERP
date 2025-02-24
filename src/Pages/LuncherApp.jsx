@@ -77,7 +77,7 @@ export default function LuncherApp() {
   //Cette page va representer la page présentante toutes les app de l'erp.
 
   return (
-                <div className="flex flex-col min-h-screen">
+                <div className="flex flex-col min-h-screen container">
                 {/* Effet nuageux avec animation */}
                 <div className="absolute inset-0 opacity-30 blur-xl animate-gradient w-full h-full flex items-center justify-center">
                   <img src="/logo-placeholder.png" alt=""/>
@@ -89,10 +89,10 @@ export default function LuncherApp() {
                   <div className='flex justify-between'>
                       <Button
                           type="submit"
-                          className="absolute top-0 right-6 my-9 mx-4 w-auto bg-red-500 text-white px-2 text-xs rounded-3xl shadow-md hover:bg-blue-700 transition "
+                          className="transition-all  md:hover:w-[120px]  md:hover:h-[35px] absolute top-0 right-6 my-9 mx-4 w-auto bg-red-500 text-white px-2 text-xs rounded-3xl shadow-md hover:bg-blue-700 transition "
                           onClick={logout}
                       >
-                        <span className='sm:hidden md:block'>Deconnexion</span>
+                        <div className='hidden md:block'>Deconnexion</div>
                         <ArrowLeftEndOnRectangleIcon className="h-6 w-6 rotate-180" />
                       </Button>
                   </div>

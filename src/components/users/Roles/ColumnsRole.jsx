@@ -53,10 +53,7 @@ export const RoleAction = ( { actRole, desRole, updateData } ) => {
    
 
     const onSubmit = async (data) => {
-        // const urlToUpdate = `${URLS.API_ROLE}${selectedRole?.id}`;
         const urlToUpdate =  `${URLS.USER_API}/roles/${selectedRole?.id}`;
-       
-      
         try {
             const response = await handlePatch(urlToUpdate, data);
             // console.log("response update", response);

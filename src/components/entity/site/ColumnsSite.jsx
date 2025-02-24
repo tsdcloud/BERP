@@ -26,9 +26,10 @@ import { jwtDecode } from 'jwt-decode';
 const siteSchema = z.object({
     name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
-    .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
+    // .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom cv' conforme."),
+    // .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom cv' conforme.")
+    ,
 
     entityId: z.string()
     .nonempty('Ce champs "Nom de la ville" est réquis')
@@ -40,16 +41,17 @@ const siteSchema = z.object({
     
     typeSite: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
-    .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
+    // .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'type de site' conforme."),
+    // .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'type de site' conforme.")
+    ,
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
 
     });
 
 // Fonction principale pour gérer les actions utilisateur
-export const SiteAction = () => {
+export const SiteAction = ({ delSite, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -75,8 +77,6 @@ export const SiteAction = () => {
         
             if (response && response?.status === 200) {
                     const results = response?.data;
-                    // console.log("results", results);
-
                     const filteredEntities = results?.map(item => {
                     const { createdBy, updateAt, ...rest } = item;
                     return { 
@@ -84,7 +84,6 @@ export const SiteAction = () => {
                         ...rest
                     };
                 });
-                    // console.log("districts - Town",filteredEntities);
                     setShowEntities(filteredEntities);
             }
             else{
@@ -120,7 +119,6 @@ export const SiteAction = () => {
     if(token){
         const decode = jwtDecode(token);
         setTokenUser(decode.user_id);
-        // console.log("var", tokenUser);
     }
   }, [tokenUser]);
 
@@ -131,14 +129,10 @@ export const SiteAction = () => {
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            console.log("response site update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("site modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("site modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -243,12 +237,10 @@ export const SiteAction = () => {
 
                     try {
                             const response = await handleDelete(urlToDeletedSite, {isActive:false});
-                            console.log("response for deleting", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("site disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                    await delSite(id);
+                                    toast.success("site supprimé avec succès", { duration: 5000});
+                             
                                 }
                                 else {
                                   toast.error("Erreur lors de la désactivation site", { duration: 5000 });
@@ -273,17 +265,21 @@ export const SiteAction = () => {
     const showDialogSite = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? "Modifier les informations" : "Détails du site" }
+                             <span className='flex text-left'>
+                                { isEdited ? "Modifier les informations" : "Détails du site" }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='name' className="text-xs mt-2">
                                                 Nom du site <sup className='text-red-500'>*</sup>
                                             </label>
@@ -292,7 +288,7 @@ export const SiteAction = () => {
                                                 type="text"
                                                 defaultValue={selectedSite?.name}
                                                 {...register("name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -300,7 +296,7 @@ export const SiteAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
                                                 )}
                                     </div>
-                                    <div className=' flex flex-col'>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='entityId' className="text-xs mt-2">
                                                 Nom de l'entité <sup className='text-red-500'>*</sup>
                                             </label>
@@ -311,7 +307,7 @@ export const SiteAction = () => {
                                                     }}
                                                     defaultValue={selectedSite?.entityId}
                                                     {...register('entityId')}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.entityId ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 >
@@ -326,7 +322,7 @@ export const SiteAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.entityId.message}</p>
                                                 )}
                                     </div>
-                                    <div className=' flex flex-col'>
+                                    <div className='flex flex-col text-left'>
                                                     <label htmlFor="typeSite" className="block text-xs font-medium mb-1">
                                                         Type de site <sup className='text-red-500'>*</sup>
                                                     </label>
@@ -339,7 +335,7 @@ export const SiteAction = () => {
                                                                 }}
                                                                 defaultValue={selectedSite?.typeSite}
                                                                 {...register('typeSite')} 
-                                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                                     errors.typeSite ? "border-red-500" : "border-gray-300"
                                                                 }`}
                                                             >
@@ -398,7 +394,7 @@ export const SiteAction = () => {
                                 </form>
                             ) : (
                                 selectedSite && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-black text-left space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedSite?.id}</h3>

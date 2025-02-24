@@ -6,7 +6,6 @@ import { URLS } from '../../../../configUrl';
 import CreateDistrict from './CreateDistrict';
 
 export default function District() {
-    const { showDialogDistrict, columnsDistrict } = DistrictAction();
     const [districts, setDistricts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -15,7 +14,6 @@ export default function District() {
     const { handleFetch } = useFetch();
 
     const fetchDistrict = async () => {
-        // const urlToShowAllDistrict = URLS.API_DISTRICT;
         const urlToShowAllDistrict =  `${URLS.ENTITY_API}/districts`;
        
         try {
@@ -23,10 +21,7 @@ export default function District() {
             const response = await handleFetch(urlToShowAllDistrict);
             
                 if (response && response?.status === 200) {
-                        const results = response?.data;
-                        // console.log("res", results);
-
-                        const filteredDistrict = results?.map(item => {
+                        const results = response?.data; const filteredDistrict = results?.map(item => {
                         const { createdBy, updateAt, ...rest } = item;
                         return { id: rest.id, 
                                  name:rest.name,
@@ -35,7 +30,6 @@ export default function District() {
                                  isActive:rest.isActive,
                                 };
                     });
-                        // console.log("district",filteredDistrict);
                         setDistricts(filteredDistrict);
                 }
                 else{
@@ -54,15 +48,29 @@ export default function District() {
         
     }, []);
 
+    const updateData = (id, updatedDistrict) => {
+        setDistricts((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedDistrict } : item
+            ));
+            fetchDistrict();
+    };
 
+    const delDistrict = (id) => {
+        setDistricts((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+    const { showDialogDistrict, columnsDistrict } = DistrictAction({ delDistrict, updateData });
   return (
-            <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des Districts</h1>
-                <div className='space-y-2'>
+            <div className='m-1 space-y-3 my-10 w-full'>
+                <h1 className='text-sm mb-2 font-semibold'>Gestion des Districts</h1>
+                <div className='space-y-2 w-full'>
                     <CreateDistrict setOpen={setOpen} onSubmit={fetchDistrict} />
                     { columnsDistrict && districts?.length >= 0 && (
                         <DataTable
-                            className="rounded-md border w-[800px] text-xs"
+                            className="rounded-md border w-[700px] max-w-full text-xs sm:text-sm"
                             columns={columnsDistrict}
                             data={districts} 
                         />

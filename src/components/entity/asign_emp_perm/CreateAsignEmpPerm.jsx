@@ -20,13 +20,6 @@ const asignEmpPermSchema = z.object({
     .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/, 
       "Ce champs doit être un 'nom de employee' Conforme."),
 
-    // employeeId: z.string()
-    // .nonempty('Ce champs "Nom du role" est réquis')
-    // .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
-    // .max(100)
-    // .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/, 
-    //   "Ce champs doit être un 'nom du role' Conforme."),
-
     permissionId: z.array(z.string()) // Modification ici pour accepter un tableau de chaînes
     .nonempty('Ce champs "Nom de la permission" est réquis')
     .min(1, "Vous devez sélectionner au moins une permission."),
@@ -68,6 +61,7 @@ export default function CreateAsignEmpPerm({setOpen, onSubmit}) {
 
     const fetchPermission = async () => {
         const urlToShowAllPermission =  `${URLS.ENTITY_API}/permissions`;
+        // const urlToShowAllPermission =  `https://entity.bfcgroupsa.com/api/permissions`;
        
         try {
             setIsLoading(true);
@@ -98,6 +92,7 @@ export default function CreateAsignEmpPerm({setOpen, onSubmit}) {
 
     const fetchEmployee = async() => {
         const urlToShowAllEmployee =  `${URLS.ENTITY_API}/employees`;
+        // const urlToShowAllEmployee =  `https://entity.bfcgroupsa.com/api/employees`;
        
         try {
             setIsLoading(true);
@@ -144,7 +139,8 @@ export default function CreateAsignEmpPerm({setOpen, onSubmit}) {
 
       const handleSubmitDataFormAsignEmpPerm = async(data) => {
         // console.log("data form",data);
-        const urlToCreateAsignEmpPerm =  `${URLS.ENTITY_API}/permission-roles`;
+        const urlToCreateAsignEmpPerm =  `${URLS.ENTITY_API}/employee-permissions`;
+        // const urlToCreateAsignEmpPerm =  `https://entity.bfcgroupsa.com/api/employee-permissions`;
     
             try {
                     const { employeeId, permissionId, createdBy } = data;

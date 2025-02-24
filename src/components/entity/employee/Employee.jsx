@@ -6,7 +6,6 @@ import { URLS } from '../../../../configUrl';
 import CreateEmployee from './CreateEmployee';
 
 export default function Employee() {
-    const { showDialogEmployee, columnsEmployee } = EmployeeAction();
     const [Employees, setEmployees] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -24,7 +23,7 @@ export default function Employee() {
             
             if (response && response?.status === 200) {
                 const results = response?.data;
-                // console.log("RES", results);
+
                 // Vérification si results est un tableau
                 if (Array.isArray(results)) {
                     const filteredEmployee = results.map(item => {
@@ -64,15 +63,30 @@ export default function Employee() {
         
     }, []);
 
+    const updateData = (id, updatedEmployee) => {
+         setEmployees((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedEmployee } : item
+            ));
+            fetchEmployee();
+    };
 
+    const delEmployee = (id) => {
+         setEmployees((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+
+    const { showDialogEmployee, columnsEmployee } = EmployeeAction({ delEmployee, updateData });
   return (
-            <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des employé(e)s</h1>
-                <div className='space-y-2'>
+            <div className='m-1 space-y-3 my-10 w-full'>
+                <h1 className='text-sm mb-2 font-semibold'>Gestion des employé(e)s</h1>
+                <div className='space-y-2 w-full'>
                     <CreateEmployee setOpen={setOpen} onSubmit={fetchEmployee} />
                     {columnsEmployee && Employees.length >= 0 && (
                         <DataTable
-                            className="rounded-md border w-[1300px] text-xs"
+                            className="rounded-md border w-[1300px] max-w-full text-xs sm:text-sm"
                             columns={columnsEmployee}
                             data={Employees} 
                         />

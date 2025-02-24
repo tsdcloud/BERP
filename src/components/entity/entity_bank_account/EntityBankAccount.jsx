@@ -6,7 +6,6 @@ import { URLS } from '../../../../configUrl';
 import CreateEntityBankAccount from './CreateEntityBankAccount';
 
 export default function EntityBankAccount() {
-    const { showDialogEntityBankAccount, columnsEntityBankAccount } = EntityBankAccountAction();
     const [EntityBankAccounts, setEntityBankAccounts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -15,7 +14,6 @@ export default function EntityBankAccount() {
     const { handleFetch } = useFetch();
 
     const fetchEntityBankAccount = async () => {
-        // const urlToShowAllEntityiesBankAccount = URLS.API_ENTITY_BANK_ACCOUNT;
         const urlToShowAllEntityiesBankAccount = `${URLS.ENTITY_API}/entity-bank-accounts`;
         try {
             setIsLoading(true);
@@ -23,8 +21,6 @@ export default function EntityBankAccount() {
             
                 if (response && response?.status === 200) {
                         const results = response?.data;
-                        // console.log("res EntityBankAccount", results);
-
                         const filteredEntityBankAccount = results?.map(item => {
                         const { createdBy, updateAt, ...rest } = item;
                         return { 
@@ -36,7 +32,6 @@ export default function EntityBankAccount() {
                                  isActive:rest.isActive,
                                 };
                     });
-                        // console.log("EntityBankAccount",filteredEntityBankAccount);
                         setEntityBankAccounts(filteredEntityBankAccount);
                 }
                 else{
@@ -56,14 +51,29 @@ export default function EntityBankAccount() {
     }, []);
 
 
+    const updateData = (id, updatedEntiyBankAccount) => {
+        setEntityBankAccounts((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedEntiyBankAccount } : item
+            ));
+            fetchEntityBankAccount();
+    };
+
+    const delEntityBankAccount = (id) => {
+        setEntityBankAccounts((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+    const { showDialogEntityBankAccount, columnsEntityBankAccount } = EntityBankAccountAction({ delEntityBankAccount, updateData });
   return (
-            <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des comptes bancaire des entités</h1>
-                <div className='space-y-2'>
+            <div className='m-1 space-y-3 my-10 w-full'>
+                <h1 className='text-sm mb-2 font-semibold'>Gestion des comptes bancaire des entités</h1>
+                <div className='space-y-2 w-full'>
                     <CreateEntityBankAccount setOpen={setOpen} onSubmit={fetchEntityBankAccount} />
                     { columnsEntityBankAccount && EntityBankAccounts?.length >= 0 && (
                         <DataTable
-                            className="rounded-md border w-[800px] text-xs"
+                           className="rounded-md border w-[700px] max-w-full text-xs sm:text-sm"
                             columns={columnsEntityBankAccount}
                             data={EntityBankAccounts} 
                         />

@@ -47,7 +47,7 @@ const asignRolePermSchema = z.object({
     });
 
 // Fonction principale pour gérer les actions utilisateur
-export const AsignRolePermAction = () => {
+export const AsignRolePermAction = ({ delAsignRolePerm, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -151,12 +151,9 @@ export const AsignRolePermAction = () => {
             const response = await handlePatch(urlToUpdate, data);
             // console.log("response role update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("Asignation Rôle - Permission modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("Role - Perm modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -263,18 +260,16 @@ export const AsignRolePermAction = () => {
                             const response = await handleDelete(urlToDeletedAsignRolePerm, {isActive:false});
                             // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("asign Role - Perm disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                    await delAsignRolePerm(id);
+                                    toast.success("Asignation Rôle - Permission supprimée avec succès", { duration: 5000});
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation asign Role - Perm", { duration: 5000 });
+                                  toast.error("Erreur lors de la suppression asign Role - Perm", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la désactivation asign Role - Perm :", error);
+                        console.error("Erreur lors de la suppression asign Role - Perm :", error);
                     }
 
                     finally{
@@ -291,34 +286,21 @@ export const AsignRolePermAction = () => {
     const showDialogAsignRolePerm = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
+                            <span className='flex text-left'>
                             { isEdited ? "Modifier les informations" : "Détails de l'assignation des rôles - permissions" }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
-                                    className='flex flex-col space-y-3 mt-5 text-xs' 
+                                    className='flex flex-col space-y-3 mt-5 text-xs'
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    {/* <div>
-                                            <label htmlFor='name' className="text-xs mt-2">
-                                                Nom du departement <sup className='text-red-500'>*</sup>
-                                            </label>
-                                            <Input
-                                                id="name"
-                                                type="text"
-                                                defaultValue={selectedAsignRolePerm?.name}
-                                                {...register("name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
-                                                    errors.name ? "border-red-500" : "border-gray-300"
-                                                }`}
-                                                />
-                                                {errors.name && (
-                                                <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
-                                                )}
-                                    </div> */}
-                                    <div className=' flex flex-col'>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='roleId' className="text-xs mt-2">
                                                 Nom du rôle <sup className='text-red-500'>*</sup>
                                             </label>
@@ -329,7 +311,7 @@ export const AsignRolePermAction = () => {
                                                         }}
                                                         defaultValue={selectedAsignRolePerm?.roleId}
                                                         {...register('roleId')}
-                                                        className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                        className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                             errors.roleId ? "border-red-500" : "border-gray-300"
                                                         }`}
                                                     >
@@ -347,7 +329,7 @@ export const AsignRolePermAction = () => {
                                                 )}
                                     </div>
 
-                                    <div className=' flex flex-col'>
+                                    <div className=' flex flex-col text-left'>
                                             <label htmlFor='permissionId' className="text-xs mt-2">
                                                 Nom de la permission <sup className='text-red-500'>*</sup>
                                             </label>
@@ -358,7 +340,7 @@ export const AsignRolePermAction = () => {
                                                     }}
                                                     defaultValue={selectedAsignRolePerm?.permissionId}
                                                     {...register('permissionId')}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.permissionId ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 >
@@ -415,7 +397,7 @@ export const AsignRolePermAction = () => {
                                 </form>
                             ) : (
                                 selectedAsignRolePerm && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-left text-black space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedAsignRolePerm?.id}</h3>

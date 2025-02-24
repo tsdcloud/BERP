@@ -76,7 +76,7 @@ export default function AsignRoleUser() {
                 columns={columnsAsignRoleUser}
                 data={asignRoleUser} 
             />
-        ) : <Preloader size={40} />}
+        ) : isLoading ? <Preloader size={40} /> : <div className='flex  justify-center text-xl font-bold text-gray-300'> No data</div>}
     </div>
     {showDialogAsignRoleUser()}
 </div> 

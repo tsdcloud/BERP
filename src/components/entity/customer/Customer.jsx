@@ -6,7 +6,6 @@ import { URLS } from '../../../../configUrl';
 import CreateCustomer from './CreateCustomer';
 
 export default function Customer() {
-    const { showDialogCustomer, columnsCustomer } = CustomerAction();
     const [customers, setCustomers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -15,7 +14,6 @@ export default function Customer() {
     const { handleFetch } = useFetch();
 
     const fetchCustomer = async () => {
-        // const urlToShowAllCustomers = URLS.API_CUSTOMER;
         const urlToShowAllCustomers = `${URLS.ENTITY_API}/clients`;
         
         try {
@@ -48,15 +46,30 @@ export default function Customer() {
         
     }, []);
 
+    const updateData = (id, updatedCountry) => {
+        setCustomers((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedCountry } : item
+            )
+        );
+    };
+
+    const delCustomer = (id) => {
+        setCustomers((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+    const { showDialogCustomer, columnsCustomer } = CustomerAction({delCustomer, updateData});
 
   return (
-            <div className='m-1 space-y-3 my-10'>
-                <h1 className='text-sm my-3 font-semibold'>Gestion des Clients</h1>
-                <div className='space-y-2'>
+            <div className='m-1 space-y-3 my-10 w-full'>
+                <h1 className='text-sm mb-2 font-semibold'>Gestion des Clients</h1>
+                <div className='space-y-2 w-full'>
                     <CreateCustomer setOpen={setOpen} onSubmit={fetchCustomer} />
                     {columnsCustomer && customers.length >= 0 && (
                         <DataTable
-                            className="rounded-md border w-[800px] text-xs"
+                           className="rounded-md border w-[700px] max-w-full text-xs sm:text-sm"
                             columns={columnsCustomer}
                             data={customers} 
                         />

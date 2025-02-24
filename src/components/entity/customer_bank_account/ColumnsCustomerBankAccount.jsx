@@ -47,7 +47,7 @@ const customerBankAccountSchema = z.object({
   });
 
 // fonction principale pour gérer les actions utilisateur
-export const CustomerBankAccountAction = () => {
+export const CustomerBankAccountAction = ({ delCustomerBankAccount, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -77,13 +77,10 @@ export const CustomerBankAccountAction = () => {
         
             if (response && response?.status === 200) {
                     const results = response?.data;
-                    // console.log("res bank", results);
-
                     const filteredBanks = results?.map(item => {
                     const { updateAt, ...rest } = item;
                     return rest;
                 });
-                    // console.log("banques",filteredBanks);
                     setShowBanks(filteredBanks);
             }
             else{
@@ -98,7 +95,6 @@ export const CustomerBankAccountAction = () => {
      };
 
   const fetchCustomers = async () => {
-    // const getCustomers = URLS.API_CUSTOMER;
     const getCustomers = `${URLS.ENTITY_API}/clients`;
     try {
         setIsLoading(true);
@@ -106,13 +102,10 @@ export const CustomerBankAccountAction = () => {
         
             if (response && response?.status === 200) {
                     const results = response?.data;
-                    // console.log("res customers", results);
-
                     const filteredCustomers = results?.map(item => {
                     const { updateAt, ...rest } = item;
                     return rest;
                 });
-                    // console.log("customers",filteredCustomers);
                     setShowCustomers(filteredCustomers);
             }
             else{
@@ -142,20 +135,14 @@ export const CustomerBankAccountAction = () => {
   }, [tokenUser]);
 
     const onSubmit = async (data) => {
-        // console.log("data role", data);
-        // const urlToUpdate = `${URLS.API_CUSTOMER_BANK_ACCOUNT}/${selectedCustomerBankAccount?.id}`;
         const urlToUpdate = `${URLS.ENTITY_API}/client-bank-accounts/${selectedCustomerBankAccount?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            // console.log("response role update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("customer bank account modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("customer bank account modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -172,7 +159,6 @@ export const CustomerBankAccountAction = () => {
         setSelectedCustomerBankAccount(item);
         setIsEdited(false);
         setDialogOpen(true);
-        // console.log("item", item);
     };
 
     const handleEditedCustomerBankAccount = (item) => {
@@ -268,10 +254,8 @@ export const CustomerBankAccountAction = () => {
                             const response = await handleDelete(urlToDisabledCustomerBankAccount, {isActive:false});
                             // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("compte bancaire disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                    await delCustomerBankAccount(id);
+                                    toast.success("Compte bancaire supprimé avec succès", { duration: 5000});
                                 }
                                 else {
                                   toast.error("Erreur lors de la désactivation compte bancaire", { duration: 5000 });
@@ -297,17 +281,21 @@ export const CustomerBankAccountAction = () => {
         
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                 className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? " Modifier les informations " : " Détails du compte bancaire du client" }
+                             <span className='flex text-left'>
+                             { isEdited ? " Modifier les informations " : " Détails du compte bancaire du client" }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs'
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='accountNumber' className="text-xs mt-2">
                                                 Numéro de compte bancaire du client <sup className='text-red-500'>*</sup>
                                             </label>
@@ -316,7 +304,7 @@ export const CustomerBankAccountAction = () => {
                                                 type="text"
                                                 defaultValue={selectedCustomerBankAccount?.accountNumber}
                                                 {...register("accountNumber")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.accountNumber ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -325,7 +313,7 @@ export const CustomerBankAccountAction = () => {
                                                 )}
                                     </div>
 
-                                    <div className=' flex flex-col'>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='bankId' className="text-xs mt-2">
                                                 Nom de la banque <sup className='text-red-500'>*</sup>
                                             </label>
@@ -336,7 +324,7 @@ export const CustomerBankAccountAction = () => {
                                                     }}
                                                     defaultValue={selectedCustomerBankAccount?.bankId}
                                                     {...register('bankId')}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.bankId ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 >
@@ -351,7 +339,7 @@ export const CustomerBankAccountAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.bankId.message}</p>
                                                 )}
                                     </div>
-                                    <div className=' flex flex-col'>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='clientId' className="text-xs mt-2">
                                                 Nom du client <sup className='text-red-500'>*</sup>
                                             </label>
@@ -362,7 +350,7 @@ export const CustomerBankAccountAction = () => {
                                                     }}
                                                     defaultValue={selectedCustomerBankAccount?.clientId}
                                                     {...register('clientId')}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.clientId ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 >
@@ -422,7 +410,7 @@ export const CustomerBankAccountAction = () => {
                                 </form>
                             ) : (
                                 selectedCustomerBankAccount && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-left text-black space-y-3'>
 
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>

@@ -23,7 +23,7 @@ export default function Role() {
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllRole);
-            console.log("respoRoles",response);
+            // console.log("respoRoles",response);
             
                 if (response && response?.data?.results) {
                         const results = response?.data?.results;
@@ -89,7 +89,7 @@ export default function Role() {
                 columns={columnsRole}
                 data={roles} 
             />
-        ) : <Preloader size={40} />}
+        ) : isLoading ? <Preloader size={40} /> : <div className='flex  justify-center text-xl font-bold text-gray-300'> No data</div>}
     </div>
     {showDialogRole()}
 </div> 

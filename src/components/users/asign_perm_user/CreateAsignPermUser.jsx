@@ -40,10 +40,10 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
 
 
     const showPermission = async () => {
-        const urlToGetPermission = `${URLS.API_PERMISSION}`;
+        const urlToGetPermission = `${URLS.USER_API}/permissions/`;
         try {
             const response = await handleFetch(urlToGetPermission);
-            console.log("response show permission", response);
+            // console.log("response show permission", response);
 
                 if (response && response?.data?.results) {
                     const filteredPermission = response?.data?.results.map(item => {
@@ -51,7 +51,7 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
                     return rest;
                     });
                         setFetchPermission(filteredPermission);
-                        console.log("fetchPermission", fetchPermission);
+                        // console.log("fetchPermission", fetchPermission);
                 
                     }
                 else {
@@ -64,7 +64,7 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
         }
     };
     const showUser = async () => {
-        const urlToGetUser = `${URLS.API_USER}`;
+        const urlToGetUser = `${URLS.USER_API}/users/`;
         try {
             const response = await handleFetch(urlToGetUser);
             console.log("response show user", response);
@@ -76,7 +76,7 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
                         return rest;
                     });
                         setFetchUser(filteredUsers);
-                        console.log("fetchUser", fetchUser);
+                        // console.log("fetchUser", fetchUser);
                 
                     }
                 else {
@@ -130,7 +130,7 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
 
       const onSubmitDataFormAsignPermUser = async (data) => {
         // console.log("Données du formulaire :", data);
-        const urlToCreateAsignPermUser = URLS.API_ASIGN_PERM_USER;
+        const urlToCreateAsignPermUser = `${URLS.USER_API}/grant_permission_user/`;
       
         try {
           const { user_id, permission_id } = data;
@@ -208,7 +208,7 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
           <div className='space-y-0'>
                 <p className='text-[12px] mb-2'>Veuillez correctement renseigner les informations de l'asignation permission - utilisateur.</p>
                 <form onSubmit={handleSubmit(onSubmitDataFormAsignPermUser)} 
-                    className='sm:bg-blue-200 md:bg-transparent'>
+                    className='md:bg-transparent'>
 
                         <div className='mb-4'>
                             <label htmlFor="user_id" className="block text-xs font-medium mb-1">
@@ -248,7 +248,7 @@ export default function CreateAsignPermUser({setOpen, onSubmit}) {
                             <div className='flex flex-wrap my-2 overflow-y-auto h-60'>
                                 {fetchPermission.map(item => (
                                     <div key={item?.id} 
-                                    className={`flex font-mono items-center ml-2 mb-2 px-2 py-2 border bg-secondary text-white rounded-sm
+                                    className={`flex font-mono items-center ml-2 mb-2 px-2 py-2 h-8 border bg-secondary text-white rounded-sm
                                     ${errors.permission_id ? "border-red-500" : "border-gray-300"}`}>
                                     <input
                                       type="checkbox"

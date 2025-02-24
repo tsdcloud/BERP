@@ -20,18 +20,20 @@ const bankSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     address: z.string()
     .nonempty("Ce champs 'Adresse' est réquis")
     .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champs doit être une 'Adresse' conforme"),
+    // .regex(/^[a-zA-Z ,]+$/, "Ce champs doit être une 'Adresse' conforme")
+    ,
 
     phone: z.string()
     .nonempty("Ce champs 'Téléphone' est réquis.")
     .length(9, "La valeur de ce champs doit contenir 9 caractères.")
-    .regex(/^[0-9]+$/)
+    // .regex(/^[0-9]+$/)
     ,
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
@@ -71,7 +73,7 @@ export default function CreateBank({setOpen, onSubmit}) {
         const response = await handlePost(urlToCreateBank, data, true);
         // console.log("response crea", response);
         if (response && response.status === 201) {
-          toast.success("banque crée avec succès", { duration:2000 });
+          toast.success("Banque crée avec succès", { duration:2000 });
           setOpen(false);
           onSubmit();
           reset();

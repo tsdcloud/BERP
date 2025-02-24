@@ -20,18 +20,20 @@ const entitySchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     localisation: z.string()
     .nonempty("Ce champs 'Localisation' est réquis")
     .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champs doit être une 'localisation' conforme"),
+    // .regex(/^[a-zA-Z ,]+$/, "Ce champs doit être une 'localisation' conforme")
+    ,
 
     phone: z.string()
     .nonempty("Ce champs 'Téléphone' est réquis.")
     .length(9, "La valeur de ce champs doit contenir 9 caractères.")
-    .regex(/^[0-9]+$/)
+    // .regex(/^[0-9]+$/)
     ,
 
     townId: z.string()

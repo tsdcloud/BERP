@@ -6,8 +6,6 @@ import DataTable from '../../DataTable';
 import CreateDepartment from './CreateDepartment';
 
 export default function Department() {
-
-    const { showDialogDepartment, columnsDepartment } = DepartmentAction();
     const [department, setDepartment] = useState([]);
     const [error, setError] = useState();
     const [open, setOpen] = useState(false);
@@ -17,7 +15,6 @@ export default function Department() {
     const { handleFetch } = useFetch();
 
     const fetchDepartment = async () => {
-        // const urlToShowAllDepartment = URLS.API_DEPARTMENT;
         const urlToShowAllDepartment =  `${URLS.ENTITY_API}/departments`;
        
         try {
@@ -57,14 +54,29 @@ export default function Department() {
         
     }, []);
 
+    const updateData = (id, updatedDepartment) => {
+        setDepartment((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, ...updatedDepartment } : item
+            ));
+        fetchDepartment();
+    };
+
+    const delDepartment = (id) => {
+        setDepartment((prev) =>
+            prev.filter((item) => item.id != id
+        ));
+    };
+
+    const { showDialogDepartment, columnsDepartment } = DepartmentAction({ delDepartment, updateData});
   return (
-    <div className='m-1 space-y-3 my-10 '>
-    <h1 className='text-sm mb-2'>Gestion des departements</h1>
-    <div className='space-y-2'>
+    <div className='m-1 space-y-3 my-10 w-full'>
+    <h1 className='text-sm mb-2 font-semibold'>Gestion des departements</h1>
+    <div className='space-y-2 w-full'>
         <CreateDepartment setOpen={setOpen} onSubmit={fetchDepartment}/>
         {columnsDepartment && department?.length >= 0 && (
             <DataTable
-                className="rounded-md border w-[800px] text-xs"
+               className="rounded-md border w-[700px] max-w-full text-xs sm:text-sm"
                 columns={columnsDepartment}
                 data={department} 
             />

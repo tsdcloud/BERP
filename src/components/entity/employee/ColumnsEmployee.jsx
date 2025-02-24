@@ -29,7 +29,8 @@ const employeeSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 4 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     email: z.string()
     .nonempty("Ce champs 'Email' est réquis.")
@@ -39,7 +40,8 @@ const employeeSchema = z.object({
     phone: z.string()
     .nonempty("Ce champs 'Téléphone' est réquis.")
     .length(9, "La valeur de ce champs doit contenir 9 caractères.")
-    .regex(/^[0-9]+$/),
+    // .regex(/^[0-9]+$/)
+    ,
 
 
     functionId: z.string()
@@ -89,7 +91,7 @@ const employeeSchema = z.object({
     });
 
 // fonction principale pour gérer les actions utilisateur
-export const EmployeeAction = () => {
+export const EmployeeAction = ({ delEmployee, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();
@@ -147,8 +149,6 @@ export const EmployeeAction = () => {
                 
                     if (response && response?.status === 200) {
                             const results = response?.data;
-                            // console.log("results", results);
-
                             const filteredGrade = results?.map(item => {
                             const { createdBy, updateAt, ...rest } = item;
                             return { ...rest };
@@ -174,8 +174,6 @@ export const EmployeeAction = () => {
                 
                     if (response && response?.status === 200) {
                             const results = response?.data;
-                            // console.log("results", results);
-
                             const filteredFunctions = results?.map(item => {
                             const { createdBy, updateAt, ...rest } = item;
                             return { ...rest };
@@ -202,8 +200,6 @@ export const EmployeeAction = () => {
                 
                     if (response && response?.status === 200) {
                             const results = response?.data;
-                            // console.log("results", results);
-
                             const filteredEchelons = results?.map(item => {
                             const { createdBy, updateAt, ...rest } = item;
                             return { ...rest };
@@ -230,9 +226,7 @@ export const EmployeeAction = () => {
                 
                     if (response && response?.status === 200) {
                             const results = response?.data;
-                            // console.log("results", results);
-
-                            const filteredCategories = results?.map(item => {
+                             const filteredCategories = results?.map(item => {
                             const { createdBy, updateAt, ...rest } = item;
                             return { ...rest };
                         });
@@ -257,8 +251,6 @@ export const EmployeeAction = () => {
                 
                     if (response && response?.status === 200) {
                             const results = response?.data?.results;
-                            // console.log("results", results);
-
                             const filteredUsers = results?.map(item => {
                             const { createdBy, updateAt, ...rest } = item;
                             return { ...rest };
@@ -285,8 +277,6 @@ export const EmployeeAction = () => {
                 
                     if (response && response?.status === 200) {
                             const results = response?.data;
-                            // console.log("results", results);
-
                             const filteredEntities = results?.map(item => {
                             const { createdBy, updateAt, ...rest } = item;
                             return { ...rest };
@@ -325,22 +315,14 @@ export const EmployeeAction = () => {
 
 
     const onSubmit = async (data) => {
-
-        // console.log("data employee", data);
-
-        // const urlToUpdate = `${URLS.API_EMPLOYEE}/${selectedEmployee?.id}`;
         const urlToUpdate =  `${URLS.ENTITY_API}/employees/${selectedEmployee?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            // console.log("response role update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("employee modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("employee modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -443,25 +425,21 @@ export const EmployeeAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cet(te) employé(e) ?");
 
         if (confirmation) {
-            // const urlToDeletedEmployee = `${URLS.API_EMPLOYEE}/${id}`;
-            const urlToDeletedEmployee =  `${URLS.ENTITY_API}/employees/${id}`;
+            const urlToDeletedEmployee = `${URLS.ENTITY_API}/employees/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDeletedEmployee, {isActive:false});
-                            // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("employee disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                    await delEmployee(id);
+                                    toast.success("Employee supprimé avec succès", { duration: 5000});
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation employee", { duration: 5000 });
+                                  toast.error("Erreur lors de la suppression employee", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la désactivation employee :", error);
+                        console.error("Erreur lors de la suppression employee :", error);
                     }
 
                     finally{
@@ -478,11 +456,14 @@ export const EmployeeAction = () => {
     const showDialogEmployee = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                     className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
-                        
                         <AlertDialogTitle>
+                           <span className='flex text-left'>
                             { isEdited ? " Modifier les informations " : " Détails de l'employé(e) " }
+                            </span>
                         </AlertDialogTitle>
 
                         <AlertDialogDescription>
@@ -492,15 +473,14 @@ export const EmployeeAction = () => {
                                         <form
                                             className='flex flex-col space-y-3 mt-5 text-xs' 
                                             onSubmit={handleSubmit(onSubmit)}>
-                                               
-
+                                       
                                               {/* Step 1 */}
                                                 {
                                                     step === 0 && (
                                                     <>
                                                     
 
-                                                        <div className='mb-1'>
+                                                        <div className='flex flex-col text-left'>
                                                             <label htmlFor="name" className="block text-xs font-medium mb-0">
                                                                 Nom de l'employée <sup className='text-red-500'>*</sup>
                                                             </label>
@@ -509,7 +489,7 @@ export const EmployeeAction = () => {
                                                                 type="text"
                                                                 defaultValue={selectedEmployee?.name}
                                                                 {...register('name', { required: "Le nom de l'employée est obligatoire." })}
-                                                                className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                                className={`w-[320px] sm:w-[400px] px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                                 errors.name ? "border-red-500" : "border-gray-300"
                                                                 }`}
                                                             />
@@ -518,7 +498,7 @@ export const EmployeeAction = () => {
                                                             )}
                                                         </div>
 
-                                                        <div className='mb-1'>
+                                                        <div className='flex flex-col text-left'>
                                                             <label htmlFor="email" className="block text-xs font-medium mb-0">
                                                                 Adresse Email Professionnelle <sup className='text-red-500'>*</sup>
                                                             </label>
@@ -533,7 +513,7 @@ export const EmployeeAction = () => {
                                                                     message: "Adresse email invalide.",
                                                                 },
                                                                 })}
-                                                                className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                                className={`w-[320px] sm:w-[400px] px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                                 errors.email ? "border-red-500" : "border-gray-300"
                                                                 }`}
                                                             />
@@ -542,7 +522,7 @@ export const EmployeeAction = () => {
                                                             )}
                                                         </div>
 
-                                                        <div className='mb-1'>
+                                                        <div className='flex flex-col text-left'>
                                                             <label htmlFor="phone" className="block text-xs font-medium mb-0">
                                                                 Numéro de téléphone professionnel <sup className='text-red-500'>*</sup>
                                                             </label>
@@ -551,7 +531,7 @@ export const EmployeeAction = () => {
                                                                 type="text"
                                                                 defaultValue={selectedEmployee?.phone}
                                                                 {...register('phone', { required: "Le numéro de téléphone est obligatoire." })}
-                                                                className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                                className={`w-[320px] sm:w-[400px] px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                                 errors.phone ? "border-red-500" : "border-gray-300"
                                                                 }`}
                                                             />
@@ -560,8 +540,8 @@ export const EmployeeAction = () => {
                                                             )}
                                                         </div>
 
-                                                        <div className='mb-1'>
-                                                                <label htmlFor="entityId" className="block text-xs font-medium mb-1">
+                                                        <div className='flex flex-col text-left'>
+                                                                <label htmlFor="entityId" className="block text-xs font-medium flex flex-col text-left">
                                                                     Attribuer une entité<sup className='text-red-500'>*</sup>
                                                                 </label>
                                                                 <select
@@ -571,7 +551,7 @@ export const EmployeeAction = () => {
                                                                         setSelectedEntities(nameEntitiesSelected);
                                                                     }}
                                                                     {...register('entityId')}
-                                                                    className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                                    className={`w-[320px] sm:w-[400px] px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                                         errors.entityId ? "border-red-500" : "border-gray-300"
                                                                     }`}
                                                                 >
@@ -597,7 +577,7 @@ export const EmployeeAction = () => {
                                                         <>
                                                         
 
-                                                                <div className='mb-1'>
+                                                                <div className='flex flex-col text-left'>
                                                                     <label htmlFor="functionId" className="block text-xs font-medium mb-1">
                                                                         Nom de la fonction<sup className='text-red-500'>*</sup>
                                                                     </label>
@@ -608,7 +588,7 @@ export const EmployeeAction = () => {
                                                                             setSelectedFunction(nameFunctionSelected);
                                                                         }}
                                                                         {...register('functionId')}
-                                                                        className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                                        className={`w-[320px] sm:w-[400px] px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                                             errors.functionId ? "border-red-500" : "border-gray-300"
                                                                         }`}
                                                                     >
@@ -624,7 +604,7 @@ export const EmployeeAction = () => {
                                                                     )}
                                                                 </div>
 
-                                                                <div className='mb-1'>
+                                                                <div className='flex flex-col text-left'>
                                                                     <label htmlFor="gradeId" className="block text-xs font-medium mb-1">
                                                                         Nom du grade <sup className='text-red-500'>*</sup>
                                                                     </label>
@@ -635,7 +615,7 @@ export const EmployeeAction = () => {
                                                                             setSelectedGrade(nameGradeSelected);
                                                                         }}
                                                                         {...register('gradeId')}
-                                                                        className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                                        className={`w-[320px] sm:w-[400px] px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                                             errors.gradeId ? "border-red-500" : "border-gray-300"
                                                                         }`}
                                                                     >
@@ -651,7 +631,7 @@ export const EmployeeAction = () => {
                                                                     )}
                                                                 </div>
 
-                                                                <div className='mb-1'>
+                                                                <div className='flex flex-col text-left'>
                                                                     <label htmlFor="echelonId" className="block text-xs font-medium mb-1">
                                                                         Nom de l'échelon <sup className='text-red-500'>*</sup>
                                                                     </label>
@@ -662,7 +642,7 @@ export const EmployeeAction = () => {
                                                                             setSelectedEchelon(nameEchelonSelected);
                                                                         }}
                                                                         {...register('echelonId')}
-                                                                        className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                                        className={`w-[320px] sm:w-[400px] px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                                             errors.echelonId ? "border-red-500" : "border-gray-300"
                                                                         }`}
                                                                     >
@@ -688,7 +668,7 @@ export const EmployeeAction = () => {
                                                                 <>
                                                                 
 
-                                                                    <div className='mb-1'>
+                                                                    <div className='flex flex-col text-left'>
                                                                         <label htmlFor="categoryId" className="block text-xs font-medium mb-1">
                                                                             Nom de la catégorie <sup className='text-red-500'>*</sup>
                                                                         </label>
@@ -699,7 +679,7 @@ export const EmployeeAction = () => {
                                                                                 setSelectedCategories(nameCategoriesSelected);
                                                                             }}
                                                                             {...register('categoryId')}
-                                                                            className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                                            className={`w-[320px] sm:w-[400px] px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                                                 errors.categoryId ? "border-red-500" : "border-gray-300"
                                                                             }`}
                                                                         >
@@ -715,7 +695,7 @@ export const EmployeeAction = () => {
                                                                         )}
                                                                     </div>
 
-                                                                    <div className='mb-1'>
+                                                                    <div className='flex flex-col text-left'>
                                                                         <label htmlFor="userId" className="block text-xs font-medium mb-1">
                                                                             Nom de l'utilisateur <sup className='text-red-500'>*</sup>
                                                                         </label>
@@ -726,7 +706,7 @@ export const EmployeeAction = () => {
                                                                                 setSelectedUsers(nameUserSelected);
                                                                             }}
                                                                             {...register('userId')}
-                                                                            className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                                            className={`w-[320px] sm:w-[400px] px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                                                 errors.userId ? "border-red-500" : "border-gray-300"
                                                                             }`}
                                                                         >
@@ -737,6 +717,7 @@ export const EmployeeAction = () => {
                                                                                 </option>
                                                                             ))}
                                                                         </select>
+                                                                              
                                                                         {errors.userId && (
                                                                             <p className="text-red-500 text-[9px] mt-1">{errors?.userId?.message}</p>
                                                                         )}
@@ -751,7 +732,7 @@ export const EmployeeAction = () => {
                                                                                 type="text"
                                                                                 defaultValue={tokenUser}
                                                                                 {...register('createdBy')}
-                                                                                className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
+                                                                                className={`w-[320px] sm:w-[400px] px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
                                                                                     ${
                                                                                     errors.createdBy ? "border-red-500" : "border-gray-300"
                                                                                     }`}
@@ -812,7 +793,7 @@ export const EmployeeAction = () => {
                                     ) : 
                                     (
                                         selectedEmployee && (
-                                            <div className='flex flex-col text-black space-y-3'>
+                                            <div className='flex flex-col text-black text-left space-y-3'>
                                                 <div>
                                                     <p className="text-xs">Identifiant Unique</p>
                                                     <h3 className="font-bold text-sm">{selectedEmployee?.id}</h3>

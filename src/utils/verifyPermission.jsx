@@ -36,11 +36,11 @@ const VerifyPermission = ({children, expected=[], roles=[], functions=[], isExcl
         let includeRoles = roles.filter((item) => expected.includes(item))
         let includePerms = functions.filter((item) => expected.includes(item))
 
-        console.log("includeRoles", includeRoles)
-        console.log("includePerms", includePerms)
+        // console.log("includeRoles", includeRoles)
+        // console.log("includePerms", includePerms)
 
         if(includeRoles.length !== 0 || includePerms.length !== 0){
-          console.log("is exclude", isExclude)
+          // console.log("is exclude", isExclude)
           return <>{children}</>
         }
 

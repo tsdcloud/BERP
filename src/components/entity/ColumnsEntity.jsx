@@ -26,18 +26,20 @@ const entitySchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     localisation: z.string()
     .nonempty("Ce champs 'Localisation' est réquis")
     .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z ,]+$/, "Ce champs doit être une 'localisation' conforme"),
+    // .regex(/^[a-zA-Z ,]+$/, "Ce champs doit être une 'localisation' conforme")
+    ,
 
     phone: z.string()
     .nonempty("Ce champs 'Téléphone' est réquis.")
     .length(9, "La valeur de ce champs doit contenir 9 caractères.")
-    .regex(/^[0-9]+$/)
+    // .regex(/^[0-9]+$/)
     ,
 
     townId: z.string()
@@ -53,7 +55,7 @@ const entitySchema = z.object({
 
 
 // Fonction principale pour gérer les actions utilisateur
-export const EntityAction = () => {
+export const EntityAction = ({ delEntity, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -74,17 +76,13 @@ export const EntityAction = () => {
 
 
    const fetchTowns = async () => {
-    // const getTown = URLS.API_TOWN;
     const getTown = `${URLS.ENTITY_API}/towns`;
-    
     try {
         setIsLoading(true);
         const response = await handleFetch(getTown);
         
             if (response && response?.status === 200) {
                     const results = response?.data;
-                    // console.log("results", results);
-
                     const filteredTowns = results?.map(item => {
                     const { createdBy, updateAt, ...rest } = item;
                     return { 
@@ -92,7 +90,6 @@ export const EntityAction = () => {
                         ...rest
                     };
                 });
-                    // console.log("districts - Town",filteredTowns);
                     setShowTowns(filteredTowns);
             }
             else{
@@ -115,29 +112,23 @@ useEffect(()=>{
     if(token){
         const decode = jwtDecode(token);
         setTokenUser(decode.user_id);
-        // console.log("var", tokenUser);
     }
   }, [tokenUser]);
 
 
     const onSubmit = async (data) => {
-        // const urlToUpdate = `${URLS.API_ENTITY}/${selectedEntity?.id}`;
         const urlToUpdate =  `${URLS.ENTITY_API}/entities/${selectedEntity?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            // console.log("response role update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("Entity modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("town modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
-                    toast.error("Erreur lors de la modification de la ville", { duration: 5000 });
+                    toast.error("Erreur lors de la modification de l'entité", { duration: 5000 });
                 }
             
           } catch (error) {
@@ -240,17 +231,14 @@ useEffect(()=>{
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer cette entité ?");
 
         if (confirmation) {
-            // const urlToDisabledEntity = `${URLS.API_ENTITY}/${id}`;
             const urlToDisabledEntity = `${URLS.ENTITY_API}/entities/${id}`;
             
                     try {
                             const response = await handleDelete(urlToDisabledEntity, {isActive:false});
-                            // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("entity disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                     await delEntity(id);
+                                    toast.success("Entité supprimée avec succès", { duration: 5000});
+                              
                                 }
                                 else {
                                   toast.error("Erreur lors de la désactivation entity", { duration: 5000 });
@@ -275,17 +263,21 @@ useEffect(()=>{
     const showDialogEntity = () => {
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? "Modifier les informations" : "Détails de l'entité" }
+                             <span className='flex text-left'>
+                                { isEdited ? "Modifier les informations" : "Détails de l'entité" }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs' 
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='name' className="text-xs mt-2">
                                                 Nom de l'entité <sup className='text-red-500'>*</sup>
                                             </label>
@@ -294,7 +286,7 @@ useEffect(()=>{
                                                 type="text"
                                                 defaultValue={selectedEntity?.name}
                                                 {...register("name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -302,7 +294,7 @@ useEffect(()=>{
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
                                                 )}
                                     </div>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                                 <label htmlFor='localisation' className="text-xs">
                                                     Localisation de l'entité <sup className='text-red-500'>*</sup>
                                                 </label>
@@ -311,7 +303,7 @@ useEffect(()=>{
                                                     type="text"
                                                     defaultValue={selectedEntity?.localisation}
                                                     {...register("localisation")}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.localisation ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 />
@@ -320,7 +312,7 @@ useEffect(()=>{
                                                 )}
                                     </div>
                                    
-                                    <div className=' flex flex-col'>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='townId' className="text-xs mt-2">
                                                 Nom de la ville <sup className='text-red-500'>*</sup>
                                             </label>
@@ -331,7 +323,7 @@ useEffect(()=>{
                                                     }}
                                                     defaultValue={selectedEntity?.townId}
                                                     {...register('townId')}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.townId ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 >
@@ -348,7 +340,7 @@ useEffect(()=>{
                                     </div>
 
 
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='phone' className="text-xs">
                                                 Téléphone de l'entité <sup className='text-red-500'>*</sup>
                                             </label>
@@ -357,7 +349,7 @@ useEffect(()=>{
                                                 type="phone"
                                                 defaultValue={selectedEntity?.phone}
                                                 {...register("phone")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.phone ? "border-red-500" : "border-gray-300"
                                                 }`}
                                             />
@@ -409,7 +401,7 @@ useEffect(()=>{
                                 </form>
                             ) : (
                                 selectedEntity && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-black text-left space-y-3'>
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
                                             <h3 className="font-bold text-sm">{selectedEntity?.id}</h3>

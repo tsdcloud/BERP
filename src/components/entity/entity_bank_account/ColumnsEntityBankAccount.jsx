@@ -47,7 +47,7 @@ const entityBankAccountSchema = z.object({
   });
 
 // fonction principale pour gérer les actions utilisateur
-export const EntityBankAccountAction = () => {
+export const EntityBankAccountAction = ({ delEntityBankAccount, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -73,16 +73,12 @@ export const EntityBankAccountAction = () => {
     try {
         setIsLoading(true);
         const response = await handleFetch(getBanks);
-        
             if (response && response?.status === 200) {
                     const results = response?.data;
-                    // console.log("res bank", results);
-
                     const filteredBanks = results?.map(item => {
                     const { updateAt, ...rest } = item;
                     return rest;
                 });
-                    // console.log("banques",filteredBanks);
                     setShowBanks(filteredBanks);
             }
             else{
@@ -104,13 +100,10 @@ export const EntityBankAccountAction = () => {
         
             if (response && response?.status === 200) {
                     const results = response?.data;
-                    // console.log("res customers", results);
-
                     const filteredEntities = results?.map(item => {
                     const { updateAt, ...rest } = item;
                     return rest;
                 });
-                    // console.log("customers",filteredEntities);
                     setShowEntities(filteredEntities);
             }
             else{
@@ -140,22 +133,13 @@ export const EntityBankAccountAction = () => {
   }, [tokenUser]);
 
     const onSubmit = async (data) => {
-        // console.log("data role", data);
-
-        // const urlToUpdate = `${URLS.API_ENTITY_BANK_ACCOUNT}/${selectedEntityBankAccount?.id}`;
         const urlToUpdate =  `${URLS.ENTITY_API}/entity-bank-accounts/${selectedEntityBankAccount?.id}`;
-       
-      
         try {
             const response = await handlePatch(urlToUpdate, data);
-            // console.log("response role update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("customer entity account modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("customer entity account modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -172,7 +156,6 @@ export const EntityBankAccountAction = () => {
         setSelectedEntityBankAccount(item);
         setIsEdited(false);
         setDialogOpen(true);
-        // console.log("item", item);
     };
 
     const handleEditedEntityBankAccount = (item) => {
@@ -262,17 +245,13 @@ export const EntityBankAccountAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer ce compte bancaire ?");
 
         if (confirmation) {
-            // const urlToDeletedEntityBankAccount = `${URLS.API_ENTITY_BANK_ACCOUNT}/${id}`;
             const urlToDeletedEntityBankAccount = `${URLS.ENTITY_API}/entity-bank-accounts/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDeletedEntityBankAccount, {isActive:false});
-                            // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("compte bancaire deleted successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                    await delEntityBankAccount(id);
+                                    toast.success("Compte bancaire supprimé avec succès", { duration: 5000});
                                 }
                                 else {
                                   toast.error("Erreur lors de la suppression compte bancaire", { duration: 5000 });
@@ -298,17 +277,21 @@ export const EntityBankAccountAction = () => {
         
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                 className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? " Modifier les informations " : " Détails du compte bancaire de l'entité" }
+                             <span className='flex text-left'>
+                                { isEdited ? " Modifier les informations " : " Détails du compte bancaire de l'entité" }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs'
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='accountNumber' className="text-xs mt-2">
                                                 Numéro de compte bancaire de l'entité <sup className='text-red-500'>*</sup>
                                             </label>
@@ -326,7 +309,7 @@ export const EntityBankAccountAction = () => {
                                                 )}
                                     </div>
 
-                                    <div className=' flex flex-col'>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='bankId' className="text-xs mt-2">
                                                 Nom de la banque <sup className='text-red-500'>*</sup>
                                             </label>
@@ -352,7 +335,7 @@ export const EntityBankAccountAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.bankId.message}</p>
                                                 )}
                                     </div>
-                                    <div className=' flex flex-col'>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='entityId' className="text-xs mt-2">
                                                 Nom de l'entité <sup className='text-red-500'>*</sup>
                                             </label>
@@ -423,7 +406,7 @@ export const EntityBankAccountAction = () => {
                                 </form>
                             ) : (
                                 selectedEntityBankAccount && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-black text-left space-y-3'>
 
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
@@ -513,8 +496,6 @@ export const EntityBankAccountAction = () => {
         { accessorKey: 'accountNumber', header: 'Numéro de compte' },
         { accessorKey: 'bankId', header: 'Nom de la banque' },
         { accessorKey: 'entityId', header: 'Nom de l\'entité' },
-        // { accessorKey: 'phone', header: 'Téléphone' },
-        // { accessorKey: 'createdAt', header: 'Date de création' },
         { accessorKey: 'isActive', header: 'Statut' },
         {
             accessorKey: "action",

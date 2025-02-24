@@ -21,20 +21,20 @@ export default function CreatePermission({setOpen, onSubmit}) {
     displayName: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
+    .max(100),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
 
     permissionName: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/, "Ce champ doit être un 'permissionName' conforme."),
+    .max(100),
+    // .regex(/^[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*$/, "Ce champ doit être un 'permissionName' conforme."),
   
     description: z.string()
     .nonempty("Ce champs 'description' est réquis")
     .min(5, "le champs doit avoir une valeur de 5 caractères au moins.")
-    .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champs doit être un 'description' conforme"),
+    .max(100),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champs doit être un 'description' conforme"),
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
   });
@@ -62,10 +62,11 @@ export default function CreatePermission({setOpen, onSubmit}) {
   const handleSubmitDataFormPermission = async(data) => {
     // const urlToCreatePermission = URLS.API_PERMISSION_ENTITY;
     const urlToCreatePermission = `${URLS.ENTITY_API}/permissions`;
-      console.log(data);
+    // const urlToCreatePermission = `https://entity.bfcgroupsa.com/api/permissions`;
+      // console.log(data);
       try {
         const response = await handlePost(urlToCreatePermission, data, true);
-        console.log("response crea", response);
+        // console.log("response crea", response);
         if (response && response.status === 201) {
           toast.success("permission crée avec succès", { duration:2000 });
           setOpen(false);

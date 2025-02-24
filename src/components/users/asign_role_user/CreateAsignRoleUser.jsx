@@ -40,13 +40,12 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
     const { handleFetch, handlePost } = useFetch();
 
 
-
     const showUser = async () => {
         // const urlToGetUser = `${URLS.API_USER}`;
         const urlToGetUser = `${URLS.USER_API}/users/`;
         try {
             const response = await handleFetch(urlToGetUser);
-            console.log("response show user", response);
+            // console.log("response show user", response);
 
                 if (response && response?.data?.results) {
                     const results = response?.data?.results;
@@ -57,7 +56,7 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
                     return rest;
                     });
                         setFetchUser(filteredUser);
-                        console.log("fetchUser", fetchUser);
+                        // console.log("fetchUser", fetchUser);
                 
                     }
                 else {
@@ -218,7 +217,7 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
           <div className='space-y-0'>
                 <p className='text-[12px] mb-2'>Veuillez correctement renseigner les informations de l'asignation Rôle - Utilisateur.</p>
                 <form onSubmit={handleSubmit(onSubmitDataFormAsignRoleUser)} 
-                    className='sm:bg-blue-200 md:bg-transparent'>
+                    className=' md:bg-transparent'>
 
                         <div className='mb-4'>
                             <label htmlFor="role_id" className="block text-xs font-medium mb-1">
@@ -280,7 +279,7 @@ export default function CreateAsignRoleUser({setOpen, onSubmit}) {
                             <div className='flex flex-wrap overflow-y-auto h-60 my-2'>
                                 {fetchUser.map(item => (
                                     <div key={item?.id} 
-                                    className={`flex font-mono items-center ml-2 mb-2 px-2 py-2 border bg-secondary text-white rounded-sm
+                                    className={`flex font-mono items-center ml-2 mb-2 px-2 py-2 h-8 border bg-secondary text-white rounded-sm
                                     ${errors.user_id ? "border-red-500" : "border-gray-300"}`}>
                                     <input
                                       type="checkbox"

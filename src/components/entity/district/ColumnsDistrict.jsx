@@ -27,7 +27,8 @@ const districtSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     countryId: z.string()
     .nonempty('Ce champs "Nom du pays" est réquis')
@@ -39,7 +40,7 @@ const districtSchema = z.object({
   });
 
 // fonction principale pour gérer les actions utilisateur
-export const DistrictAction = () => {
+export const DistrictAction = ({ delDistrict, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -59,7 +60,6 @@ export const DistrictAction = () => {
    
 
    const fetchCountries = async () => {
-    // const getCountries = URLS.API_COUNTRY;
     const getCountries =  `${URLS.ENTITY_API}/countries`;
     try {
         setIsLoading(true);
@@ -67,14 +67,11 @@ export const DistrictAction = () => {
         
             if (response && response?.status === 200) {
                     const results = response?.data;
-                    // console.log("results", results);
-
                     const filteredCountries = results?.map(item => {
                     const { createdBy, updateAt, ...rest } = item;
                     return { id: item.id, ...rest};
                 });
-                    // console.log("countries",filteredCountries);
-                    setShowCountries(filteredCountries);
+                setShowCountries(filteredCountries);
             }
             else{
                 throw new Error('Erreur lors de la récupération des pays');
@@ -102,25 +99,18 @@ export const DistrictAction = () => {
   }, [tokenUser]);
 
     const onSubmit = async (data) => {
-        // console.log("data role", data);
-
-        // const urlToUpdate = `${URLS.API_DISTRICT}/${selectedDistrict?.id}`;
-        const urlToUpdate = `${URLS.ENTITY_API}/districts/${selectedDistrict?.id}`;
+         const urlToUpdate = `${URLS.ENTITY_API}/districts/${selectedDistrict?.id}`;
       
         try {
             const response = await handlePatch(urlToUpdate, data);
-            // console.log("response role update", response);
-                if (response) {
+             if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("district modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("district modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
-                    toast.error("Erreur lors de la modification de la permission", { duration: 5000 });
+                    toast.error("Erreur lors de la modification du district", { duration: 5000 });
                 }
             
           } catch (error) {
@@ -222,17 +212,15 @@ export const DistrictAction = () => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer ce district ?");
 
         if (confirmation) {
-            // const urlToDisabledDistrict = `${URLS.API_DISTRICT}/${id}`;
             const urlToDisabledDistrict = `${URLS.ENTITY_API}/districts/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledDistrict, {isActive:false});
                             // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("district disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                    await delDistrict(id);
+                                    toast.success("District supprimé avec succès", { duration: 5000});
+                              
                                 }
                                 else {
                                   toast.error("Erreur lors de la désactivation district", { duration: 5000 });
@@ -258,17 +246,21 @@ export const DistrictAction = () => {
         
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                    className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? " Modifier les informations " : " Détails du district" }
+                           <span className='flex text-left'>
+                             { isEdited ? " Modifier les informations " : " Détails du district" }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs'
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='name' className="text-xs mt-2">
                                                 Nom du district <sup className='text-red-500'>*</sup>
                                             </label>
@@ -277,7 +269,7 @@ export const DistrictAction = () => {
                                                 type="text"
                                                 defaultValue={selectedDistrict?.name}
                                                 {...register("name")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.name ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -285,7 +277,7 @@ export const DistrictAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.name.message}</p>
                                                 )}
                                     </div>
-                                    <div className=' flex flex-col'>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='countryId' className="text-xs mt-2">
                                                 Nom du pays <sup className='text-red-500'>*</sup>
                                             </label>
@@ -296,7 +288,7 @@ export const DistrictAction = () => {
                                                     }}
                                                     defaultValue={selectedDistrict?.countryId}
                                                     {...register('countryId')}
-                                                    className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                    className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                         errors.countryId ? "border-red-500" : "border-gray-300"
                                                     }`}
                                                 >
@@ -355,7 +347,7 @@ export const DistrictAction = () => {
                                 </form>
                             ) : (
                                 selectedDistrict && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-left text-black space-y-3'>
 
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
@@ -440,8 +432,6 @@ export const DistrictAction = () => {
     const columnsDistrict = useMemo(() => [
         { accessorKey: 'name', header: 'Nom du district' },
         { accessorKey: 'countryId', header: 'Nom du pays' },
-        // { accessorKey: 'phone', header: 'Téléphone' },
-        // { accessorKey: 'createdAt', header: 'Date de création' },
         { accessorKey: 'isActive', header: 'Statut' },
         {
             accessorKey: "action",

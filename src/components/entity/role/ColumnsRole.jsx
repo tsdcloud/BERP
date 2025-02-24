@@ -27,19 +27,21 @@ const roleSchema = z.object({
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme."),
+    // .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme.")
+    ,
 
     displayName: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
     .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
-    .regex(/^[a-zA-Z0-9 ',]+$/, "Ce champ doit être une 'description' conforme."),
+    // .regex(/^[a-zA-Z0-9 ',]+$/, "Ce champ doit être une 'description' conforme.")
+    ,
 
     createdBy: z.string().nonempty("Le champ 'createdBy' est requis."),
     });
 
 // fonction principale pour gérer les actions utilisateur
-export const RoleAction = () => {
+export const RoleAction = ({ delRole, updateData }) => {
     const [isDialogOpen, setDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isEdited, setIsEdited] = useState(true);
@@ -58,27 +60,17 @@ export const RoleAction = () => {
     if(token){
         const decode = jwtDecode(token);
         setTokenUser(decode.user_id);
-        // console.log("var", tokenUser);
     }
   }, [tokenUser]);
 
     const onSubmit = async (data) => {
-        // console.log("data role", data);
-
-        // const urlToUpdate = `${URLS.API_ROLE_ENTITY}/${selectedRole?.id}`;
         const urlToUpdate =  `${URLS.ENTITY_API}/roles/${selectedRole?.id}`;
-       
-      
         try {
             const response = await handlePatch(urlToUpdate, data);
-            // console.log("response role update", response);
                 if (response) {
+                    await updateData(response.id, { ...data, id: response.id });
+                    toast.success("Role modified successfully", { duration: 900 });
                     setDialogOpen(false);
-                        
-                    setTimeout(()=>{
-                        toast.success("role modified successfully", { duration: 900 });
-                        window.location.reload();
-                    },[200]);
                 }
                 else {
                     setDialogOpen(false);
@@ -95,7 +87,6 @@ export const RoleAction = () => {
         setSelectedRole(item);
         setIsEdited(false);
         setDialogOpen(true);
-        console.log("item", item);
     };
 
     const handleEditedRole = (item) => {
@@ -182,27 +173,22 @@ export const RoleAction = () => {
     
     const deletedRole = async (id) => {
         const confirmation = window.confirm("Êtes-vous sûr de vouloir supprimer ce rôle ?");
-
         if (confirmation) {
-            // const urlToDisabledRole = `${URLS.API_ROLE_ENTITY}/${id}`;
             const urlToDisabledRole =  `${URLS.ENTITY_API}/roles/${id}`;
 
                     try {
                             const response = await handleDelete(urlToDisabledRole, {isActive:false});
-                            // console.log("response for deleted", response);
                                 if (response) {
-                                    setTimeout(()=>{
-                                        toast.success("role disabled successfully", { duration: 5000});
-                                        window.location.reload();
-                                    },[200]);
+                                    await delRole(id);
+                                    toast.success("Role supprimé avec succès", { duration: 5000});
                                 }
                                 else {
-                                  toast.error("Erreur lors de la désactivation role", { duration: 5000 });
+                                  toast.error("Erreur lors de la suppression role", { duration: 5000 });
                                 }
                             isDialogOpen && setDialogOpen(false);
                     }
                     catch(error){
-                        console.error("Erreur lors de la désactivation role :", error);
+                        console.error("Erreur lors de la suppression role :", error);
                     }
 
                     finally{
@@ -220,17 +206,21 @@ export const RoleAction = () => {
         
         return (
             <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
-                <AlertDialogContent>
+                <AlertDialogContent
+                className="w-[90%] sm:w-[80%] md:w-[60%] lg:w-[50%] xl:w-[40%] max-h-[80vh] overflow-y-auto p-4 bg-white rounded-lg shadow-lg"
+                >
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            { isEdited ? " Modifier les informations " : " Détails du rôle " }
+                           <span className='flex text-left'>
+                               { isEdited ? " Modifier les informations " : " Détails du rôle " }
+                            </span>
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             { isEdited ? (
                                 <form
                                     className='flex flex-col space-y-3 mt-5 text-xs'
                                      onSubmit={handleSubmit(onSubmit)}>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='roleName' className="text-xs mt-2">
                                                 Nom du rôle <sup className='text-red-500'>*</sup>
                                             </label>
@@ -239,7 +229,7 @@ export const RoleAction = () => {
                                                 type="text"
                                                 defaultValue={selectedRole?.roleName}
                                                 {...register("roleName")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.roleName ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -247,7 +237,7 @@ export const RoleAction = () => {
                                                 <p className="text-red-500 text-[9px] mt-1">{errors.roleName.message}</p>
                                                 )}
                                     </div>
-                                    <div>
+                                    <div className='flex flex-col text-left'>
                                             <label htmlFor='displayName' className="text-xs mt-2">
                                                 Description <sup className='text-red-500'>*</sup>
                                             </label>
@@ -256,7 +246,7 @@ export const RoleAction = () => {
                                                 type="text"
                                                 defaultValue={selectedRole?.displayName}
                                                 {...register("displayName")}
-                                                className={`w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
+                                                className={`w-[320px] sm:w-[400px] mb-2 text-bold px-2 py-3 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900 ${
                                                     errors.displayName ? "border-red-500" : "border-gray-300"
                                                 }`}
                                                 />
@@ -307,7 +297,7 @@ export const RoleAction = () => {
                                 </form>
                             ) : (
                                 selectedRole && (
-                                    <div className='flex flex-col text-black space-y-3'>
+                                    <div className='flex flex-col text-black text-left space-y-3'>
 
                                         <div>
                                             <p className="text-xs">Identifiant Unique</p>
@@ -391,8 +381,6 @@ export const RoleAction = () => {
     const columnsRole = useMemo(() => [
         { accessorKey: 'roleName', header: 'Nom du rôle' },
         { accessorKey: 'displayName', header: 'Description' },
-        // { accessorKey: 'phone', header: 'Téléphone' },
-        // { accessorKey: 'createdAt', header: 'Date de création' },
         { accessorKey: 'isActive', header: 'Statut' },
         {
             accessorKey: "action",
