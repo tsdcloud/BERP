@@ -89,24 +89,19 @@ const Maintenance = () => {
                     setDataList={setMaintenances}
                     searchValue={searchValue}
                     loading={isLoading}
-                    pagination={{
-                        pageSize:100,
-                        total:totalPages,
-                        onChange:()=>{
-
-                        }
-                    }}
+                    pagination={
+                        <div className='flex items-center px-6'>
+                            <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                            <Pagination 
+                                total={total}
+                                pageSize={100}
+                                onChange={(page)=>{
+                                    totalPages > page && fetchMaintenance(`${URLS.INCIDENT_API}/maintenances?page=${page}`)
+                                }}
+                            />
+                        </div>
+                    }
                 />
-                <div className='flex items-center px-6'>
-                    <p className='text-xs text-gray-400'>{total} ligne(s)</p>
-                    <Pagination 
-                        total={total}
-                        pageSize={100}
-                        onChange={(page)=>{
-                            totalPages > page && fetchMaintenance(`${URLS.INCIDENT_API}/maintenances?page=${page}`)
-                        }}
-                    />
-                </div>
             </div>
 
             

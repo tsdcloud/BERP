@@ -99,24 +99,19 @@ const IncidentType = () => {
                     dataList={incidentTypes}
                     fetchData={()=>fetchMaintenanceTypes(`${URLS.INCIDENT_API}/incident-types`)}
                     loading={isLoading}
-                    pagination={{
-                        pageSize:100,
-                        total: totalPages,
-                        onchange:()=>{
-
-                        }
-                    }}
+                    pagination={
+                        <div className='flex items-center px-6'>
+                            <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                            <Pagination 
+                                total={total}
+                                pageSize={100}
+                                onChange={(page)=>{
+                                    totalPages > page && fetchIncidents(`${URLS.INCIDENT_API}/incident-types?page=${page}`)
+                                }}
+                            />
+                        </div>
+                    }
                 />
-                <div className='flex items-center px-6'>
-                    <p className='text-xs text-gray-400'>{total} ligne(s)</p>
-                    <Pagination 
-                        total={total}
-                        pageSize={100}
-                        onChange={(page)=>{
-                            totalPages > page && fetchIncidents(`${URLS.INCIDENT_API}/incident-types?page=${page}`)
-                        }}
-                    />
-                </div>
             </div>
 
             

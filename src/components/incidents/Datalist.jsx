@@ -433,16 +433,16 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   
   return (
     <div className="w-full">
-      <div className="py-4 px-4 w-full max-h-[500px]">
+      <div className="py-2 px-4 w-full max-h-[50vh] h-[50vh]">
         <Form>
           <Table 
-            footer={() => <div className='flex'></div>}
+            footer={() => <div className='flex w-full justify-end'>{pagination}</div>}
             dataSource={dataList}
             columns={columns}
             bordered={true}
             scroll={{
                 x: 500,
-                y: "30vh"
+                y: "40vh"
             }}
             pagination={false}
             loading={loading}

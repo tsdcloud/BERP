@@ -296,7 +296,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       <div className="py-4 px-4 w-full max-h-[500px]">
         <Form>
           <Table 
-            footer={() => <div className='flex'></div>}
+            footer={() => <div className='flex w-full justify-end'>{pagination}</div>}
             dataSource={dataList}
             columns={columns}
             bordered={true}
@@ -304,7 +304,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                 x: 500,
                 y: "30vh"
             }}
-            pagination={{...pagination}}
+            pagination={false}
             loading={loading}
           />
         </Form>

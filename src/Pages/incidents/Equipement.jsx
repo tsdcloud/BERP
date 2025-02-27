@@ -86,7 +86,7 @@ const Equipement = () => {
             </div>
 
             {/* Table */}
-            <div className='w-full bg-white rounded-lg p-2 h-[70vh] flex flex-col justify-between'>
+            <div className='w-full bg-white rounded-lg p-2 h-[70vh] flex flex-col justify-evenly'>
                 <div className='px-4'>
                     <input 
                         type="text"
@@ -101,25 +101,20 @@ const Equipement = () => {
                     fetchData={()=>fetchEquipement(`${URLS.INCIDENT_API}/equipements`)}
                     searchValue={searchValue}
                     loading={isLoading}
-                    pagination={{
-                        total: totalPages,
-                        pageSize:100,
-                        onChange:()=>{
-                            totalPages > page && fetchEquipement(`${URLS.INCIDENT_API}/equipements?page=${page+1}`)
-                        }
-                    }}
+                    pagination={
+                    <div className='flex items-center px-6 justify-end w-full'>
+                        <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                        <Pagination 
+                            total={total}
+                            pageSize={100}
+                            onChange={(page)=>{
+                                totalPages > page && fetchEquipement(`${URLS.INCIDENT_API}/equipements?page=${page}`)
+                            }}
+                        />
+                    </div>}
                 />
             </div>
-            <div className='flex items-center px-6'>
-                <p className='text-xs text-gray-400'>{total} ligne(s)</p>
-                <Pagination 
-                    total={total}
-                    pageSize={100}
-                    onChange={(page)=>{
-                        totalPages > page && fetchEquipement(`${URLS.INCIDENT_API}/equipements?page=${page}`)
-                    }}
-                />
-            </div>
+            
         </div>
     </>
   )

@@ -81,24 +81,19 @@ const Incident = () =>{
                         fetchData={()=>fetchIncidents(`${URLS.INCIDENT_API}/incidents`)}
                         loading={isLoading}
                         searchValue={searchValue}
-                        pagination={{
-                            total: totalPages,
-                            pageSize: 100,
-                            onChange:(page)=>{
-                                totalPages > page && fetchIncidents(`${URLS.INCIDENT_API}/incidents?page=${page}`)
-                            }
-                        }}
+                        pagination={
+                            <div className='flex items-center px-6'>
+                                <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                                <Pagination 
+                                    total={total}
+                                    pageSize={100}
+                                    onChange={(page)=>{
+                                        totalPages > page && fetchIncidents(`${URLS.INCIDENT_API}/incidents?page=${page}`)
+                                    }}
+                                />
+                            </div>
+                        }
                     />
-                    <div className='flex items-center px-6'>
-                        <p className='text-xs text-gray-400'>{total} ligne(s)</p>
-                        <Pagination 
-                            total={total}
-                            pageSize={100}
-                            onChange={(page)=>{
-                                totalPages > page && fetchIncidents(`${URLS.INCIDENT_API}/incidents?page=${page}`)
-                            }}
-                        />
-                    </div>
                 </div>
             </div>
         </>

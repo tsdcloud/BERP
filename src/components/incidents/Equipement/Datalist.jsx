@@ -140,7 +140,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem 
+              {/* <DropdownMenuItem 
                 className="flex gap-2 items-center cursor-pointer"
                 onClick={()=>{
                   setEditingRow(record.id)
@@ -148,7 +148,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
               >
                 <PencilIcon className='h-4 w-6'/>
                 <span className=''>Editer</span>
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" 
                 onClick={()=>handleDelete(record.id)}>
                 <TrashIcon className='text-red-500 h-4 w-6'/>
@@ -180,8 +180,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   }
   const handleFetchEmployees = async (link) =>{
     try {
-      let response = await handleFetch(link);    
-      console.log(response) 
+      let response = await handleFetch(link);
       if(response?.status === 200){
         let formatedData = response?.data.map(item=>{
           return {
@@ -207,23 +206,21 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
 
   return (
     <div className="w-full">
-      <div className="py-4 px-4 w-full max-h-[500px]">
+      <div className="py-2 px-4 w-full max-h-[500px]">
         <Form>
           <Table 
-            footer={() => <div className='flex'></div>}
+            footer={() => <div className='flex'>{pagination}</div>}
             dataSource={dataList}
             bordered={true}
             columns={columns}
             scroll={{
                 x: 500,
-                y: "30vh"
+                y: "35vh"
             }}
-            pagination={pagination}
+            pagination={false}
             loading={loading}
           />
         </Form>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
       </div>
     </div>
   )

@@ -74,9 +74,9 @@ const IncidentSettingRoutes = ({permissions=[], roles=[]}) => {
         );
     }
     
-    if (!hasPermissions && !hasRoles) {
-        return <Navigate to="/incidents" />;
-    }
+    // if (!hasPermissions && !hasRoles) {
+    //     return <Navigate to="/incidents" />;
+    // }
 
     return (
         <>

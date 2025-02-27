@@ -97,25 +97,20 @@ const TypeMaintenance = () => {
                     dataList={maintenanceTypes}
                     fetchData={()=>fetchMaintenanceTypes(`${URLS.INCIDENT_API}/maintenance-types`)}
                     searchValue={searchValue}
-                    pagination={{
-                        total: totalPages,
-                        pageSize: 100,
-                        onchange:()=>{
-                            totalPages > page && fetchMaintenanceTypes(`${URLS.INCIDENT_API}/maintenance-types?page=${page+1}`)
-                        }
-                    }}
+                    pagination={
+                        <div className='flex items-center px-6'>
+                            <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                            <Pagination 
+                                total={total}
+                                pageSize={100}
+                                onChange={(page)=>{
+                                    totalPages > page && fetchMaintenanceTypes(`${URLS.INCIDENT_API}/maintenance-types?page=${page}`)
+                                }}
+                            />
+                        </div>
+                    }
                     loading={isLoading}
                 />
-                <div className='flex items-center px-6'>
-                    <p className='text-xs text-gray-400'>{total} ligne(s)</p>
-                    <Pagination 
-                        total={total}
-                        pageSize={100}
-                        onChange={(page)=>{
-                            totalPages > page && fetchMaintenanceTypes(`${URLS.INCIDENT_API}/maintenance-types?page=${page}`)
-                        }}
-                    />
-                </div>
             </div>
 
             

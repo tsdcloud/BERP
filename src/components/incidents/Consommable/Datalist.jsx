@@ -178,9 +178,9 @@ const Datalist = ({dataList, fetchData, searchValue, pagination}) => {
             columns={columns}
             scroll={{
                 x: 500,
-                y: "30vh"
+                y: "40vh"
             }}
-            pagination={pagination  }
+            pagination={false}
           />
         </Form>
       </div>

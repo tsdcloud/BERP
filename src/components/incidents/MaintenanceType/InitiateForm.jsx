@@ -13,7 +13,7 @@ const InitiateForm = ({onSucess}) => {
 
   const submitForm = async (data) =>{
     let url = `${URLS.INCIDENT_API}/maintenance-types`
-    data.createdBy = "user 1";
+    // data.createdBy = "user 1";
     try {
       let response = await handlePost(url, data, true);
       if(response.error){

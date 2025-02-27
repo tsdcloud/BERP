@@ -65,6 +65,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [sites, setSites] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [products, setProducts] = useState([]);
   const [externalEntities, setExternalEntities] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
@@ -84,7 +85,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       title:"Tier",
       dataIndex:"tier",
       width:"150px",
-      render:(value)=><p className='text-sm'>{highlightText(value) || "--"}</p>
+      render:(value)=><p className='text-sm'>{externalEntities.find(entity => entity.value === value)?.name}</p>
     },
     {
       title:"Conteneur 1",
@@ -114,19 +115,19 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       title:"Chargeur",
       dataIndex:"loader",
       width:"150px",
-      render:(value)=><p className='text-sm capitalize'>{highlightText(value) || "--"}</p>
+      render:(value)=><p className='text-sm capitalize'>{externalEntities.find(entity => entity.value === value)?.name}</p>
     },
     {
       title:"Produit",
       dataIndex:"product",
       width:"150px",
-      render:(value)=><p className='text-sm capitalize'>{highlightText(value) || "--"}</p>
+      render:(value)=><p className='text-sm capitalize'>{products.find(product => product.value === value)?.name}</p>
     },
     {
       title:"Transporteur",
       dataIndex:"transporter",
       width:"150px",
-      render:(value)=><p className='text-sm capitalize'>{highlightText(value) || "--"}</p>
+      render:(value)=><p className='text-sm capitalize'>{externalEntities.find(entity => entity.value === value)?.name}</p>
     },
     {
       title:"Vehicule",
@@ -279,6 +280,25 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
           }
         });
         setExternalEntities(formatedData);
+        console.log(externalEntities)
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  
+  const handleFetchProducts = async (link) =>{
+    try {
+      let response = await handleFetch(link);     
+      if(response?.status === 200){
+        let formatedData = response?.data.map(item=>{
+          return {
+            name:item?.name,
+            value: item?.id
+          }
+        });
+        setProducts(formatedData);
+        console.log(externalEntities)
       }
     } catch (error) {
       console.error(error);
@@ -289,6 +309,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/sites`);
     handleFetchEmployees(`${import.meta.env.VITE_ENTITY_API}/employees`);
     handleFetchExternalEntities(`${import.meta.env.VITE_ENTITY_API}/suppliers`);
+    handleFetchProducts(`${import.meta.env.VITE_ENTITY_API}/articles`);
   }, []);
   
   return (
@@ -296,20 +317,18 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       <div className="py-4 px-4 w-full max-h-[500px]">
         <Form>
           <Table 
-            footer={() => <div className='flex'></div>}
+            footer={() => <div className='flex justify-end w-full'>{pagination}</div>}
             dataSource={dataList}
             columns={columns}
             bordered={true}
             scroll={{
                 x: 500,
-                y: "30vh"
+                y: "40vh"
             }}
-            pagination={pagination}
+            pagination={false}
             loading={loading}
           />
         </Form>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
       </div>
     </div>
   )

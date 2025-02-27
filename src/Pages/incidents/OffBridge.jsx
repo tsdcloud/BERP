@@ -90,24 +90,19 @@ const OffBridge = () => {
                     // setDataList={setOffBridges}
                     searchValue={searchValue}
                     loading={isLoading}
-                    pagination={{
-                        pageSize:100,
-                        total:totalPages, 
-                        onChange:()=>{
-
-                        }
-                    }}
+                    pagination={
+                        <div className='flex items-center px-6'>
+                            <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                            <Pagination 
+                                total={total}
+                                pageSize={100}
+                                onChange={(page)=>{
+                                    totalPages > page && fetchOffBridges(`${URLS.INCIDENT_API}/off-bridges?page=${page}`)
+                                }}
+                            />
+                        </div>
+                    }
                 />
-                <div className='flex items-center px-6'>
-                    <p className='text-xs text-gray-400'>{total} ligne(s)</p>
-                    <Pagination 
-                        total={total}
-                        pageSize={100}
-                        onChange={(page)=>{
-                            totalPages > page && fetchOffBridges(`${URLS.INCIDENT_API}/off-bridges?page=${page}`)
-                        }}
-                    />
-                </div>
             </div>
 
             

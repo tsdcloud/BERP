@@ -92,17 +92,19 @@ const IncidentCauses = () => {
                     fetchData={()=>fetchIncidentCauses(`${URLS.INCIDENT_API}/incident-causes`)}
                     loading={isLoading}
                     searchValue={searchValue}
+                    pagination={
+                        <div className='flex items-center px-6'>
+                                <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                                <Pagination 
+                                    total={total}
+                                    pageSize={100}
+                                    onChange={(page)=>{
+                                        totalPages > page && fetchIncidentCauses(`${URLS.INCIDENT_API}/incident-causes?page=${page}`)
+                                    }}
+                                />
+                        </div>
+                    }
                 />
-                <div className='flex items-center px-6'>
-                        <p className='text-xs text-gray-400'>{total} ligne(s)</p>
-                        <Pagination 
-                            total={total}
-                            pageSize={100}
-                            onChange={(page)=>{
-                                totalPages > page && fetchIncidentCauses(`${URLS.INCIDENT_API}/incident-causes?page=${page}`)
-                            }}
-                        />
-                </div>
             </div>
 
             

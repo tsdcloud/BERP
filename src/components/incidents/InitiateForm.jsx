@@ -241,7 +241,7 @@ const InitiateForm = ({onSucess}) => {
       <div className='h-[300px] overflow-y-scroll overflow-x-hidden'>
         {/* incident type selection */}
         <div className='flex flex-col'>
-          <label htmlFor="" className='text-xs px-2'>Choisir le type d'incident :</label>
+          <label htmlFor="" className='text-xs px-2'>Choisir le type d'incident <span className='text-red-500'>*</span>:</label>
           <AutoComplete
             placeholder="Choisir un type d'incident"
             isLoading={isLoading}
@@ -255,7 +255,7 @@ const InitiateForm = ({onSucess}) => {
 
         {/* incident cause selection */}
         <div className='flex flex-col'>
-          <label htmlFor="" className='text-xs px-2'>Choisir la cause de l'incident :</label>
+          <label htmlFor="" className='text-xs px-2'>Choisir la cause de l'incident <span className='text-red-500'>*</span>:</label>
           <AutoComplete
             placeholder="Choisir une cause d'incident"
             isLoading={isLoading}
@@ -284,7 +284,7 @@ const InitiateForm = ({onSucess}) => {
 
         {/* Equipement selection */}
         <div className='flex flex-col'>
-          <label htmlFor="" className='text-xs px-2'>Choisir l'equipement :</label>
+          <label htmlFor="" className='text-xs px-2'>Choisir l'equipement <span className='text-red-500'>*</span>:</label>
           <AutoComplete
             placeholder="Choisir un equipment"
             isLoading={isLoading}
@@ -298,7 +298,7 @@ const InitiateForm = ({onSucess}) => {
 
         {/* site selection */}
         <div className='flex flex-col'>
-          <label htmlFor="" className='text-xs px-2'>Choisir le site :</label>
+          <label htmlFor="" className='text-xs px-2'>Choisir le site <span className='text-red-500'>*</span>:</label>
           <AutoComplete
             placeholder="Choisir un site"
             isLoading={isLoading}
@@ -312,7 +312,7 @@ const InitiateForm = ({onSucess}) => {
 
         {/* Shift selection */}
         <div className='flex flex-col'>
-          <label htmlFor="" className='text-xs px-2'>Choisir le Shift :</label>
+          <label htmlFor="" className='text-xs px-2'>Choisir le Shift <span className='text-red-500'>*</span>:</label>
           <AutoComplete
             placeholder="Choisir un shift"
             isLoading={isLoading}
