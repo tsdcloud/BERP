@@ -24,6 +24,7 @@ const InitiateForm = ({onSucess}) => {
   const [equipements, setEquipements] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [supplierType, setSupplierType] = useState("");
+  const [isSubmiting, setIsSubmiting] = useState(false);
 
   // maintenance types
   const handleFetchMaintenanceTypes = async (link) =>{
@@ -379,7 +380,7 @@ const InitiateForm = ({onSucess}) => {
           <textarea className='border rounded-lg w-full p-2' placeholder='Description' {...register("description", { required: false })}></textarea>
         </div>
       </div>
-        <Button className="bg-primary text-white font-normal my-2 py-1 text-xs">Créer</Button>
+        <Button className="bg-primary text-white font-normal my-2 py-1 text-xs" disable={isSubmiting}>{isSubmiting ? "Creation en cours .." : "Créer"}</Button>
     </form>
   )
 }

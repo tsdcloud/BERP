@@ -18,6 +18,7 @@ const HorsPontForm = ({onSucess}) =>{
     const [sites, setSites] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
     const [products, setProducts] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
 
     const declarationType = watch("declarationType");
 
@@ -64,7 +65,8 @@ const HorsPontForm = ({onSucess}) =>{
     }
 
     const handleSubmitForm=async(data)=>{
-        let url = `${URLS.INCIDENT_API}/off-bridges`
+        let url = `${URLS.INCIDENT_API}/off-bridges`;
+        setIsLoading(true);
         try {
             let response = await handlePost(url, data);
             if(response.status === 201){
@@ -74,6 +76,8 @@ const HorsPontForm = ({onSucess}) =>{
             alert("Echec de creation du hors pont");
         } catch (error) {
             console.error(error)
+        }finally{
+            setIsLoading(false)
         }
     }
 
@@ -82,6 +86,7 @@ const HorsPontForm = ({onSucess}) =>{
         fetchIncidentCauses(`${URLS.INCIDENT_API}/incident-causes`);
         fetchSites(`${URLS.ENTITY_API}/sites?typeSite=${SITE_TYPE.FIELD}`);
         fetchSuppliers(`${URLS.ENTITY_API}/suppliers`);
+        fetchProducts(`${URLS.ENTITY_API}/articles`);
     },[]);
 
     return(
@@ -152,7 +157,7 @@ const HorsPontForm = ({onSucess}) =>{
                 <div className='flex flex-col w-full px-2'>
                     <label htmlFor="" className='text-sm font-semibold'>Tier <span className='text-red-500'>*</span></label>
                     <AutoComplete 
-                        dataList={sites}
+                        dataList={suppliers}
                         onSearch={(value)=>fetchSuppliers(`${URLS.ENTITY_API}/suppliers?search=${value}`)}
                         onSelect={(value)=>{
                             if(value){
@@ -197,7 +202,7 @@ const HorsPontForm = ({onSucess}) =>{
                 <div className='flex flex-col w-full px-2'>
                     <label htmlFor="" className='text-sm font-semibold'>Chargeur <span className='text-red-500'>*</span>:</label>
                     <AutoComplete 
-                        dataList={sites}
+                        dataList={suppliers}
                         onSearch={(value)=>fetchSuppliers(`${URLS.ENTITY_API}/suppliers?search=${value}`)}
                         onSelect={(value)=>{
                             if(value){
@@ -217,27 +222,27 @@ const HorsPontForm = ({onSucess}) =>{
                 <div className='flex flex-col w-full px-2'>
                     <label htmlFor="" className='text-sm font-semibold'>Produit <span className='text-red-500'>*</span>:</label>
                     <AutoComplete 
-                        dataList={sites}
+                        dataList={products}
                         onSearch={(value)=>fetchProducts(`${URLS.ENTITY_API}/articles?search=${value}`)}
                         onSelect={(value)=>{
                             if(value){
-                                setValue("articles", value?.id)
+                                setValue("product", value?.id)
                             }else{
-                                setValue("articles",null)
+                                setValue("product",null)
                             }
                         }}
-                        register={{...register("articles", {required:"Ce champ est requis"})}}
+                        register={{...register("product", {required:"Ce champ est requis"})}}
                         validation={{required:"Ce champs est requis"}}
                         placeholder="Produit"
-                        name={"articles"}
-                        errorMessage={errors.transporter && <small className='text-red-500 px-2 text-xs'>{errors.transporter.message}</small>}
+                        name={"product"}
+                        errorMessage={errors.product && <small className='text-red-500 px-2 text-xs'>{errors.product.message}</small>}
                     />
                     {errors.product && <small className='text-xs text-red-500'>{errors.product.message}</small>}
                 </div>
                 <div className='flex flex-col w-full px-2'>
                     <label htmlFor="" className='text-sm font-semibold'>Transporteur <span className='text-red-500'>*</span>:</label>
                     <AutoComplete 
-                        dataList={sites}
+                        dataList={suppliers}
                         onSearch={(value)=>fetchSites(`${URLS.ENTITY_API}/suppliers?search=${value}`)}
                         onSelect={(value)=>{
                             if(value){
@@ -272,7 +277,7 @@ const HorsPontForm = ({onSucess}) =>{
             </div>
 
             <div className='flex justify-end'>
-                <Button className='p-2 rounded-lg bg-primary text-sm text-white'>Créer hors pont</Button>
+                <Button className='p-2 rounded-lg bg-primary text-sm text-white' disabled={isLoading}>{isLoading ? "Creation ... " :'Créer hors pont'}</Button>
             </div>
         </form>
     )

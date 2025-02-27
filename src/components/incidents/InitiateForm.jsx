@@ -17,7 +17,7 @@ const InitiateForm = ({onSucess}) => {
     const [shifts, setShifts] = useState([]);
     const [sites, setSites] = useState([]);
     const [supplierType, setSupplierType] = useState("");
-
+    const [isSubmiting, setIsSubmiting] = useState(false);
     const handleSubmitDecleration = async (data) =>{
       try {
         let url = `${import.meta.env.VITE_INCIDENT_API}/incidents`;
@@ -330,7 +330,7 @@ const InitiateForm = ({onSucess}) => {
         </div>
 
       </div>
-      <Button className="bg-primary text-white font-normal my-2 py-1 text-xs">Déclarer</Button>
+      <Button className="bg-primary text-white font-normal my-2 py-1 text-xs" disabled={isSubmiting}>{isSubmiting ? "En cours..."  :"Déclarer"}</Button>
     </form>
   )
 }
