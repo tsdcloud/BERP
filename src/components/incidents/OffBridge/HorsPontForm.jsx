@@ -16,6 +16,8 @@ const HorsPontForm = ({onSucess}) =>{
     // const [declarationType, setDeclarationType] = useState("")
     const [incidentCauses, setIncidentCauses] = useState([]);
     const [sites, setSites] = useState([]);
+    const [suppliers, setSuppliers] = useState([]);
+    const [products, setProducts] = useState([]);
 
     const declarationType = watch("declarationType");
 
@@ -40,6 +42,26 @@ const HorsPontForm = ({onSucess}) =>{
             console.error(error);
         }
     }
+    const fetchSuppliers = async(url)=>{
+        try {
+            let response = await handleFetch(url);
+            if(response?.status === 200){
+                setSuppliers(response?.data)
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    const fetchProducts = async(url)=>{
+        try {
+            let response = await handleFetch(url);
+            if(response?.status === 200){
+                setProducts(response?.data)
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     const handleSubmitForm=async(data)=>{
         let url = `${URLS.INCIDENT_API}/off-bridges`
@@ -59,6 +81,7 @@ const HorsPontForm = ({onSucess}) =>{
     useEffect(()=>{
         fetchIncidentCauses(`${URLS.INCIDENT_API}/incident-causes`);
         fetchSites(`${URLS.ENTITY_API}/sites?typeSite=${SITE_TYPE.FIELD}`);
+        fetchSuppliers(`${URLS.ENTITY_API}/suppliers`);
     },[]);
 
     return(
@@ -128,7 +151,22 @@ const HorsPontForm = ({onSucess}) =>{
                 </div>
                 <div className='flex flex-col w-full px-2'>
                     <label htmlFor="" className='text-sm font-semibold'>Tier <span className='text-red-500'>*</span></label>
-                    <input type="text" className='border rounded-lg p-2 text-sm' {...register("tier", {required:"Ce champ est requis"})}/>
+                    <AutoComplete 
+                        dataList={sites}
+                        onSearch={(value)=>fetchSuppliers(`${URLS.ENTITY_API}/suppliers?search=${value}`)}
+                        onSelect={(value)=>{
+                            if(value){
+                                setValue("tier", value?.id)
+                            }else{
+                                setValue("tier",null)
+                            }
+                        }}
+                        register={{...register("tier", {required:"Ce champ est requis"})}}
+                        validation={{required:"Ce champs est requis"}}
+                        placeholder="Tier"
+                        name={"tier"}
+                        errorMessage={errors.incidentCauseId && <small className='text-red-500 px-2 text-xs'>{errors.incidentCauseId.message}</small>}
+                    />
                     {errors.tier && <small className='text-xs text-red-500'>{errors.tier.message}</small>}
                 </div>
                 {
@@ -158,17 +196,62 @@ const HorsPontForm = ({onSucess}) =>{
                 </div>
                 <div className='flex flex-col w-full px-2'>
                     <label htmlFor="" className='text-sm font-semibold'>Chargeur <span className='text-red-500'>*</span>:</label>
-                    <input type="text" className='border rounded-lg p-2 text-sm' {...register("loader", {required:"Ce champ est requis"})}/>
+                    <AutoComplete 
+                        dataList={sites}
+                        onSearch={(value)=>fetchSuppliers(`${URLS.ENTITY_API}/suppliers?search=${value}`)}
+                        onSelect={(value)=>{
+                            if(value){
+                                setValue("loader", value?.id)
+                            }else{
+                                setValue("loader",null)
+                            }
+                        }}
+                        register={{...register("loader", {required:"Ce champ est requis"})}}
+                        validation={{required:"Ce champs est requis"}}
+                        placeholder="Chargeur"
+                        name={"loader"}
+                        errorMessage={errors.loader && <small className='text-red-500 px-2 text-xs'>{errors.loader.message}</small>}
+                    />
                     {errors.loader && <small className='text-xs text-red-500'>{errors.loader.message}</small>}
                 </div>
                 <div className='flex flex-col w-full px-2'>
                     <label htmlFor="" className='text-sm font-semibold'>Produit <span className='text-red-500'>*</span>:</label>
-                    <input type="text" className='border rounded-lg p-2 text-sm' {...register("product", {required:"Ce champ est requis"})}/>
+                    <AutoComplete 
+                        dataList={sites}
+                        onSearch={(value)=>fetchProducts(`${URLS.ENTITY_API}/articles?search=${value}`)}
+                        onSelect={(value)=>{
+                            if(value){
+                                setValue("articles", value?.id)
+                            }else{
+                                setValue("articles",null)
+                            }
+                        }}
+                        register={{...register("articles", {required:"Ce champ est requis"})}}
+                        validation={{required:"Ce champs est requis"}}
+                        placeholder="Produit"
+                        name={"articles"}
+                        errorMessage={errors.transporter && <small className='text-red-500 px-2 text-xs'>{errors.transporter.message}</small>}
+                    />
                     {errors.product && <small className='text-xs text-red-500'>{errors.product.message}</small>}
                 </div>
                 <div className='flex flex-col w-full px-2'>
                     <label htmlFor="" className='text-sm font-semibold'>Transporteur <span className='text-red-500'>*</span>:</label>
-                    <input type="text" className='border rounded-lg p-2 text-sm' {...register("transporter", {required:"Ce champ est requis"})}/>
+                    <AutoComplete 
+                        dataList={sites}
+                        onSearch={(value)=>fetchSites(`${URLS.ENTITY_API}/suppliers?search=${value}`)}
+                        onSelect={(value)=>{
+                            if(value){
+                                setValue("transporter", value?.id)
+                            }else{
+                                setValue("transporter",null)
+                            }
+                        }}
+                        register={{...register("transporter", {required:"Ce champ est requis"})}}
+                        validation={{required:"Ce champs est requis"}}
+                        placeholder="Transporteur"
+                        name={"transporter"}
+                        errorMessage={errors.transporter && <small className='text-red-500 px-2 text-xs'>{errors.transporter.message}</small>}
+                    />
                     {errors.transporter && <small className='text-xs text-red-500'>{errors.transporter.message}</small>}
                 </div>
                 <div className='flex flex-col w-full px-2'>
