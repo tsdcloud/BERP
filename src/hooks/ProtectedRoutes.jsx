@@ -22,7 +22,7 @@ export default function ProtectedRoutes() {
   const { handlePost } = useFetch();
 
   const location = useLocation();
-  const navigateToLogin = useNavigate();
+  const navigateTo = useNavigate();
 
   useEffect(()=>{
 
@@ -44,7 +44,7 @@ export default function ProtectedRoutes() {
             
             setTimeout(()=>{
               setIsReconnecting(false);
-              navigateToLogin("/utilisateurs");
+              navigateTo(`${location.pathname}`); 
             }, [3000]);
 
 
@@ -58,7 +58,7 @@ export default function ProtectedRoutes() {
             localStorage.removeItem("isAuth");
             localStorage.removeItem("refresh");
             localStorage.removeItem("token");
-            navigateToLogin("/signIn");
+            navigateTo("/signIn");
           }
         }
       } catch (error) {
