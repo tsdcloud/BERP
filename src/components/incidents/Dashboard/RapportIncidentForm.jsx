@@ -67,7 +67,13 @@ const RapportIncidentForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list des causes d'incidents")
                 return;
             }
-            setIncidentCauses(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+            });
+            setIncidentCauses(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -81,7 +87,13 @@ const RapportIncidentForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list d'equipement'")
                 return;
             }
-            setEquipements(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+            });
+            setEquipements(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -95,7 +107,13 @@ const RapportIncidentForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list de soite")
                 return;
             }
-            setSites(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+            });
+            setSites(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -109,7 +127,13 @@ const RapportIncidentForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list des employes")
                 return;
             }
-            setEmployees(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+            });
+            setEmployees(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -123,7 +147,13 @@ const RapportIncidentForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list des shifts")
                 return;
             }
-            setShifts(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+            });
+            setShifts(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -227,7 +257,7 @@ const RapportIncidentForm = ({onSubmit}) => {
                             }}
                             onSelect={(value)=>{
                                 if(value){
-                                    setValue('value', value?.id)
+                                    setValue('value', value?.value)
                                 }else{
                                     setValue('value', null)
                                 }
@@ -245,7 +275,7 @@ const RapportIncidentForm = ({onSubmit}) => {
                             }}
                             onSelect={(value)=>{
                                 if(value){
-                                    setValue('value', value?.id)
+                                    setValue('value', value?.value)
                                 }else{
                                     setValue('value', null)
                                 }
@@ -263,7 +293,7 @@ const RapportIncidentForm = ({onSubmit}) => {
                             }}
                             onSelect={(value)=>{
                                 if(value){
-                                    setValue('value', value?.id)
+                                    setValue('value', value?.value)
                                 }else{
                                     setValue('value', null)
                                 }
@@ -281,7 +311,7 @@ const RapportIncidentForm = ({onSubmit}) => {
                             }}
                             onSelect={(value)=>{
                                 if(value){
-                                    setValue('value', value?.id)
+                                    setValue('value', value?.value)
                                 }else{
                                     setValue('value', null)
                                 }
@@ -299,7 +329,7 @@ const RapportIncidentForm = ({onSubmit}) => {
                             }}
                             onSelect={(value)=>{
                                 if(value){
-                                    setValue('value', value?.id)
+                                    setValue('value', value?.value)
                                 }else{
                                     setValue('value', null)
                                 }
