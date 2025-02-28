@@ -143,6 +143,7 @@ const RapportIncidentForm = ({onSubmit}) => {
     const generateReport=async(data)=>{
         setError("");
         let {startDate, endDate, value} = data;
+        console.log(data)
         let url =`${URLS.INCIDENT_API}/incidents/file?criteria=${criteria}&condition=${condition}&value=${value}&start=${startDate ? new Date(startDate).toISOString():''}&end=${endDate?new Date(endDate).toISOString():''}`;
         
         if(criteria==="" || condition === "" || !value){
@@ -165,7 +166,7 @@ const RapportIncidentForm = ({onSubmit}) => {
                 link.download = 'incidents-export.xlsx';
                 link.click();
                 onSubmit()
-                return;
+                return; 
             }
             setError("Echec du telechargement du rapport")
             
@@ -244,7 +245,7 @@ const RapportIncidentForm = ({onSubmit}) => {
                             }}
                             onSelect={(value)=>{
                                 if(value){
-                                    setValue('value', value?.value)
+                                    setValue('value', value?.id)
                                 }else{
                                     setValue('value', null)
                                 }
