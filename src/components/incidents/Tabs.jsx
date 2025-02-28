@@ -63,21 +63,21 @@ const Tabs = () => {
             name:"Causes d'incidents",
             isActive:pathname.includes("incident-cause") ? true : false,
             link: "/incidents/incident-cause",
-            requiredPermissions:[],
+            requiredPermissions:["incident__view_incident_causes"],
             requiredRoles:[]
         },
         {
             name:"Types d'incidents",
             isActive:pathname.includes("incident-type") ? true : false,
             link: "/incidents/incident-type",
-            requiredPermissions:[],
+            requiredPermissions:["incident__view_incident_types"],
             requiredRoles:[]
         },
         {
             name:"Type de Maintenances",
             isActive:pathname.includes("maintenance-type") ? true : false,
             link: "/incidents/maintenance-type",
-            requiredPermissions:[],
+            requiredPermissions:["incident__view_maintenance_types"],
             requiredRoles:[]
         },
         // {
@@ -89,7 +89,7 @@ const Tabs = () => {
             name:"Equipements",
             isActive:pathname.includes("equipement") ? true : false,
             link: "/incidents/equipement",
-            requiredPermissions:[],
+            requiredPermissions:["incident__view_equipements"],
             requiredRoles:[]
         }
     ]
