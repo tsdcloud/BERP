@@ -232,7 +232,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     },
   ]
     
-  const {handleFetch, handlePost} = useFetch();
+  const {handleFetch} = useFetch();
 
   const handleFetchSites = async (link) =>{
     try {

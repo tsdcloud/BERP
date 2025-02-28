@@ -31,12 +31,14 @@ import {
   TableRow,
 } from "../../../components/ui/table"
 import { URLS } from '../../../../configUrl';
+import { useFetch } from '../../../hooks/useFetch';
  
 
 
 
 
 const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
+  const {handleFetch} = useFetch();
 
   const handleDelete = async (id) =>{
     if (window.confirm("Voulez vous supprimer la cause d'incident ?")) {
@@ -69,6 +71,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
+  const [employees, setEmployees] = useState([]);
   const [editingRow, setEditingRow] = useState("");
   const [columns, setColumns] = useState([
     {
@@ -142,9 +145,29 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     },
   ])
     
+  const handleFetchEmployees = async (link) =>{
+    try {
+      let response = await handleFetch(link);     
+      if(response?.status === 200){
+        let formatedData = response?.data.map(item=>{
+          return {
+            name:item?.name,
+            value: item?.id
+          }
+        });
+        setEmployees(formatedData);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   useEffect(()=>{
   },[editingRow])
+
+  useEffect(()=>{
+    handleFetchEmployees(`${import.meta.env.VITE_ENTITY_API}/employees`);
+  },[])
 
   return (
     <div className="w-full">

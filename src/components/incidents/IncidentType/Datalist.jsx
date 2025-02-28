@@ -31,6 +31,7 @@ import {
   TableRow,
 } from "../../../components/ui/table"
 import { URLS } from '../../../../configUrl';
+import { useFetch } from '../../../hooks/useFetch';
  
 const token = localStorage.getItem("token")
 
@@ -38,7 +39,7 @@ const token = localStorage.getItem("token")
 
 
 const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
-
+  const {handleFetch} = useFetch();
   const handleDelete = async (id) =>{
     if (window.confirm("Voulez vous supprimer le type d'incident ?")) {
       try {
@@ -69,12 +70,34 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       (match) => `<mark style="background-color: yellow;">${match}</mark>`
     )}} />
   };
+
+  const handleFetchEmployees = async (link) =>{
+    try {
+      let response = await handleFetch(link);     
+      if(response?.status === 200){
+        let formatedData = response?.data.map(item=>{
+          return {
+            name:item?.name,
+            value: item?.id
+          }
+        });
+        setEmployees(formatedData);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(()=>{
+    handleFetchEmployees(`${import.meta.env.VITE_ENTITY_API}/employees`);
+  },[])
           
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const [editingRow, setEditingRow] = useState("");
+  const [employees, setEmployees] = useState([]);
   const [columns, setColumns] = useState([
     {
       title:"No ref",
@@ -95,7 +118,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       title:"Cree par",
       dataIndex:"createdBy",
       width:"200px",
-      render:(value)=><p className='text-sm'>{highlightText(value)}</p>
+      render:(value)=><p className='text-sm'>{employees.find(employee => employee.value === value)?.name || "N/A"}</p>
     },
     {
       title:"Date de création",
@@ -180,7 +203,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
             bordered={true}
             scroll={{
                 x: 500,
-                y: "30vh"
+                y: "40vh"
             }}
             pagination={false}
             loading={loading}
