@@ -22,7 +22,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
     const [error, setError] = useState("");
 
     // Listing states
-    const [maintenanceTypes, setIncidentTypes] = useState([]);
+    const [maintenanceTypes, setMaintenanceTypes] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
     const [equipements, setEquipements] = useState([]);
     const [sites, setSites] = useState([]);
@@ -52,8 +52,8 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                   name:item?.name,
                   value: item?.id
                 }
-              });
-            setIncidentTypes(formatedData);
+            });
+            setMaintenanceTypes(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -72,6 +72,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
     //         console.log(error);
     //     }
     // }
+
     // Fetch equipements 
     const fetchEquipements = async()=>{
         let url = `${URLS.INCIDENT_API}/equipements`
@@ -81,11 +82,18 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list d'equipement'")
                 return;
             }
-            setEquipements(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+              });
+            setEquipements(formatedData);
         } catch (error) {
             console.log(error);
         }
     }
+
     // Fetch sites 
     const fetchSites = async()=>{
         let url = `${URLS.ENTITY_API}/sites`
@@ -95,7 +103,13 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list de soite")
                 return;
             }
-            setSites(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+              });
+            setSites(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -110,7 +124,13 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list des employes")
                 return;
             }
-            setEmployees(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+              });
+            setEmployees(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -125,7 +145,13 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list des maintenancier")
                 return;
             }
-            setSuppliers(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+              });
+            setSuppliers(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -140,7 +166,13 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list des shifts")
                 return;
             }
-            setShifts(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+              });
+            setShifts(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -220,7 +252,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                             onSearch={async (value)=>{
                                 let url = `${URLS.INCIDENT_API}/maintenance-types?search=${value}`
                                 let result = await handleSearch(url);
-                                setIncidentTypes(result);
+                                setMaintenanceTypes(result);
                             }}
                             onSelect={(value)=>{
                                 if(value){

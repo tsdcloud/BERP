@@ -42,11 +42,18 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list des causes d'incidents")
                 return;
             }
-            setIncidentCauses(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+            });
+            setIncidentCauses(formatedData);
         } catch (error) {
             console.log(error);
         }
     }
+
     // Fetch sites 
     const fetchSites = async()=>{
         let url = `${URLS.ENTITY_API}/sites`
@@ -56,11 +63,18 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list de soite")
                 return;
             }
-            setSites(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+            });
+            setSites(formatedData);
         } catch (error) {
             console.log(error);
         }
     }
+
     // Fetch Employes 
     const fetchEmployees = async()=>{
         let url = `${URLS.ENTITY_API}/employees`
@@ -70,7 +84,13 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list des employes")
                 return;
             }
-            setEmployees(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+              });
+            setEmployees(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -174,7 +194,7 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                             }}
                             onSelect={(value)=>{
                                 if(value){
-                                    setValue('value', value?.id)
+                                    setValue('value', value?.value)
                                 }else{
                                     setValue('value', null)
                                 }

@@ -18,6 +18,7 @@ const InitiateForm = ({onSucess}) => {
     const [sites, setSites] = useState([]);
     const [supplierType, setSupplierType] = useState("");
     const [isSubmiting, setIsSubmiting] = useState(false);
+    
     const handleSubmitDecleration = async (data) =>{
       try {
         let url = `${import.meta.env.VITE_INCIDENT_API}/incidents`;
