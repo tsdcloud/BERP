@@ -23,6 +23,8 @@ const RapportOffBridgeForm = ({onSubmit}) => {
     // Listing states
     const [incidentCauses, setIncidentCauses] = useState([])
     const [sites, setSites] = useState([])
+    const [externalEntities, setExternalEntities] = useState([])
+    const [products, setProducts] = useState([])
     const [employees, setEmployees] = useState([]);
 
     // Criteria
@@ -91,6 +93,48 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 }
               });
             setEmployees(formatedData);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    
+    // Fetch exteranl entities 
+    const fetchExternalEntities = async()=>{
+        let url = `${URLS.ENTITY_API}/suppliers`
+        try {
+            let response = await handleFetch(url);
+            if(response.status !== 200){
+                alert("Echec. Impossible d'obtenir la list des entreprise")
+                return;
+            }
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+              });
+            setExternalEntities(formatedData);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    
+    // Fetch products 
+    const fetchproducts = async()=>{
+        let url = `${URLS.ENTITY_API}/articles`
+        try {
+            let response = await handleFetch(url);
+            if(response.status !== 200){
+                alert("Echec. Impossible d'obtenir la list des produit")
+                return;
+            }
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+              });
+            setProducts(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -183,6 +227,78 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                             }}
                         />
             break;
+            case "tier":
+                return <AutoComplete 
+                            dataList={externalEntities}
+                            placeholder="Recherche de tier"
+                            onSearch={async (value)=>{
+                                let url = `${URLS.ENTITY_API}/suppliers?search=${value}`
+                                let result = await handleSearch(url);
+                                setExternalEntities(result);
+                            }}
+                            onSelect={(value)=>{
+                                if(value){
+                                    setValue('value', value?.value)
+                                }else{
+                                    setValue('value', null)
+                                }
+                            }}
+                        />
+            break;
+            case "loader":
+                return <AutoComplete 
+                            dataList={externalEntities}
+                            placeholder="Recherche de chargeur"
+                            onSearch={async (value)=>{
+                                let url = `${URLS.ENTITY_API}/suppliers?search=${value}`
+                                let result = await handleSearch(url);
+                                setExternalEntities(result);
+                            }}
+                            onSelect={(value)=>{
+                                if(value){
+                                    setValue('value', value?.value)
+                                }else{
+                                    setValue('value', null)
+                                }
+                            }}
+                        />
+            break;
+            case "transporter":
+                return <AutoComplete 
+                            dataList={externalEntities}
+                            placeholder="Recherche de transporteur"
+                            onSearch={async (value)=>{
+                                let url = `${URLS.ENTITY_API}/suppliers?search=${value}`
+                                let result = await handleSearch(url);
+                                setExternalEntities(result);
+                            }}
+                            onSelect={(value)=>{
+                                if(value){
+                                    setValue('value', value?.value)
+                                }else{
+                                    setValue('value', null)
+                                }
+                            }}
+                        />
+            break;
+            case "product":
+                return <AutoComplete 
+                            dataList={products}
+                            placeholder="Recherche de produit"
+                            onSearch={async (value)=>{
+                                let url = `${URLS.ENTITY_API}/articles?search=${value}`
+                                let result = await handleSearch(url);
+                                setProducts(result);
+                            }}
+                            onSelect={(value)=>{
+                                if(value){
+                                    setValue('value', value?.value)
+                                }else{
+                                    setValue('value', null)
+                                }
+                            }}
+                        />
+            break;
             case "createdBy":
                 return <AutoComplete 
                             dataList={employees}
@@ -215,6 +331,8 @@ const RapportOffBridgeForm = ({onSubmit}) => {
     useEffect(()=>{
         fetchIncidentCauses()
         fetchSites()
+        fetchExternalEntities()
+        fetchproducts()
         fetchEmployees()
     },[]);
 
