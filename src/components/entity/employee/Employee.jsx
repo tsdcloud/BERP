@@ -19,7 +19,7 @@ export default function Employee() {
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToShowAllEmployee);
-            // console.log("respoEmp", response);
+            console.log("respoEmp", response);
             
             if (response && response?.status === 200) {
                 const results = response?.data;

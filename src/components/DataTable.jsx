@@ -45,7 +45,7 @@ export default function DataTable({ columns, data, className }) {
         getFilteredRowModel: getFilteredRowModel(),
         initialState: {
             pagination: {
-              pageSize: 5, //custom default page size
+              pageSize: 100, //custom default page size
             },
           },
         state:{

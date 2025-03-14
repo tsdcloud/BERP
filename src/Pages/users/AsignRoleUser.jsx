@@ -29,7 +29,7 @@ export default function AsignRoleUser() {
                     <AsignRoleUserComponent/>
                     </div>
                 </div>
-                <Footer className="flex flex-col sm:flex-row items-center"/>
+                <Footer className="flex flex-col sm:flex-row items-center justify-center"/>
             
             </>
         )

@@ -28,7 +28,7 @@ export default function Permission() {
                     <PermissionComponent/>
                     </div>
                 </div>
-                <Footer className="flex flex-col sm:flex-row items-center"/>
+                <Footer className="flex flex-col sm:flex-row items-center justify-center"/>
             </>
         )
     }
