@@ -23,6 +23,8 @@ import {
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
 import { URLS } from '../../../../configUrl';
+import CloseMaintenanceForm from './CloseMaintenanceForm';
+import VerifyPermission from '../../../utils/verifyPermission';
  
 
 
@@ -65,6 +67,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [sites, setSites] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [modalIsOpen, setModalIsOpen] = useState(false)
   const [externalEntities, setExternalEntities] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
@@ -184,49 +187,44 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
             (record.status === "PENDING") &&
             <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
               <button className='flex items-center space-x-2'
-                onClick={async ()=>{
-                  if (window.confirm("Voulez vous cloturer la maintenance ?")) {
-                    try {
-                      let url = `${URLS.INCIDENT_API}/maintenances/${record.id}`;
-                      let response = await fetch(url, {
-                        method:"PATCH",
-                        headers:{
-                          "Content-Type":"application/json",
-                          'authorization': `Bearer ${localStorage.getItem('token')}` || ''
-                        },
-                        body:JSON.stringify({status: "CLOSED"})
-                      });
-                      if(response.status === 200){
-                        let urlIncident = `${URLS.INCIDENT_API}/incidents/${record.incidentId}`;
-                        let response = await fetch(urlIncident, {
-                          method:"PATCH",
-                          headers:{
-                            "Content-Type":"application/json",
-                            'authorization': `Bearer ${localStorage.getItem('token')}` || ''
-                          },
-                          body:JSON.stringify({status: "CLOSED"})
-                        });
-                        if(response.status == 200){
+                onClick={
+                  async ()=>{
+                    setRowSelection(record);
+                    if(record.incidentId){
+                      setModalIsOpen(true);
+                    }
+                    else{
+                      if (window.confirm("Voulez vous cloturer la maintenance ?")) {
+                        try {
+                          let url = `${URLS.INCIDENT_API}/maintenances/${record.id}`;
+                          let response = await fetch(url, {
+                            method:"PATCH",
+                            headers:{
+                              "Content-Type":"application/json",
+                              'authorization': `Bearer ${localStorage.getItem('token')}` || ''
+                            },
+                            body:JSON.stringify({status: "CLOSED"})
+                          });
                           fetchData();
-                        } else {
-                          fetchData()
+                        } catch (error) {
+                          console.log(error);
                         }
                       }
-                    } catch (error) {
-                      console.log(error);
                     }
                   }
-                }}
+                }
               >
                 <XMarkIcon />
                 <span>Cloturer la maintenance</span>
               </button>
             </DropdownMenuItem>
           }
-          <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(record.id)}>
-            <TrashIcon className='text-red-500 h-4 w-6'/>
-            <span className='text-red-500'>Supprimer</span>
-          </DropdownMenuItem>
+          <VerifyPermission>
+            <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(record.id)}>
+              <TrashIcon className='text-red-500 h-4 w-6'/>
+              <span className='text-red-500'>Supprimer</span>
+            </DropdownMenuItem>
+          </VerifyPermission>
         </DropdownMenuContent>
       </DropdownMenu>
     },
@@ -309,8 +307,12 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
           />
         </Form>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-      </div>
+      <CloseMaintenanceForm 
+        isOpen={modalIsOpen} 
+        setIsOpen={setModalIsOpen} 
+        selectedMaintenance={rowSelection}
+        onSubmit={fetchData}
+      />
     </div>
   )
 }
