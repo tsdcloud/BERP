@@ -154,12 +154,20 @@ const RapportOffBridgeForm = ({onSubmit}) => {
     const generateReport=async(data)=>{
         setError("");
         let {startDate, endDate, value} = data;
-        console.log(data);
-        let url =`${URLS.INCIDENT_API}/off-bridges/file?criteria=${criteria}&condition=${condition}&value=${value}&start=${startDate ? new Date(startDate).toISOString():''}&end=${endDate?new Date(endDate).toISOString():''}`;
-        if(criteria==="" || condition === "" || !value){
-            setError("tous les champs (*) sont requis");
-            return;
+
+        if(criteria === "date"){
+            if(startDate === "" || endDate === ""){
+                setError("La date de début et la date de fin sont requises");
+                return
+            }
         }
+        else{
+            if(criteria === ""|| condition === "" || !value){
+                setError("tous les champs (*) sont requis");
+                return;
+            }
+        }
+        let url =`${URLS.INCIDENT_API}/off-bridges/file?criteria=${criteria}&condition=${condition}&value=${value}&start=${startDate ? new Date(startDate).toISOString():''}&end=${endDate?new Date(endDate).toISOString():''}`;
         let requestOptions ={
             headers:{
                 "Content-Type":"application/json",
@@ -207,6 +215,9 @@ const RapportOffBridgeForm = ({onSubmit}) => {
     const handleDisplayFields=(criteria)=>{
         switch(criteria){
             case "":
+                return <></>
+            break;
+            case "date":
                 return <></>
             break;
             case "siteId":
@@ -358,6 +369,7 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 <option value=""></option>
                 <option value="incidentCause">Cause de l'incident</option>
                 <option value="siteId">Site</option>
+                <option value="date">Date</option>
                 <option value="tier">Tier</option>
                 <option value="container1">Conteneur 1</option>
                 <option value="container2">Conteneur 2</option>
@@ -371,7 +383,6 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 <option value="driver">Chauffeur</option>
                 <option value="trailer">Remorque</option>
                 <option value="createdBy">Initier par</option>
-                {/* <option value="date">Date</option> */}
             </select>
         </div>
 
@@ -389,7 +400,7 @@ const RapportOffBridgeForm = ({onSubmit}) => {
             </select>
         </div>
         <div className='flex flex-col px-2'>
-            {criteria != "" && <label className="text-xs font-semibold px-2">Valeur <span className='text-red-500'>*</span>:</label>}
+            {(criteria != "" && criteria !== "date") && <label className="text-xs font-semibold px-4">Valeur <span className='text-red-500'>*</span>:</label>}
             {handleDisplayFields(criteria)}
             {errors.value && <small className='text-xs text-red-500 px-2'>{errors.value.message}</small>}
         </div>

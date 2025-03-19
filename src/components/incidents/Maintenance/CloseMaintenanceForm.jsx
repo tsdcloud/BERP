@@ -6,6 +6,8 @@ import AutoComplete from '../../common/AutoComplete';
 import { URLS } from '../../../../configUrl';
 import { Button } from '../../ui/button';
 import { INCIDENT_STATUS } from '../../../utils/constant.utils';
+import Preloader from '../../Preloader';
+import { CheckCircle } from 'lucide-react';
 
 const CloseMaintenanceForm = ({isOpen, setIsOpen, selectedMaintenance, onSubmit}) => {
     
@@ -17,6 +19,7 @@ const CloseMaintenanceForm = ({isOpen, setIsOpen, selectedMaintenance, onSubmit}
     });
     const {handleFetch} = useFetch();
     const [type, setType] = useState("");
+    const [typeErr, setTypeErr] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [suppliers, setSuppliers] = useState([]);
     const [employees, setEmployees] = useState([]);
@@ -75,7 +78,11 @@ const CloseMaintenanceForm = ({isOpen, setIsOpen, selectedMaintenance, onSubmit}
     }
 
     const closeMaintenance=async(data)=>{
-        data.incidentId = selectedMaintenance?.incidentId
+        // if(type === ""){
+        //     setTypeErr("Ce champ est requis")
+        //     return;
+        // }
+        data.incidentId = selectedMaintenance?.incidentId;
         setIsLoading(true);
         let {type, ...others} = data
         let url = `${URLS.INCIDENT_API}/maintenances/${selectedMaintenance?.id}/close`;
@@ -111,6 +118,12 @@ const CloseMaintenanceForm = ({isOpen, setIsOpen, selectedMaintenance, onSubmit}
         handleFetchIncidentCauses(`${URLS.INCIDENT_API}/incident-causes`);
     }, []);
 
+    useEffect(()=>{
+        if(type !== ""){
+            setTypeErr("");
+        }
+    }, [type])
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
@@ -138,11 +151,11 @@ const CloseMaintenanceForm = ({isOpen, setIsOpen, selectedMaintenance, onSubmit}
                 <div className='flex flex-col mx-2'>
                     <label htmlFor="" className='text-sm font-bold'>Type d'intervenant <span className='text-red-500'>*</span></label>
                     <select name="" id="" className='p-2 rounded-lg border' ref={typeRef} value={type} onChange={(e)=>setType(e.target.value)}>
-                        {/* <option value="">Choisir le type d'intervenant</option> */}
+                        <option value="">Choisir le type d'intervenant</option>
                         <option value="EMPLOYEE">Employé</option>
                         <option value="SUPPLIER">Prestataire</option>
                     </select>
-                    {errors.type && <small className='text-sm text-red-500'>{errors.type?.message}</small>}
+                    {typeErr === "" && <small className='text-sm text-red-500'>{typeErr}</small>}
                 </div>
                 <div className='flex flex-col'>
                     {
@@ -172,7 +185,7 @@ const CloseMaintenanceForm = ({isOpen, setIsOpen, selectedMaintenance, onSubmit}
                 </div>
                 <div className='flex justify-end'>
                     <button className={`text-white ${isLoading ? 'bg-blue-300 cursor-not-allowed':''} p-2 rounded-lg bg-primary text-sm flex items-center gap-2`} disabled={isLoading}>
-                        
+                        {isLoading ? <Preloader size={20}/> : <CheckCircle />}
                         {isLoading ? 'Encours...' : 'Cloturer la maintenance'}
                     </button>
                 </div>

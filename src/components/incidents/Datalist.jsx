@@ -80,6 +80,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   const [employees, setEmployees] = useState([]);
   const [externalEntities, setExternalEntities] = useState([]);
   const [maintenanceTypes, setMaintenanceTypes] = useState([]);
+  const [incidentCauses, setIncidentCauses] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const [editingRow, setEditingRow] = useState("");
@@ -162,15 +163,15 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     },
     {
       title:"Cause incident",
-      dataIndex:"incidentCauses",
+      dataIndex:"incidentCauseId",
       width:"200px",
       render:(value)=>
         <p className='text-sm capitalize'>
-          {value?.name || "--"}
+          {incidentCauses.find(cause => cause.value === value)?.name || value || "--"}
         </p>
     },
     {
-      title:"Date de creation",
+      title:"Date de création",
       dataIndex:"creationDate",
       width:"200px",
       render:(value)=>
@@ -240,7 +241,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                 </DropdownMenuItem>
               }
               {
-                (record.status === "UNDER_MAINTENANCE" || record.status === "PENDING") &&
+                (record.status === "PENDING") &&
                 <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
                   <button className='flex items-center space-x-2'
                     onClick={async ()=>{
@@ -413,6 +414,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       setIsLoading(false);
     }
   }
+
   const handleSelectMaintenanceType=(item)=>{
     if(item){
       setValue("maintenanceId", item.value);
@@ -434,9 +436,29 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     }
   }
 
+
+  const handleFetchIncidentCauses = async (link) =>{
+    try {
+      let response = await handleFetch(link);     
+      if(response?.status === 200){
+        let formatedData = response?.data.map(item=>{
+          return {
+            name:item?.name,
+            value: item?.id
+          }
+        });
+        setIncidentCauses(formatedData);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally{
+      setIsLoading(false);
+    }
+  }
   useEffect(()=>{
     handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/sites`);
     handleFetchShifts(`${import.meta.env.VITE_ENTITY_API}/shifts`);
+    handleFetchIncidentCauses(`${import.meta.env.VITE_INCIDENT_API}/incident-causes`);
     handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types?hasIncident=${true}`);
     handleFetchEmployees(`${import.meta.env.VITE_ENTITY_API}/employees`);
     handleFetchExternalEntities(`${import.meta.env.VITE_ENTITY_API}/suppliers`);

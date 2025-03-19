@@ -9,6 +9,8 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "../ui/dialog"
+import { PlusIcon } from 'lucide-react';
+import { WrenchScrewdriverIcon } from '@heroicons/react/24/outline';
 
 const Dialogue = ({header, content, footer, buttonText, isOpenned}) => {
   const [isOpen, setIsOpen] = useState(isOpenned);
@@ -20,7 +22,10 @@ const Dialogue = ({header, content, footer, buttonText, isOpenned}) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-            <Button className="bg-primary text-white font-normal outline-none text-xs" onClick={() => setIsOpen(!isOpenned)} id="close-dialog">{buttonText}</Button>
+            <Button className="bg-primary hover:bg-secondary text-white font-semibold outline-none text-sm" onClick={() => setIsOpen(!isOpenned)} id="close-dialog">
+              <PlusIcon className='h-3' />
+              <span>{buttonText}</span>
+            </Button>
         </DialogTrigger>
         <DialogContent>
             <DialogHeader>{header}</DialogHeader>

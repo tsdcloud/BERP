@@ -5,6 +5,7 @@ import AutoComplete from '../common/AutoComplete';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { Button } from '../ui/button';
 import { CheckCircle } from 'lucide-react';
+import Preloader from '../Preloader';
 
 const InitiateForm = ({onSucess}) => {
     const {register, handleSubmit, formState:{errors}, setValue} = useForm();
@@ -344,7 +345,7 @@ const InitiateForm = ({onSucess}) => {
       </div>
       <div className='flex justify-end p-2'>
         <Button className="bg-primary text-white my-2 text-sm w-1/3 hover:bg-secondary" disabled={isSubmiting}>
-          <CheckCircle className='text-white'/>
+          {isSubmiting ? <Preloader size={20}/> : <CheckCircle className='text-white'/> }
           <span>{isSubmiting ? "En cours..."  :"Déclarer"}</span>
         </Button>
       </div>
