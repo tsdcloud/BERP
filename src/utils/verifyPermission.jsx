@@ -20,9 +20,9 @@ const VerifyPermission = ({children, expected=[], roles=[], functions=[], isExcl
       isSuperAdmin();
     },[]);
 
-    if(isSuperAdmin){
-      return<>{children}</>
-    }
+    // if(isSuperAdmin){
+    //   return<>{children}</>
+    // }
 
     if(expected instanceof Array){
 

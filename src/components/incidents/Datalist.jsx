@@ -31,6 +31,7 @@ import VerifyPermission from '../../utils/verifyPermission';
 import { PERMISSION_CONTEXT } from '../../contexts/PermissionsProvider';
 import { Cog6ToothIcon } from '@heroicons/react/24/solid';
 import Preloader from '../Preloader';
+import { getEmployee } from '../../utils/entity.utils';
  
 
 
@@ -38,7 +39,7 @@ import Preloader from '../Preloader';
 
 const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
 
-  const {roles, permissions} = useContext(PERMISSION_CONTEXT);
+  // const {roles, permissions} = useContext(PERMISSION_CONTEXT);
 
   const handleDelete = async (id) =>{
     if (window.confirm("Voulez vous supprimer l'incident ?")) {
@@ -78,6 +79,8 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   const [isSubmitting, seyIsSubmitting] = useState(false);
   const [shifts, setShifts] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [permissions, setPermissions] = useState([]);
   const [externalEntities, setExternalEntities] = useState([]);
   const [maintenanceTypes, setMaintenanceTypes] = useState([]);
   const [incidentCauses, setIncidentCauses] = useState([]);
@@ -466,6 +469,32 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types?hasIncident=${true}`);
     handleFetchEmployees(`${import.meta.env.VITE_ENTITY_API}/employees`);
     handleFetchExternalEntities(`${import.meta.env.VITE_ENTITY_API}/suppliers`);
+
+    const handleCheckPermissions = async () =>{
+      const employee = await getEmployee();
+      if(!employee){
+         setIsLoading(false);
+         return 
+      }
+      const requiredPermissions = [...permissions];
+      const userPermissions = employee?.employeePermissions.map(permission=>permission?.permission.permissionName) || [];
+      setPermissions(userPermissions);
+
+      
+      const requiredRoles = [...roles];
+      const userRoles = employee?.employeeRoles.map(role=>role?.role?.roleName) || [];
+      setRoles(userRoles);
+      console.log(userRoles, userPermissions);
+
+      // const hasRequiredPermissions = requiredPermissions.some(permission => userPermissions.includes(permission));
+      // const hasRequiredRoles = requiredRoles.some(role => userRoles.includes(role));
+
+      // setHasRoles(hasRequiredRoles);
+      // console.log(permissions)
+
+      setIsLoading(false);
+  }
+  handleCheckPermissions();
   }, []);
 
   useEffect(()=>{

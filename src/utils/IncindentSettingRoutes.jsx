@@ -30,12 +30,14 @@ const IncidentSettingRoutes = ({permissions=[], roles=[]}) => {
             const requiredRoles = [...roles];
             const userRoles = employee?.employeeRoles.map(role=>role?.role?.roleName) || [];
             setRoles(userRoles);
+            console.log(userRoles)
 
             const hasRequiredPermissions = requiredPermissions.some(permission => userPermissions.includes(permission));
             const hasRequiredRoles = requiredRoles.some(role => userRoles.includes(role));
 
             setHasPermissions(hasRequiredPermissions);
             setHasRoles(hasRequiredRoles);
+            console.log(permissions)
 
             setIsLoading(false);
         }

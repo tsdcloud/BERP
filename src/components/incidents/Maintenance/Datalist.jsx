@@ -25,6 +25,7 @@ import {
 import { URLS } from '../../../../configUrl';
 import CloseMaintenanceForm from './CloseMaintenanceForm';
 import VerifyPermission from '../../../utils/verifyPermission';
+import { getEmployee } from '../../../utils/entity.utils';
  
 
 
@@ -69,6 +70,8 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   const [employees, setEmployees] = useState([]);
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const [externalEntities, setExternalEntities] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [permissions, setPermissions] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const [editingRow, setEditingRow] = useState("");
@@ -295,6 +298,31 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/sites`);
     handleFetchEmployees(`${import.meta.env.VITE_ENTITY_API}/employees`);
     handleFetchExternalEntities(`${import.meta.env.VITE_ENTITY_API}/suppliers`);
+    const handleCheckPermissions = async () =>{
+      const employee = await getEmployee();
+      if(!employee){
+         setIsLoading(false);
+         return 
+      }
+      const requiredPermissions = [...permissions];
+      const userPermissions = employee?.employeePermissions.map(permission=>permission?.permission.permissionName) || [];
+      setPermissions(userPermissions);
+
+      
+      const requiredRoles = [...roles];
+      const userRoles = employee?.employeeRoles.map(role=>role?.role?.roleName) || [];
+      setRoles(userRoles);
+      console.log(userRoles, userPermissions);
+
+      // const hasRequiredPermissions = requiredPermissions.some(permission => userPermissions.includes(permission));
+      // const hasRequiredRoles = requiredRoles.some(role => userRoles.includes(role));
+
+      // setHasRoles(hasRequiredRoles);
+      // console.log(permissions)
+
+      setIsLoading(false);
+  }
+  handleCheckPermissions();
   }, []);
   
   return (
