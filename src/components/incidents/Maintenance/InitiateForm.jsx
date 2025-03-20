@@ -7,6 +7,8 @@ import { URLS } from '../../../../configUrl';
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import Preloader from '../../Preloader';
+import { CheckCircle } from 'lucide-react';
 dayjs.extend(customParseFormat);
 
 const dateFormat = 'YYYY-MM-DDThh:mm:ssZ';
@@ -53,7 +55,11 @@ const InitiateForm = ({onSucess}) => {
     }
   }
   const handleSelectMaintenanceTypes = (item) => {
-    setValue("maintenanceId", item.value);
+    if(item){
+      setValue("maintenanceId", item.value);
+    }else{
+      setValue("maintenanceId", null);
+    }
   };
 
   // incidents
@@ -115,7 +121,11 @@ const InitiateForm = ({onSucess}) => {
   }
 
   const handleSelectEquipement = (item) => {
-    setValue("equipement", item.value);
+    if(item){
+      setValue("equipement", item.value);
+    }else{
+      setValue("equipement", null);
+    }
   };
 
 
@@ -146,7 +156,11 @@ const InitiateForm = ({onSucess}) => {
     }
   }
   const handleSelectSites = (item) => {
-    setValue("siteId", item.value);
+    if(item){
+      setValue("siteId", item.value);
+    }else{
+      setValue("siteId", null);
+    }
   };
 
   // employees
@@ -176,7 +190,11 @@ const InitiateForm = ({onSucess}) => {
     }
   };
   const handleSelectEmployees = (item) => {
-    setValue("userId", item.value);
+    if(item){
+      setValue("userId", item.value);
+    }else{
+      setValue("userId", null);
+    }
   };
 
   // suppliers
@@ -206,32 +224,49 @@ const InitiateForm = ({onSucess}) => {
     }
   };
   const handleSelectSuppliers = (item) => {
-    setValue("supplierId", item.value);
+    if(item){
+      setValue("supplierId", item.value);
+    }else{
+      setValue("supplierId", null);
+    }
   };
 
 
   const handleChangeProjectionDate=(date, dateString)=>{
     const formattedDate = date.format(dateFormat);
-    setValue("projectedDate",formattedDate);
+    if(date){
+      setValue("projectedDate",formattedDate);
+    }else{
+      setValue("projectedDate",null);
+    }
   }
 
   const handleChangeNextDate=(date, dateString)=>{
     const formattedDate = date.format(dateFormat);
-    setValue("nextMaintenance",formattedDate);
+    if(date){
+      setValue("nextMaintenance",formattedDate);
+    }else{
+      setValue("nextMaintenance",null);
+    }
   }
   
   const handleChangeEffectiveDate=(date, dateString)=>{
     const formattedDate = date.format(dateFormat);
-    setValue("effectifDate",formattedDate);
+    if(date){
+      setValue("effectifDate",formattedDate);
+    }else{
+      setValue("effectifDate",null);
+    }
   }
 
 
   const submitForm = async (data) =>{
     let url = `${URLS.INCIDENT_API}/maintenances`
-    data.createdBy = "878c6bae-b754-4577-b614-69e15821dac8";
+    // data.createdBy = "878c6bae-b754-4577-b614-69e15821dac8";
     try {
       let response = await handlePost(url, data, true);
       if(response.error){
+        console.log(response.error);
         alert("Erreur. Une erreur est survenue lors de la création.");
         return
       }
@@ -264,7 +299,9 @@ const InitiateForm = ({onSucess}) => {
             dataList={maintenanceTypes}
             onSearch={handleSearchMaintenanceTypes}
             onSelect={handleSelectMaintenanceTypes}
-            // register={register}
+            register={{...register("maintenanceId", {required: 'Ce champs est requis'})}}
+            error={errors.maintenanceId}
+            errorMessage={errors.maintenanceId && <small className='text-xs my-2 text-red-500 mx-4'>{errors.maintenanceId.message}</small>}
           />
         </div>
         {/* <div className='flex flex-col'>
@@ -290,14 +327,10 @@ const InitiateForm = ({onSucess}) => {
             isLoading={isLoading}
             dataList={equipements}
             onSearch={handleSearchEquipements}
-            onSelect={(item) => {
-              if (item) {
-                handleSelectEquipement(item);
-              } else {
-                setValue("equipement", null);
-              }
-            }}
-            // register={register}
+            onSelect={handleSelectEquipement}
+            register={{...register("equipement", {required: 'Ce champs est requis'})}}
+            error={errors.equipement}
+            errorMessage={errors.equipement && <small className='text-xs my-2 text-red-500 mx-4'>{errors.equipement.message}</small>}
           />
         </div>
         <div className='flex flex-col'>
@@ -308,7 +341,9 @@ const InitiateForm = ({onSucess}) => {
             dataList={sites}
             onSearch={handleSearchSites}
             onSelect={handleSelectSites}
-            // register={register}
+            register={{...register("siteId", {required: 'Ce champs est requis'})}}
+            error={errors.siteId}
+            errorMessage={errors.siteId && <small className='text-xs my-2 text-red-500 mx-4'>{errors.siteId.message}</small>}
           />
         </div>
         <div 
@@ -318,7 +353,7 @@ const InitiateForm = ({onSucess}) => {
           <label htmlFor="" className='text-xs font-semibold'>Choisir le type d'intervenant' <span className='text-red-500'>*</span></label>
           <select name="" id="" className='border rounded-lg p-2' placeholder="Choisir le type d'intervenant">
             <option value="">Choisir le type d'intervenant</option>
-            <option value="EMPLOYEE">Employer</option>
+            <option value="EMPLOYEE">Employé</option>
             <option value="SUPPLIER">Prestataire</option>
           </select>
           {/* {errors.equipementId && <small className='text-xs my-2 text-red-500'>{errors.equipementId.message}</small>} */}
@@ -333,7 +368,9 @@ const InitiateForm = ({onSucess}) => {
             dataList={suppliers}
             onSearch={handleSearchSuppliers}
             onSelect={handleSelectSuppliers}
-            // register={register}
+            register={{...register("supplierId", {required: 'Ce champs est requis'})}}
+            error={errors.supplierId}
+            errorMessage={errors.supplierId && <small className='text-xs my-2 text-red-500 mx-4'>{errors.supplierId.message}</small>}
           />
           </div>
         }
@@ -347,7 +384,9 @@ const InitiateForm = ({onSucess}) => {
             dataList={employees}
             onSearch={handleSearchEmployees}
             onSelect={handleSelectEmployees}
-            // register={register}
+            register={{...register("userId", {required: 'Ce champs est requis'})}}
+            error={errors.userId}
+            errorMessage={errors.userId && <small className='text-xs my-2 text-red-500 mx-4'>{errors.userId.message}</small>}
           />
           </div>
         }
@@ -358,6 +397,7 @@ const InitiateForm = ({onSucess}) => {
               onChange={handleChangeProjectionDate} 
               minDate={dayjs()}
             />
+            {errors.projectedDate && <small className='text-xs my-2 text-red-500 mx-4'>{errors.projectedDate.message}</small>}
           </div>
           <div className='flex flex-col'>
             <label htmlFor="" className='text-xs font-semibold px-2'>Date prochaine <span className='text-red-500'>*</span></label>
@@ -365,6 +405,7 @@ const InitiateForm = ({onSucess}) => {
               onChange={handleChangeNextDate} 
               minDate={dayjs()}
             />
+            {errors.nextMaintenance && <small className='text-xs my-2 text-red-500 mx-4'>{errors.nextMaintenance.message}</small>}
           </div>
           <div className='flex flex-col'>
             <label htmlFor="" className='text-xs font-semibold px-2'>Date effective <span className='text-red-500'>*</span></label>
@@ -372,6 +413,7 @@ const InitiateForm = ({onSucess}) => {
               onChange={handleChangeEffectiveDate} 
               minDate={dayjs()}
             />
+            {errors.effectifDate && <small className='text-xs my-2 text-red-500 mx-4'>{errors.effectifDate.message}</small>}
           </div>
         </div>
         
@@ -380,7 +422,12 @@ const InitiateForm = ({onSucess}) => {
           <textarea className='border rounded-lg w-full p-2' placeholder='Description' {...register("description", { required: false })}></textarea>
         </div>
       </div>
-        <Button className="bg-primary text-white font-normal my-2 py-1 text-xs" disable={isSubmiting}>{isSubmiting ? "Creation en cours .." : "Créer"}</Button>
+      <div className='flex justify-end p-2'>
+        <Button className="bg-primary text-white font-semibold my-2 py-1 text-sm" disable={isSubmiting}>
+          {isSubmiting ? <Preloader size={20}/> : <CheckCircle/>}
+          {isSubmiting ? "Creation en cours .." : "Créer"}
+        </Button>
+      </div>
     </form>
   )
 }

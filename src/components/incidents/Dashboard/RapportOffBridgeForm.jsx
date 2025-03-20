@@ -23,6 +23,8 @@ const RapportOffBridgeForm = ({onSubmit}) => {
     // Listing states
     const [incidentCauses, setIncidentCauses] = useState([])
     const [sites, setSites] = useState([])
+    const [externalEntities, setExternalEntities] = useState([])
+    const [products, setProducts] = useState([])
     const [employees, setEmployees] = useState([]);
 
     // Criteria
@@ -42,11 +44,18 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list des causes d'incidents")
                 return;
             }
-            setIncidentCauses(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+            });
+            setIncidentCauses(formatedData);
         } catch (error) {
             console.log(error);
         }
     }
+
     // Fetch sites 
     const fetchSites = async()=>{
         let url = `${URLS.ENTITY_API}/sites`
@@ -56,11 +65,18 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list de soite")
                 return;
             }
-            setSites(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+            });
+            setSites(formatedData);
         } catch (error) {
             console.log(error);
         }
     }
+
     // Fetch Employes 
     const fetchEmployees = async()=>{
         let url = `${URLS.ENTITY_API}/employees`
@@ -70,7 +86,55 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list des employes")
                 return;
             }
-            setEmployees(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+              });
+            setEmployees(formatedData);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    
+    // Fetch exteranl entities 
+    const fetchExternalEntities = async()=>{
+        let url = `${URLS.ENTITY_API}/suppliers`
+        try {
+            let response = await handleFetch(url);
+            if(response.status !== 200){
+                alert("Echec. Impossible d'obtenir la list des entreprise")
+                return;
+            }
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+              });
+            setExternalEntities(formatedData);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    
+    // Fetch products 
+    const fetchproducts = async()=>{
+        let url = `${URLS.ENTITY_API}/articles`
+        try {
+            let response = await handleFetch(url);
+            if(response.status !== 200){
+                alert("Echec. Impossible d'obtenir la list des produit")
+                return;
+            }
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+              });
+            setProducts(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -90,12 +154,20 @@ const RapportOffBridgeForm = ({onSubmit}) => {
     const generateReport=async(data)=>{
         setError("");
         let {startDate, endDate, value} = data;
-        console.log(data);
-        let url =`${URLS.INCIDENT_API}/off-bridges/file?criteria=${criteria}&condition=${condition}&value=${value}&start=${startDate ? new Date(startDate).toISOString():''}&end=${endDate?new Date(endDate).toISOString():''}`;
-        if(criteria==="" || condition === "" || !value){
-            setError("tous les champs (*) sont requis");
-            return;
+
+        if(criteria === "date"){
+            if(startDate === "" || endDate === ""){
+                setError("La date de début et la date de fin sont requises");
+                return
+            }
         }
+        else{
+            if(criteria === ""|| condition === "" || !value){
+                setError("tous les champs (*) sont requis");
+                return;
+            }
+        }
+        let url =`${URLS.INCIDENT_API}/off-bridges/file?criteria=${criteria}&condition=${condition}&value=${value}&start=${startDate ? new Date(startDate).toISOString():''}&end=${endDate?new Date(endDate).toISOString():''}`;
         let requestOptions ={
             headers:{
                 "Content-Type":"application/json",
@@ -145,6 +217,9 @@ const RapportOffBridgeForm = ({onSubmit}) => {
             case "":
                 return <></>
             break;
+            case "date":
+                return <></>
+            break;
             case "siteId":
                 return <AutoComplete 
                             dataList={sites}
@@ -153,6 +228,78 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                                 let url = `${URLS.ENTITY_API}/sites?search=${value}`
                                 let result = await handleSearch(url);
                                 setSites(result);
+                            }}
+                            onSelect={(value)=>{
+                                if(value){
+                                    setValue('value', value?.value)
+                                }else{
+                                    setValue('value', null)
+                                }
+                            }}
+                        />
+            break;
+            case "tier":
+                return <AutoComplete 
+                            dataList={externalEntities}
+                            placeholder="Recherche de tier"
+                            onSearch={async (value)=>{
+                                let url = `${URLS.ENTITY_API}/suppliers?search=${value}`
+                                let result = await handleSearch(url);
+                                setExternalEntities(result);
+                            }}
+                            onSelect={(value)=>{
+                                if(value){
+                                    setValue('value', value?.value)
+                                }else{
+                                    setValue('value', null)
+                                }
+                            }}
+                        />
+            break;
+            case "loader":
+                return <AutoComplete 
+                            dataList={externalEntities}
+                            placeholder="Recherche de chargeur"
+                            onSearch={async (value)=>{
+                                let url = `${URLS.ENTITY_API}/suppliers?search=${value}`
+                                let result = await handleSearch(url);
+                                setExternalEntities(result);
+                            }}
+                            onSelect={(value)=>{
+                                if(value){
+                                    setValue('value', value?.value)
+                                }else{
+                                    setValue('value', null)
+                                }
+                            }}
+                        />
+            break;
+            case "transporter":
+                return <AutoComplete 
+                            dataList={externalEntities}
+                            placeholder="Recherche de transporteur"
+                            onSearch={async (value)=>{
+                                let url = `${URLS.ENTITY_API}/suppliers?search=${value}`
+                                let result = await handleSearch(url);
+                                setExternalEntities(result);
+                            }}
+                            onSelect={(value)=>{
+                                if(value){
+                                    setValue('value', value?.value)
+                                }else{
+                                    setValue('value', null)
+                                }
+                            }}
+                        />
+            break;
+            case "product":
+                return <AutoComplete 
+                            dataList={products}
+                            placeholder="Recherche de produit"
+                            onSearch={async (value)=>{
+                                let url = `${URLS.ENTITY_API}/articles?search=${value}`
+                                let result = await handleSearch(url);
+                                setProducts(result);
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -174,7 +321,7 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                             }}
                             onSelect={(value)=>{
                                 if(value){
-                                    setValue('value', value?.id)
+                                    setValue('value', value?.value)
                                 }else{
                                     setValue('value', null)
                                 }
@@ -195,6 +342,8 @@ const RapportOffBridgeForm = ({onSubmit}) => {
     useEffect(()=>{
         fetchIncidentCauses()
         fetchSites()
+        fetchExternalEntities()
+        fetchproducts()
         fetchEmployees()
     },[]);
 
@@ -220,6 +369,7 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 <option value=""></option>
                 <option value="incidentCause">Cause de l'incident</option>
                 <option value="siteId">Site</option>
+                <option value="date">Date</option>
                 <option value="tier">Tier</option>
                 <option value="container1">Conteneur 1</option>
                 <option value="container2">Conteneur 2</option>
@@ -233,7 +383,6 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 <option value="driver">Chauffeur</option>
                 <option value="trailer">Remorque</option>
                 <option value="createdBy">Initier par</option>
-                {/* <option value="date">Date</option> */}
             </select>
         </div>
 
@@ -251,7 +400,7 @@ const RapportOffBridgeForm = ({onSubmit}) => {
             </select>
         </div>
         <div className='flex flex-col px-2'>
-            {criteria != "" && <label className="text-xs font-semibold px-2">Valeur <span className='text-red-500'>*</span>:</label>}
+            {(criteria != "" && criteria !== "date") && <label className="text-xs font-semibold px-4">Valeur <span className='text-red-500'>*</span>:</label>}
             {handleDisplayFields(criteria)}
             {errors.value && <small className='text-xs text-red-500 px-2'>{errors.value.message}</small>}
         </div>

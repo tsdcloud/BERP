@@ -45,7 +45,7 @@ const Maintenance = () => {
 
     const handleSearch=(e)=>{
         setSearchValue(e.target.value);
-        fetchMaintenance(`${URLS.INCIDENT_API}/maintenances?page=${e.target.value}`)
+        fetchMaintenance(`${URLS.INCIDENT_API}/maintenances?search=${e.target.value}`)
     }
     useEffect(()=>{
         fetchMaintenance(`${URLS.INCIDENT_API}/maintenances`);
@@ -63,7 +63,7 @@ const Maintenance = () => {
                 {/* Dialog */}
                 <div className='flex gap-2 items-center'>
                     <Dialogue 
-                        buttonText={"Nouveau maintenance"}
+                        buttonText={"Nouvelle maintenance"}
                         header={<h2 className='text-xl font-semibold'>Nouvelle maintenance</h2>}
                         content={
                         <InitiateForm 

@@ -2,11 +2,13 @@ import React, {useEffect, useState} from 'react'
 import { DatePicker } from 'antd';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import Preloader from '../../common/Preloader';
+import Preloader from '../../Preloader';
 import { useForm } from 'react-hook-form';
 import { URLS } from '../../../../configUrl';
 import { useFetch } from '../../../hooks/useFetch';
 import AutoComplete from '../../common/AutoComplete';
+import { FileIcon } from 'lucide-react';
+import { Button } from '../../ui/button';
 dayjs.extend(customParseFormat);
 
 const dateFormat = 'YYYY-MM-DDThh:mm:ssZ';
@@ -22,8 +24,9 @@ const RapportMaintenanceForm = ({onSubmit}) => {
     const [error, setError] = useState("");
 
     // Listing states
-    const [maintenanceTypes, setIncidentTypes] = useState([]);
+    const [maintenanceTypes, setMaintenanceTypes] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [equipements, setEquipements] = useState([]);
     const [sites, setSites] = useState([]);
     const [shifts, setShifts] = useState([]);
@@ -52,8 +55,8 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                   name:item?.name,
                   value: item?.id
                 }
-              });
-            setIncidentTypes(formatedData);
+            });
+            setMaintenanceTypes(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -72,6 +75,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
     //         console.log(error);
     //     }
     // }
+
     // Fetch equipements 
     const fetchEquipements = async()=>{
         let url = `${URLS.INCIDENT_API}/equipements`
@@ -81,11 +85,18 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list d'equipement'")
                 return;
             }
-            setEquipements(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+              });
+            setEquipements(formatedData);
         } catch (error) {
             console.log(error);
         }
     }
+
     // Fetch sites 
     const fetchSites = async()=>{
         let url = `${URLS.ENTITY_API}/sites`
@@ -95,7 +106,13 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list de soite")
                 return;
             }
-            setSites(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+              });
+            setSites(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -110,7 +127,13 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list des employes")
                 return;
             }
-            setEmployees(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+              });
+            setEmployees(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -125,7 +148,13 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list des maintenancier")
                 return;
             }
-            setSuppliers(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+              });
+            setSuppliers(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -140,7 +169,13 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 alert("Echec. Impossible d'obtenir la list des shifts")
                 return;
             }
-            setShifts(response.data);
+            let formatedData = response?.data.map(item=>{
+                return {
+                  name:item?.name,
+                  value: item?.id
+                }
+              });
+            setShifts(formatedData);
         } catch (error) {
             console.log(error);
         }
@@ -159,20 +194,29 @@ const RapportMaintenanceForm = ({onSubmit}) => {
 
     const generateReport=async(data)=>{
         setError("");
+        
         let {startDate, endDate, value} = data;
-        console.log(data)
+        if(criteria === "date"){
+            if(startDate === "" || endDate === ""){
+                setError("La date de début et la date de fin sont requises");
+                return
+            }
+        }
+        else{
+            if(criteria==="" || condition === "" || !value){
+                setError("tous les champs (*) sont requis");
+                return;
+            }
+        }
         let url =`${URLS.INCIDENT_API}/maintenances/file?criteria=${criteria}&condition=${condition}&value=${value}&start=${startDate ? new Date(startDate).toISOString():''}&end=${endDate?new Date(endDate).toISOString():''}`;
         
-        if(criteria==="" || condition === "" || !value){
-            setError("tous les champs (*) sont requis");
-            return;
-        }
         let requestOptions ={
             headers:{
                 "Content-Type":"application/json",
                 'authorization': `Bearer ${token}`
             }
         }
+        setIsLoading(true);
         try {
             let response = await fetch(url, requestOptions);
             if(response.status === 200){
@@ -188,6 +232,8 @@ const RapportMaintenanceForm = ({onSubmit}) => {
             
         } catch (error) {
             console.log(error)
+        }finally{
+            setIsLoading(false);
         }
     }
 
@@ -220,7 +266,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                             onSearch={async (value)=>{
                                 let url = `${URLS.INCIDENT_API}/maintenance-types?search=${value}`
                                 let result = await handleSearch(url);
-                                setIncidentTypes(result);
+                                setMaintenanceTypes(result);
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -339,7 +385,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
 
     useEffect(()=>{
         setError("");
-    }, [criteria, condition])
+    }, [criteria, condition, startDate, endDate])
 
   return (
     <form className="space-y-2" onSubmit={handleSubmit(generateReport)}>
@@ -355,6 +401,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 <option value=""></option>
                 <option value="maintenanceId">Type de maintenance</option>
                 <option value="equipementId">Equipements</option>
+                <option value="date">Date</option>
                 <option value="siteId">Site</option>
                 <option value="supplierId">Maintenancier</option>
                 <option value="createdBy">Employee initiateur</option>
@@ -376,7 +423,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
             </select>
         </div>
         <div>
-            {criteria != "" && <label className="text-xs font-semibold px-4">Valeur :</label>}
+            {criteria != "" && criteria != "date" && <label className="text-xs font-semibold px-4">Valeur :</label>}
             {handleDisplayFields(criteria)}
         </div>
         <div className='flex items-center space-x-2 px-2'>
@@ -401,10 +448,10 @@ const RapportMaintenanceForm = ({onSubmit}) => {
         </div>
         <p className='text-xs text-red-500 px-2'>{error}</p>
         <div className='flex justify-end'>
-            <button className='rounded-lg bg-primary hover:bg-blue-600 text-white p-2 text-sm shadow-sm flex items-center space-x-1 justify-center'>
-                {/* <Preloader className={"w-8 h-8"} /> */}
+            <Button className='rounded-lg bg-primary hover:bg-secondary text-white font-semibold gap-2 text-sm shadow-sm flex items-center space-x-1 justify-center' disabled={isLoading}>
+                {isLoading ?<Preloader size={20}/>:<FileIcon size={15} />}
                 <span>Generer</span>
-            </button>
+            </Button>
         </div>
     </form>
   )

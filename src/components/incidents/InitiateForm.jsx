@@ -4,13 +4,15 @@ import { useFetch } from '../../hooks/useFetch';
 import AutoComplete from '../common/AutoComplete';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { Button } from '../ui/button';
+import { CheckCircle } from 'lucide-react';
+import Preloader from '../Preloader';
 
 const InitiateForm = ({onSucess}) => {
     const {register, handleSubmit, formState:{errors}, setValue} = useForm();
     const {handleFetch, handlePost} = useFetch();
 
     const [isLoading, setIsLoading] = useState(true);
-    const [incidentCauses, setIncidentCauses] = useState([]);
+    // const [incidentCauses, setIncidentCauses] = useState([]);
     const [incidentTypes, setIncidentTypes] = useState([]);
     const [consommables, setConsommables] = useState([]);
     const [equipements, setEquipments] = useState([]);
@@ -18,7 +20,10 @@ const InitiateForm = ({onSucess}) => {
     const [sites, setSites] = useState([]);
     const [supplierType, setSupplierType] = useState("");
     const [isSubmiting, setIsSubmiting] = useState(false);
+    
     const handleSubmitDecleration = async (data) =>{
+      console.log(data)
+      setIsSubmiting(true);
       try {
         let url = `${import.meta.env.VITE_INCIDENT_API}/incidents`;
         // console.log(data)
@@ -30,6 +35,8 @@ const InitiateForm = ({onSucess}) => {
         onSucess();
       } catch (error) {
         console.log(error)
+      }finally{
+        setIsSubmiting(false);
       }
     }
 
@@ -95,7 +102,11 @@ const InitiateForm = ({onSucess}) => {
     }
 
     const handleSelectEquipement = (item) => {
-      setValue("equipementId", item.value);
+      if(item){
+        setValue("equipementId", item.value);
+      }else{
+        setValue("equipementId", null);
+      }
     };
 
     // Incident causes
@@ -159,7 +170,11 @@ const InitiateForm = ({onSucess}) => {
     }
 
     const handleSelectTypes = (item) => {
-      setValue("incidentId", item.value);
+      if(item){
+        setValue("incidentId", item?.value);
+      }else{
+          setValue("incidentId",null);
+      }
     };
 
 
@@ -192,7 +207,11 @@ const InitiateForm = ({onSucess}) => {
     }
 
     const handleSelectSites = (item) => {
-      setValue("siteId", item.value);
+      if(item){
+        setValue("siteId", item.value);
+      }else{
+        setValue("siteId", null);
+      }
     };
 
     // shifts
@@ -224,37 +243,42 @@ const InitiateForm = ({onSucess}) => {
     }
 
     const handleSelectShifts = (item) => {
-      setValue("shiftId", item.value);
+      if(item){
+        setValue("shiftId", item.value);
+      }else{
+        setValue("shiftId", null);
+      }
     }
 
     useEffect(()=>{
       handleFetchConsommable(`${import.meta.env.VITE_INCIDENT_API}/consommables`);
       handleFetchEquipements(`${import.meta.env.VITE_INCIDENT_API}/equipements`);
-      handleFetchCauses(`${import.meta.env.VITE_INCIDENT_API}/incident-causes`);
+      // handleFetchCauses(`${import.meta.env.VITE_INCIDENT_API}/incident-causes`);
       handleFetchTypes(`${import.meta.env.VITE_INCIDENT_API}/incident-types`);
       handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/sites`);
       handleFetchShifts(`${import.meta.env.VITE_ENTITY_API}/shifts`);
     },[]);
 
   return (
-    <form className='h-[350px]' onSubmit={handleSubmit(handleSubmitDecleration)}>
+    <form className='h-[350px] p-2' onSubmit={handleSubmit(handleSubmitDecleration)}>
       <div className='h-[300px] overflow-y-scroll overflow-x-hidden'>
         {/* incident type selection */}
-        <div className='flex flex-col'>
-          <label htmlFor="" className='text-xs px-2'>Choisir le type d'incident <span className='text-red-500'>*</span>:</label>
+        <div className='flex flex-col my-2'>
+          <label htmlFor="" className='text-sm px-2 font-semibold'>Choisir le type d'incident <span className='text-red-500'>*</span>:</label>
           <AutoComplete
             placeholder="Choisir un type d'incident"
             isLoading={isLoading}
             dataList={incidentTypes}
             onSearch={handleSearchTypes}
             onSelect={handleSelectTypes}
-            // register={register}
+            register={{...register('incidentId', {required:'Ce champ est requis'})}}
+            error={errors.incidentId}
           />
-          {errors.incidentId && <small className='text-xs my-2 text-red-500'>{errors.incidentId.message}</small>}
+          {errors.incidentId && <small className='text-xs text-red-500 mx-4'>{errors.incidentId.message}</small>}
         </div>
 
         {/* incident cause selection */}
-        <div className='flex flex-col'>
+        {/* <div className='flex flex-col'>
           <label htmlFor="" className='text-xs px-2'>Choisir la cause de l'incident <span className='text-red-500'>*</span>:</label>
           <AutoComplete
             placeholder="Choisir une cause d'incident"
@@ -265,72 +289,66 @@ const InitiateForm = ({onSucess}) => {
             // register={register}
           />
           {errors.consomableId && <small className='text-xs my-2 text-red-500'>{errors.consomableId.message}</small>}
-        </div>
-
-
-        {/* Consommable selection */}
-        {/* <div className='flex flex-col'>
-          <label htmlFor="" className='text-xs px-2'>Choisir le consommable :</label>
-          <AutoComplete
-            placeholder="Choisir un consommable"
-            isLoading={isLoading}
-            dataList={consommables}
-            onSearch={handleSearchConsommables}
-            onSelect={handleSelectConsommable}
-            // register={register}
-          />
-          {errors.consomableId && <small className='text-xs my-2 text-red-500'>{errors.consomableId.message}</small>}
         </div> */}
 
         {/* Equipement selection */}
         <div className='flex flex-col'>
-          <label htmlFor="" className='text-xs px-2'>Choisir l'equipement <span className='text-red-500'>*</span>:</label>
+          <label htmlFor="" className='text-sm px-2 font-semibold'>Choisir l'equipement <span className='text-red-500'>*</span>:</label>
           <AutoComplete
             placeholder="Choisir un equipment"
             isLoading={isLoading}
             dataList={equipements}
             onSearch={handleSearchEquipements}
             onSelect={handleSelectEquipement}
-            // register={register}
+            register={{...register('equipementId', {required:'Ce champ est requis'})}}
+            error={errors.equipementId}
           />
-          {errors.equipementId && <small className='text-xs my-2 text-red-500'>{errors.equipementId.message}</small>}
+          {errors.equipementId && <small className='text-xs text-red-500 mx-4'>{errors.equipementId.message}</small>}
         </div>
 
         {/* site selection */}
         <div className='flex flex-col'>
-          <label htmlFor="" className='text-xs px-2'>Choisir le site <span className='text-red-500'>*</span>:</label>
+          <label htmlFor="" className='text-sm px-2 font-semibold'>Choisir le site <span className='text-red-500'>*</span>:</label>
           <AutoComplete
             placeholder="Choisir un site"
             isLoading={isLoading}
             dataList={sites}
             onSearch={handleSearchSites}
             onSelect={handleSelectSites}
-            // register={register}
+            register={{...register('siteId', {required:'Ce champ est requis'})}}
+            error={errors.siteId}
           />
-          {errors.consomableId && <small className='text-xs my-2 text-red-500'>{errors.consomableId.message}</small>}
+          {errors.siteId && <small className='text-xs my-2 text-red-500 mx-4'>{errors.siteId.message}</small>}
         </div>
 
         {/* Shift selection */}
         <div className='flex flex-col'>
-          <label htmlFor="" className='text-xs px-2'>Choisir le Shift <span className='text-red-500'>*</span>:</label>
+          <label htmlFor="" className='text-sm px-2 font-semibold'>Choisir le Shift <span className='text-red-500'>*</span>:</label>
           <AutoComplete
             placeholder="Choisir un shift"
             isLoading={isLoading}
             dataList={shifts}
             onSearch={handleSearchShifts}
             onSelect={handleSelectShifts}
-            // register={register}
+            register={{...register('shiftId', {required:'Ce champ est requis'})}}
+            error={errors.shiftId}
           />
-          {errors.consomableId && <small className='text-xs my-2 text-red-500'>{errors.consomableId.message}</small>}
+          {errors.shiftId && <small className='text-xs my-2 text-red-500 mx-4'>{errors.shiftId.message}</small>}
         </div>
 
         {/* Description */}
         <div className='flex flex-col px-2'>
+          <label htmlFor="" className='text-sm px-2 font-semibold'>Description :</label>
           <textarea {...register("description", {required:false})} className='p-2 rounded-lg tetx-sm w-full border' placeholder='Description'></textarea>
         </div>
 
       </div>
-      <Button className="bg-primary text-white font-normal my-2 py-1 text-xs" disabled={isSubmiting}>{isSubmiting ? "En cours..."  :"Déclarer"}</Button>
+      <div className='flex justify-end p-2'>
+        <Button className="bg-primary text-white my-2 text-sm w-1/3 hover:bg-secondary" disabled={isSubmiting}>
+          {isSubmiting ? <Preloader size={20}/> : <CheckCircle className='text-white'/> }
+          <span>{isSubmiting ? "En cours..."  :"Déclarer"}</span>
+        </Button>
+      </div>
     </form>
   )
 }

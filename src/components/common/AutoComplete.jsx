@@ -13,6 +13,7 @@ const AutoComplete = ({
   register={},
   inputName,
   validation = {},
+  error= false,
   errorMessage
 }) => {
   const [value, setValue] = useState("");
@@ -61,7 +62,7 @@ const AutoComplete = ({
     <div className="w-full">
         <div className="w-full p-2 bg-white relative" ref={autocompleteRef}>
           <input
-              className="w-full p-2 rounded-md border text-sm outline-[1px] outline-blue-300"
+              className={`w-full p-2 rounded-md border text-sm ${error ? "outline-[2px] outline-red-500 ring-2 ring-red-500" : "outline-[1px] outline-blue-300"}`}
               placeholder={placeholder}
               value={value}
               ref={autocompleteInputRef}
@@ -70,7 +71,7 @@ const AutoComplete = ({
               register
           />
         {showOptions && (
-            <div className="bg-white shadow-lg rounded-sm p-2 absolute w-[97%] transition-all space-y-2 max-h-[100px] overflow-scroll z-[30] mr-3">
+            <div className="bg-white shadow-xl border-[1px] rounded-sm p-2 absolute w-[97%] transition-all space-y-2 max-h-[100px] overflow-scroll z-[30] mr-3">
             {dataList.map((item, index) => (
                 <div
                 key={index}

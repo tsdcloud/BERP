@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import { Button } from '../ui/button';
 import { useForm } from 'react-hook-form';
 import { INCIDENT_STATUS } from '../../utils/constant.utils';
-import { XMarkIcon, TrashIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, TrashIcon, ExclamationTriangleIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/outline';
 import { Form, Table } from 'antd';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
@@ -25,14 +25,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import { ChevronDown, MoreHorizontal } from "lucide-react";
+import { CheckCircle, ChevronDown, MoreHorizontal } from "lucide-react";
 import CustomPagination from '../common/Pagination';
+import VerifyPermission from '../../utils/verifyPermission';
+import { PERMISSION_CONTEXT } from '../../contexts/PermissionsProvider';
+import { Cog6ToothIcon } from '@heroicons/react/24/solid';
+import Preloader from '../Preloader';
  
 
 
 
 
 const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
+
+  const {roles, permissions} = useContext(PERMISSION_CONTEXT);
 
   const handleDelete = async (id) =>{
     if (window.confirm("Voulez vous supprimer l'incident ?")) {
@@ -69,10 +75,12 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [sites, setSites] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, seyIsSubmitting] = useState(false);
   const [shifts, setShifts] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [externalEntities, setExternalEntities] = useState([]);
   const [maintenanceTypes, setMaintenanceTypes] = useState([]);
+  const [incidentCauses, setIncidentCauses] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const [editingRow, setEditingRow] = useState("");
@@ -106,12 +114,12 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       title:"Description",
       dataIndex:"description",
       width:"200px",
-      render:(value)=><p className='text-sm'>{value?.name || value}</p>
+      render:(value)=><p className='text-sm'>{highlightText(value) || "--"}</p>
     },
     {
       title:"Site",
       dataIndex:"siteId",
-      width:"100px",
+      width:"150px",
       render:(value)=>
         <p className='text-sm capitalize'>
           {sites.find(site => site.value === value)?.name || value}
@@ -155,15 +163,15 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     },
     {
       title:"Cause incident",
-      dataIndex:"incidentCauses",
+      dataIndex:"incidentCauseId",
       width:"200px",
       render:(value)=>
         <p className='text-sm capitalize'>
-          {value?.name}
+          {incidentCauses.find(cause => cause.value === value)?.name || value || "--"}
         </p>
     },
     {
-      title:"Date de creation",
+      title:"Date de création",
       dataIndex:"creationDate",
       width:"200px",
       render:(value)=>
@@ -233,7 +241,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                 </DropdownMenuItem>
               }
               {
-                (record.status === "UNDER_MAINTENANCE" || record.status === "PENDING") &&
+                (record.status === "PENDING") &&
                 <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
                   <button className='flex items-center space-x-2'
                     onClick={async ()=>{
@@ -262,10 +270,12 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                   </button>
                 </DropdownMenuItem>
               }
-              <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(record.id)}>
-                <TrashIcon className='text-red-500 h-4 w-6'/>
-                <span className='text-red-500'>Supprimer</span>
-              </DropdownMenuItem>
+              <VerifyPermission functions={permissions} roles={roles} expected={['incident__can _delete_incident']}>
+                <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(record.id)}>
+                  <TrashIcon className='text-red-500 h-4 w-6'/>
+                  <span className='text-red-500'>Supprimer</span>
+                </DropdownMenuItem>
+              </VerifyPermission>
             </DropdownMenuContent>
           </DropdownMenu>
       },
@@ -351,8 +361,8 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   }
 
   const submitMaintenance = async(data) =>{
-    data.userId = "user id";
-    data.createdBy = "created id";
+    seyIsSubmitting(true);
+
     data.description = description;
     data.siteId = selectedSite;
     data.equipement = selectedEquipement;
@@ -381,6 +391,8 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       setIsOpen(false);
     } catch (error) {
       console.log(error)
+    }finally{
+      seyIsSubmitting(false);
     }
   }
 
@@ -402,8 +414,14 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       setIsLoading(false);
     }
   }
+
   const handleSelectMaintenanceType=(item)=>{
-    setValue("maintenanceId", item.value)
+    if(item){
+      setValue("maintenanceId", item.value);
+    }else{
+      setValue("maintenanceId", null);
+
+    }
   }
 
   const handleSelectSupplier=(item)=>{
@@ -418,9 +436,29 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     }
   }
 
+
+  const handleFetchIncidentCauses = async (link) =>{
+    try {
+      let response = await handleFetch(link);     
+      if(response?.status === 200){
+        let formatedData = response?.data.map(item=>{
+          return {
+            name:item?.name,
+            value: item?.id
+          }
+        });
+        setIncidentCauses(formatedData);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally{
+      setIsLoading(false);
+    }
+  }
   useEffect(()=>{
     handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/sites`);
     handleFetchShifts(`${import.meta.env.VITE_ENTITY_API}/shifts`);
+    handleFetchIncidentCauses(`${import.meta.env.VITE_INCIDENT_API}/incident-causes`);
     handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types?hasIncident=${true}`);
     handleFetchEmployees(`${import.meta.env.VITE_ENTITY_API}/employees`);
     handleFetchExternalEntities(`${import.meta.env.VITE_ENTITY_API}/suppliers`);
@@ -452,24 +490,30 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogContent>
-                <DialogHeader>{"Mettre en maintenance"}</DialogHeader>
+                <DialogHeader className={"font-poppins mx-2 text-lg"}>
+                  <div className='flex items-center gap-2'>
+                    <Cog6ToothIcon className='h-5 w-5'/>
+                    <span>{"Mettre en maintenance"}</span>
+                  </div>
+                </DialogHeader>
                 <form onSubmit={handleSubmit(submitMaintenance)}>
                   {/* Type maintenance selection */}
                   <div className='flex flex-col'>
-                    <label htmlFor="" className='text-xs px-2'>Choisir le type de maintenance*:</label>
+                    <label htmlFor="" className='text-sm px-2 font-semibold'>Choisir le type de maintenance <span className='text-red-500'>*</span>:</label>
                     <AutoComplete
                       placeholder="Choisir le type de maintenance"
                       isLoading={isLoading}
                       dataList={maintenanceTypes}
                       onSearch={handleSearchMaintenanceType}
                       onSelect={handleSelectMaintenanceType}
-                      // register={register}
+                      register={{...register('maintenanceId', {required:'Ce champs est requis'})}}
+                      error={errors.maintenanceId}
                     />
-                    {/* {errors.equipementId && <small className='text-xs my-2 text-red-500'>{errors.equipementId.message}</small>} */}
+                    {errors.maintenanceId && <small className='text-xs mx-2 text-red-500'>{errors.maintenanceId.message}</small>}
                   </div>
                   
                   {/* type selection */}
-                  <label htmlFor="" className='text-xs px-2'>Choisir le type d'intervenant*:</label>
+                  {/* <label htmlFor="" className='text-xs px-2'>Choisir le type d'intervenant*:</label>
                   <div 
                     className='flex flex-col mx-2'
                     onChange={(e)=>setSupplierType(e.target.value)}
@@ -478,30 +522,30 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                       <option value="">Choisir le type d'intervenant</option>
                       <option value="EMPLOYEE">Employer</option>
                       <option value="SUPPLIER">Prestataire</option>
-                    </select>
+                    </select> */}
                     {/* {errors.equipementId && <small className='text-xs my-2 text-red-500'>{errors.equipementId.message}</small>} */}
-                  </div>
+                  {/* </div> */}
 
 
                   {/* Supplier selection */}
-                  {
+                  {/* {
                     supplierType === "SUPPLIER" &&
                     <div className='flex flex-col'>
-                    <label htmlFor="" className='text-xs px-2'>Choisir le prestataire:</label>
+                    <label htmlFor="" className='text-sm font-semibold px-2'>Choisir le prestataire:</label>
                     <AutoComplete
                       placeholder="Choisir le prestataire"
                       isLoading={isLoading}
                       dataList={externalEntities}
                       onSearch={()=>{}}
                       onSelect={handleSelectSupplier}
-                      // register={register}
+                      register={{...register('maintenanceId', {required:'Ce champ est requis'})}}
                     />
-                    {/* {errors.equipementId && <small className='text-xs my-2 text-red-500'>{errors.equipementId.message}</small>} */}
+                    {errors.maintenanceId && <small className='text-xs my-2 text-red-500 mx-2'>{errors.maintenanceId.message}</small>}
                     </div>
-                  }
+                  } */}
 
                   {/* Employer selection */}
-                  {
+                  {/* {
                     supplierType === "EMPLOYEE" &&
                     <div className='flex flex-col'>
                       <label htmlFor="" className='text-xs px-2'>Choisir un employer:</label>
@@ -511,14 +555,15 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                         dataList={employees}
                         onSearch={()=>{}}
                         onSelect={handleSelectSupplier}
-                        // register={register}
+                        register={register}
                       />
-                      {/* {errors.equipementId && <small className='text-xs my-2 text-red-500'>{errors.equipementId.message}</small>} */}
+                      {errors.equipementId && <small className='text-xs my-2 text-red-500'>{errors.equipementId.message}</small>}
                     </div>
-                  }
+                  } */}
 
                   {/* Description */}
                   <div className='mx-2 mt-3'>
+                    <label htmlFor="" className='text-sm font-semibold'>Description</label>
                     <textarea 
                       name="" 
                       id="" 
@@ -528,9 +573,12 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                       onChange={(e)=>setDescription(e.target.value)}
                     ></textarea>
                   </div>
-                  <Button className="text-white">
-                    Mettre en maintenance
-                  </Button>
+                  <div className='flex justify-end p-4'>
+                    <Button className={` flex gap-2 text-white hover:bg-secondary ${isSubmitting ? "bg-blue-300" :""}`}>
+                      {isSubmitting ? <Preloader size={20}/> : <CheckCircle />}
+                      <span>{isSubmitting ? "Encours..." : "Mettre en maintenance"}</span>
+                    </Button>  
+                  </div>
                 </form>
                 <DialogFooter>{""}</DialogFooter>
             </DialogContent>

@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { URLS } from '../../../../configUrl';
 import { useFetch } from '../../../hooks/useFetch';
 import AutoComplete from '../../common/AutoComplete';
+import { Button } from '../../ui/button';
 dayjs.extend(customParseFormat);
 
 const dateFormat = 'YYYY-MM-DDThh:mm:ssZ';
@@ -27,6 +28,7 @@ const RapportIncidentForm = ({onSubmit}) => {
     const [equipements, setEquipements] = useState([])
     const [sites, setSites] = useState([])
     const [shifts, setShifts] = useState([])
+    const [isLoading, setIsLoading] = useState(false);
     const [employees, setEmployees] = useState([]);
 
     // Criteria
@@ -173,13 +175,21 @@ const RapportIncidentForm = ({onSubmit}) => {
     const generateReport=async(data)=>{
         setError("");
         let {startDate, endDate, value} = data;
-        console.log(data)
-        let url =`${URLS.INCIDENT_API}/incidents/file?criteria=${criteria}&condition=${condition}&value=${value}&start=${startDate ? new Date(startDate).toISOString():''}&end=${endDate?new Date(endDate).toISOString():''}`;
-        
-        if(criteria==="" || condition === "" || !value){
-            setError("tous les champs (*) sont requis");
-            return;
+
+        if(criteria === "date"){
+            if(startDate === "" || endDate === ""){
+                setError("La date de début et la date de fin sont requises");
+                return
+            }
         }
+        else{
+            if(criteria === ""|| condition === "" || !value){
+                setError("tous les champs (*) sont requis");
+                return;
+            }
+        }
+        setIsLoading(true);
+        let url =`${URLS.INCIDENT_API}/incidents/file?criteria=${criteria}&condition=${condition}&value=${value}&start=${startDate ? new Date(startDate).toISOString():''}&end=${endDate?new Date(endDate).toISOString():''}`;
         let requestOptions ={
             headers:{
                 "Content-Type":"application/json",
@@ -189,7 +199,6 @@ const RapportIncidentForm = ({onSubmit}) => {
         try {
             let response = await fetch(url, requestOptions);
             if(response.status === 200){
-                
                 const result = await response.json();
                 const link = document.createElement('a');
                 link.href = result?.downloadLink;
@@ -198,10 +207,11 @@ const RapportIncidentForm = ({onSubmit}) => {
                 onSubmit()
                 return; 
             }
-            setError("Echec du telechargement du rapport")
-            
+            setError("Echec du telechargement du rapport");            
         } catch (error) {
-            console.log(error)
+            console.log(error);
+        }finally{
+            setIsLoading(false);
         }
     }
 
@@ -354,7 +364,7 @@ const RapportIncidentForm = ({onSubmit}) => {
 
     useEffect(()=>{
         setError("");
-    }, [criteria, condition])
+    }, [criteria, condition, startDate, endDate])
 
   return (
     <form className="space-y-2" onSubmit={handleSubmit(generateReport)}>
@@ -369,6 +379,7 @@ const RapportIncidentForm = ({onSubmit}) => {
             >
                 <option value=""></option>
                 <option value="incidentId">Type d'incident</option>
+                <option value="date">Date</option>
                 <option value="equipementId">Type d'equipement</option>
                 <option value="siteId">Site</option>
                 <option value="shiftId">Shift</option>
@@ -392,35 +403,62 @@ const RapportIncidentForm = ({onSubmit}) => {
             </select>
         </div>
         <div>
-            {criteria != "" && <label className="text-xs font-semibold px-4">Valeur <span className='text-red-500'>*</span>:</label>}
+            {(criteria != "" && criteria !== "date") && <label className="text-xs font-semibold px-4">Valeur <span className='text-red-500'>*</span>:</label>}
             {handleDisplayFields(criteria)}
         </div>
-        <div className='flex items-center space-x-2 px-2'>
-            <div className='flex flex-col w-1/2'>
-                <label className="text-xs font-semibold px-2">Du</label>
-                <DatePicker 
-                    onChange={handleStartDate} 
-                    // maxDate={dayjs()}
-                    className='text-sm'
-                    placement={"bottomRight"}
-                />
+        {
+            criteria === "date" &&
+            <div className='flex items-center space-x-2 px-2'>
+                <div className='flex flex-col w-1/2'>
+                    <label className="text-xs font-semibold px-2">Du <span className='text-red-500'>*</span></label>
+                    <DatePicker 
+                        onChange={handleStartDate} 
+                        // maxDate={dayjs()}
+                        className='text-sm'
+                        placement={"bottomRight"}
+                    />
+                </div>
+                <div className='flex flex-col w-1/2'>
+                    <label className="text-xs font-semibold px-2">Au  <span className='text-red-500'>*</span></label>
+                    <DatePicker 
+                        onChange={handleEndDate} 
+                        // minDate={dayjs()}
+                        className='text-sm'
+                        placement={"topRight"}
+                    />
+                </div>
             </div>
-            <div className='flex flex-col w-1/2'>
-                <label className="text-xs font-semibold px-2">Au</label>
-                <DatePicker 
-                    onChange={handleEndDate} 
-                    // minDate={dayjs()}
-                    className='text-sm'
-                    placement={"topRight"}
-                />
+        }
+
+        {
+            criteria !== "date" &&
+            <div className='flex items-center space-x-2 px-2'>
+                <div className='flex flex-col w-1/2'>
+                    <label className="text-xs font-semibold px-2">Du</label>
+                    <DatePicker 
+                        onChange={handleStartDate} 
+                        // maxDate={dayjs()}
+                        className='text-sm'
+                        placement={"bottomRight"}
+                    />
+                </div>
+                <div className='flex flex-col w-1/2'>
+                    <label className="text-xs font-semibold px-2">Au</label>
+                    <DatePicker 
+                        onChange={handleEndDate} 
+                        // minDate={dayjs()}
+                        className='text-sm'
+                        placement={"topRight"}
+                    />
+                </div>
             </div>
-        </div>
+        }
         <p className='text-xs text-red-500 px-2'>{error}</p>
         <div className='flex justify-end'>
-            <button className='rounded-lg bg-primary hover:bg-blue-600 text-white p-2 text-sm shadow-sm flex items-center space-x-1 justify-center'>
+            <Button  disabled={isLoading} className='rounded-lg bg-primary hover:bg-blue-600 text-white p-2 text-sm shadow-sm flex items-center space-x-1 justify-center'>
                 {/* <Preloader className={"w-8 h-8"} /> */}
                 <span>Generer</span>
-            </button>
+            </Button>
         </div>
     </form>
   )
