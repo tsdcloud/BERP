@@ -100,6 +100,12 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       render:(value)=><p className='text-sm capitalize'>{highlightText(value) || "--"}</p>
     },
     {
+      title:"Type de facturation",
+      dataIndex:"paymentMode",
+      width:"150px",
+      render:(value)=><p className='text-sm capitalize'>{value === "CASH" ? "ESPECE" :  highlightText(value) || "--"}</p>
+    },
+    {
       title:"Plomb 1",
       dataIndex:"plomb1",
       width:"150px",
