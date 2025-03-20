@@ -77,10 +77,11 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       if(response?.status === 200){
         let formatedData = response?.data.map(item=>{
           return {
-            name:item?.name,
+            name:  item?.name,
             value: item?.id
           }
         });
+        console.log(formatedData);
         setEmployees(formatedData);
       }
     } catch (error) {
@@ -98,7 +99,8 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   const [rowSelection, setRowSelection] = useState({});
   const [editingRow, setEditingRow] = useState("");
   const [employees, setEmployees] = useState([]);
-  const [columns, setColumns] = useState([
+  const columns =
+    [
     {
       title:"No ref",
       dataIndex:"numRef",
@@ -115,10 +117,10 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       render:(value)=><p className='text-sm'>{highlightText(value)}</p>
     },
     {
-      title:"Cree par",
+      title:"Crée par",
       dataIndex:"createdBy",
       width:"200px",
-      render:(value)=><p className='text-sm'>{employees.find(employee => employee.value === value)?.name || "N/A"}</p>
+      render:(value)=><p className='text-sm'>{employees.filter(employee => employee.value === value)[0]?.name || value}</p>
     },
     {
       title:"Date de création",
@@ -168,7 +170,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
           </DropdownMenu>
       </>
     },
-  ])
+  ]
     
 
   useEffect(()=>{

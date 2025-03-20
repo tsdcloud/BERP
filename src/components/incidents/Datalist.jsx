@@ -226,51 +226,55 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
               </DropdownMenuItem> */}
               {
                 record.status === "PENDING" &&
-                <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
-                  <button className='flex items-center space-x-2'
-                    onClick={()=>{
-                      setSelectedSite(record.siteId);
-                      setSelectedIncident(record.id);
-                      setSelectedEquipement(record.equipementId);
-                      setIsOpen(true);
-                    }}
-                  >
-                    <ExclamationTriangleIcon />
-                    <span>Mettre en maintenance</span>
-                  </button>
-                </DropdownMenuItem>
+                <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_send_to_maintenance_incident"]}>
+                  <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
+                    <button className='flex items-center space-x-2'
+                      onClick={()=>{
+                        setSelectedSite(record.siteId);
+                        setSelectedIncident(record.id);
+                        setSelectedEquipement(record.equipementId);
+                        setIsOpen(true);
+                      }}
+                    >
+                      <ExclamationTriangleIcon />
+                      <span>Mettre en maintenance</span>
+                    </button>
+                  </DropdownMenuItem>
+                </VerifyPermission>
               }
               {
                 (record.status === "PENDING") &&
-                <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
-                  <button className='flex items-center space-x-2'
-                    onClick={async ()=>{
-                      if (window.confirm("Voulez vous cloturer l'incident ?")) {
-                        try {
-                          let url = `${URLS.INCIDENT_API}/incidents/${record.id}`;
-                          let response = await fetch(url, {
-                            method:"PATCH",
-                            headers:{
-                              "Content-Type":"application/json",
-                              'authorization': `Bearer ${localStorage.getItem('token')}` || ''
-                            },
-                            body:JSON.stringify({status: "CLOSED"})
-                          });
-                          if(response.status === 200){
-                            fetchData();
+                <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_close_incident"]}>
+                  <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
+                    <button className='flex items-center space-x-2'
+                      onClick={async ()=>{
+                        if (window.confirm("Voulez vous cloturer l'incident ?")) {
+                          try {
+                            let url = `${URLS.INCIDENT_API}/incidents/${record.id}`;
+                            let response = await fetch(url, {
+                              method:"PATCH",
+                              headers:{
+                                "Content-Type":"application/json",
+                                'authorization': `Bearer ${localStorage.getItem('token')}` || ''
+                              },
+                              body:JSON.stringify({status: "CLOSED"})
+                            });
+                            if(response.status === 200){
+                              fetchData();
+                            }
+                          } catch (error) {
+                            console.log(error);
                           }
-                        } catch (error) {
-                          console.log(error);
                         }
-                      }
-                    }}
-                  >
-                    <XMarkIcon />
-                    <span>Cloturer l'incident</span>
-                  </button>
-                </DropdownMenuItem>
+                      }}
+                    >
+                      <XMarkIcon />
+                      <span>Cloturer l'incident</span>
+                    </button>
+                  </DropdownMenuItem>
+                </VerifyPermission>
               }
-              <VerifyPermission functions={permissions} roles={roles} expected={['incident__can _delete_incident']}>
+              <VerifyPermission functions={permissions} roles={roles} expected={['incident__can_delete_incident']}>
                 <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(record.id)}>
                   <TrashIcon className='text-red-500 h-4 w-6'/>
                   <span className='text-red-500'>Supprimer</span>

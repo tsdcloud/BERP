@@ -191,41 +191,43 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
           <DropdownMenuSeparator />
           {
             (record.status === "PENDING") &&
-            <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
-              <button className='flex items-center space-x-2'
-                onClick={
-                  async ()=>{
-                    setRowSelection(record);
-                    if(record.incidentId){
-                      setModalIsOpen(true);
-                    }
-                    else{
-                      if (window.confirm("Voulez vous cloturer la maintenance ?")) {
-                        try {
-                          let url = `${URLS.INCIDENT_API}/maintenances/${record.id}`;
-                          let response = await fetch(url, {
-                            method:"PATCH",
-                            headers:{
-                              "Content-Type":"application/json",
-                              'authorization': `Bearer ${localStorage.getItem('token')}` || ''
-                            },
-                            body:JSON.stringify({status: "CLOSED"})
-                          });
-                          fetchData();
-                        } catch (error) {
-                          console.log(error);
+            <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_close_maintenance"]}>
+              <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
+                <button className='flex items-center space-x-2'
+                  onClick={
+                    async ()=>{
+                      setRowSelection(record);
+                      if(record.incidentId){
+                        setModalIsOpen(true);
+                      }
+                      else{
+                        if (window.confirm("Voulez vous cloturer la maintenance ?")) {
+                          try {
+                            let url = `${URLS.INCIDENT_API}/maintenances/${record.id}`;
+                            let response = await fetch(url, {
+                              method:"PATCH",
+                              headers:{
+                                "Content-Type":"application/json",
+                                'authorization': `Bearer ${localStorage.getItem('token')}` || ''
+                              },
+                              body:JSON.stringify({status: "CLOSED"})
+                            });
+                            fetchData();
+                          } catch (error) {
+                            console.log(error);
+                          }
                         }
                       }
                     }
                   }
-                }
-              >
-                <XMarkIcon />
-                <span>Cloturer la maintenance</span>
-              </button>
-            </DropdownMenuItem>
+                >
+                  <XMarkIcon />
+                  <span>Cloturer la maintenance</span>
+                </button>
+              </DropdownMenuItem>
+            </VerifyPermission>
           }
-          <VerifyPermission>
+          <VerifyPermission functions={permissions} roles={roles} expected={['incident__can_delete_maintenance']}>
             <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(record.id)}>
               <TrashIcon className='text-red-500 h-4 w-6'/>
               <span className='text-red-500'>Supprimer</span>

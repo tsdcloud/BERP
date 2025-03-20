@@ -28,77 +28,7 @@ const token = localStorage.getItem("token")
 
 const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   
-  const columns = [
-    {
-      title:"No ref",
-      dataIndex:"numRef",
-      width:"100px",
-      render:(value, record)=>
-        editingRow == record.id ?
-        <input />:
-        <p className='text-sm'>{highlightText(value)}</p>
-    },
-    {
-      title:"Nom",
-      dataIndex:"name",
-      width:"200px",
-      render:(value)=><p className='text-sm'>{highlightText(value)}</p>
-    },
-    {
-      title:"Cree par",
-      dataIndex:"createdBy",
-      width:"200px",
-      render:(value)=><p className='text-sm'>{employees.find(employee => employee.value === value)?.name || "N/A"}</p>
-    },
-    {
-      title:"Date de création",
-      dataIndex:"createdAt",
-      width:"200px",
-      render:(value)=><p className='text-sm'>{highlightText(value?.split("T")[0])}</p>
-    },
-    {
-      title:"Dernière mise a jour",
-      dataIndex:"updatedAt",
-      width:"200px",
-      render:(value)=><p className='text-sm'>{highlightText(value?.split("T")[0])}</p>
-    },
-    {
-      title:"Actions",
-      width:  "200px",
-      fixed: 'right',
-      render:(value, record)=>
-        editingRow == record.id ?
-        <button title='Enregistrer'>Enreg...</button>:
-      <>
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {/* <DropdownMenuItem 
-                className="flex gap-2 items-center cursor-pointer"
-                onClick={()=>{
-                  setEditingRow(record.id)
-                }}
-              >
-                <PencilIcon className='h-4 w-6'/>
-                <span className=''>Editer</span>
-              </DropdownMenuItem> */}
-              <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" 
-                onClick={()=>handleDelete(record.id)}>
-                <TrashIcon className='text-red-500 h-4 w-6'/>
-                <span className='text-red-500'>Supprimer</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-      </>
-    },
-  ]
+  
   const {handleFetch} = useFetch();
 
   const handleDelete = async (id) =>{
@@ -150,7 +80,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
             value: item?.id
           }
         });
-        console.log(formatedData)
         setEmployees(formatedData);
       }
     } catch (error) {
@@ -158,7 +87,78 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     }
   }
     
-
+  const columns = [
+    {
+      title:"No ref",
+      dataIndex:"numRef",
+      width:"100px",
+      render:(value, record)=>
+        editingRow == record.id ?
+        <input />:
+        <p className='text-sm'>{highlightText(value)}</p>
+    },
+    {
+      title:"Nom",
+      dataIndex:"name",
+      width:"200px",
+      render:(value)=><p className='text-sm'>{highlightText(value)}</p>
+    },
+    {
+      title:"Cree par",
+      dataIndex:"createdBy",
+      width:"200px",
+      render:(value)=><p className='text-sm'>{employees.find(site => site.value === value)?.name || value}</p>
+    },
+    {
+      title:"Date de création",
+      dataIndex:"createdAt",
+      width:"200px",
+      render:(value)=><p className='text-sm'>{highlightText(value?.split("T")[0])}</p>
+    },
+    {
+      title:"Dernière mise a jour",
+      dataIndex:"updatedAt",
+      width:"200px",
+      render:(value)=><p className='text-sm'>{highlightText(value?.split("T")[0])}</p>
+    },
+    {
+      title:"Actions",
+      width:  "200px",
+      fixed: 'right',
+      render:(value, record)=>
+        editingRow == record.id ?
+        <button title='Enregistrer'>Enreg...</button>:
+      <>
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {/* <DropdownMenuItem 
+                className="flex gap-2 items-center cursor-pointer"
+                onClick={()=>{
+                  setEditingRow(record.id)
+                }}
+              >
+                <PencilIcon className='h-4 w-6'/>
+                <span className=''>Editer</span>
+              </DropdownMenuItem> */}
+              <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" 
+                onClick={()=>handleDelete(record.id)}>
+                <TrashIcon className='text-red-500 h-4 w-6'/>
+                <span className='text-red-500'>Supprimer</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+      </>
+    },
+  ];
+  
   useEffect(()=>{
   },[editingRow])
 
