@@ -21,7 +21,7 @@ const HorsPontForm = ({onSucess}) =>{
     const [isLoading, setIsLoading] = useState(false);
 
     const declarationType = watch("declarationType");
-    const facturationType = watch("facturationType");
+    const paymentMode = watch("paymentMode");
 
     // Handles
     const fetchIncidentCauses = async(url)=>{
@@ -116,13 +116,13 @@ const HorsPontForm = ({onSucess}) =>{
                     </div>
                     <div className='w-full'>
                         <label htmlFor="declaration-type" className='text-sm font-semibold' >Type de facturation <span className='text-red-500'>*</span></label>
-                        <select id='declaration-type' className='w-full border p-2 rounded-lg text-sm' {...register("facturationType", {required:"Ce champ est requis"})}>
+                        <select id='declaration-type' className='w-full border p-2 rounded-lg text-sm' {...register("paymentMode", {required:"Ce champ est requis"})}>
                             <option value="">Choisir le type de facturation *</option>
                             {
                                 FACTURATION_TYPES.map((operation, index)=><option value={operation.value} key={index}>{operation.name}</option>)
                             }
                         </select>
-                        {errors.facturationType && <small className='text-xs text-red-500'>{errors.facturationType.message}</small>}
+                        {errors.paymentMode && <small className='text-xs text-red-500'>{errors.paymentMode.message}</small>}
                     </div>
                 </div>
                 <div className='w-full'>
