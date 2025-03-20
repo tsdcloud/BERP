@@ -73,7 +73,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   const [rowSelection, setRowSelection] = useState({});
   const [employees, setEmployees] = useState([]);
   const [editingRow, setEditingRow] = useState("");
-  const [columns, setColumns] = useState([
+  const columns = [
     {
       title:"No ref",
       dataIndex:"numRef",
@@ -93,7 +93,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       title:"Cree par",
       dataIndex:"createdBy",
       width:"200px",
-      render:(value)=><p className='text-sm'>{highlightText(value)}</p>
+      render:(value)=><p className='text-sm'>{employees.find(employee => employee.value === value)?.name || highlightText(value)}</p>
     },
     {
       title:"Date de création",
@@ -143,7 +143,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
           </DropdownMenu>
       </>
     },
-  ])
+  ]
     
   const handleFetchEmployees = async (link) =>{
     try {

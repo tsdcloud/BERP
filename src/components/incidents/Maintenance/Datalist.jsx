@@ -150,6 +150,12 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       render:(value)=><p className='text-sm'>{highlightText(value?.split("T")[0]) || "--"}</p>
     },
     {
+      title:"Description",
+      dataIndex:"description",
+      width:"300px",
+      render:(value)=><p className='text-sm'>{highlightText(value) ||"--"}</p>
+    },
+    {
       title:"Statut",
       dataIndex:"status",
       width:"200px",
