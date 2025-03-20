@@ -191,7 +191,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
           <DropdownMenuSeparator />
           {
             (record.status === "PENDING") &&
-            <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_close_maintenance"]}>
+            <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_send_to_maintenance_incident"]}>
               <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
                 <button className='flex items-center space-x-2'
                   onClick={
