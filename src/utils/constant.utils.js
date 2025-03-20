@@ -57,6 +57,17 @@ export const DECLARATION_TYPES = [
   },
 ]
 
+export const FACTURATION_TYPES = [
+  {
+    value: "MOBILE",
+    name:"MOBILE"
+  },
+  {
+    value:"CASH",
+    name:"ESPECE"
+  }
+]
+
 export const INCIDENT_CATEGORY = [
   {
     value: "PORTUARY",
