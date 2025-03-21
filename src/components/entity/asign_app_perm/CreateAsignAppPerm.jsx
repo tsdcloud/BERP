@@ -233,7 +233,7 @@ export default function CreateAsignAppPerm({setOpen, onSubmit}) {
 
                     <div className='my-3'>
                             <h6 className='text-xs'>Attribuer une ou plusieurs permissions</h6>
-                            <div className='flex flex-wrap my-2 overflow-y-auto h-16'>
+                            <div className='flex flex-wrap my-2 overflow-y-auto h-[300px]'>
                                 {showPermission.map(item => (
                                     <div key={item?.id} 
                                     className={`flex font-mono items-center ml-2 mb-2 px-2 py-2 border bg-secondary text-white rounded-sm

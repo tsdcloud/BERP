@@ -20,7 +20,7 @@ export default function CreateDistrict({setOpen, onSubmit}) {
   const districtSchema = z.object({
     name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
-    .min(1, "le champs doit avoir une valeur de 1 caractère au moins.")
+    // .min(1, "le champs doit avoir une valeur de 1 caractère au moins.")
     .max(100)
     // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme.")
     ,
