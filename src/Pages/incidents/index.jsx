@@ -7,6 +7,7 @@ import Tabs from '../../components/incidents/Tabs';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
 import { Pagination } from 'antd';
+import VerifyPermission from '../../utils/verifyPermission';
 
 const Incident = () =>{
     const {handleFetch} = useFetch();

@@ -245,7 +245,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                     <button className='flex items-center space-x-2'
                       onClick={()=>{
                         setSelectedSite(record.siteId);
-                        setSelectedIncident(record);
+                        setSelectedIncident(record.id);
                         setSelectedEquipement(record.equipementId);
                         setIsOpen(true);
                       }}

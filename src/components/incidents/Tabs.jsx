@@ -49,14 +49,14 @@ const Tabs = () => {
             name:"Hors pont",
             isActive: pathname.includes("off-bridge") ? true : false,
             link: "/incidents/off-bridge",
-            requiredPermissions:[],
+            requiredPermissions:["incident__view_incidents"],
             requiredRoles:[]
         },
         {
             name:"Maintenances",
             isActive:(pathname.includes("maintenance") && !pathname.includes("type")) ? true : false,
             link: "/incidents/maintenance",
-            requiredPermissions:[],
+            requiredPermissions:["incident__view_maintenances"],
             requiredRoles:[]
         },
         {

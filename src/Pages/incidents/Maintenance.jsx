@@ -7,6 +7,7 @@ import Datalist from '../../components/incidents/Maintenance/Datalist';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
 import { Pagination } from 'antd';
+import VerifyPermission from '../../utils/verifyPermission';
 
 
 
