@@ -274,6 +274,17 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                             }}
                         />
             break;
+            case "paymentMode":
+                return <div>
+                    <label htmlFor="">Choisir </label>
+                    <select name="" id="" {...register('value', {required:'Ce champs est requis'})}>
+                        <option value="">Choisir le mode de paiement</option>
+                        <option value="MOBILE">MOBILE</option>
+                        <option value="CASH">ESPECE</option>
+                    </select>
+                    {errors.value && <p className='text-xs text-red-500'>{errors.value.message}</p>}
+                </div>
+            break;
             case "transporter":
                 return <AutoComplete 
                             dataList={externalEntities}
@@ -370,6 +381,7 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 <option value="incidentCause">Cause de l'incident</option>
                 <option value="siteId">Site</option>
                 <option value="date">Date</option>
+                <option value="paymentMode">Date</option>
                 <option value="tier">Tier</option>
                 <option value="container1">Conteneur 1</option>
                 <option value="container2">Conteneur 2</option>
