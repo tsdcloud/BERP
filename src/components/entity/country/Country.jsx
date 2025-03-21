@@ -6,7 +6,6 @@ import { URLS } from '../../../../configUrl';
 import CreateCountry from './CreateCountry';
 
 export default function Country() {
-   
     const [countries, setCountries] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState();

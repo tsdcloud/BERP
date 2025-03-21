@@ -25,16 +25,16 @@ export default function Role() {
                     <div>
                         <Tabs links={links} />
                     </div>
-                    {/* Permission */}
+                    {/* Role */}
                     <div className='flex gap-2 items-center'>
                     <RoleComponent/>
                     </div>
                 </div>
-                <Footer className="flex flex-col sm:flex-row items-center"/>
+                <Footer className="flex flex-col sm:flex-row items-center justify-center"/>
             
             </>
         )
     }
-</>
-  );
+    </>
+    );
 };
