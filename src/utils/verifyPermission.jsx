@@ -33,6 +33,7 @@ const VerifyPermission = ({children, expected=[], roles=[], functions=[], isExcl
           return null;
         }
 
+        // let includeRoles = roles.every(role => userRoles.includes(role))
         let includeRoles = roles.filter((item) => expected.includes(item))
         let includePerms = functions.filter((item) => expected.includes(item))
 
