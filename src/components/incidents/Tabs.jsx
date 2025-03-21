@@ -56,7 +56,7 @@ const Tabs = () => {
             name:"Maintenances",
             isActive:(pathname.includes("maintenance") && !pathname.includes("type")) ? true : false,
             link: "/incidents/maintenance",
-            requiredPermissions:["incident__view_maintenances"],
+            requiredPermissions:[],
             requiredRoles:[]
         },
         {
