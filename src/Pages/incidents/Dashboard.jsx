@@ -186,35 +186,35 @@ const Dashboard = () =>{
                         title={"Incidents en attente"}
                         data={totalIncidentPending}
                         iconBg={"bg-orange-500"}
-                        onClick={()=>navigate("/incidents")}
+                        onClick={()=>{}}
                     />
                     <Card 
                         icon={<ExclamationTriangleIcon  className='h-8 w-8 text-white'/>}
                         title={"Incidents cloturé"}
                         data={totalIncidentClosed}
                         iconBg={"bg-orange-500"}
-                        onClick={()=>navigate("/incidents")}
+                        onClick={()=>{}}
                     />
                     <Card 
                         icon={<WrenchIcon  className='h-8 w-8 text-white'/>}
                         title={"Maintenances en attente"}
                         data={totalMaintenancePending}
                         iconBg={"bg-primary"}
-                        onClick={()=>navigate("/incidents/maintenance")}
+                        onClick={()=>{}}
                     />
                     <Card 
                         icon={<WrenchIcon  className='h-8 w-8 text-white'/>}
                         title={"Maintenances cloturé"}
                         data={totalMaintenanceClosed}
                         iconBg={"bg-primary"}
-                        onClick={()=>navigate("/incidents/maintenance")}
+                        onClick={()=>{}}
                     />
                     <Card 
                         icon={<TruckIcon  className='h-8 w-8 text-white'/>}
                         title={"Hors pont"}
                         data={totalOffBridge}
                         iconBg={"bg-yellow-500"}
-                        onClick={()=>navigate("/incidents/off-bridge")}
+                        onClick={()=>{}}
                     />
                 </div>
             </div>
