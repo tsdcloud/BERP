@@ -381,7 +381,7 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 <option value="incidentCause">Cause de l'incident</option>
                 <option value="siteId">Site</option>
                 <option value="date">Date</option>
-                <option value="paymentMode">Date</option>
+                <option value="paymentMode">Modes de paiement</option>
                 <option value="tier">Tier</option>
                 <option value="container1">Conteneur 1</option>
                 <option value="container2">Conteneur 2</option>
