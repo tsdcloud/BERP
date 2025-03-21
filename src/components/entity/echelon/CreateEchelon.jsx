@@ -18,7 +18,7 @@ const echelonSchema = z.object({
 
     name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
-    .min(1, "le champs doit avoir une valeur de 1 caractères au moins.")
+    // .min(1, "le champs doit avoir une valeur de 1 caractères au moins.")
     .max(100)
     // .regex(/^[a-zA-Z ,]+$/, "Ce champ doit être un 'nom' conforme.")
     ,

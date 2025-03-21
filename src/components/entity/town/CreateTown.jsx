@@ -20,14 +20,14 @@ export default function CreateTown({setOpen, onSubmit}) {
   const townSchema = z.object({
     name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
-    .min(1, "le champs doit avoir une valeur de 1 caractère au moins.")
+    // .min(1, "le champs doit avoir une valeur de 1 caractère au moins.")
     .max(100)
     // .regex(/^[a-zA-Z0-9\s]+$/, "Ce champ doit être un 'nom' conforme.")
     ,
 
     districtId: z.string()
     .nonempty('Ce champs "Nom du district est réquis')
-    .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
+    // .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
     .regex(/^(?:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|[a-zA-Z0-9 ,]+)$/, "Ce champs doit être un 'nom du pays Conforme."),
 

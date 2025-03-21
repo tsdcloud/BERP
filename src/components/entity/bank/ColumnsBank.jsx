@@ -25,14 +25,14 @@ import { jwtDecode } from 'jwt-decode';
 const bankSchema = z.object({
     name: z.string()
     .nonempty("Ce champs 'Nom' est réquis.")
-    .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
+    // .min(2, "le champs doit avoir une valeur de 2 caractères au moins.")
     .max(100)
     // .regex(/^[a-zA-Z0-9 ,]+$/, "Ce champ doit être un 'nom' conforme.")
     ,
 
     address: z.string()
     .nonempty("Ce champs 'Adresse' est réquis")
-    .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
+    // .min(4, "le champs doit avoir une valeur de 4 caractères au moins.")
     .max(100)
     // .regex(/^[a-zA-Z ,]+$/, "Ce champs doit être une 'Adresse' conforme")
     ,
