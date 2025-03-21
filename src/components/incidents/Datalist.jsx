@@ -240,7 +240,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
               </DropdownMenuItem> */}
               {
                 record.status === "PENDING" &&
-                <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_send_to_maintenance_incident"]}>
+                <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_send_to_maintenance_incident", "Responsable", "DEX"]}>
                   <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
                     <button className='flex items-center space-x-2'
                       onClick={()=>{
@@ -258,7 +258,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
               }
               {
                 (record.status === "PENDING") &&
-                <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_close_incident"]}>
+                <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_close_incident", "head guard", "HSE supervisor", "Responsable", "DEX"]}>
                   <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
                     <button className='flex items-center space-x-2'
                       onClick={async ()=>{
