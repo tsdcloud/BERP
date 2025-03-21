@@ -275,14 +275,13 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                         />
             break;
             case "paymentMode":
-                return <div>
-                    <label htmlFor="">Choisir </label>
-                    <select name="" id="" {...register('value', {required:'Ce champs est requis'})}>
+                return <div className='flex flex-col'>
+                    <select className='p-2 text-sm border rounded-lg' name="" id="" {...register('value', {required:'Ce champs est requis'})}>
                         <option value="">Choisir le mode de paiement</option>
                         <option value="MOBILE">MOBILE</option>
                         <option value="CASH">ESPECE</option>
                     </select>
-                    {errors.value && <p className='text-xs text-red-500'>{errors.value.message}</p>}
+                    {/* {errors.value && <p className='text-xs text-red-500'>{errors.value.message}</p>} */}
                 </div>
             break;
             case "transporter":
