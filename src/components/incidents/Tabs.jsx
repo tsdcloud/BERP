@@ -64,21 +64,21 @@ const Tabs = () => {
             isActive:pathname.includes("incident-cause") ? true : false,
             link: "/incidents/incident-cause",
             requiredPermissions:["incident__view_incident_causes"],
-            requiredRoles:["IT technician"]
+            requiredRoles:[]
         },
         {
             name:"Types d'incidents",
             isActive:pathname.includes("incident-type") ? true : false,
             link: "/incidents/incident-type",
             requiredPermissions:["incident__view_incident_types"],
-            requiredRoles:["IT technician"]
+            requiredRoles:[]
         },
         {
             name:"Type de Maintenances",
             isActive:pathname.includes("maintenance-type") ? true : false,
             link: "/incidents/maintenance-type",
             requiredPermissions:["incident__view_maintenance_types"],
-            requiredRoles:["IT technician"]
+            requiredRoles:[]
         },
         // {
         //     name:"Consommables",
@@ -90,7 +90,7 @@ const Tabs = () => {
             isActive:pathname.includes("equipement") ? true : false,
             link: "/incidents/equipement",
             requiredPermissions:["incident__view_equipements"],
-            requiredRoles:["IT technician"]
+            requiredRoles:[]
         }
     ]
 
