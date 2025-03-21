@@ -43,7 +43,7 @@ const Tabs = () => {
             isActive:pathname === "/incidents" ? true : false,
             link: "/incidents",
             requiredPermissions:[],
-            requiredRoles:["HSE supervisor","head guard"]
+            requiredRoles:[]
         },
         {
             name:"Hors pont",
