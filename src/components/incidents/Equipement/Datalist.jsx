@@ -215,7 +215,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
             columns={columns}
             scroll={{
                 x: 500,
-                y: "35vh"
+                y: "40vh"
             }}
             pagination={false}
             loading={loading}

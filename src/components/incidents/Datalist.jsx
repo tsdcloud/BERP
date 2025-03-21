@@ -32,6 +32,7 @@ import { PERMISSION_CONTEXT } from '../../contexts/PermissionsProvider';
 import { Cog6ToothIcon } from '@heroicons/react/24/solid';
 import Preloader from '../Preloader';
 import { getEmployee } from '../../utils/entity.utils';
+import CloseIncidentForm from './closeIncidentForm';
  
 
 
@@ -92,6 +93,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   const [selectedEquipement, setSelectedEquipement] = useState("");
 
   const [isOpen, setIsOpen] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [maintenanceType, setMaintenanceType] = useState("");
   const [supplierType, setSupplierType] = useState("");
   const [description, setDescription] = useState("");
@@ -138,12 +140,21 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
         </p>
     },
     {
-      title:"Utilisateur",
+      title:"Initiateur",
       dataIndex:"createdBy",
       width:"200px",
       render:(value)=>
         <p className='text-sm capitalize'>
           {employees.find(employee => employee.value === value)?.name || value}
+        </p>
+    },
+    {
+      title:"Intervenant",
+      dataIndex:"technician",
+      width:"200px",
+      render:(value)=>
+        <p className='text-sm capitalize'>
+          {employees.find(employee => employee.value === value)?.name || externalEntities.find(entity => entity.value === value)?.name ||  value || "--"}
         </p>
     },
     {
@@ -234,7 +245,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                     <button className='flex items-center space-x-2'
                       onClick={()=>{
                         setSelectedSite(record.siteId);
-                        setSelectedIncident(record.id);
+                        setSelectedIncident(record);
                         setSelectedEquipement(record.equipementId);
                         setIsOpen(true);
                       }}
@@ -251,24 +262,9 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                   <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
                     <button className='flex items-center space-x-2'
                       onClick={async ()=>{
-                        if (window.confirm("Voulez vous cloturer l'incident ?")) {
-                          try {
-                            let url = `${URLS.INCIDENT_API}/incidents/${record.id}`;
-                            let response = await fetch(url, {
-                              method:"PATCH",
-                              headers:{
-                                "Content-Type":"application/json",
-                                'authorization': `Bearer ${localStorage.getItem('token')}` || ''
-                              },
-                              body:JSON.stringify({status: "CLOSED"})
-                            });
-                            if(response.status === 200){
-                              fetchData();
-                            }
-                          } catch (error) {
-                            console.log(error);
-                          }
-                        }
+                        setModalIsOpen(true);
+                        setSelectedIncident(record.id);
+                        setRowSelection(record);
                       }}
                     >
                       <XMarkIcon />
@@ -336,19 +332,13 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
             value: item?.id
           }
         });
-
         setEmployees(formatedData);
-
-        // setTimeout(()=>{
-        //   console.log(employees.find(employee => employee.value === "5435e1e3-4074-4d7f-94b2-f2157f3b0c71")?.name);
-
-        // }, [10000])
-
       }
     } catch (error) {
       console.error(error);
     }
   }
+  
 
   const handleFetchExternalEntities = async (link) =>{
     try {
@@ -616,6 +606,8 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                 <DialogFooter>{""}</DialogFooter>
             </DialogContent>
         </Dialog>
+
+        <CloseIncidentForm selectedRow={rowSelection} isOpen={modalIsOpen} setIsOpen={setModalIsOpen} fetchData={fetchData}/>
     </div>
   )
 }
