@@ -53,7 +53,7 @@ const Dashboard = () =>{
            const response = await handleFetch(url);
            console.log(response);
            if(response.data){
-            setTotalIncidentPending(response.total);
+            setTotalIncidentPending(response.data?.length);
            }
         } catch (error) {
             console.log(error)
@@ -66,7 +66,7 @@ const Dashboard = () =>{
            const response = await handleFetch(url);
            console.log(response);
            if(response.data){
-            setTotalIncidentClosed(response.total);
+            setTotalIncidentClosed(response.data?.length);
            }
         } catch (error) {
             console.log(error)
@@ -90,12 +90,23 @@ const Dashboard = () =>{
     
     
 
+    const fetchMaintenancesPending= async () => {
+        let url = `${URLS.INCIDENT_API}/maintenances?status=PENDING`;
+        try {
+           const response = await handleFetch(url);
+           if(response.data){
+            setTotalMaintenancePending(response.data?.length);
+           }
+        } catch (error) {
+            console.log(error)
+        }
+    }
     const fetchMaintenances= async () => {
         let url = `${URLS.INCIDENT_API}/maintenances`;
         try {
            const response = await handleFetch(url);
            if(response.data){
-            setTotalMaintenance(response.total);
+            setTotalMaintenance(response.data?.length);
            }
         } catch (error) {
             console.log(error)
@@ -106,7 +117,7 @@ const Dashboard = () =>{
         try {
            const response = await handleFetch(url);
            if(response.data){
-            setTotalMaintenanceClosed(response.total);
+            setTotalMaintenanceClosed(response.data?.length);
            }
         } catch (error) {
             console.log(error)
@@ -139,7 +150,8 @@ const Dashboard = () =>{
         fetchIncidentsPending();
         fetchIncidentsClosed();
 
-        fetchMaintenances();
+        fetchMaintenancesPending();
+        fetchMaintenancesClosed();
 
         fetchOffBridges();
     }, []);
@@ -179,16 +191,16 @@ const Dashboard = () =>{
                     <Card 
                         icon={<WrenchIcon  className='h-8 w-8 text-white'/>}
                         title={"Maintenances en attente"}
-                        data={totalMaintenance}
+                        data={totalMaintenancePending}
                         iconBg={"bg-red-500"}
                         onClick={()=>navigate("/incidents/maintenance")}
                     />
                     <Card 
                         icon={<WrenchIcon  className='h-8 w-8 text-white'/>}
                         title={"Maintenances cloturé"}
-                        data={totalIncidentClosed}
+                        data={totalMaintenanceClosed}
                         iconBg={"bg-red-500"}
-                        onClick={()=>navigate("/incidents")}
+                        onClick={()=>navigate("/incidents/maintenance")}
                     />
                     <Card 
                         icon={<TruckIcon  className='h-8 w-8 text-white'/>}
