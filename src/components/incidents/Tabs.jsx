@@ -43,13 +43,13 @@ const Tabs = () => {
             isActive:pathname === "/incidents" ? true : false,
             link: "/incidents",
             requiredPermissions:[],
-            requiredRoles:[]
+            requiredRoles:["HSE supervisor","head guard"]
         },
         {
             name:"Hors pont",
             isActive: pathname.includes("off-bridge") ? true : false,
             link: "/incidents/off-bridge",
-            requiredPermissions:["incident__view_incidents"],
+            requiredPermissions:[],
             requiredRoles:[]
         },
         {
@@ -57,7 +57,7 @@ const Tabs = () => {
             isActive:(pathname.includes("maintenance") && !pathname.includes("type")) ? true : false,
             link: "/incidents/maintenance",
             requiredPermissions:[],
-            requiredRoles:["maintenance technician"]
+            requiredRoles:["maintenance technician","HSE supervisor", "coordinator", "manager"]
         },
         {
             name:"Causes d'incidents",
