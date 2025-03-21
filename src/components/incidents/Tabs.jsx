@@ -49,15 +49,15 @@ const Tabs = () => {
             name:"Hors pont",
             isActive: pathname.includes("off-bridge") ? true : false,
             link: "/incidents/off-bridge",
-            requiredPermissions:[],
+            requiredPermissions:["incident__view_off_bridges"],
             requiredRoles:[]
         },
         {
             name:"Maintenances",
             isActive:(pathname.includes("maintenance") && !pathname.includes("type")) ? true : false,
             link: "/incidents/maintenance",
-            requiredPermissions:[],
-            requiredRoles:["maintenance technician","HSE supervisor", "coordinator", "manager"]
+            requiredPermissions:["incident__view_maintenance"],
+            requiredRoles:[]
         },
         {
             name:"Causes d'incidents",
@@ -103,7 +103,7 @@ const Tabs = () => {
             <div className='flex flex-col gap-2'>
                 {
                     links.map((link, index) => 
-                        (link.requiredPermissions.every(permission => userPermissions.includes(permission)) && link.requiredRoles.every(role => userRoles.includes(role))) &&
+                        (link.requiredPermissions.every(permission => userPermissions.includes(permission)) || link.requiredRoles.every(role => userRoles.includes(role))) &&
                         <div key={index} className={`px-2 p-1 ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold flex justify-center`} onClick={()=>navigate(link?.link)}><span>{link?.name}</span></div>
                     )
                 }
@@ -112,7 +112,7 @@ const Tabs = () => {
         <div className='hidden md:flex gap-2 items-center whitespace-nowrap overflow-x-auto no-scrollbar'>
             {
                 links.map((link, index) => 
-                    (link.requiredPermissions.every(permission => userPermissions.includes(permission)) && link.requiredRoles.every(role => userRoles.includes(role))) &&
+                    (link.requiredPermissions.every(permission => userPermissions.includes(permission)) || link.requiredRoles.every(role => userRoles.includes(role))) &&
                 <div key={index} className={`px-2 p-1 ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold flex justify-center`} onClick={()=>navigate(link?.link)}><span>{link?.name}</span></div>
             )
             }
