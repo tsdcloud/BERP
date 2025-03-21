@@ -16,7 +16,7 @@ const dateFormat = 'YYYY-MM-DDThh:mm:ssZ';
 
 const RapportIncidentForm = ({onSubmit}) => {
 
-    const {setValue, handleSubmit, reset} = useForm();
+    const {setValue, handleSubmit, reset, formState:{errors}, register} = useForm();
     const {handleFetch, handlePost} = useFetch();
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
@@ -30,6 +30,7 @@ const RapportIncidentForm = ({onSubmit}) => {
     const [shifts, setShifts] = useState([])
     const [isLoading, setIsLoading] = useState(false);
     const [employees, setEmployees] = useState([]);
+    const [suppliers, setSuppliers] = useState([]);
 
     // Criteria
     const [criteria, setCriteria] = useState("");
@@ -175,7 +176,7 @@ const RapportIncidentForm = ({onSubmit}) => {
     const generateReport=async(data)=>{
         setError("");
         let {startDate, endDate, value} = data;
-
+        console.log(data);
         if(criteria === "date"){
             if(startDate === "" || endDate === ""){
                 setError("La date de début et la date de fin sont requises");
@@ -310,6 +311,31 @@ const RapportIncidentForm = ({onSubmit}) => {
                             }}
                         />
             break;
+            case "technician":
+                return <AutoComplete 
+                            dataList={[...employees, ...suppliers]}
+                            placeholder="Recherche intervenant"
+                            onSearch={async (value)=>{
+                                let url_employee = `${URLS.ENTITY_API}/employees?search=${value}`;
+                                let result_employee = await handleSearch(url_employee);
+                                setEmployees(result_employee);
+                                
+                                let url_suppliers = `${URLS.ENTITY_API}/suppliers?search=${value}`;
+                                let result_suppliers = await handleSearch(url_suppliers);
+                                setSuppliers(result_suppliers);
+                            }}
+                            onSelect={(value)=>{
+                                if(value){
+                                    setValue('value', value?.value);
+                                }else{
+                                    setValue('value', null);
+                                }
+                            }}
+                            register={{...register('value', {required:'Ce champs est requis'})}}
+                            error={errors.technician}
+                            errorMessage={<p className='text-sm text-red-500'>{errors.technician && errors.technician?.message}</p>}
+                        />
+            break;
             case "shiftId":
                 return <AutoComplete 
                             dataList={shifts}
@@ -381,6 +407,7 @@ const RapportIncidentForm = ({onSubmit}) => {
                 <option value="incidentId">Type d'incident</option>
                 <option value="date">Date</option>
                 <option value="equipementId">Type d'equipement</option>
+                <option value="technician">Intervenant</option>
                 <option value="siteId">Site</option>
                 <option value="shiftId">Shift</option>
                 <option value="incidentCauseId">Cause d'incident</option>

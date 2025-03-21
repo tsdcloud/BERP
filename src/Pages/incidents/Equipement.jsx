@@ -66,7 +66,7 @@ const Equipement = () => {
     <>
         <Header />
         <div className='px-6 space-y-4'>
-            <div className='flex items-center justify-between'>
+            <div className='flex items-center'>
                 {/* Header */}
                 <div className='sm:w-full'>
                     <Tabs />
@@ -86,7 +86,7 @@ const Equipement = () => {
             </div>
 
             {/* Table */}
-            <div className='w-full bg-white rounded-lg p-2 h-[70vh] flex flex-col justify-evenly'>
+            <div className='w-full bg-white rounded-lg p-2 h-[70vh] flex flex-col'>
                 <div className='px-4'>
                     <input 
                         type="text"
