@@ -32,7 +32,7 @@ import { PERMISSION_CONTEXT } from '../../contexts/PermissionsProvider';
 import { Cog6ToothIcon } from '@heroicons/react/24/solid';
 import Preloader from '../Preloader';
 import { getEmployee } from '../../utils/entity.utils';
-import CloseIncidentForm from './closeIncidentForm';
+import CloseIncidentForm from './CloseIncidentForm';
  
 
 

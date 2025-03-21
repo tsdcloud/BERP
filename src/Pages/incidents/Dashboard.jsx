@@ -5,7 +5,7 @@ import Tabs from '../../components/incidents/Tabs';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
 import Card from '../../components/incidents/Dashboard/Card';
-import { Cog6ToothIcon, Cog8ToothIcon, ExclamationTriangleIcon, PlusIcon, TruckIcon } from '@heroicons/react/24/outline';
+import { Cog6ToothIcon, Cog8ToothIcon, ExclamationTriangleIcon, PauseIcon, PlusIcon, TruckIcon, WrenchIcon } from '@heroicons/react/24/outline';
 import ActionHeader from '../../components/incidents/Dashboard/ActionHeader';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -31,18 +31,53 @@ const Dashboard = () =>{
     const [isOpenned, setIsOpenned] = useState(false);
     const [openFloatBtn, setOpenFloatBtn] = useState(false);
     const [dialogType, setDialogType] = useState("");
+
     const [totalIncident, setTotalIncident] = useState(0);
+    const [totalIncidentPending, setTotalIncidentPending] = useState(0);
+    const [totalIncidentClosed, setTotalIncidentClosed] = useState(0);
+
     const [totalMaintenance, setTotalMaintenance] = useState(0);
+    const [totalMaintenanceClosed, setTotalMaintenanceClosed] = useState(0);
+    const [totalMaintenancePending, setTotalMaintenancePending] = useState(0);
+
+
     const [totalOffBridge, setTotalOffBridge] = useState(0);
     const [page, setPage] = useState(0);
     const [pageList, setPageList] = useState([]);
 
     const navigate = useNavigate();
 
+    const fetchIncidentsPending= async () => {
+        let url = `${URLS.INCIDENT_API}/incidents?status=PENDING`;
+        try {
+           const response = await handleFetch(url);
+           console.log(response);
+           if(response.data){
+            setTotalIncidentPending(response.total);
+           }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const fetchIncidentsClosed= async () => {
+        let url = `${URLS.INCIDENT_API}/incidents?status=CLOSED`;
+        try {
+           const response = await handleFetch(url);
+           console.log(response);
+           if(response.data){
+            setTotalIncidentClosed(response.total);
+           }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    
     const fetchIncidents= async () => {
         let url = `${URLS.INCIDENT_API}/incidents`;
         try {
            const response = await handleFetch(url);
+           console.log(response)
            if(response.data){
             setIncidents(response.data);
             setTotalIncident(response.total);
@@ -52,6 +87,8 @@ const Dashboard = () =>{
             console.log(error)
         }
     }
+    
+    
 
     const fetchMaintenances= async () => {
         let url = `${URLS.INCIDENT_API}/maintenances`;
@@ -59,6 +96,17 @@ const Dashboard = () =>{
            const response = await handleFetch(url);
            if(response.data){
             setTotalMaintenance(response.total);
+           }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const fetchMaintenancesClosed= async () => {
+        let url = `${URLS.INCIDENT_API}/maintenances?status=CLOSED`;
+        try {
+           const response = await handleFetch(url);
+           if(response.data){
+            setTotalMaintenanceClosed(response.total);
            }
         } catch (error) {
             console.log(error)
@@ -78,7 +126,7 @@ const Dashboard = () =>{
     }
 
     const handleSubmit=()=>{
-        fetchIncidents();
+        fetchIncidentsPending();
         document.getElementById("close-dialog").click();
     }
 
@@ -88,8 +136,11 @@ const Dashboard = () =>{
     }
 
     useEffect(()=>{
-        fetchIncidents();
+        fetchIncidentsPending();
+        fetchIncidentsClosed();
+
         fetchMaintenances();
+
         fetchOffBridges();
     }, []);
 
@@ -113,17 +164,31 @@ const Dashboard = () =>{
                 <div className='p-2 py-[50px] flex flex-col md:flex-row  items-center gap-6 md:gap-2'>
                     <Card 
                         icon={<ExclamationTriangleIcon  className='h-8 w-8 text-white'/>}
-                        title={"Incidents"}
-                        data={totalIncident}
-                        iconBg={"bg-red-500"}
+                        title={"Incidents en attente"}
+                        data={totalIncidentPending}
+                        iconBg={"bg-orange-500"}
                         onClick={()=>navigate("/incidents")}
                     />
                     <Card 
-                        icon={<Cog8ToothIcon  className='h-8 w-8 text-white'/>}
-                        title={"Maintenances"}
+                        icon={<ExclamationTriangleIcon  className='h-8 w-8 text-white'/>}
+                        title={"Incidents cloturé"}
+                        data={totalIncidentClosed}
+                        iconBg={"bg-orange-500"}
+                        onClick={()=>navigate("/incidents")}
+                    />
+                    <Card 
+                        icon={<WrenchIcon  className='h-8 w-8 text-white'/>}
+                        title={"Maintenances en attente"}
                         data={totalMaintenance}
-                        iconBg={"bg-blue-500"}
+                        iconBg={"bg-red-500"}
                         onClick={()=>navigate("/incidents/maintenance")}
+                    />
+                    <Card 
+                        icon={<WrenchIcon  className='h-8 w-8 text-white'/>}
+                        title={"Maintenances cloturé"}
+                        data={totalIncidentClosed}
+                        iconBg={"bg-red-500"}
+                        onClick={()=>navigate("/incidents")}
                     />
                     <Card 
                         icon={<TruckIcon  className='h-8 w-8 text-white'/>}
