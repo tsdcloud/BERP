@@ -152,7 +152,7 @@ export default function CreateEntity({setOpen, onSubmit}) {
 
           <div className='space-y-0'>
                 <p className='text-[12px] mb-2'>Veuillez correctement renseigner les informations de l'entité.</p>
-                <form onSubmit={handleSubmit(handleSubmitDataFormEntity)} className='sm:bg-blue-200 md:bg-transparent'>
+                <form onSubmit={handleSubmit(handleSubmitDataFormEntity)} className=''>
 
                   <div className='mb-1'>
                       <label htmlFor="name" className="block text-xs font-medium mb-0">

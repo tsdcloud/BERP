@@ -144,7 +144,7 @@ export default function CreateSupplier({setOpen, onSubmit}) {
 
           <div className='space-y-0'>
                 <p className='text-[12px] mb-2'>Veuillez correctement renseigner les informations du prestataire.</p>
-                <form onSubmit={handleSubmit(handleSubmitDataFormSupplier)} className='sm:bg-blue-200 md:bg-transparent'>
+                <form onSubmit={handleSubmit(handleSubmitDataFormSupplier)} className=''>
 
                     <div className='mb-1'>
                         <label htmlFor="name" className="block text-xs font-medium mb-0">
