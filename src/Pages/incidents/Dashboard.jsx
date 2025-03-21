@@ -149,9 +149,11 @@ const Dashboard = () =>{
     useEffect(()=>{
         fetchIncidentsPending();
         fetchIncidentsClosed();
+        fetchIncidents();
 
         fetchMaintenancesPending();
         fetchMaintenancesClosed();
+        fetchMaintenances();
 
         fetchOffBridges();
     }, []);
@@ -173,6 +175,11 @@ const Dashboard = () =>{
                         onClickOffBridge={()=>handleOpenDialog("OFF_BRIDGE")}
                     />
                 </div>
+                <div className='flex flex-col md:flex-row md:items-center md:gap-3 bg-white shadow p-2 py-4 rounded-lg mx-2'>
+                    <p className='text-md'>Total incident: <span className='font-bold'>{totalIncident}</span></p>
+                    <p className='text-md'>Total maintenance: <span className='font-bold'>{totalMaintenance}</span></p>
+                    <p className='text-md'>Total hors pont: <span className='font-bold'>{totalOffBridge}</span></p>
+                </div>
                 <div className='p-2 py-[50px] flex flex-col md:flex-row  items-center gap-6 md:gap-2'>
                     <Card 
                         icon={<ExclamationTriangleIcon  className='h-8 w-8 text-white'/>}
@@ -192,14 +199,14 @@ const Dashboard = () =>{
                         icon={<WrenchIcon  className='h-8 w-8 text-white'/>}
                         title={"Maintenances en attente"}
                         data={totalMaintenancePending}
-                        iconBg={"bg-red-500"}
+                        iconBg={"bg-primary"}
                         onClick={()=>navigate("/incidents/maintenance")}
                     />
                     <Card 
                         icon={<WrenchIcon  className='h-8 w-8 text-white'/>}
                         title={"Maintenances cloturé"}
                         data={totalMaintenanceClosed}
-                        iconBg={"bg-red-500"}
+                        iconBg={"bg-primary"}
                         onClick={()=>navigate("/incidents/maintenance")}
                     />
                     <Card 
