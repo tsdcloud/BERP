@@ -387,7 +387,7 @@ export default function CreateEmployee({setOpen, onSubmit}) {
 
       <div className='space-y-0'>
        <p className='text-[12px] mb-2'>Veuillez correctement renseigner les informations de l'employé(e).</p>
-          <form onSubmit={handleSubmit(handleSubmitDataFormEmployee)} className='sm:bg-blue-200 md:bg-transparent'>
+          <form onSubmit={handleSubmit(handleSubmitDataFormEmployee)} className=''>
 
                 {/* Step 1 */}
                 {

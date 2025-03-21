@@ -89,7 +89,7 @@ export default function CreateCountry({setOpen, onSubmit}) {
 
           <div className='space-y-0'>
                 <p className='text-[12px] mb-2'>Veuillez correctement renseigner les informations du pays.</p>
-                <form onSubmit={handleSubmit(handleSubmitDataFormCountry)} className='sm:bg-blue-200 md:bg-transparent'>
+                <form onSubmit={handleSubmit(handleSubmitDataFormCountry)} className=''>
 
                   <div className='mb-1'>
                       <label htmlFor="name" className="block text-xs font-medium mb-0">

@@ -103,7 +103,7 @@ export default function CreateCustomer({setOpen, onSubmit}) {
 
           <div className='space-y-0'>
                 <p className='text-[12px] mb-2'>Veuillez correctement renseigner les informations du client.</p>
-                <form onSubmit={handleSubmit(handleSubmitDataFormCustomer)} className='sm:bg-blue-200 md:bg-transparent'>
+                <form onSubmit={handleSubmit(handleSubmitDataFormCustomer)} className=''>
 
                   <div className='mb-1'>
                       <label htmlFor="name" className="block text-xs font-medium mb-0">
