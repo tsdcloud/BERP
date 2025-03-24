@@ -8,8 +8,8 @@ import { Drawer } from 'antd';
 const Tabs = () => {
     const {pathname} = useLocation();
     const navigate = useNavigate();
-    const [userPermissions, setUserPermissions] = useState([""]);
-    const [userRoles, setUserRoles] = useState([""]);
+    const [userPermissions, setUserPermissions] = useState([]);
+    const [userRoles, setUserRoles] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
     // const [userPermissions, setUserPermissions] = useState(["incident__view_incident_causes","incident__view_incident_types", "incident__view_maintenance_types", "incident__view_equipements"]);
 
@@ -22,6 +22,7 @@ const Tabs = () => {
                     setUserPermissions(permissions || []);
 
                     let roles = employee?.employeeRoles.map(role => role?.role.roleName);
+                    console.log(roles, permissions);
                     setUserRoles(roles || []);
                 }
             } catch (error) {
@@ -56,7 +57,7 @@ const Tabs = () => {
             name:"Maintenances",
             isActive:(pathname.includes("maintenance") && !pathname.includes("type")) ? true : false,
             link: "/incidents/maintenance",
-            requiredPermissions:[""],
+            requiredPermissions:["incident__view_maintenance"],
             requiredRoles:["maintenance technician", "HSE supervisor", "IT technician", "manager"]
         },
         {
@@ -96,6 +97,19 @@ const Tabs = () => {
 
   return (
     <div>
+        
+        <div className='hidden md:flex gap-2 items-center whitespace-nowrap overflow-x-auto no-scrollbar'>
+            {
+                links.map((link, index) => 
+                    // (link.requiredPermissions.filter(permission => userPermissions.includes(permission)).length !==0 || link.requiredRoles.filter(role => userRoles.includes(role))).length !== 0 &&
+
+                (link.requiredPermissions.find(permission => userPermissions.includes(permission)) || 
+                link.requiredRoles.find(role => userRoles.includes(role)))  &&
+                <div key={index} className={`px-2 p-1 shadow-md ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold flex justify-center`} onClick={()=>navigate(link?.link)}><span>{link?.name}</span></div>
+            )
+            }
+        </div>
+
         <button className='mx-2 border p-2 rounded-lg bg-primary md:hidden' onClick={()=>setIsOpen(true)}>
             <Bars3BottomLeftIcon className='text-white h-6 w-6'/>
         </button>
@@ -103,20 +117,13 @@ const Tabs = () => {
             <div className='flex flex-col gap-2'>
                 {
                     links.map((link, index) => 
-                            (link.requiredPermissions.filter(permission => userPermissions.includes(permission)).length !==0 || link.requiredRoles.filter(role => userRoles.includes(role))).length !== 0 &&
+                        (link.requiredPermissions.find(permission => userPermissions.includes(permission)) || 
+                        link.requiredRoles.find(role => userRoles.includes(role))) &&
                         <div key={index} className={`px-2 p-1 ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold flex justify-center`} onClick={()=>navigate(link?.link)}><span>{link?.name}</span></div>
                     )
                 }
             </div>
         </Drawer>
-        <div className='hidden md:flex gap-2 items-center whitespace-nowrap overflow-x-auto no-scrollbar'>
-            {
-                links.map((link, index) => 
-                    (link.requiredPermissions.filter(permission => userPermissions.includes(permission)).length !==0 || link.requiredRoles.filter(role => userRoles.includes(role))).length !== 0 &&
-                <div key={index} className={`px-2 p-1 ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold flex justify-center`} onClick={()=>navigate(link?.link)}><span>{link?.name}</span></div>
-            )
-            }
-        </div>
     </div>
   ) 
 }

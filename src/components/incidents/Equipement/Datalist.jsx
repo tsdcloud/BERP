@@ -32,7 +32,7 @@ import {
 } from "../../../components/ui/table"
 import { URLS } from '../../../../configUrl';
 import { useFetch } from '../../../hooks/useFetch';
- 
+import toast from 'react-hot-toast';
 
 
 
@@ -51,11 +51,13 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
           },
         });
         if(response.status === 200){
-          alert("Deleted successfully");
+          toast.success("Supprimé avec succès");
           fetchData();
+          return
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        toast.error("Vérifier la connexion internet, nous ne pouvons pas récupérer les équipements.");
       }
     }
   }

@@ -7,6 +7,7 @@ import Datalist from '../../components/incidents/Equipement/Datalist';
 import { useFetch } from '../../hooks/useFetch';
 import { Pagination } from 'antd';
 import { URLS } from '../../../configUrl';
+import { Toaster } from 'react-hot-toast';
 
 
 const Equipement = () => {
@@ -114,7 +115,10 @@ const Equipement = () => {
                     </div>}
                 />
             </div>
-            
+            <Toaster 
+              position="bottom-right"
+              reverseOrder={false}
+            />
         </div>
     </>
   )
