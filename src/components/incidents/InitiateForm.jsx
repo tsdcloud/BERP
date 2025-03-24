@@ -6,6 +6,7 @@ import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { Button } from '../ui/button';
 import { CheckCircle } from 'lucide-react';
 import Preloader from '../Preloader';
+import toast from 'react-hot-toast';
 
 const InitiateForm = ({onSucess}) => {
     const {register, handleSubmit, formState:{errors}, setValue} = useForm();
@@ -26,12 +27,12 @@ const InitiateForm = ({onSucess}) => {
       setIsSubmiting(true);
       try {
         let url = `${import.meta.env.VITE_INCIDENT_API}/incidents`;
-        // console.log(data)
         let response = await handlePost(url, data);
-        if(response?.status !== 201){
-          alert("Echec. Echec lors de la création");
-          return
+        if(response.error){
+          response?.error_list.forEach(error =>toast.error(error.msg));
+          return;
         }
+        toast.success("Incident déclaré avec succès");
         onSucess();
       } catch (error) {
         console.log(error)

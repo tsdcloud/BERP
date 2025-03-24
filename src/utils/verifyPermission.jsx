@@ -4,7 +4,8 @@ import { jwtDecode } from 'jwt-decode'
 const VerifyPermission = ({children, expected=[], roles=[], functions=[], isExclude = false}) => {  
   
   let token = localStorage.getItem('token');
-  const [isSuperAdmin, setIsSuperAdmin] = useState(false)
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+
   useEffect(()=>{
       const isSuperAdmin =()=>{
         try {
@@ -20,35 +21,26 @@ const VerifyPermission = ({children, expected=[], roles=[], functions=[], isExcl
       isSuperAdmin();
     },[]);
 
-    if(isSuperAdmin){
-      return<>{children}</>
-    }
+    // if(isSuperAdmin){
+    //   return<>{children}</>
+    // }
 
     if(expected instanceof Array){
 
+        let includeRoles = roles.find((item) => expected.includes(item))
+        let includePerms = functions.find((item) => expected.includes(item))
+
         if(isExclude){
-          if((!expected.includes(roles) || !expected.includes(functions))){
+          if((!includeRoles || !includePerms)){
             return <>{children}</>
           }
           return null;
         }
 
-        // let includeRoles = roles.every(role => userRoles.includes(role))
-        let includeRoles = roles.filter((item) => expected.includes(item))
-        let includePerms = functions.filter((item) => expected.includes(item))
-
-        // console.log("includeRoles", includeRoles)
-        // console.log("includePerms", includePerms)
-
-        if(includeRoles.length !== 0 || includePerms.length !== 0){
-          // console.log("is exclude", isExclude)
+        if(includeRoles|| includePerms){
           return <>{children}</>
         }
 
-        // if(expected.includes(roles) || expected.includes(functions)){
-        //   console.log("is exclude", isExclude)
-        //   return <>{children}</>
-        // }
         return null;
     }
     return null

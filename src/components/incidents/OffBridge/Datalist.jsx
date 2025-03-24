@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
+import { PERMISSION_CONTEXT } from '../../../contexts/PermissionsProvider';
 import { Button } from '../../ui/button';
 import { INCIDENT_STATUS } from '../../../utils/constant.utils';
 import { XMarkIcon, TrashIcon } from '@heroicons/react/24/outline';
@@ -23,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "../../ui/dropdown-menu";
 import { URLS } from '../../../../configUrl';
+import VerifyPermission from '../../../utils/verifyPermission';
  
 
 
@@ -60,7 +62,8 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       (match) => `<mark style="background-color: yellow;">${match}</mark>`
     )}} />
   };
-          
+    
+  const {roles, permissions} = useContext(PERMISSION_CONTEXT);
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [sites, setSites] = useState([]);
@@ -191,49 +194,12 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
             Copy payment ID
           </DropdownMenuItem> */}
           <DropdownMenuSeparator />
-          {/* {
-            (record.status === "PENDING") &&
-            <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
-              <button className='flex items-center space-x-2'
-                onClick={async ()=>{
-                  if (window.confirm("Voulez vous cloturer la maintenance ?")) {
-                    try {
-                      let url = `${URLS.INCIDENT_API}/maintenances/${record.id}`;
-                      let response = await fetch(url, {
-                        method:"PATCH",
-                        headers:{
-                          "Content-Type":"application/json",
-                        },
-                        body:JSON.stringify({status: "CLOSED", updatedBy:"878c6bae-b754-4577-b614-69e15821dac8"})
-                      });
-                      if(response.status === 200){
-                        let urlIncident = `${URLS.INCIDENT_API}/incidents/${record.incidentId}`;
-                        let response = await fetch(urlIncident, {
-                          method:"PATCH",
-                          headers:{
-                            "Content-Type":"application/json",
-                          },
-                          body:JSON.stringify({status: "CLOSED"})
-                        });
-                        if(response.status == 200){
-                          fetchData();
-                        }
-                      }
-                    } catch (error) {
-                      console.log(error);
-                    }
-                  }
-                }}
-              >
-                <XMarkIcon />
-                <span>Cloturer la maintenance</span>
-              </button>
+          <VerifyPermission expected={["incident__can_delete_maintenance"]} functions={permissions} roles={roles}>
+            <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(record.id)}>
+              <TrashIcon className='text-red-500 h-4 w-6'/>
+              <span className='text-red-500'>Supprimer</span>
             </DropdownMenuItem>
-          } */}
-          <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(record.id)}>
-            <TrashIcon className='text-red-500 h-4 w-6'/>
-            <span className='text-red-500'>Supprimer</span>
-          </DropdownMenuItem>
+          </VerifyPermission>
         </DropdownMenuContent>
       </DropdownMenu>
     },

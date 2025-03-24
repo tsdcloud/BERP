@@ -26,6 +26,7 @@ import { URLS } from '../../../../configUrl';
 import CloseMaintenanceForm from './CloseMaintenanceForm';
 import VerifyPermission from '../../../utils/verifyPermission';
 import { getEmployee } from '../../../utils/entity.utils';
+import toast from 'react-hot-toast';
  
 
 
@@ -44,8 +45,14 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
             'authorization': `Bearer ${localStorage.getItem('token')}` || ''
           },
         });
+
+        if(response.error){
+          response?.error_list.map(error => toast.error(error.msg));
+          return;
+        }
+
         if(response.status === 200){
-          alert("Deleted successfully");
+          toast.success("Deleted successfully");
           fetchData();
         }
       } catch (error) {
@@ -215,6 +222,11 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                               },
                               body:JSON.stringify({status: "CLOSED"})
                             });
+                            if(response.error){
+                              response?.error_list.map(error => toast.error(error.msg));
+                              return
+                            }
+                            toast.success("La maintenance a été clôturée avec succès");
                             fetchData();
                           } catch (error) {
                             console.log(error);
@@ -312,13 +324,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       const requiredRoles = [...roles];
       const userRoles = employee?.employeeRoles.map(role=>role?.role?.roleName) || [];
       setRoles(userRoles);
-      console.log(userRoles, userPermissions);
-
-      // const hasRequiredPermissions = requiredPermissions.some(permission => userPermissions.includes(permission));
-      // const hasRequiredRoles = requiredRoles.some(role => userRoles.includes(role));
-
-      // setHasRoles(hasRequiredRoles);
-      // console.log(permissions)
 
       setIsLoading(false);
   }

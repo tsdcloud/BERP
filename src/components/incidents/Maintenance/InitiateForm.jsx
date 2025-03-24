@@ -9,6 +9,7 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import Preloader from '../../Preloader';
 import { CheckCircle } from 'lucide-react';
+import toast from 'react-hot-toast';
 dayjs.extend(customParseFormat);
 
 const dateFormat = 'YYYY-MM-DDThh:mm:ssZ';
@@ -261,19 +262,18 @@ const InitiateForm = ({onSucess}) => {
 
 
   const submitForm = async (data) =>{
-    let url = `${URLS.INCIDENT_API}/maintenances`
-    // data.createdBy = "878c6bae-b754-4577-b614-69e15821dac8";
+    let url = `${URLS.INCIDENT_API}/maintenances`;
     try {
       let response = await handlePost(url, data, true);
       if(response.error){
         console.log(response.error);
-        alert("Erreur. Une erreur est survenue lors de la création.");
+        response?.error_list?.froEach(error => toast.error(error.msg));
         return
       }
       onSucess();
     } catch (error) {
       console.log(error);
-      alert("Erreur. Une erreur est survenue lors de la création.");
+      toast.error("Une erreur inattendue s'est produite, veuillez réessayer plus tard.");
     }
   }
 

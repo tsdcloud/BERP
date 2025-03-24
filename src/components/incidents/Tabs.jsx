@@ -6,12 +6,12 @@ import { Drawer } from 'antd';
 
 
 const Tabs = () => {
+    
     const {pathname} = useLocation();
     const navigate = useNavigate();
     const [userPermissions, setUserPermissions] = useState([]);
     const [userRoles, setUserRoles] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
-    // const [userPermissions, setUserPermissions] = useState(["incident__view_incident_causes","incident__view_incident_types", "incident__view_maintenance_types", "incident__view_equipements"]);
 
     useEffect(()=>{
         const handleCheckPermissions = async () =>{
@@ -50,8 +50,8 @@ const Tabs = () => {
             name:"Hors pont",
             isActive: pathname.includes("off-bridge") ? true : false,
             link: "/incidents/off-bridge",
-            requiredPermissions:["incident__view_off_bridges"],
-            requiredRoles:["maintenance technician", "head guard", "coordinator", "manager"]
+            requiredPermissions:[],
+            requiredRoles:["maintenance technician", "head guard", "coordinator", "manager", "IT technician"]
         },
         {
             name:"Maintenances",
@@ -97,16 +97,13 @@ const Tabs = () => {
 
   return (
     <div>
-        
         <div className='hidden md:flex gap-2 items-center whitespace-nowrap overflow-x-auto no-scrollbar'>
             {
                 links.map((link, index) => 
-                    // (link.requiredPermissions.filter(permission => userPermissions.includes(permission)).length !==0 || link.requiredRoles.filter(role => userRoles.includes(role))).length !== 0 &&
-
                 (link.requiredPermissions.find(permission => userPermissions.includes(permission)) || 
                 link.requiredRoles.find(role => userRoles.includes(role)))  &&
-                <div key={index} className={`px-2 p-1 shadow-md ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold flex justify-center`} onClick={()=>navigate(link?.link)}><span>{link?.name}</span></div>
-            )
+                    <div key={index} className={`px-2 p-1 shadow-md ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold flex justify-center`} onClick={()=>navigate(link?.link)}><span>{link?.name}</span></div>
+                )
             }
         </div>
 
