@@ -100,8 +100,8 @@ const Tabs = () => {
         <div className='hidden md:flex gap-2 items-center whitespace-nowrap overflow-x-auto no-scrollbar'>
             {
                 links.map((link, index) => 
-                link.requiredPermissions.filter(permission => userPermissions.includes(permission)).length > 0 || 
-                link.requiredRoles.find(role => userRoles.includes(role)).length > 0  &&
+                (link.requiredPermissions.find(permission => userPermissions.includes(permission)) || 
+                link.requiredRoles.find(role => userRoles.includes(role)))  &&
                     <div key={index} className={`px-2 p-1 shadow-md ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold flex justify-center`} onClick={()=>navigate(link?.link)}><span>{link?.name}</span></div>
                 )
             }
@@ -114,8 +114,8 @@ const Tabs = () => {
             <div className='flex flex-col gap-2'>
                 {
                     links.map((link, index) => 
-                        link.requiredPermissions.find(permission => userPermissions.includes(permission)).length > 0 || 
-                        link.requiredRoles.find(role => userRoles.includes(role)).length > 0 &&
+                        (link.requiredPermissions.find(permission => userPermissions.includes(permission)) || 
+                        link.requiredRoles.find(role => userRoles.includes(role))) &&
                         <div key={index} className={`px-2 p-1 ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold flex justify-center`} onClick={()=>navigate(link?.link)}><span>{link?.name}</span></div>
                     )
                 }
