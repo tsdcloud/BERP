@@ -474,8 +474,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       const requiredRoles = [...roles];
       const userRoles = employee?.employeeRoles.map(role=>role?.role?.roleName) || [];
       setRoles(userRoles);
-      console.log(userRoles, userPermissions);
-
       // const hasRequiredPermissions = requiredPermissions.some(permission => userPermissions.includes(permission));
       // const hasRequiredRoles = requiredRoles.some(role => userRoles.includes(role));
 
