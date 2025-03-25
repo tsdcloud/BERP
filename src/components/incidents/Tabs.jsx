@@ -51,7 +51,7 @@ const Tabs = () => {
             isActive: pathname.includes("off-bridge") ? true : false,
             link: "/incidents/off-bridge",
             requiredPermissions:[],
-            requiredRoles:["maintenance technician", "head guard", "coordinator", "manager", "IT technician"]
+            requiredRoles:["maintenance technician", "head guard", "customer manager", "coordinator", "HSE supervisor", "IT technician", "manager"]
         },
         {
             name:"Maintenances",
