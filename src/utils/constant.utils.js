@@ -68,7 +68,7 @@ export const FACTURATION_TYPES = [
   },
   {
     value:"BILLABLE",
-    name:"FACTURES"
+    name:"A FACTURES"
   },
 ]
 
