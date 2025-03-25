@@ -65,7 +65,11 @@ export const FACTURATION_TYPES = [
   {
     value:"CASH",
     name:"ESPECE"
-  }
+  },
+  {
+    value:"BILLABLE",
+    name:"FACTURES"
+  },
 ]
 
 export const INCIDENT_CATEGORY = [

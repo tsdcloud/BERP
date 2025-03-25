@@ -87,14 +87,6 @@ const Tabs = () => {
                     let roles = employee?.employeeRoles.map(role => role?.role.roleName);
                     setUserRoles(roles || []);
                     
-                    console.log(roles);
-                    links.map(link=>{
-                        let rol = link.requiredRoles.some(role => roles.includes(role))
-                        let perm = link.requiredPermissions.some(permission => permissions.includes(permission))
-                        if(rol || permissions){
-                            console.log(rol, perm)
-                        }
-                    })
                 }
             } catch (error) {
                 console.log(error);
