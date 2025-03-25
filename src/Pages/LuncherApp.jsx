@@ -106,10 +106,10 @@ export default function LuncherApp() {
                           <VerifyPermission  expected={["application__can_view_users"]} functions={userPermissions} roles={userRoles}>
                             <UserEntryPoint/>
                           </VerifyPermission>
-                          <VerifyPermission expected={["application__can_view_incidents"]} functions={userPermissions} roles={userRoles}>
+                          <VerifyPermission expected={["application__can_view_incidents","maintenance technician", "head guard", "customer manager", "coordinator", "HSE supervisor", "IT technician", "manager"]} functions={userPermissions} roles={userRoles}>
                             <IncidentEntryPoint/>
                           </VerifyPermission>
-                          <VerifyPermission expected={["application__can_view_wpo"]} functions={userPermissions} roles={userRoles}>
+                          <VerifyPermission expected={["application__can_view_wpo","maintenance technician", "head guard", "customer manager", "coordinator", "HSE supervisor", "IT technician", "manager"]} functions={userPermissions} roles={userRoles}>
                             <WPOEnteryPoint />
                           </VerifyPermission>
                         </div>
