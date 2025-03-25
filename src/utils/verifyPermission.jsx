@@ -21,23 +21,27 @@ const VerifyPermission = ({children, expected=[], roles=[], functions=[], isExcl
       isSuperAdmin();
     },[]);
 
+    if(expected.length  === 0){
+      return<>{children}</>
+    }
     if(isSuperAdmin){
       return<>{children}</>
     }
 
     if(expected instanceof Array){
 
-        let includeRoles = roles.find((item) => expected.includes(item))
-        let includePerms = functions.find((item) => expected.includes(item))
+        let includeRoles = roles.some((item) => expected.includes(item))
+        let includePerms = functions.some((item) => expected.includes(item))
+
 
         if(isExclude){
-          if((!includeRoles || !includePerms)){
+          if(!includeRoles || !includePerms){
             return <>{children}</>
           }
           return null;
         }
 
-        if(includeRoles|| includePerms){
+        if(includeRoles || includePerms){
           return <>{children}</>
         }
 

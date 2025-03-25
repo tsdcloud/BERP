@@ -12,25 +12,6 @@ const Tabs = () => {
     const [userPermissions, setUserPermissions] = useState([]);
     const [userRoles, setUserRoles] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
-
-    useEffect(()=>{
-        const handleCheckPermissions = async () =>{
-            try {
-                let employee = await getEmployee();
-                if(employee != null){
-                    let permissions = employee?.employeePermissions.map(permission=>permission?.permission.permissionName);
-                    setUserPermissions(permissions || []);
-
-                    let roles = employee?.employeeRoles.map(role => role?.role.roleName);
-                    console.log(roles, permissions);
-                    setUserRoles(roles || []);
-                }
-            } catch (error) {
-                console.log(error)
-            }
-        }
-        handleCheckPermissions();
-    }, [])
     const links = [
         {
             name:"Dashboard",
@@ -44,7 +25,7 @@ const Tabs = () => {
             isActive:pathname === "/incidents" ? true : false,
             link: "/incidents",
             requiredPermissions:[],
-            requiredRoles:["maintenance technician", "head guard", "customer manager", "coordinator", "HSE supervisor", "IT technician", "manager"]
+            requiredRoles:[]
         },
         {
             name:"Hors pont",
@@ -95,13 +76,34 @@ const Tabs = () => {
         }
     ]
 
+    useEffect(()=>{
+        const handleCheckPermissions = async () =>{
+            try {
+                let employee = await getEmployee();
+                if(employee != null){
+                    let permissions = employee?.employeePermissions.map(permission=>permission?.permission.permissionName);
+                    setUserPermissions(permissions || []);
+
+                    let roles = employee?.employeeRoles.map(role => role?.role.roleName);
+                    setUserRoles(roles || []);
+
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        handleCheckPermissions();
+    }, []);
+
+    
+
   return (
     <div>
         <div className='hidden md:flex gap-2 items-center whitespace-nowrap overflow-x-auto no-scrollbar'>
             {
                 links.map((link, index) => 
-                (link.requiredPermissions.find(permission => userPermissions.includes(permission)) || 
-                link.requiredRoles.find(role => userRoles.includes(role)))  &&
+                ((link.requiredPermissions.some(permission => userPermissions.includes(permission)) || 
+                link.requiredRoles.some(role => userRoles.includes(role))))  &&
                     <div key={index} className={`px-2 p-1 shadow-md ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold flex justify-center`} onClick={()=>navigate(link?.link)}><span>{link?.name}</span></div>
                 )
             }
@@ -114,8 +116,8 @@ const Tabs = () => {
             <div className='flex flex-col gap-2'>
                 {
                     links.map((link, index) => 
-                        (link.requiredPermissions.find(permission => userPermissions.includes(permission)) || 
-                        link.requiredRoles.find(role => userRoles.includes(role))) &&
+                        (link.requiredPermissions.some(permission => userPermissions.includes(permission)) || 
+                        link.requiredRoles.some(role => userRoles.includes(role))) &&
                         <div key={index} className={`px-2 p-1 ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold flex justify-center`} onClick={()=>navigate(link?.link)}><span>{link?.name}</span></div>
                     )
                 }
