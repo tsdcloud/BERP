@@ -257,7 +257,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                 </VerifyPermission>
               }
               {
-                (record.status === "PENDING") &&
+                record.status === "PENDING" &&
                 <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_close_incident", "head guard", "HSE supervisor", "manager", "DEX"]}>
                   <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
                     <button className='flex items-center space-x-2'
