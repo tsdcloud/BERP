@@ -42,7 +42,7 @@ export default function ForgetPassword() {
   const returnDialog = () =>{
 
     return(
-      <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+      <AlertDialog open={isDialogOpen} onOpenChange={setDialogOpen}> 
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Finaliser la procédure.</AlertDialogTitle>
@@ -67,7 +67,7 @@ export default function ForgetPassword() {
     });
 
   const handleSubmitEmailForReseting = async(data) => {
-      const urlToResetPassword = `${URLS.API_USER_ABILITY}/forgot_password/`;
+      const urlToResetPassword = `${URLS.USER_API}/forgot_password/`;
       try {
         const response = await handlePost(urlToResetPassword, data, false);
         // console.log("reset",response);
