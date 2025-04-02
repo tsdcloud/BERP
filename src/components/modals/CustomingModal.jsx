@@ -6,12 +6,12 @@ export default function CustomingModal({ children, title, buttonText }) {
     const [open, setOpen] = useState(false);
  
     const showModal = () => {
-        console.log("open modal is true");
+        // console.log("open modal is true");
         setOpen(true);
     };
 
     const handleCancel = () => {
-        console.log('Bouton x annuler cliqué');
+        // console.log('Bouton x annuler cliqué');
         setOpen(false);
     };
 
@@ -27,7 +27,8 @@ export default function CustomingModal({ children, title, buttonText }) {
                 footer={null}
             >
                 {/* {children} */}
-                {React.cloneElement(children, { handleCancel })}
+                {/* {React.cloneElement(children, { handleCancel })} */}
+                {children}
             </Modal>
         </div>
     );

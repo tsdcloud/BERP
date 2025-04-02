@@ -10,6 +10,7 @@ import { useFetch } from '../../../hooks/useFetch';
 import { jwtDecode } from 'jwt-decode';
 import PropTypes from 'prop-types';
 import toast, { Toaster } from 'react-hot-toast';
+import { Select } from 'antd';
 
 const asignAppPermSchema = z.object({
 
@@ -17,18 +18,18 @@ const asignAppPermSchema = z.object({
     .nonempty('Ce champs "Nom de l\'application" est réquis')
     .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     .max(100)
-    .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/, 
+    .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/,
       "Ce champs doit être un 'nom d application' Conforme."),
 
     // permissionId: z.string()
-    // .nonempty('Ce champs "Nom du role" est réquis')
+    // .nonempty('Ce champs "Nom du permission" est réquis')
     // .min(4, "La valeur de ce champs doit contenir au moins 4 caractères.")
     // .max(100)
     // .regex(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/, 
-    //   "Ce champs doit être un 'nom du role' Conforme."),
+    //   "Ce champs doit être un 'nom du permission' Conforme."),
 
     permissionId: z.array(z.string()) // Modification ici pour accepter un tableau de chaînes
-    .nonempty('Ce champs "Nom du role" est réquis')
+    .nonempty('Ce champs "Nom de permission" est réquis')
     .min(1, "Vous devez sélectionner au moins un rôle."),
 
 
@@ -144,50 +145,68 @@ export default function CreateAsignAppPerm({setOpen, onSubmit}) {
 
 
       const handleSubmitDataFormAsignAppPerm = async(data) => {
-        // console.log("data form",data);
-        // const urlToCreateAsignAppPerm = URLS.API_DEPARTMENT;
         const urlToCreateAsignAppPerm =  `${URLS.ENTITY_API}/application-permissions`;
+        try {
+            const { applicationId, permissionId, createdBy } = data;
+            let successCount = 0;
+            let hasError = false;
         
-    
-    try {
-              const { applicationId, permissionId, createdBy } = data;
-             for( const rolId of permissionId) {
-
-                    try {
-                        const response = await handlePost(urlToCreateAsignAppPerm, {applicationId, permissionId: rolId, createdBy }, true);
-                        // console.log("response crea", response);
-                        if (response && response.status === 201) {
-                            // toast.success("Asignation crée avec succès", { duration : 2000 });
-                            // // console.log("department created", response?.success);
-                            // setOpen(false);
-                            // onSubmit();
-                            // reset();
-                
+            for (const permId of permissionId) {
+                try {
+                    const response = await handlePost(
+                        urlToCreateAsignAppPerm, 
+                        {applicationId, permissionId: permId, createdBy }, 
+                        true
+                    );
+        
+                    if (response && response.status === 201) {
+                        successCount++;
+                    } else {
+                        hasError = true;
+                        if (Array.isArray(response.errors)) {
+                            const errorMessages = response.errors.map(error => error.msg).join(', ');
+                            toast.error(errorMessages, { duration: 5000 });
+                        } else {
+                            toast.error(response.errors.msg, { duration: 5000 });
                         }
-                        else {
-                                if (Array.isArray(response.errors)) {
-                                const errorMessages = response.errors.map(error => error.msg).join(', ');
-                                toast.error(errorMessages, { duration: 5000 });
-                                } else {
-                                toast.error(response.errors.msg, { duration: 5000 });
-                                }
-                
-                        }
-                    } catch (error) {
-                        console.error("Une erreur est survenue", error);
-                    } 
-              }
-
-              toast.success("Asignation crée avec succès", { duration : 2000 });
-              setOpen(false);
-              onSubmit();
-              reset();
-            
-          } catch (error) {
-            console.error("Error during creating",error);
-            toast.error("Erreur lors de la création du departement", { duration: 5000 });
-          }
+                    }
+                } catch (error) {
+                    hasError = true;
+                    console.error("Une erreur est survenue", error);
+                    toast.error("Une erreur est survenue lors de la création", { duration: 5000 });
+                }
+            }
+        
+            // Afficher le toast de succès uniquement si toutes les créations ont réussi
+            if (successCount === permissionId.length) {
+                toast.success("Assignation créée avec succès", { duration: 2000 });
+                setOpen(false);
+                onSubmit();
+                reset();
+            } else if (!hasError && successCount > 0) {
+                // Cas où certaines créations ont réussi mais pas toutes
+                toast.warning(`${successCount} permission(s) sur ${permissionId.length} ont été assignées`, { duration: 3000 });
+                setOpen(false);
+                onSubmit();
+                reset();
+            }
+        } catch (error) {
+            console.error("Error during creating", error);
+            toast.error("Erreur lors de la création de l'assignation", { duration: 5000 });
+        }
       };
+
+      //Ant Desing Feature
+
+    //   const onChange = value => {
+    //     console.log(`selected ${value}`);
+    //   };
+
+    //   const onSearch = value => {
+    //     console.log('search:', value);
+    //   };
+
+      
 
   return (
     <CustomingModal
@@ -195,40 +214,36 @@ export default function CreateAsignAppPerm({setOpen, onSubmit}) {
         buttonText="Créer une asignation Applications - Permissions"
     >
 
-<div className='space-y-0'>
+          <div className='space-y-0'>
                 <p className='text-[12px] mb-2'>Veuillez correctement renseigner les informations de cette asignation.</p>
                 <form onSubmit={handleSubmit(handleSubmitDataFormAsignAppPerm)} className=''>
 
-                    <div className='mb-4'>
-                              <label htmlFor="applicationId" className="block text-xs font-medium mb-1">
-                                  Nom de l'application <sup className='text-red-500'>*</sup>
-                              </label>
+                   <div className='mb-4'>
+                        <label htmlFor="applicationId" className="block text-xs font-medium mb-1">
+                            Nom de l'application <sup className='text-red-500'>*</sup>
+                        </label>
 
-                          
-                              <select
-                                          onChange={(e) => {
-                                              const nameApplicationSelected = showApplication.find(item => item.id === e.target.value);
-                                              setSelectedApplications(nameApplicationSelected);
-                                          }}
-                                          {...register('applicationId')} 
-                                          className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
-                                          ${
-                                              errors.applicationId ? "border-red-500" : "border-gray-300"
-                                          }`}
-                                      >
-                                          <option value="">Selectionner une application</option>
-                                              {showApplication.map((item) => (
-                                                  <option key={item.id} value={item.id}>
-                                                          {item.name}
-                                                  </option>
-                                              ))}
-                              </select>
-                              {
-                                  errors.applicationId && (
-                                  <p className="text-red-500 text-[9px] mt-1">{errors?.applicationId?.message}</p>
-                                  )
-                              }
-                      
+                        <Select
+                            showSearch
+                            placeholder="Sélectionner une application"
+                            optionFilterProp="label"
+                            onChange={(value) => {
+                                const nameApplicationSelected = showApplication.find(item => item.id === value);
+                                setSelectedApplications(nameApplicationSelected);
+                                setValue('applicationId', value, { shouldValidate: true });
+                            }}
+                            // onSearch={onSearch}
+                            options={showApplication.map(item => ({
+                                value: item.id,
+                                label: item.name,
+                            }))}
+                            className={`w-2/3 ${errors.applicationId ? "border-red-500" : "border-gray-300"}`}
+                        />
+                        {
+                            errors.applicationId && (
+                                <p className="text-red-500 text-[9px] mt-1">{errors?.applicationId?.message}</p>
+                            )
+                        }
                     </div>
 
                     <div className='my-3'>

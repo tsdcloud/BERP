@@ -15,25 +15,24 @@ export default function AsignAppPerm() {
 
     const fetchAppPerm = async () => {
         const urlToGetAsignAppPerm = `${URLS.ENTITY_API}/application-permissions`;
-        
         try {
             setIsLoading(true);
             const response = await handleFetch(urlToGetAsignAppPerm);
             // console.log("respo",response);
             
-                if (response && response?.status === 200) {
+                if (response?.data && response?.status === 200) {
                         const results = response?.data;
                         const filteredAppPerm = results?.map(item => {
                         const { createdBy, updateAt, ...rest } = item;
                         return {
                             id:rest.id,
-                            applicationId:rest.application.name,
-                            permissionId:rest.permission.displayName,
+                            applicationId:rest.application.name || 'N/A',
+                            permissionId:rest.permission.displayName || 'N/A',
                             createdAt:rest.createdAt,
                             isActive:rest.isActive
                         };
                         });
-                        // console.log("empRole", filteredAppPerm);
+                        console.log("empApp", filteredAppPerm);
                         setAsignAppPerm(filteredAppPerm);
                 }
                 else{

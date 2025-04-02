@@ -10,6 +10,7 @@ import { useFetch } from '../../../hooks/useFetch';
 import { jwtDecode } from 'jwt-decode';
 import PropTypes from 'prop-types';
 import toast, { Toaster } from 'react-hot-toast';
+import { Select } from 'antd';
 
 const asignRolePermSchema = z.object({
 
@@ -147,47 +148,52 @@ export default function CreateAsignRolePerm({setOpen, onSubmit}) {
         // console.log("data form",data);
         const urlToCreateAsignRolePerm =  `${URLS.ENTITY_API}/permission-roles`;
     
-            try {
-                    const { roleId, permissionId, createdBy } = data;
-                    for( const permId of permissionId) {
-
-                            try {
-                                const response = await handlePost(urlToCreateAsignRolePerm, {roleId, permissionId: permId, createdBy }, true);
-                                // console.log("response crea", response);
-                                if (response && response.status === 201) {
-                                    //Jai mis cette valeur à la fin de l'instruction car je 
-                                    // voulais que le toast s'affiche une fois à la fin de la création
-                                    
-                                    // toast.success("Asignation crée avec succès", { duration : 2000 });
-                                    // // console.log("department created", response?.success);
-                                    // setOpen(false);
-                                    // onSubmit();
-                                    // reset();
-                        
-                                }
-                                else {
-                                        if (Array.isArray(response.errors)) {
-                                        const errorMessages = response.errors.map(error => error.msg).join(', ');
-                                        toast.error(errorMessages, { duration: 5000 });
-                                        } else {
-                                        toast.error(response.errors.msg, { duration: 5000 });
-                                        }
-                        
-                                }
-                            } catch (error) {
-                                console.error("Une erreur est survenue", error);
-                            } 
+        try {
+            const { roleId, permissionId, createdBy } = data;
+            let successCount = 0;
+            let hasError = false;
+    
+            for (const permId of permissionId) {
+                try {
+                    const response = await handlePost(
+                        urlToCreateAsignRolePerm, 
+                        {roleId, permissionId: permId, createdBy }, 
+                        true
+                    );
+    
+                    if (response && response.status === 201) {
+                        successCount++;
+                    } else {
+                        hasError = true;
+                        if (Array.isArray(response.errors)) {
+                            const errorMessages = response.errors.map(error => error.msg).join(', ');
+                            toast.error(errorMessages, { duration: 5000 });
+                        } else {
+                            toast.error(response.errors.msg, { duration: 5000 });
+                        }
                     }
-
-                    toast.success("Asignation crée avec succès", { duration : 2000 });
-                    setOpen(false);
-                    onSubmit();
-                    reset();
-                    
                 } catch (error) {
-                    console.error("Error during creating",error);
-                    toast.error("Erreur lors de la création de l'asignation", { duration: 5000 });
+                    hasError = true;
+                    console.error("Une erreur est survenue", error);
+                    toast.error("Une erreur est survenue lors de la création", { duration: 5000 });
                 }
+            }
+    
+            if (successCount === permissionId.length) {
+                toast.success("Assignation créée avec succès", { duration: 2000 });
+                setOpen(false);
+                onSubmit();
+                reset();
+            } else if (!hasError && successCount > 0) {
+                toast.warning(`${successCount} permission(s) sur ${permissionId.length} ont été assignées`, { duration: 3000 });
+                setOpen(false);
+                onSubmit();
+                reset();
+            }
+        } catch (error) {
+            console.error("Error during creating", error);
+            toast.error("Erreur lors de la création de l'assignation", { duration: 5000 });
+        }
       };
 
   return (
@@ -196,41 +202,34 @@ export default function CreateAsignRolePerm({setOpen, onSubmit}) {
         buttonText="Créer une asignation rôles - permissions"
     >
 
-<div className='space-y-0'>
+        <div className='space-y-0'>
                 <p className='text-[12px] mb-2'>Veuillez correctement renseigner les informations de cette asignation.</p>
                 <form onSubmit={handleSubmit(handleSubmitDataFormAsignRolePerm)} className=''>
 
                     <div className='mb-4'>
-                              <label htmlFor="roleId" className="block text-xs font-medium mb-1">
-                                  Nom du rôle <sup className='text-red-500'>*</sup>
-                              </label>
+                        <label htmlFor="roleId" className="block text-xs font-medium mb-1">
+                            Nom du rôle <sup className='text-red-500'>*</sup>
+                        </label>
 
-                          
-                              <select
-                                          onChange={(e) => {
-                                              const nameRoleSelected = showRole.find(item => item.id === e.target.value);
-                                              setSelectedRole(nameRoleSelected);
-                                          }}
-                                          {...register('roleId')} 
-                                          className={`w-2/3 px-2 py-2 border rounded-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-900
-                                          ${
-                                              errors.roleId ? "border-red-500" : "border-gray-300"
-                                          }`}
-                                      >
-                                          <option value="">Selectionner un rôle</option>
-                                              {showRole.map((item) => (
-                                                  <option key={item.id} value={item.id}>
-                                                          {item.roleName}
-                                                  </option>
-                                              ))}
-                              </select>
-                              {
-                                  errors.roleId && (
-                                  <p className="text-red-500 text-[9px] mt-1">{errors?.roleId?.message}</p>
-                                  )
-                              }
-                      
-                    </div>
+                        <Select
+                            showSearch
+                            placeholder="Sélectionner un rôle"
+                            optionFilterProp="label"
+                            onChange={(value) => {
+                                const nameRoleSelected = showRole.find(item => item.id === value);
+                                setSelectedRole(nameRoleSelected);
+                                setValue('roleId', value, { shouldValidate: true });
+                            }}
+                            options={showRole.map(item => ({
+                                value: item.id,
+                                label: item.roleName,
+                            }))}
+                            className={`w-2/3 ${errors.roleId ? "border-red-500" : "border-gray-300"}`}
+                        />
+                        {errors.roleId && (
+                            <p className="text-red-500 text-[9px] mt-1">{errors?.roleId?.message}</p>
+                        )}
+                </div>
 
                     <div className='my-3'>
                             <h6 className='text-xs'>Attribuer une ou plusieurs permissions</h6>
