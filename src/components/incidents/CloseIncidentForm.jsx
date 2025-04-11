@@ -137,7 +137,7 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
                     <AutoComplete 
                         dataList={[...incidentCauses]}
                         placeholder="Choisir la cause"
-                        register={{...register("incidentCauseId")}}
+                        register={{...register("incidentCauseId", {required:'This field is required'})}}
                         onSearch={(input)=>{
                             handleIncidentCauses(`${URLS.INCIDENT_API}/incident-causes?search=${input}`);
                         }}
