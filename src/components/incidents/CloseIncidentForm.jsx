@@ -15,6 +15,7 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
 
     const [employees, setEmployees] = useState([]);
     const [entities, setEntities] = useState([]);
+    const [incidentCauses, setIncidentCauses] = useState([]);
     const [isSubmiting, setIsSubmiting] = useState(false);
 
     const handleEmployees = async (url) =>{
@@ -54,6 +55,25 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
             console.log(error);
         }
     }
+    
+    const handleIncidentCauses = async (url) =>{
+        try {
+            let response = await handleFetch(url);
+            if(response.error){
+
+            }
+            let result = response?.data;
+            let formattedData = result.map(entity=>{
+                return {
+                    name:  entity?.name,
+                    value: entity?.id
+                }
+            });
+            setIncidentCauses(formattedData);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const onSubmit = async (data) =>{
         setIsSubmiting(true);
@@ -83,6 +103,7 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
     useEffect(()=>{
         handleEmployees(`${URLS.ENTITY_API}/employees`);
         handleEntities(`${URLS.ENTITY_API}/suppliers`);
+        handleIncidentCauses(`${URLS.INCIDENT_API}/incident-causes`);
     },[])
 
   return ( 
@@ -98,7 +119,7 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
                         register={{...register("technician")}}
                         onSearch={(input)=>{
                             handleEmployees(`${URLS.ENTITY_API}/employees?search=${input}`);
-                            handleEntities(`${URLS.ENTITY_API}/entities?search=${input}`);
+                            handleEntities(`${URLS.ENTITY_API}/suppliers?search=${input}`);
                         }}
                         onSelect={(value)=>{
                             if(value){
@@ -109,6 +130,26 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
                         }}
                         errorMessage={<p className='text-sm text-red-500'>{errors.causeId && errors.causeId?.message}</p>}
                         error={errors.technician}
+                    />
+                </div>
+                <div className='mx-2'>
+                    <label htmlFor="" className='font-semibold text-sm'>Choisir la cause:</label>
+                    <AutoComplete 
+                        dataList={[...incidentCauses]}
+                        placeholder="Choisir la cause"
+                        register={{...register("incidentCauseId")}}
+                        onSearch={(input)=>{
+                            handleIncidentCauses(`${URLS.INCIDENT_API}/incident-causes?search=${input}`);
+                        }}
+                        onSelect={(value)=>{
+                            if(value){
+                                setValue("incidentCauseId", value?.value);
+                            }else{
+                                setValue("incidentCauseId",null);
+                            }
+                        }}
+                        errorMessage={<p className='text-sm text-red-500'>{errors.incidentCauseId && errors.incidentCauseId?.message}</p>}
+                        error={errors.incidentCauseId}
                     />
                 </div>
                 <div className='flex justify-end'>
