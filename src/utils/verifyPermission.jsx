@@ -28,11 +28,11 @@ const VerifyPermission = ({children, expected=[], roles=[], functions=[], isExcl
       return<>{children}</>
     }
 
+    
     if(expected instanceof Array){
-
-        let includeRoles = roles.some((item) => expected.includes(item))
-        let includePerms = functions.some((item) => expected.includes(item))
-
+      
+      let includeRoles = roles.some((item) => expected.includes(item))
+      let includePerms = functions.some((item) => expected.includes(item))
 
         if(isExclude){
           if(!includeRoles || !includePerms){

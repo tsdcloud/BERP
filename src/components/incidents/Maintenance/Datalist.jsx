@@ -310,24 +310,31 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/sites`);
     handleFetchEmployees(`${import.meta.env.VITE_ENTITY_API}/employees`);
     handleFetchExternalEntities(`${import.meta.env.VITE_ENTITY_API}/suppliers`);
+    
     const handleCheckPermissions = async () =>{
       const employee = await getEmployee();
       if(!employee){
          setIsLoading(false);
          return 
       }
-      const requiredPermissions = [...permissions];
-      const userPermissions = employee?.employeePermissions.map(permission=>permission?.permission.permissionName) || [];
-      setPermissions(userPermissions);
 
+      const employeeRoles = await handleFetch(`${URLS.ENTITY_API}/employees/${employee?.id}/roles`);
+      const employeePermissions = await handleFetch(`${URLS.ENTITY_API}/employees/${employee?.id}/permissions`);
       
-      const requiredRoles = [...roles];
-      const userRoles = employee?.employeeRoles.map(role=>role?.role?.roleName) || [];
-      setRoles(userRoles);
+      
+      let empPerms = employeePermissions?.employeePermissions
+      let empRoles = employeeRoles?.employeeRoles
 
+      let formatedRoles = empRoles.map(role=>role?.role.roleName)
+      let formatedPerms = empPerms.map(perm=>perm?.permission.permissionName)
+
+
+      setRoles(formatedRoles);
+      setPermissions(formatedPerms);
+      
       setIsLoading(false);
-  }
-  handleCheckPermissions();
+    }
+    handleCheckPermissions();
   }, []);
   
   return (

@@ -131,7 +131,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
         </p>
     },
     {
-      title:"Shift",
+      title:"Quart",
       dataIndex:"shiftId",
       width:"150px",
       render:(value)=>
@@ -158,7 +158,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
         </p>
     },
     {
-      title:"Cloturer par",
+      title:"Clôturé par",
       dataIndex:"closedBy",
       width:"200px",
       render:(value)=>
@@ -194,7 +194,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
         </p>
     },
     {
-      title:"Date de cloture",
+      title:"Date de clôture",
       dataIndex:"closedDate",
       width:"200px",
       render:(value)=>
@@ -258,7 +258,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
               }
               {
                 record.status === "PENDING" &&
-                <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_close_incident", "head guard", "HSE supervisor", "manager", "DEX"]}>
+                <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_close_incident", "head guard", "HSE supervisor", "manager", "DEX", "IT technician"]}>
                   <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
                     <button className='flex items-center space-x-2'
                       onClick={async ()=>{
@@ -466,27 +466,27 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
          setIsLoading(false);
          return 
       }
-      const requiredPermissions = [...permissions];
-      const userPermissions = employee?.employeePermissions.map(permission=>permission?.permission.permissionName) || [];
-      setPermissions(userPermissions);
 
+      const employeeRoles = await handleFetch(`${URLS.ENTITY_API}/employees/${employee?.id}/roles`);
+      const employeePermissions = await handleFetch(`${URLS.ENTITY_API}/employees/${employee?.id}/permissions`);
       
-      const requiredRoles = [...roles];
-      const userRoles = employee?.employeeRoles.map(role=>role?.role?.roleName) || [];
-      setRoles(userRoles);
-      // const hasRequiredPermissions = requiredPermissions.some(permission => userPermissions.includes(permission));
-      // const hasRequiredRoles = requiredRoles.some(role => userRoles.includes(role));
+      
+      let empPerms = employeePermissions?.employeePermissions
+      let empRoles = employeeRoles?.employeeRoles
 
-      // setHasRoles(hasRequiredRoles);
-      // console.log(permissions)
+      let formatedRoles = empRoles.map(role=>role?.role.roleName)
+      let formatedPerms = empPerms.map(perm=>perm?.permission.permissionName)
 
+
+      setRoles(formatedRoles);
+      setPermissions(formatedPerms);
+      
       setIsLoading(false);
-  }
-  handleCheckPermissions();
+    }
+    handleCheckPermissions();
   }, []);
 
   useEffect(()=>{
-    // handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types?hasIncident=${true}`);
     handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types?hasIncident=${false}`);
   }, [isOpen])
   

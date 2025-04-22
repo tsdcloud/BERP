@@ -78,21 +78,29 @@ const Tabs = () => {
 
     useEffect(()=>{
         const handleCheckPermissions = async () =>{
-            try {
-                let employee = await getEmployee();
-                if(employee != null){
-                    let permissions = employee?.employeePermissions.map(permission=>permission?.permission.permissionName);
-                    setUserPermissions(permissions || []);
-
-                    let roles = employee?.employeeRoles.map(role => role?.role.roleName);
-                    setUserRoles(roles || []);
-                    
-                }
-            } catch (error) {
-                console.log(error);
+            const employee = await getEmployee();
+            if(!employee){
+               setIsLoading(false);
+               return 
             }
-        }
-        handleCheckPermissions();
+      
+            const employeeRoles = await handleFetch(`${URLS.ENTITY_API}/employees/${employee?.id}/roles`);
+            const employeePermissions = await handleFetch(`${URLS.ENTITY_API}/employees/${employee?.id}/permissions`);
+            
+            
+            let empPerms = employeePermissions?.employeePermissions
+            let empRoles = employeeRoles?.employeeRoles
+      
+            let formatedRoles = empRoles.map(role=>role?.role.roleName)
+            let formatedPerms = empPerms.map(perm=>perm?.permission.permissionName)
+      
+      
+            setUserRoles(formatedRoles);
+            setUserPermissions(formatedPerms);
+            
+            setIsLoading(false);
+          }
+          handleCheckPermissions();
     }, []);
 
     

@@ -324,7 +324,7 @@ const InitiateForm = ({onSucess}) => {
 
         {/* Shift selection */}
         <div className='flex flex-col'>
-          <label htmlFor="" className='text-sm px-2 font-semibold'>Choisir le Shift <span className='text-red-500'>*</span>:</label>
+          <label htmlFor="" className='text-sm px-2 font-semibold'>Choisir le quart <span className='text-red-500'>*</span>:</label>
           <AutoComplete
             placeholder="Choisir un shift"
             isLoading={isLoading}
