@@ -23,7 +23,6 @@ const InitiateForm = ({onSucess}) => {
     const [isSubmiting, setIsSubmiting] = useState(false);
     
     const handleSubmitDecleration = async (data) =>{
-      console.log(data)
       setIsSubmiting(true);
       try {
         let url = `${import.meta.env.VITE_INCIDENT_API}/incidents`;
@@ -254,7 +253,6 @@ const InitiateForm = ({onSucess}) => {
     useEffect(()=>{
       handleFetchConsommable(`${import.meta.env.VITE_INCIDENT_API}/consommables`);
       handleFetchEquipements(`${import.meta.env.VITE_INCIDENT_API}/equipements`);
-      // handleFetchCauses(`${import.meta.env.VITE_INCIDENT_API}/incident-causes`);
       handleFetchTypes(`${import.meta.env.VITE_INCIDENT_API}/incident-types`);
       handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/sites`);
       handleFetchShifts(`${import.meta.env.VITE_ENTITY_API}/shifts`);
@@ -277,20 +275,6 @@ const InitiateForm = ({onSucess}) => {
           />
           {errors.incidentId && <small className='text-xs text-red-500 mx-4'>{errors.incidentId.message}</small>}
         </div>
-
-        {/* incident cause selection */}
-        {/* <div className='flex flex-col'>
-          <label htmlFor="" className='text-xs px-2'>Choisir la cause de l'incident <span className='text-red-500'>*</span>:</label>
-          <AutoComplete
-            placeholder="Choisir une cause d'incident"
-            isLoading={isLoading}
-            dataList={incidentCauses}
-            onSearch={handleSearchCauses}
-            onSelect={handleSelectCause}
-            // register={register}
-          />
-          {errors.consomableId && <small className='text-xs my-2 text-red-500'>{errors.consomableId.message}</small>}
-        </div> */}
 
         {/* Equipement selection */}
         <div className='flex flex-col'>
