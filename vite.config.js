@@ -1,10 +1,24 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
-// import { VitePWA } from 'vite-plugin-pwa';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), VitePWA({
+    registerType: 'autoUpdate',
+    workbox: {
+      clientsClaim: true,
+      skipWaiting: true,
+      globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      manifest: {
+        name: 'BERP-BFC group SA Enterprise resource planning',
+        short_name: 'BERP',
+        description: 'BFC group SA Enterprise resource planning',
+        theme_color: '#ffffff'
+      }
+    }
+  })],
   server: {
     proxy: {
       "/api": {
