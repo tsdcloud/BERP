@@ -1,33 +1,43 @@
 import React, {useEffect, useState} from 'react';
 import Header from '../../components/layout/Header';
-import Dialogue from '../../components/incidents/Dialogue';
+import { Button, Menu } from 'antd';
 import Tabs from '../../components/incidents/Tabs';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
-import Card from '../../components/incidents/Dashboard/Card';
-import { Cog6ToothIcon, Cog8ToothIcon, ExclamationTriangleIcon, PauseIcon, PlusIcon, TruckIcon, WrenchIcon } from '@heroicons/react/24/outline';
+import { Cog6ToothIcon, CursorArrowRaysIcon, ExclamationTriangleIcon, PlusIcon, PrinterIcon, TruckIcon } from '@heroicons/react/24/outline';
 import ActionHeader from '../../components/incidents/Dashboard/ActionHeader';
 import { useNavigate } from 'react-router-dom';
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogFooter,
     DialogHeader,
-    DialogTitle,
-    DialogTrigger,
   } from "../../components/ui/dialog"
 import RapportIncidentForm from '../../components/incidents/Dashboard/RapportIncidentForm';
 import RapportMaintenanceForm from '../../components/incidents/Dashboard/RapportMaintenanceForm';
 import RapportOffBridgeForm from '../../components/incidents/Dashboard/RapportOffBridgeForm';
-import { FloatButton } from 'antd';
 
+// Icons
+import {
+    AppstoreOutlined,
+    ContainerOutlined,
+    DesktopOutlined,
+    MailOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
+    PieChartOutlined,
+  } from '@ant-design/icons';
+import { FloatButton } from 'antd';
+import Card from '../../components/incidents/Dashboard/Card';
+import { WrenchIcon } from 'lucide-react';
 
 
 
 const Dashboard = () =>{
     const {handleFetch} = useFetch();
     const [incidents, setIncidents] = useState([]);
+    const [incidentStats, setIncidentStats] = useState([]);
+    const [maintenanceStats, setMaintenanceStats] = useState([]);
     const [isOpenned, setIsOpenned] = useState(false);
     const [openFloatBtn, setOpenFloatBtn] = useState(false);
     const [dialogType, setDialogType] = useState("");
@@ -35,6 +45,7 @@ const Dashboard = () =>{
     const [totalIncident, setTotalIncident] = useState(0);
     const [totalIncidentPending, setTotalIncidentPending] = useState(0);
     const [totalIncidentClosed, setTotalIncidentClosed] = useState(0);
+    const [totalIncidentUnderMaintenance, setTotalIncidentUnderMaintenance] = useState(0);
 
     const [totalMaintenance, setTotalMaintenance] = useState(0);
     const [totalMaintenanceClosed, setTotalMaintenanceClosed] = useState(0);
@@ -44,19 +55,21 @@ const Dashboard = () =>{
     const [totalOffBridge, setTotalOffBridge] = useState(0);
     const [page, setPage] = useState(0);
     const [pageList, setPageList] = useState([]);
-
+    const [collapsed, setCollapsed] = useState(false);
+    const toggleCollapsed = () => {
+        setCollapsed(!collapsed);
+    };
     const navigate = useNavigate();
 
     const fetchIncidentsPending= async () => {
         let url = `${URLS.INCIDENT_API}/incidents?status=PENDING`;
         try {
            const response = await handleFetch(url);
-           console.log(response);
            if(response.data){
             setTotalIncidentPending(response.data?.length);
            }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     }
 
@@ -64,9 +77,20 @@ const Dashboard = () =>{
         let url = `${URLS.INCIDENT_API}/incidents?status=CLOSED`;
         try {
            const response = await handleFetch(url);
-           console.log(response);
            if(response.data){
-            setTotalIncidentClosed(response.data?.length);
+               setTotalIncidentClosed(response.data?.length);
+           }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    
+    const fetchIncidentsInMaintenance= async () => {
+        let url = `${URLS.INCIDENT_API}/incidents?status=UNDER_MAINTENANCE`;
+        try {
+           const response = await handleFetch(url);
+           if(response.data){
+            setTotalIncidentUnderMaintenance(response.data?.length);
            }
         } catch (error) {
             console.log(error)
@@ -77,14 +101,13 @@ const Dashboard = () =>{
         let url = `${URLS.INCIDENT_API}/incidents`;
         try {
            const response = await handleFetch(url);
-           console.log(response)
            if(response.data){
             setIncidents(response.data);
             setTotalIncident(response.total);
             setPage(response.page);
            }
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     }
     
@@ -124,6 +147,19 @@ const Dashboard = () =>{
         }
     }
     
+    const fetchStats= async () => {
+        let url = `${URLS.INCIDENT_API}/incidents/stats`;
+        try {
+           const response = await handleFetch(url);
+            console.log(response);  
+           if(response.status === 200){
+            setIncidentStats(response?.byIncidentType)
+            // setTotalMaintenanceClosed(response.data?.length);
+           }
+        } catch (error) {
+            console.log(error)
+        }
+    }
     const fetchOffBridges= async () => {
         let url = `${URLS.INCIDENT_API}/off-bridges`;
         try {
@@ -149,14 +185,31 @@ const Dashboard = () =>{
     useEffect(()=>{
         fetchIncidentsPending();
         fetchIncidentsClosed();
+        fetchIncidentsInMaintenance();
         fetchIncidents();
 
         fetchMaintenancesPending();
         fetchMaintenancesClosed();
         fetchMaintenances();
+        fetchStats();
 
         fetchOffBridges();
     }, []);
+
+    // Sideboard menu
+    const items = [
+        { key: '1', icon: <PieChartOutlined />, label: 'Vue \'ensemble' },
+        {
+          key: '2',
+          label: 'Opérations',
+          icon: <CursorArrowRaysIcon className='h-5' />,
+          children: [
+            { key: '5', label: 'Génerer rapport', icon:<PrinterIcon className='h-4 text-gray-500'/>},
+            // { key: '6', label: 'Option 6' }
+          ],
+        },
+      ];
+      
 
 
     return(
@@ -217,14 +270,16 @@ const Dashboard = () =>{
                         onClick={()=>{}}
                     />
                 </div>
+
+                
             </div>
 
             {/* Dialog */}
             <Dialog open={isOpenned} onOpenChange={setIsOpenned}>
                 <DialogContent>
-                    <DialogHeader>{dialogType === "INCIDENT" && "Generer rapport incident" || 
-                                 dialogType === "MAINTENANCE" &&"Generer rapport maintenance"||
-                                 dialogType === "OFF_BRIDGE"&& "Generer rapport hors pont"}</DialogHeader>
+                    <DialogHeader>{dialogType === "INCIDENT" && "Extraction des incidents" || 
+                                 dialogType === "MAINTENANCE" &&"Extraction des maintenances"||
+                                 dialogType === "OFF_BRIDGE"&& "Extraction des hors ponts"}</DialogHeader>
                     {
                         dialogType === "INCIDENT" &&
                         <RapportIncidentForm onSubmit={()=>setIsOpenned(false)}/>

@@ -3,15 +3,19 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {getEmployee} from '../../utils/entity.utils'
 import { Bars3BottomLeftIcon } from '@heroicons/react/24/outline';
 import { Drawer } from 'antd';
+import { URLS } from '../../../configUrl';
+import { useFetch } from '../../hooks/useFetch';
 
 
 const Tabs = () => {
     
     const {pathname} = useLocation();
+    const {handleFetch} = useFetch();
     const navigate = useNavigate();
     const [userPermissions, setUserPermissions] = useState([]);
     const [userRoles, setUserRoles] = useState([]);
     const [isOpen, setIsOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const links = [
         {
             name:"Dashboard",
@@ -86,7 +90,6 @@ const Tabs = () => {
       
             const employeeRoles = await handleFetch(`${URLS.ENTITY_API}/employees/${employee?.id}/roles`);
             const employeePermissions = await handleFetch(`${URLS.ENTITY_API}/employees/${employee?.id}/permissions`);
-            
             
             let empPerms = employeePermissions?.employeePermissions
             let empRoles = employeeRoles?.employeeRoles

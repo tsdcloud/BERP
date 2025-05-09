@@ -1,8 +1,8 @@
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useEffect, useState} from 'react';
 import { Button } from '../ui/button';
 import { useForm } from 'react-hook-form';
 import { INCIDENT_STATUS } from '../../utils/constant.utils';
-import { XMarkIcon, TrashIcon, ExclamationTriangleIcon, WrenchScrewdriverIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, TrashIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { Form, Table } from 'antd';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
@@ -10,25 +10,19 @@ import AutoComplete from '../common/AutoComplete';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger,
 } from "../ui/dialog"
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import { CheckCircle, ChevronDown, MoreHorizontal } from "lucide-react";
-import CustomPagination from '../common/Pagination';
+import { CheckCircle, MoreHorizontal } from "lucide-react";
 import VerifyPermission from '../../utils/verifyPermission';
-import { PERMISSION_CONTEXT } from '../../contexts/PermissionsProvider';
 import { Cog6ToothIcon } from '@heroicons/react/24/solid';
 import Preloader from '../Preloader';
 import { getEmployee } from '../../utils/entity.utils';
@@ -73,8 +67,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     )}} />
   };
           
-  const [sorting, setSorting] = useState([]);
-  const [columnFilters, setColumnFilters] = useState([]);
   const [sites, setSites] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, seyIsSubmitting] = useState(false);
@@ -85,17 +77,13 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   const [externalEntities, setExternalEntities] = useState([]);
   const [maintenanceTypes, setMaintenanceTypes] = useState([]);
   const [incidentCauses, setIncidentCauses] = useState([]);
-  const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
-  const [editingRow, setEditingRow] = useState("");
   const [selectedSite, setSelectedSite] = useState("");
   const [selectedIncident, setSelectedIncident] = useState("");
   const [selectedEquipement, setSelectedEquipement] = useState("");
 
   const [isOpen, setIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [maintenanceType, setMaintenanceType] = useState("");
-  const [supplierType, setSupplierType] = useState("");
   const [description, setDescription] = useState("");
 
   const {register, handleSubmit, formState:{errors}, setValue} = useForm();
@@ -190,7 +178,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       width:"200px",
       render:(value)=>
         <p className='text-sm capitalize'>
-          {value?.split("T")[0] || "--"}
+          {new Date(value).toLocaleString() || "--"}
         </p>
     },
     {
@@ -199,7 +187,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       width:"200px",
       render:(value)=>
         <p className='text-sm capitalize'>
-          {value?.split("T")[0] || "--"}
+          {value ? new Date(value).toLocaleString() : "--"}
         </p>
     },
     {
@@ -492,7 +480,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   
   return (
     <div className="w-full">
-      <div className="py-2 px-4 w-full max-h-[50vh] h-[50vh]">
+      <div className="py-2 md:px-4 w-full max-h-[60vh] h-[60vh]">
         <Form>
           <Table 
             footer={() => <div className='flex w-full justify-end'>{pagination}</div>}

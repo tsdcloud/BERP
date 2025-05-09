@@ -151,13 +151,13 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       title:"Date de création",
       dataIndex:"createdAt",
       width:"200px",
-      render:(value)=><p className='text-sm'>{highlightText(value?.split("T")[0])}</p>
+      render:(value)=><p className='text-sm'>{value ? highlightText(new Date(value).toLocaleString()) : "--"}</p>
     },
     {
       title:"Date de cloture",
       dataIndex:"closedDate",
       width:"200px",
-      render:(value)=><p className='text-sm'>{highlightText(value?.split("T")[0]) || "--"}</p>
+      render:(value)=><p className='text-sm'>{value ? highlightText(new Date(value).toLocaleString()) : "--"}</p>
     },
     {
       title:"Description",

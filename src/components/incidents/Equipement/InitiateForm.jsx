@@ -88,7 +88,7 @@ const InitiateForm = ({onSucess}) => {
           {errors.name && <small className='text-xs my-2 text-red-500'>{errors.name.message}</small>}
         </div>
         {/* site selection */}
-        {/* <div className='flex flex-col'>
+        <div className='flex flex-col'>
           <label htmlFor="" className='text-sm px-2 mx-2 font-semibold'>Choisir le site :</label>
           <AutoComplete
             placeholder="Choisir un site"
@@ -99,7 +99,7 @@ const InitiateForm = ({onSucess}) => {
             // register={register}
           />
           {errors.consomableId && <small className='text-xs my-2 text-red-500'>{errors.consomableId.message}</small>}
-        </div> */}
+        </div>
         <div className='flex justify-end'>
           <Button disabled={isSubmitting} className={`${isSubmitting ? 'bg-blue-300' :'bg-primary hover:bg-secondary'} text-white font-semibold my-2 py-1 text-sm flex`}>
             {isSubmitting ? <Preloader size={20}/> : <CheckCircle />}
