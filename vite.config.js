@@ -9,13 +9,7 @@ export default defineConfig({
     workbox: {
       clientsClaim: true,
       skipWaiting: true,
-      globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-      manifest: {
-        name: 'BERP-BFC group SA Enterprise resource planning',
-        short_name: 'BERP',
-        description: 'BFC group SA Enterprise resource planning',
-        theme_color: '#ffffff'
-      }
+      globPatterns: ['**/*.{js,css,html,ico,png,svg}']
     }
   })],
   server: {
