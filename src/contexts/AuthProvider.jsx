@@ -10,6 +10,8 @@ export default function AuthProvider({children}) {
     const [refresh, setRefresh] = useState(() => localStorage.getItem("refresh"));
     const [userData, setUserData] = useState(JSON.stringify(token));
 
+    const [employeeData, setEmployeeData] = useState([]);
+
     // User's Roles and permissions
     const [roles, setRoles] = useState([]);
     const [permissions, setPermissions] = useState([]);
@@ -44,7 +46,9 @@ export default function AuthProvider({children}) {
       roles,
       setRoles,
       permissions,
-      setPermissions
+      setPermissions,
+      employeeData, 
+      setEmployeeData
       }}>
         {children}
     </AUTHCONTEXT.Provider>

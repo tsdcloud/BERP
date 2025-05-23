@@ -8,7 +8,7 @@ WPO_LINK : import.meta.env.VITE_WPO,
 
 // user api
 API_USER_ABILITY: import.meta.env.VITE_USER_ABILITY_API,
-USER_API: import.meta.env.VITE_USER_API,
+USER_API: import.meta.env.VITE_USER_API, 
 CHECK_TOKEN_API: import.meta.env.VITE_TOKEN_API,
 API_GRANT_PERMISSIONS_ROLE: import.meta.env.VITE_API_GRANT_PERMISSIONS_ROLE,
 
@@ -20,5 +20,6 @@ ENTITY_API : import.meta.env.VITE_ENTITY_API,
 API_SHIFT: import.meta.env.VITE_API_SHIFT,
 API_SITE: import.meta.env.VITE_API_SITE,
 API_SUPPLIER: import.meta.env.VITE_API_SUPPLIER,
+API_BUDGETLINE: import.meta.env.VITE_BUDGETLINE_API,
 
 };

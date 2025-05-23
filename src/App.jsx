@@ -65,6 +65,14 @@ import AsignAppPerm from './Pages/entity/AsignAppPerm';
 import AsignRolePerm from './Pages/entity/AsignRolePerm';
 import AsignEmpPerm from './Pages/entity/AsignEmpPerm';
 
+//BudgetLine
+import DashboardBudget from './Pages/budgetLine';
+import BreakdownBudgetLineOf from './Pages/budgetLine/BreakdownBudgetLineOf';
+import MajorBudgetLine from './Pages/budgetLine/MajorBudgetLine';
+import BudgetLIneOf from './Pages/budgetLine/BudgetLIneOf';
+import BudgetLineName from './Pages/budgetLine/BudgetLineName';
+import AppTable from './components/budgetLine/AppTable';
+import Derogations from './Pages/budgetLine/Derogations';
 
 
 
@@ -146,6 +154,16 @@ function App() {
               </Route>
                 {/* <Route path="consommable" element={<Consommable />} /> */}
            </Route>
+
+            {/* Incident */}
+            <Route path="/budgetLine">
+              <Route path="" element={<DashboardBudget />} />
+              <Route path="majorBudgetLine" element={<MajorBudgetLine />} />
+              <Route path="budgetLineName" element={<BudgetLineName />} />
+              <Route path="budgetLineOf" element={<BudgetLIneOf />} />
+              <Route path="antDesign" element={<AppTable />} />
+              <Route path="Derogations" element={<Derogations />} />
+            </Route>
 
           </Route>
           
