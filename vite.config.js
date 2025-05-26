@@ -10,13 +10,13 @@ export default defineConfig({
       clientsClaim: true,
       skipWaiting: true,
       globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
-      manifest: {
+      //includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      /*manifest: {
         name: 'BERP-BFC group SA Enterprise resource planning',
         short_name: 'BERP',
         description: 'BFC group SA Enterprise resource planning',
         theme_color: '#ffffff'
-      }
+      }*/
     }
   })],
   server: {
