@@ -110,6 +110,9 @@ export default function LuncherApp() {
                           <VerifyPermission expected={[]} functions={userPermissions} roles={userRoles}>
                             <IncidentEntryPoint/>
                           </VerifyPermission>
+                          <VerifyPermission expected={[]} functions={userPermissions} roles={userRoles}>
+                            <WPOEnteryPoint />
+                          </VerifyPermission>
                           <VerifyPermission expected={["application__can_view_budget_line"]} functions={userPermissions} roles={userRoles}>
                             <BudgetLineEntryPoint />
                           </VerifyPermission>
