@@ -101,7 +101,7 @@ export const useFetch = () => {
         const requestOptions = {
             method: "PATCH",
             headers: myHeaders,
-            redirect: "follow"
+            redirect: "follow",
         };
     
         // Ajouter le corps uniquement si des données sont fournies

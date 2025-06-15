@@ -146,7 +146,6 @@ function App() {
               </Route>
               <Route path="operations" element={<Operation />} />
               <Route path="movements" element={<Movement />} />
-                {/* <Route path="consommable" element={<Consommable />} /> */}
            </Route> */}
 
           </Route>

@@ -19,6 +19,7 @@ import { ArrowLeftEndOnRectangleIcon  } from "@heroicons/react/24/outline";
 import WPOEnteryPoint from './wpo/WPOEnteryPoint';
 import VerifyPermission from '../utils/verifyPermission'
 import { getEmployee } from '../utils/entity.utils';
+import BudgetLineEntryPoint from './budgetLine/BudgetLineEntryPoint';
 
 export default function LuncherApp() {
   const { disconnect, refresh } = useContext(AUTHCONTEXT);
@@ -111,6 +112,9 @@ export default function LuncherApp() {
                           </VerifyPermission>
                           <VerifyPermission expected={[]} functions={userPermissions} roles={userRoles}>
                             <WPOEnteryPoint />
+                          </VerifyPermission>
+                          <VerifyPermission expected={["application__can_view_budget_line"]} functions={userPermissions} roles={userRoles}>
+                            <BudgetLineEntryPoint />
                           </VerifyPermission>
                         </div>
                     </div>
