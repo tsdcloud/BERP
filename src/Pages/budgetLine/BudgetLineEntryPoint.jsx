@@ -14,7 +14,7 @@ export default function BudgetLineEntryPoint () {
                 isLoading ? (
                     <div className='flex flex-col justify-center items-center'>
                         <Preloader className="w-[100px] h-[100px]"/>
-                        <h6>Chargement...</h6>
+                        <h6>Chargement....</h6>
                     </div>
                 ) : (
                     <div className='flex flex-col items-center space-y-2'>
