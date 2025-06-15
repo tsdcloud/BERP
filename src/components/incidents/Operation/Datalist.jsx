@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { Button } from '../../ui/button';
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { Form, Table } from 'antd';
-import { ChevronDown, DatabaseBackupIcon, MoreHorizontal } from "lucide-react"
+import { ChevronDown, MoreHorizontal } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -11,11 +11,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../../../components/ui/dropdown-menu"
+} from "../../ui/dropdown-menu"
 import { URLS } from '../../../../configUrl';
 import { useFetch } from '../../../hooks/useFetch';
 import toast from 'react-hot-toast';
-import EquipementDetails from './EquipementDetails';
 
 
 
@@ -61,59 +60,51 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   const [columnFilters, setColumnFilters] = useState([]);
   const [sites, setSites] = useState([]);
   const [employees, setEmployees] = useState([]);
-  const [groups, setGroups] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
   const [editingRow, setEditingRow] = useState("");
 
 
-  const [open, setOpen] = useState(false);
   const columns = [
     {
-      title:"No ref",
-      dataIndex:"numRef",
-      width:"100px",
-      render:(value, record)=>
-        editingRow == record.id ?
-        <input className='w-full border rounded-lg p-2 text-sm'/>:
-        <p className='text-sm'>{highlightText(value)}</p>
+      title:"Num ref",
+      dataIndex:"equipement",
+      render:(value)=><p className='text-sm'>{highlightText(value?.numRef) || "--"}</p>
     },
     {
-      title:"Nom",
-      dataIndex:"title",
-      width:"200px",
-      render:(value)=><p className='text-sm'>{highlightText(value)}</p>
+      title:"Equipement",
+      dataIndex:"equipement",
+      render:(value)=><p>{value?.title ||"--"}</p>
     },
     {
-      title:"Groupe",
-      dataIndex:"equipmentGroupId",
-      width:"200px",
-      render:(value)=><p className='text-sm capitalize'>{groups.find(group => group.value === value)?.name || value || '--'}</p>
+      title:"Type d'action",
+      dataIndex:"actionType",
+      render:(value)=><p className='text-sm'>{
+        value == "START" ? "Démarrage" : 
+        value == "STOP" ? "Arrêt" :
+        value == "REFUEL" ? "Ravitaillement" : 
+        highlightText(value) || '--'}</p>
     },
     {
       title:"Site",
       dataIndex:"siteId",
-      width:"200px",
-      render:(value)=><p className='text-sm capitalize'>{sites.find(site => site.value === value)?.name || value || '--'}</p>
+      render:(value)=><p className='text-sm'>{sites.find(site => site.value === value)?.name ||"--"}</p>
     },
     {
-      title:"Cree par",
-      dataIndex:"createdBy",
-      width:"200px",
-      render:(value)=><p className='text-sm capitalize'>{employees.find(site => site.value === value)?.name || value}</p>
+      title:"Contenu",
+      dataIndex:"content",
+      render:(value)=><p className='text-sm'>{highlightText(value)||"--"}</p>
     },
     {
-      title:"Date de création",
+      title:"Date et création",
       dataIndex:"createdAt",
-      width:"200px",
-      render:(value)=><p className='text-sm'>{highlightText(new Date(value).toLocaleString().toString())}</p>
+      render:(value)=><p className='text-sm'>{new Date(value).toLocaleString() ||"--"}</p>
     },
     {
-      title:"Dernière mise a jour",
-      dataIndex:"updatedAt",
-      width:"200px",
-      render:(value)=><p className='text-sm'>{highlightText(new Date(value).toLocaleString().toString())}</p>
+      title:"Description",
+      dataIndex:"description",
+      render:(value)=><p className='text-sm'>{highlightText(value) || "--"}</p>
     },
     {
       title:"Actions",
@@ -121,10 +112,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       fixed: 'right',
       render:(value, record)=>
         editingRow == record.id ?
-        <button title='Enregistrer' className='text-xs p-2 bg-secondary rounded-lg text-white shadow flex gap-2'>
-          <DatabaseBackupIcon className='h-4 w-4'/>
-          <span>Sauvegarder</span>
-        </button>:
+        <button title='Enregistrer'>Enreg...</button>:
       <>
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -136,15 +124,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {/* <DropdownMenuItem 
-                className="flex gap-2 items-center cursor-pointer"
-                onClick={()=>{
-                  setEditingRow(record.id)
-                }}
-              >
-                <PencilIcon className='h-4 w-6'/>
-                <span className=''>Editer</span>
-              </DropdownMenuItem> */}
               <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" 
                 onClick={()=>handleDelete(record.id)}>
                 <TrashIcon className='text-red-500 h-4 w-6'/>
@@ -158,7 +137,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
 
   const handleFetchSites = async (link) =>{
     try {
-      let response = await handleFetch(link);
+      let response = await handleFetch(link);    
       if(response?.status === 200){
         let formatedData = response?.data.map(item=>{
           return {
@@ -189,28 +168,11 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       console.error(error);
     }
   }
-  const handleFetchGroups = async (link) =>{
-    try {
-      let response = await handleFetch(link);
-      if(response?.status === 200){
-        let formatedData = response?.data.map(item=>{
-          return {
-            name:item?.name,
-            value: item?.id
-          }
-        });
-        setGroups(formatedData);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
     
 
   useEffect(()=>{
     handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/sites`);
     handleFetchEmployees(`${import.meta.env.VITE_ENTITY_API}/employees`);
-    handleFetchGroups(`${import.meta.env.VITE_INCIDENT_API}/equipment-groups`);
   },[])
 
   useEffect(()=>{
@@ -225,12 +187,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
             dataSource={dataList}
             bordered={true}
             columns={columns}
-            onRow={record => ({
-              onClick: () => {
-                setRowSelection(record);
-                setOpen(true);
-              }
-            })}
             scroll={{
                 x: 500,
                 y: "40vh"
@@ -240,7 +196,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
           />
         </Form>
       </div>
-      <EquipementDetails open={open} setOpen={setOpen} equipements={rowSelection}/>
     </div>
   )
 }

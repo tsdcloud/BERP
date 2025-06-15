@@ -8,6 +8,8 @@ import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
 import { Pagination } from 'antd';
 import VerifyPermission from '../../utils/verifyPermission';
+import ActionHeaders from '../../components/common/ActionHeaders';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 
 
@@ -21,6 +23,10 @@ const Maintenance = () => {
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(0);
     const [pageList, setPageList] = useState([]);
+
+    // Action header states
+    const [selectValue, setSelectValue] = useState('');
+    const [inputValue, setInputValue] = useState('');
 
     const fetchMaintenance= async (url) => {
         setIsLoading(true)
@@ -48,9 +54,76 @@ const Maintenance = () => {
         setSearchValue(e.target.value);
         fetchMaintenance(`${URLS.INCIDENT_API}/maintenances?search=${e.target.value}`)
     }
+
     useEffect(()=>{
         fetchMaintenance(`${URLS.INCIDENT_API}/maintenances`);
     }, []);
+
+
+     /**
+     * Handles selected filter
+     * @param {*} evt 
+     */
+     const handleOnSelectChange=async(evt)=>{
+        setInputValue("");
+        fetchMaintenance(`${URLS.INCIDENT_API}/maintenances`);
+        setSelectValue(evt.target.value)
+    }
+
+    const handleDisplayInput=(criteria)=>{
+        return (<div className={`border p-1 rounded-lg w-full md:max-w-[300px] relative flex items-center my-2 focus:outline-blue-300 ${!criteria && 'cursor-not-allowed bg-gray-200'}`}>
+            <MagnifyingGlassIcon className='h-4 text-gray-400 px-2'/>
+            
+            {
+                criteria === "statut" ? 
+                <select
+                    className={`p-1 text-sm w-full md:max-w-[300px] focus:outline-blue-300 ${!criteria && 'cursor-not-allowed bg-gray-200'}`}
+                    value={inputValue}
+                    onChange={handleInputChange}
+                >
+                    <option value="PENDING">EN ATTENTE</option>
+                    <option value="UNDER_MAINTENANCE">EN MAINTENANCE</option>
+                    <option value="CLOSED">CLÔTURER</option>
+                </select>
+                
+                :<input 
+                    placeholder={criteria ? 'Recherche' : 'Choisir le filtre'}
+                    className={`p-1 text-sm w-full md:max-w-[300px] focus:outline-blue-300 ${!criteria && 'cursor-not-allowed bg-gray-200'}`}
+                    value={inputValue}
+                    onChange={handleInputChange}
+                    disabled={criteria ==="" ? true : false }
+                />
+            }
+        </div>)
+    }
+
+    /**
+     * Handles input search
+     * @param {*} evt 
+     */
+    const handleInputChange=async (evt)=>{
+        setInputValue(evt.target.value);
+        try {
+            fetchMaintenance(`${URLS.INCIDENT_API}/maintenances?filter=${selectValue}&value=${evt.target.value}`);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
+    const filterOptions =[
+        {value:"numRef", name:"Numéro de référence"},
+        {value:"incidentRef", name:"No Réf incident"},
+        {value:"equipementId", name:"Equipement"},
+        {value:"siteId", name:"Site"},
+        {value:"createdBy", name:"Utilisateur"},
+        {value:"closedBy", name:"Cloturer par"},
+        {value:"intervainer", name:"Maintenancier"},
+        {value:"description", name:"Description"},
+        {value:"createdAt", name:"Date de création"},
+        {value:"closedAt", name:"Date de clôture"},
+        {value:"statut", name:"Status"},
+    ];
 
   return (
     <>
@@ -61,8 +134,16 @@ const Maintenance = () => {
                 <div className='max-w-2/3 overflow-x-auto'>
                     <Tabs />
                 </div>
-                {/* Dialog */}
-                <div className='flex gap-2 items-center'>
+            </div>
+            {/* Table */}
+            <div className='w-full bg-white rounded-lg p-2'>
+                <div className='flex flex-col md:flex-row items-center justify-between'>
+                    <ActionHeaders 
+                        filterOptions={filterOptions}
+                        selectChange={handleOnSelectChange}
+                        selectValue={selectValue}
+                        input={handleDisplayInput(selectValue)}
+                    />
                     <Dialogue 
                         buttonText={"Nouvelle maintenance"}
                         header={<h2 className='text-xl font-semibold'>Nouvelle maintenance</h2>}
@@ -71,17 +152,6 @@ const Maintenance = () => {
                             onSucess={handleSubmit}
                         />}
                         isOpenned={isOpenned}
-                    />
-                </div>
-            </div>
-            {/* Table */}
-            <div className='w-full bg-white rounded-lg p-2'>
-                <div className='px-4'>
-                    <input 
-                        type="text" 
-                        className='p-2 rounded-lg border'
-                        placeholder='Recherche...'
-                        onChange={handleSearch} 
                     />
                 </div>
                 <Datalist 

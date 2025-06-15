@@ -49,7 +49,7 @@ const Incident = () =>{
 
 
     const handleDisplayInput=(criteria)=>{
-        return (<div className={`border p-1 rounded-lg relative flex items-center my-2 focus:outline-blue-300 ${!criteria && 'cursor-not-allowed bg-gray-200'}`}>
+        return (<div className={`border p-1 rounded-lg w-full md:max-w-[300px] relative flex items-center my-2 focus:outline-blue-300 ${!criteria && 'cursor-not-allowed bg-gray-200'}`}>
             <MagnifyingGlassIcon className='h-4 text-gray-400 px-2'/>
             
             {
@@ -190,34 +190,23 @@ const Incident = () =>{
                     <div className='max-w-2/3 overflow-x-auto'>
                         <Tabs />
                     </div>
-                    <Dialogue 
-                        buttonText={"Declarer un incident"}
-                        header={<h2 className='text-xl font-semibold'>Déclarer un incident</h2>}
-                        content={<InitiateForm onSucess={handleSubmit}/>}
-                    />
                 </div>
                 {/* Table */}
                 <div className='w-full bg-white rounded-lg p-2'>
-                    <ActionHeaders 
-                        filterOptions={filterOptions}
-                        selectChange={handleOnSelectChange}
-                        selectValue={selectValue}
+                    <div className='flex flex-col md:flex-row items-center justify-between'>
+                        <ActionHeaders 
+                            filterOptions={filterOptions}
+                            selectChange={handleOnSelectChange}
+                            selectValue={selectValue}
                         input={handleDisplayInput(selectValue)}
-                    />
-                    <div className='px-2 flex justify-between'>
-                        {/* <div className='flex ite    ms-center'>
-                            <input 
-                                type="text" 
-                                className='p-2 border rounded-lg' 
-                                placeholder='Recherche...' 
-                                value={searchValue}
-                                onChange={(e)=>{
-                                    setSearchValue(e.target.value);
-                                    fetchIncidents(`${URLS.INCIDENT_API}/incidents?search=${e.target.value}`)
-                                }}
-                            />
-                        </div> */}
+                        />
+                        <Dialogue 
+                            buttonText={"Declarer un incident"}
+                            header={<h2 className='text-xl font-semibold'>Déclarer un incident</h2>}
+                            content={<InitiateForm onSucess={handleSubmit}/>}
+                        />
                     </div>
+                    
                     <Datalist 
                         dataList={incidents}
                         fetchData={()=>fetchIncidents(`${URLS.INCIDENT_API}/incidents`)}

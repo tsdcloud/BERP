@@ -5,7 +5,7 @@ import { Button } from '../ui/button';
 
 const AutoComplete = ({
   placeholder = "Type to search...",
-  isLoading = false,
+  isLoading = true,
   dataList = [],
   onSearch,
   clearDependency=[],
@@ -20,6 +20,7 @@ const AutoComplete = ({
   const [showOptions, setShowOptions] = useState(false);
   const autocompleteRef = useRef();
   const autocompleteInputRef = useRef(null);
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleOnChange = (e) => {
     const inputValue = e.target.value;
@@ -43,6 +44,7 @@ const AutoComplete = ({
         !autocompleteRef.current.contains(event.target)
       ) {
         setShowOptions(false);
+        setIsFocused(false);
       }
     };
 
@@ -56,8 +58,17 @@ const AutoComplete = ({
     setValue("");
   }, [...clearDependency]); 
 
+  useEffect(() => {
+    if (isFocused && autocompleteInputRef.current) {
+      autocompleteInputRef.current.focus();
+    }
+  }, [isLoading, isFocused]);
+
   return isLoading ? (
-    <Skeleton className="h-4 w-full p-2" />
+    <div className="w-full p-2 relative flex items-center">
+      <Skeleton className="w-full p-2 h-[40px] border" />
+      <p className="absolute text-sm text-gray-500 animated-fade animated-infinite mx-4">Chargement...</p>
+    </div>
   ) : (
     <div className="w-full">
         <div className="w-full p-2 bg-white relative" ref={autocompleteRef}>
@@ -66,7 +77,10 @@ const AutoComplete = ({
               placeholder={placeholder}
               value={value}
               ref={autocompleteInputRef}
-              onFocus={() => setShowOptions(true)}
+              onFocus={() => {
+                setShowOptions(true);
+                setIsFocused(true);
+              }}
               onChange={handleOnChange}
               register
           />

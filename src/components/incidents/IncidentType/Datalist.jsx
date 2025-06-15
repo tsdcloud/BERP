@@ -81,7 +81,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
             value: item?.id
           }
         });
-        console.log(formatedData);
         setEmployees(formatedData);
       }
     } catch (error) {

@@ -87,3 +87,19 @@ export const SITE_TYPE = {
   FIELD:"FIELD",
   HEADQUARTER:"HEADQUARTER"
 }
+
+
+export const ACTION_TYPES = [
+  {
+    value: "START",
+    label: "Démarrage"
+  },
+  {
+    value: "STOP",
+    label: "Arrêt"
+  },
+  {
+    value: "REFUEL",
+    label: "Ravitaillement"
+  },
+]

@@ -15,7 +15,6 @@ import {
 import { URLS } from '../../../../configUrl';
 import { useFetch } from '../../../hooks/useFetch';
 import toast from 'react-hot-toast';
-import EquipementDetails from './EquipementDetails';
 
 
 
@@ -23,9 +22,9 @@ import EquipementDetails from './EquipementDetails';
 const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
 
   const handleDelete = async (id) =>{
-    if (window.confirm("Voulez vous supprimer l'equipement ?")) {
+    if (window.confirm("Voulez vous supprimer le group d'equipement ?")) {
       try {
-        let url = `${URLS.INCIDENT_API}/equipements/${id}`;
+        let url = `${URLS.INCIDENT_API}/equipment-groups/${id}`;
         let response = await fetch(url, {
           method:"DELETE",
           headers:{
@@ -33,10 +32,11 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
             'authorization': `Bearer ${localStorage.getItem('token')}` || ''
           },
         });
-        if(response.status === 200){
-          toast.success("Supprimé avec succès");
-          fetchData();
-          return
+        toast.success("Supprimé avec succès");
+        fetchData();
+        return
+        console.log(response.error)
+        if(!response.error){
         }
       } catch (error) {
         console.error(error);
@@ -59,9 +59,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
           
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
-  const [sites, setSites] = useState([]);
   const [employees, setEmployees] = useState([]);
-  const [groups, setGroups] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rowSelection, setRowSelection] = useState({});
@@ -81,21 +79,9 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     },
     {
       title:"Nom",
-      dataIndex:"title",
+      dataIndex:"name",
       width:"200px",
       render:(value)=><p className='text-sm'>{highlightText(value)}</p>
-    },
-    {
-      title:"Groupe",
-      dataIndex:"equipmentGroupId",
-      width:"200px",
-      render:(value)=><p className='text-sm capitalize'>{groups.find(group => group.value === value)?.name || value || '--'}</p>
-    },
-    {
-      title:"Site",
-      dataIndex:"siteId",
-      width:"200px",
-      render:(value)=><p className='text-sm capitalize'>{sites.find(site => site.value === value)?.name || value || '--'}</p>
     },
     {
       title:"Cree par",
@@ -155,24 +141,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       </>
     },
   ]
-
-  const handleFetchSites = async (link) =>{
-    try {
-      let response = await handleFetch(link);
-      if(response?.status === 200){
-        let formatedData = response?.data.map(item=>{
-          return {
-            name:item?.name,
-            value: item?.id
-          }
-        });
-        setSites(formatedData);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  
-  }
   const handleFetchEmployees = async (link) =>{
     try {
       let response = await handleFetch(link);
@@ -189,28 +157,10 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       console.error(error);
     }
   }
-  const handleFetchGroups = async (link) =>{
-    try {
-      let response = await handleFetch(link);
-      if(response?.status === 200){
-        let formatedData = response?.data.map(item=>{
-          return {
-            name:item?.name,
-            value: item?.id
-          }
-        });
-        setGroups(formatedData);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  }
     
 
   useEffect(()=>{
-    handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/sites`);
     handleFetchEmployees(`${import.meta.env.VITE_ENTITY_API}/employees`);
-    handleFetchGroups(`${import.meta.env.VITE_INCIDENT_API}/equipment-groups`);
   },[])
 
   useEffect(()=>{
@@ -227,7 +177,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
             columns={columns}
             onRow={record => ({
               onClick: () => {
-                setRowSelection(record);
                 setOpen(true);
               }
             })}
@@ -240,7 +189,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
           />
         </Form>
       </div>
-      <EquipementDetails open={open} setOpen={setOpen} equipements={rowSelection}/>
     </div>
   )
 }

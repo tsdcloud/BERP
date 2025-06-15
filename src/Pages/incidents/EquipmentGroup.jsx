@@ -1,19 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import Header from '../../components/layout/Header';
 import Dialogue from '../../components/incidents/Dialogue';
-import InitiateForm from '../../components/incidents/Equipement/InitiateForm';
+import InitiateForm from '../../components/incidents/EquipmentGroup/InitiateForm';
 import Tabs from '../../components/incidents/Tabs';
-import Datalist from '../../components/incidents/Equipement/Datalist';
+import Datalist from '../../components/incidents/EquipmentGroup/Datalist';
 import { useFetch } from '../../hooks/useFetch';
 import { Pagination } from 'antd';
 import { URLS } from '../../../configUrl';
 import { Toaster } from 'react-hot-toast';
 
 
-const Equipement = () => {
-
+const EquipmentGroup = () => {
     const {handleFetch} = useFetch();
-    const [equipements, setEquipements] = useState([]);
+    const [equipmentGroups, setEquipementGroups] = useState([]);
     const [isOpenned, setIsOpenned] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [searchValue, setSearchValue] = useState("");
@@ -22,13 +21,12 @@ const Equipement = () => {
     const [page, setPage] = useState(0);
     const [pageList, setPageList] = useState([]);
 
-
-    const fetchEquipement= async (url) => {
+    const fetchEquipmentGroups= async (url) => {
         setIsLoading(true)
         try {
            const response = await handleFetch(url);
            if(response.data){
-            setEquipements(response.data);
+            setEquipementGroups(response.data);
             setTotal(response.total);
             setTotalPages(response.totalPages);
             setPage(response.page);
@@ -41,17 +39,17 @@ const Equipement = () => {
     }
 
     const handleSubmit=()=>{
-        fetchEquipement(`${URLS.INCIDENT_API}/equipements`);
+        fetchEquipmentGroups(`${URLS.INCIDENT_API}/equipment-groups`);
         document.getElementById("close-dialog").click();
     }
 
     const handleSearch = async(e)=>{
         setSearchValue(e.target.value)
-        let url = `${URLS.INCIDENT_API}/equipements?search=${e.target.value}`;
+        let url = `${URLS.INCIDENT_API}/equipment-groups?search=${e.target.value}`;
         try {
            const response = await handleFetch(url);
            if(response.data){
-            setEquipements(response.data);
+            setEquipementGroups(response.data);
             setTotalPages(response.totalPages);
             setPage(response.page);
            }
@@ -61,8 +59,10 @@ const Equipement = () => {
     }
 
     useEffect(()=>{
-        fetchEquipement(`${URLS.INCIDENT_API}/equipements`);
+        fetchEquipmentGroups(`${URLS.INCIDENT_API}/equipment-groups`);
     }, []);
+
+
   return (
     <>
         <Header />
@@ -77,7 +77,7 @@ const Equipement = () => {
 
             {/* Table */}
             <div className='w-full bg-white rounded-lg p-2 h-[70vh] flex flex-col'>
-                <div className='px-4 flex items-center justify-between w-full'>
+                <div className='px-4 w-full justify-between items-center flex'>
                     <input 
                         type="text"
                         className='p-2 text-sm border rounded-lg' 
@@ -88,8 +88,8 @@ const Equipement = () => {
                     {/* Dialog */}
                     <div className='flex gap-2 items-center'>
                         <Dialogue 
-                            buttonText={"Créer equipement"}
-                            header={<h2 className='text-xl font-semibold'>Créer equipement</h2>}
+                            buttonText={"Créer un nouveau group"}
+                            header={<h2 className='text-xl font-semibold'>Créer un nouveau group</h2>}
                             content={
                             <InitiateForm 
                                 onSucess={handleSubmit}
@@ -99,8 +99,8 @@ const Equipement = () => {
                     </div>
                 </div>
                 <Datalist 
-                    dataList={equipements}
-                    fetchData={()=>fetchEquipement(`${URLS.INCIDENT_API}/equipements`)}
+                    dataList={equipmentGroups}
+                    fetchData={()=>fetchEquipmentGroups(`${URLS.INCIDENT_API}/equipment-groups`)}
                     searchValue={searchValue}
                     loading={isLoading}
                     pagination={
@@ -110,7 +110,7 @@ const Equipement = () => {
                             total={total}
                             pageSize={100}
                             onChange={(page)=>{
-                                totalPages > page && fetchEquipement(`${URLS.INCIDENT_API}/equipements?page=${page}`)
+                                totalPages > page && fetchEquipmentGroups(`${URLS.INCIDENT_API}/equipment-groups?page=${page}`)
                             }}
                         />
                     </div>}
@@ -125,4 +125,4 @@ const Equipement = () => {
   )
 }
 
-export default Equipement
+export default EquipmentGroup

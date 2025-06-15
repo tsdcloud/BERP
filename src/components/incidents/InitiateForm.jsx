@@ -2,14 +2,14 @@ import React, {useEffect, useState} from 'react';
 import { useForm } from 'react-hook-form';
 import { useFetch } from '../../hooks/useFetch';
 import AutoComplete from '../common/AutoComplete';
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { Button } from '../ui/button';
 import { CheckCircle } from 'lucide-react';
 import Preloader from '../Preloader';
 import toast from 'react-hot-toast';
+import { URLS } from '../../../configUrl';
 
 const InitiateForm = ({onSucess}) => {
-    const {register, handleSubmit, formState:{errors}, setValue} = useForm();
+    const {register, handleSubmit, formState:{errors}, setValue, watch} = useForm();
     const {handleFetch, handlePost} = useFetch();
 
     const [isLoading, setIsLoading] = useState(true);
@@ -22,6 +22,15 @@ const InitiateForm = ({onSucess}) => {
     const [supplierType, setSupplierType] = useState("");
     const [isSubmiting, setIsSubmiting] = useState(false);
     
+
+    // loaders states
+    const [isTypeLoading, setIsTypeLoading] = useState(true);
+    const [isEquipementLoading, setIsEquipementLoading] = useState(true);
+    const [isSiteLoading, setIsSiteLoading] = useState(true);
+    const [isShiftLoading, setIsShiftLoading] = useState(true);
+    const [isConsommableLoading, setIsConsommableLoading] = useState(true);
+    
+
     const handleSubmitDecleration = async (data) =>{
       setIsSubmiting(true);
       try {
@@ -40,47 +49,16 @@ const InitiateForm = ({onSucess}) => {
       }
     }
 
-    // Consommables
-    const handleFetchConsommable = async (link) =>{
-      try {
-        let response = await handleFetch(link);     
-        if(response?.status === 200){
-          let formatedData = response?.data.map(item=>{
-            return {
-              name:item?.name,
-              value: item?.id
-            }
-          });
-          setConsommables(formatedData);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally{
-        setIsLoading(false);
-      }
-    }
 
-    const handleSearchConsommables=async(searchInput)=>{
-      try{
-        handleFetchConsommable(`${import.meta.env.VITE_INCIDENT_API}/consommables?search=${searchInput}`);
-      }catch(error){
-        console.log(error);
-      }
-    }
-
-    const handleSelectConsommable = (item) => {
-      setValue("consomableId", item.value);
-    };
-
-
-    // Equipements
+    // Fetch equipements
     const handleFetchEquipements = async (link) =>{
+      setIsEquipementLoading(true);
       try {
         let response = await handleFetch(link);     
         if(response?.status === 200){
           let formatedData = response?.data.map(item=>{
             return {
-              name:item?.name,
+              name:item?.title,
               value: item?.id
             }
           });
@@ -89,10 +67,11 @@ const InitiateForm = ({onSucess}) => {
       } catch (error) {
         console.error(error);
       } finally{
-        setIsLoading(false);
+        setIsEquipementLoading(false);
       }
     }
 
+    // Handle search equipements
     const handleSearchEquipements=async(searchInput)=>{
       try{
         handleFetchEquipements(`${import.meta.env.VITE_INCIDENT_API}/equipements?search=${searchInput}`);
@@ -101,6 +80,7 @@ const InitiateForm = ({onSucess}) => {
       }
     }
 
+    // Handle select equipement
     const handleSelectEquipement = (item) => {
       if(item){
         setValue("equipementId", item.value);
@@ -111,6 +91,7 @@ const InitiateForm = ({onSucess}) => {
 
     // Incident causes
     const handleFetchCauses = async (link) =>{
+      setIsTypeLoading(true);
       try {
         let response = await handleFetch(link);     
         if(response?.status === 200){
@@ -125,10 +106,11 @@ const InitiateForm = ({onSucess}) => {
       } catch (error) {
         console.error(error);
       } finally{
-        setIsLoading(false);
+        setIsTypeLoading(false);
       }
     }
 
+    // Handle search causes
     const handleSearchCauses=async(searchInput)=>{
       try{
         handleFetchCauses(`${import.meta.env.VITE_INCIDENT_API}/incident-causes?search=${searchInput}`);
@@ -137,12 +119,14 @@ const InitiateForm = ({onSucess}) => {
       }
     }
 
+    // Handle select cause
     const handleSelectCause = (item) => {
       setValue("incidentCauseId", item.value);
     };
 
-    // Incident Types
+    // Fetch incident types
     const handleFetchTypes = async (link) =>{
+      setIsTypeLoading(true);
       try {
         let response = await handleFetch(link);     
         if(response?.status === 200){
@@ -157,10 +141,11 @@ const InitiateForm = ({onSucess}) => {
       } catch (error) {
         console.error(error);
       } finally{
-        setIsLoading(false);
+        setIsTypeLoading(false);
       }
     }
 
+    // Handle search types
     const handleSearchTypes=async(searchInput)=>{
       try{
         handleFetchTypes(`${import.meta.env.VITE_INCIDENT_API}/incident-types?search=${searchInput}`);
@@ -178,24 +163,26 @@ const InitiateForm = ({onSucess}) => {
     };
 
 
-    // Sites
+    // Site handlers
     const handleFetchSites = async (link) =>{
-      try {
-        let response = await handleFetch(link);     
-        if(response?.status === 200){
-          let formatedData = response?.data.map(item=>{
-            return {
-              name:item?.name,
-              value: item?.id
-            }
-          });
-          setSites(formatedData);
+      setIsSiteLoading(true)
+        try {
+          let response = await handleFetch(link);     
+          if(response?.status === 200){
+            let formatedData = response?.data.map(item=>{
+              return {
+                name:item?.name,
+                value: item?.id
+              }
+            });
+            setSites(formatedData);
+          }
+        } catch (error) {
+          console.error(error);
+          toast.error("Échec de l'essai de récupération des sites");
+        }finally{
+          setIsSiteLoading(false);
         }
-      } catch (error) {
-        console.error(error);
-      } finally{
-        setIsLoading(false);
-      }
     }
 
     const handleSearchSites=async(searchInput)=>{
@@ -206,16 +193,21 @@ const InitiateForm = ({onSucess}) => {
       }
     }
 
-    const handleSelectSites = (item) => {
-      if(item){
-        setValue("siteId", item.value);
-      }else{
-        setValue("siteId", null);
-      }
-    };
+    const handleSelectSites = async (item) => {
+        setValue("equipementId", null);
+        if(item){
+          console.log("selected sites")
+            setValue("siteId", item.value);
+            await handleFetchEquipements(`${URLS.INCIDENT_API}/equipements/site/${item.value}`);
+        }else{
+            setValue("siteId", null);
+            setEquipments([]);
+        }
+    }
 
     // shifts
     const handleFetchShifts = async (link) =>{
+      setIsShiftLoading(true);
       try {
         let response = await handleFetch(link);     
         if(response?.status === 200){
@@ -230,7 +222,7 @@ const InitiateForm = ({onSucess}) => {
       } catch (error) {
         console.error(error);
       } finally{
-        setIsLoading(false);
+        setIsShiftLoading(false);
       }
     }
 
@@ -251,8 +243,7 @@ const InitiateForm = ({onSucess}) => {
     }
 
     useEffect(()=>{
-      handleFetchConsommable(`${import.meta.env.VITE_INCIDENT_API}/consommables`);
-      handleFetchEquipements(`${import.meta.env.VITE_INCIDENT_API}/equipements`);
+      // handleFetchEquipements(`${import.meta.env.VITE_INCIDENT_API}/equipements`);
       handleFetchTypes(`${import.meta.env.VITE_INCIDENT_API}/incident-types`);
       handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/sites`);
       handleFetchShifts(`${import.meta.env.VITE_ENTITY_API}/shifts`);
@@ -266,7 +257,7 @@ const InitiateForm = ({onSucess}) => {
           <label htmlFor="" className='text-sm px-2 font-semibold'>Choisir le type d'incident <span className='text-red-500'>*</span>:</label>
           <AutoComplete
             placeholder="Choisir un type d'incident"
-            isLoading={isLoading}
+            isLoading={isTypeLoading}
             dataList={incidentTypes}
             onSearch={handleSearchTypes}
             onSelect={handleSelectTypes}
@@ -276,27 +267,12 @@ const InitiateForm = ({onSucess}) => {
           {errors.incidentId && <small className='text-xs text-red-500 mx-4'>{errors.incidentId.message}</small>}
         </div>
 
-        {/* Equipement selection */}
-        <div className='flex flex-col'>
-          <label htmlFor="" className='text-sm px-2 font-semibold'>Choisir l'equipement <span className='text-red-500'>*</span>:</label>
-          <AutoComplete
-            placeholder="Choisir un equipment"
-            isLoading={isLoading}
-            dataList={equipements}
-            onSearch={handleSearchEquipements}
-            onSelect={handleSelectEquipement}
-            register={{...register('equipementId', {required:'Ce champ est requis'})}}
-            error={errors.equipementId}
-          />
-          {errors.equipementId && <small className='text-xs text-red-500 mx-4'>{errors.equipementId.message}</small>}
-        </div>
-
         {/* site selection */}
         <div className='flex flex-col'>
           <label htmlFor="" className='text-sm px-2 font-semibold'>Choisir le site <span className='text-red-500'>*</span>:</label>
           <AutoComplete
             placeholder="Choisir un site"
-            isLoading={isLoading}
+            isLoading={isSiteLoading}
             dataList={sites}
             onSearch={handleSearchSites}
             onSelect={handleSelectSites}
@@ -306,12 +282,30 @@ const InitiateForm = ({onSucess}) => {
           {errors.siteId && <small className='text-xs my-2 text-red-500 mx-4'>{errors.siteId.message}</small>}
         </div>
 
+        {/* Equipement selection */}
+        {
+          watch("siteId") &&
+          <div className='flex flex-col'>
+            <label htmlFor="" className='text-sm px-2 font-semibold'>Choisir l'equipement <span className='text-red-500'>*</span>:</label>
+            <AutoComplete
+              placeholder="Choisir un equipment"
+              isLoading={isEquipementLoading}
+              dataList={equipements}
+              onSearch={handleSearchEquipements}
+              onSelect={handleSelectEquipement}
+              register={{...register('equipementId', {required:'Ce champ est requis'})}}
+              error={errors.equipementId}
+            />
+            {errors.equipementId && <small className='text-xs text-red-500 mx-4'>{errors.equipementId.message}</small>}
+          </div>
+        }
+
         {/* Shift selection */}
         <div className='flex flex-col'>
           <label htmlFor="" className='text-sm px-2 font-semibold'>Choisir le quart <span className='text-red-500'>*</span>:</label>
           <AutoComplete
             placeholder="Choisir un shift"
-            isLoading={isLoading}
+            isLoading={isShiftLoading}
             dataList={shifts}
             onSearch={handleSearchShifts}
             onSelect={handleSelectShifts}

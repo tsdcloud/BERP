@@ -60,22 +60,10 @@ const OffBridge = () => {
                 <div className='max-w-2/3 overflow-x-auto'>
                     <Tabs />
                 </div>
-                {/* Dialog */}
-                <div className='flex gap-2 items-center'>
-                    <Dialogue 
-                        buttonText={"Nouveau hors pont"}
-                        header={<h2 className='text-xl font-semibold'>Nouveau hors pont</h2>}
-                        content={
-                        <HorsPontForm 
-                            onSucess={handleSubmit}
-                        />}
-                        isOpenned={isOpenned}
-                    />
-                </div>
             </div>
             {/* Table */}
             <div className='w-full bg-white rounded-lg p-2'>
-                <div className='px-4'>
+                <div className='px-4 flex items-center justify-between w-full'>
                     <input 
                         type="text" 
                         className='p-2 rounded-lg border'
@@ -83,6 +71,18 @@ const OffBridge = () => {
                         value={searchValue}
                         onChange={handleSearch} 
                     />
+                    {/* Dialog */}
+                    <div className='flex gap-2 items-center'>
+                        <Dialogue 
+                            buttonText={"Nouveau hors pont"}
+                            header={<h2 className='text-xl font-semibold'>Nouveau hors pont</h2>}
+                            content={
+                            <HorsPontForm 
+                                onSucess={handleSubmit}
+                            />}
+                            isOpenned={isOpenned}
+                        />
+                    </div>
                 </div>
                 <Datalist 
                     dataList={offBridges}

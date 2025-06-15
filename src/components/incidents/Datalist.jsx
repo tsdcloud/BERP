@@ -69,7 +69,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
           
   const [sites, setSites] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, seyIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [shifts, setShifts] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [roles, setRoles] = useState([]);
@@ -160,7 +160,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       width:"200px",
       render:(value)=>
         <p className='text-sm capitalize'>
-          {value?.name}
+          {value?.title}
         </p>
     },
     {
@@ -346,11 +346,11 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   }
 
   const submitMaintenance = async(data) =>{
-    seyIsSubmitting(true);
+    setIsSubmitting(true);
 
     data.description = description;
     data.siteId = selectedSite;
-    data.equipement = selectedEquipement;
+    data.equipementId = selectedEquipement;
     
     let url = `${import.meta.env.VITE_INCIDENT_API}/maintenances`
     try {
@@ -377,7 +377,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     } catch (error) {
       console.log(error)
     }finally{
-      seyIsSubmitting(false);
+      setIsSubmitting(false);
     }
   }
 
@@ -507,18 +507,15 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                 </DialogHeader>
                 <form onSubmit={handleSubmit(submitMaintenance)}>
                   {/* Type maintenance selection */}
-                  <div className='flex flex-col'>
-                    <label htmlFor="" className='text-sm px-2 font-semibold'>Choisir le type de maintenance <span className='text-red-500'>*</span>:</label>
-                    <AutoComplete
-                      placeholder="Choisir le type de maintenance"
-                      isLoading={isLoading}
-                      dataList={maintenanceTypes}
-                      onSearch={handleSearchMaintenanceType}
-                      onSelect={handleSelectMaintenanceType}
-                      register={{...register('maintenanceId', {required:'Ce champs est requis'})}}
-                      error={errors.maintenanceId}
-                    />
-                    {errors.maintenanceId && <small className='text-xs mx-2 text-red-500'>{errors.maintenanceId.message}</small>}
+                  <div className='flex flex-col mx-4'>
+                    <label htmlFor="" className='text-xs font-semibold px-2'>Choisir le type de maintenance <span className='text-red-500'>*</span></label>
+                    <select className='border rounded-lg w-full p-2' {...register('maintenance', {required:'Ce champ est requis'})}>
+                      <option value="">Choisir le type de maintenance</option>
+                      <option value="CORRECTION">CORRECTIF</option>
+                      <option value="PALLIATIVE">PALIATIF</option>
+                      <option value="CURATIVE">CURATIF</option>
+                    </select>
+                    {errors.maintenance && <small className='text-xs my-2 text-red-500 mx-4'>{errors.maintenance.message}</small>}
                   </div>
                   
                   {/* type selection */}
@@ -571,7 +568,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
                   } */}
 
                   {/* Description */}
-                  <div className='mx-2 mt-3'>
+                  <div className='mx-4 mt-3'>
                     <label htmlFor="" className='text-sm font-semibold'>Description</label>
                     <textarea 
                       name="" 

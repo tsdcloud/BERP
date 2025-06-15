@@ -32,6 +32,14 @@ const RapportIncidentForm = ({onSubmit}) => {
     const [employees, setEmployees] = useState([]);
     const [suppliers, setSuppliers] = useState([]);
 
+    const [isLoadingEquipment, setIsLoadingEquipments] = useState(true);
+    const [isLoadingTypes, setIsLoadingTypes] = useState(true);
+    const [isLoadingSupport, setIsLoadingSupport] = useState(true);
+    const [isLoadingSite, setIsLoadingSite] = useState(true);
+    const [isLoadingShift, setIsLoadingShift] = useState(true);
+    const [isLoadingCauses, setIsLoadingCauses] = useState(true);
+    const [isLoadingEmployees, setIsLoadingEmployees] = useState(true);
+
     // Criteria
     const [criteria, setCriteria] = useState("");
     const [condition, setCondition] = useState("EQUAL");
@@ -43,6 +51,7 @@ const RapportIncidentForm = ({onSubmit}) => {
 
     // Fetch incident types
     const fetchIncidentTypes = async()=>{
+        setIsLoadingTypes(true);
         let url = `${URLS.INCIDENT_API}/incident-types`
         try {
             let response = await handleFetch(url);
@@ -59,10 +68,13 @@ const RapportIncidentForm = ({onSubmit}) => {
             setIncidentTypes(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingTypes(false);
         }
     }
     // Fetch incident causes 
     const fetchIncidentCauses = async()=>{
+        setIsLoadingCauses(true);
         let url = `${URLS.INCIDENT_API}/incident-causes`
         try {
             let response = await handleFetch(url);
@@ -79,10 +91,13 @@ const RapportIncidentForm = ({onSubmit}) => {
             setIncidentCauses(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingCauses(false);
         }
     }
     // Fetch equipements 
     const fetchEquipements = async()=>{
+        setIsLoadingEquipments(true)
         let url = `${URLS.INCIDENT_API}/equipements`
         try {
             let response = await handleFetch(url);
@@ -92,17 +107,20 @@ const RapportIncidentForm = ({onSubmit}) => {
             }
             let formatedData = response?.data.map(item=>{
                 return {
-                  name:item?.name,
+                  name:item?.title,
                   value: item?.id
                 }
             });
             setEquipements(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingEquipments(false);
         }
     }
     // Fetch sites 
     const fetchSites = async()=>{
+        setIsLoadingSite(true);
         let url = `${URLS.ENTITY_API}/sites`
         try {
             let response = await handleFetch(url);
@@ -119,10 +137,13 @@ const RapportIncidentForm = ({onSubmit}) => {
             setSites(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingSite(false);
         }
     }
-    // Fetch Employes 
+    // Fetch Employees 
     const fetchEmployees = async()=>{
+        setIsLoadingEmployees(true);
         let url = `${URLS.ENTITY_API}/employees`
         try {
             let response = await handleFetch(url);
@@ -139,10 +160,13 @@ const RapportIncidentForm = ({onSubmit}) => {
             setEmployees(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingEmployees(false);
         }
     }
     // Fetch shifts 
     const fetchShits = async()=>{
+        setIsLoadingShift(true);
         let url = `${URLS.ENTITY_API}/shifts`
         try {
             let response = await handleFetch(url);
@@ -159,6 +183,8 @@ const RapportIncidentForm = ({onSubmit}) => {
             setShifts(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingShift(false);
         }
     }
 
@@ -176,7 +202,6 @@ const RapportIncidentForm = ({onSubmit}) => {
     const generateReport=async(data)=>{
         setError("");
         let {startDate, endDate, value} = data;
-        console.log(data);
         if(criteria === "date"){
             if(startDate === "" || endDate === ""){
                 setError("La date de début et la date de fin sont requises");
@@ -217,12 +242,13 @@ const RapportIncidentForm = ({onSubmit}) => {
     }
 
     const handleSearch=async(url)=>{
+        setIsLoading(true);
         try {
             let response = await handleFetch(url);
             if(response?.status === 200){
                 let formatedData = response?.data.map(item=>{
                     return {
-                      name:item?.name,
+                      name:item?.title || item?.name,
                       value: item?.id
                     }
                 });
@@ -230,6 +256,8 @@ const RapportIncidentForm = ({onSubmit}) => {
             }
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoading(false);
         }
     }
 
@@ -242,10 +270,18 @@ const RapportIncidentForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={incidentTypes}
                             placeholder="Recherche type d'incident"
+                            isLoading={isLoadingTypes}
                             onSearch={async (value)=>{
-                                let url = `${URLS.INCIDENT_API}/incident-types?search=${value}`
-                                let result = await handleSearch(url);
-                                setIncidentTypes(result);
+                                try {
+                                    setIsLoadingTypes(true);
+                                    let url = `${URLS.INCIDENT_API}/incident-types?search=${value}`
+                                    let result = await handleSearch(url);
+                                    setIncidentTypes(result);
+                                } catch (error) {
+                                    console.error(error)
+                                }finally{
+                                    setIsLoadingTypes(false);
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -260,11 +296,19 @@ const RapportIncidentForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={incidentCauses}
                             placeholder="Recherche cause d'incident"
+                            isLoading={isLoadingCauses}
                             clearDependency={criteria}
                             onSearch={async (value)=>{
-                                let url = `${URLS.INCIDENT_API}/incident-causes?search=${value}`
-                                let result = await handleSearch(url);
-                                setIncidentCauses(result);
+                                try {
+                                    setIsLoadingCauses(true);
+                                    let url = `${URLS.INCIDENT_API}/incident-causes?search=${value}`
+                                    let result = await handleSearch(url);
+                                    setIncidentCauses(result);
+                                } catch (error) {
+                                    console.log(error);
+                                }finally{
+                                    setIsLoadingCauses(false);
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -279,10 +323,18 @@ const RapportIncidentForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={sites}
                             placeholder="Recherche site"
+                            isLoading={isLoadingSite}
                             onSearch={async (value)=>{
-                                let url = `${URLS.ENTITY_API}/sites?search=${value}`
-                                let result = await handleSearch(url);
-                                setSites(result);
+                                try {
+                                    setIsLoadingSite(true);
+                                    let url = `${URLS.ENTITY_API}/sites?search=${value}`
+                                    let result = await handleSearch(url);
+                                    setSites(result);
+                                } catch (error) {
+                                    console.log(error);
+                                }finally{
+                                    setIsLoadingSite(false);
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -297,10 +349,18 @@ const RapportIncidentForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={equipements}
                             placeholder="Recherche equipement"
+                            isLoading={isLoadingEquipment}
                             onSearch={async (value)=>{
-                                let url = `${URLS.INCIDENT_API}/equipements?search=${value}`
-                                let result = await handleSearch(url);
-                                setEquipements(result);
+                                try {
+                                    setIsLoadingEquipments(true);
+                                    let url = `${URLS.INCIDENT_API}/equipements?search=${value}`
+                                    let result = await handleSearch(url);
+                                    setEquipements(result);
+                                } catch (error) {
+                                    console.log(error)
+                                }finally{
+                                    setIsLoadingEquipments(false)
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -315,14 +375,25 @@ const RapportIncidentForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={[...employees, ...suppliers]}
                             placeholder="Recherche intervenant"
+                            isLoading={isLoadingSupport && isLoadingEmployees}
                             onSearch={async (value)=>{
-                                let url_employee = `${URLS.ENTITY_API}/employees?search=${value}`;
-                                let result_employee = await handleSearch(url_employee);
-                                setEmployees(result_employee);
+                                try {
+                                    setIsLoadingEmployees(true);
+                                    setIsLoadingSupport(true);
+                                    let url_employee = `${URLS.ENTITY_API}/employees?search=${value}`;
+                                    let result_employee = await handleSearch(url_employee);
+                                    setEmployees(result_employee);
+                                    
+                                    let url_suppliers = `${URLS.ENTITY_API}/suppliers?search=${value}`;
+                                    let result_suppliers = await handleSearch(url_suppliers);
+                                    setSuppliers(result_suppliers);
+                                } catch (error) {
+                                    console.log(error)
+                                }finally{
+                                    setIsLoadingEmployees(false);
+                                    setIsLoadingSupport(false);
+                                }
                                 
-                                let url_suppliers = `${URLS.ENTITY_API}/suppliers?search=${value}`;
-                                let result_suppliers = await handleSearch(url_suppliers);
-                                setSuppliers(result_suppliers);
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -340,10 +411,18 @@ const RapportIncidentForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={shifts}
                             placeholder="Recherche shift"
+                            isLoading={isLoadingShift}
                             onSearch={async (value)=>{
-                                let url = `${URLS.INCIDENT_API}/shifts?search=${value}`
-                                let result = await handleSearch(url);
-                                setShifts(result);
+                                try {
+                                    setIsLoadingShift(true);
+                                    let url = `${URLS.INCIDENT_API}/shifts?search=${value}`
+                                    let result = await handleSearch(url);
+                                    setShifts(result);
+                                } catch (error) {
+                                    console.log(error);
+                                }finally{
+                                    setIsLoadingShift(false);
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -358,10 +437,18 @@ const RapportIncidentForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={employees}
                             placeholder="Recherche Employee"
+                            isLoading={isLoadingEmployees}
                             onSearch={async (value)=>{
-                                let url = `${URLS.ENTITY_API}/employees?search=${value}`
-                                let result = await handleSearch(url);
-                                setEmployees(result);
+                                try {
+                                    setIsLoadingEmployees(true);
+                                    let url = `${URLS.ENTITY_API}/employees?search=${value}`
+                                    let result = await handleSearch(url);
+                                    setEmployees(result);
+                                } catch (error) {
+                                    console.log(error);
+                                }finally{
+                                    setIsLoadingEmployees(false);
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){

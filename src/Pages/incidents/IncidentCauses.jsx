@@ -60,25 +60,13 @@ const IncidentCauses = () => {
         <div className='px-6'>
             <div className='flex items-center justify-between'>
                 {/* Header */}
-                <div>
+                <div className='overflow-x-auto'>
                     <Tabs />
-                </div>
-                {/* Dialog */}
-                <div className='flex gap-2 items-center'>
-                    <Dialogue 
-                        buttonText={"Créer une cause d'incident"}
-                        header={<h2 className='text-xl font-semibold'>Créer une cause d'incident</h2>}
-                        content={
-                        <InitiateForm 
-                            onSucess={handleSubmit}
-                        />}
-                        isOpenned={isOpenned}
-                    />
                 </div>
             </div>
             {/* Table */}
             <div className='w-full bg-white rounded-lg p-2'>
-                <div className='px-4'>
+                <div className='px-4 flex items-center justify-between'>
                     <input 
                         type="text" 
                         placeholder='Recherch' 
@@ -86,6 +74,18 @@ const IncidentCauses = () => {
                         value={searchValue}
                         onChange={handleSearch}
                     />
+                    {/* Dialog */}
+                    <div className='flex gap-2 items-center'>
+                        <Dialogue 
+                            buttonText={"Créer une cause d'incident"}
+                            header={<h2 className='text-xl font-semibold'>Créer une cause d'incident</h2>}
+                            content={
+                            <InitiateForm 
+                                onSucess={handleSubmit}
+                            />}
+                            isOpenned={isOpenned}
+                        />
+                    </div>
                 </div>
                 <Datalist 
                     dataList={incidentCauses}
@@ -94,7 +94,7 @@ const IncidentCauses = () => {
                     searchValue={searchValue}
                     pagination={
                         <div className='flex items-center px-6'>
-                                <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                                <p className='text-sm font-bold'>{total} ligne(s)</p>
                                 <Pagination 
                                     total={total}
                                     pageSize={100}

@@ -17,7 +17,7 @@ const dateFormat = 'YYYY-MM-DDThh:mm:ssZ';
 
 const RapportMaintenanceForm = ({onSubmit}) => {
 
-    const {setValue, handleSubmit, reset} = useForm();
+    const {setValue, handleSubmit, reset, register, formState:{errors}} = useForm();
     const {handleFetch, handlePost} = useFetch();
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
@@ -32,6 +32,15 @@ const RapportMaintenanceForm = ({onSubmit}) => {
     const [shifts, setShifts] = useState([]);
     const [employees, setEmployees] = useState([]);
 
+    const [isLoadingTypes, setIsLoadingTypes] = useState(true);
+    const [isLoadingEquiments, setIsLoadingEquipments] = useState(true);
+    const [isLoadingSites, setIsLoadingSites] = useState(true);
+    const [isLoadingShifts, setIsLoadingShifts] = useState(true);
+    const [isLoadingSupports, setIsLoadingSupports] = useState(true);
+    const [isLoadingEmployees, setIsLoadingEmployees] = useState(true);
+    const [isLoadingSuppliers, setIsLoadingSuppliers] = useState(true);
+    const [isGeneratingReport, setIsGeneratingReport] = useState(true);
+
     // Criteria
     const [criteria, setCriteria] = useState("");
     const [condition, setCondition] = useState("EQUAL");
@@ -43,6 +52,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
 
     // Fetch incident types
     const fetchMaintenanceTypes = async()=>{
+        setIsLoadingTypes(true);
         let url = `${URLS.INCIDENT_API}/maintenance-types`
         try {
             let response = await handleFetch(url);
@@ -59,6 +69,8 @@ const RapportMaintenanceForm = ({onSubmit}) => {
             setMaintenanceTypes(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingTypes(false);
         }
     }
     // Fetch incident causes 
@@ -78,6 +90,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
 
     // Fetch equipements 
     const fetchEquipements = async()=>{
+        setIsLoadingEquipments(true);
         let url = `${URLS.INCIDENT_API}/equipements`
         try {
             let response = await handleFetch(url);
@@ -87,18 +100,21 @@ const RapportMaintenanceForm = ({onSubmit}) => {
             }
             let formatedData = response?.data.map(item=>{
                 return {
-                  name:item?.name,
+                  name:item?.title,
                   value: item?.id
                 }
               });
             setEquipements(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingEquipments(false);
         }
     }
 
     // Fetch sites 
     const fetchSites = async()=>{
+        setIsLoadingSites(true);
         let url = `${URLS.ENTITY_API}/sites`
         try {
             let response = await handleFetch(url);
@@ -115,11 +131,14 @@ const RapportMaintenanceForm = ({onSubmit}) => {
             setSites(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingSites(false);
         }
     }
 
     // Fetch Employees 
     const fetchEmployees = async()=>{
+        setIsLoadingEmployees(true);
         let url = `${URLS.ENTITY_API}/employees`
         try {
             let response = await handleFetch(url);
@@ -136,12 +155,15 @@ const RapportMaintenanceForm = ({onSubmit}) => {
             setEmployees(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingEmployees(false);
         }
     }
     
     // Fetch suppliers 
     const fetchSuppliers = async()=>{
-        let url = `${URLS.ENTITY_API}/suppliers`
+        let url = `${URLS.ENTITY_API}/suppliers`;
+        setIsLoadingSuppliers(true);
         try {
             let response = await handleFetch(url);
             if(response.status !== 200){
@@ -157,11 +179,14 @@ const RapportMaintenanceForm = ({onSubmit}) => {
             setSuppliers(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingSuppliers(false)
         }
     }
 
     // Fetch shifts 
     const fetchShits = async()=>{
+        setIsLoadingSites(true);
         let url = `${URLS.ENTITY_API}/shifts`
         try {
             let response = await handleFetch(url);
@@ -178,6 +203,8 @@ const RapportMaintenanceForm = ({onSubmit}) => {
             setShifts(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingSites(false);
         }
     }
 
@@ -194,7 +221,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
 
     const generateReport=async(data)=>{
         setError("");
-        
+        setIsGeneratingReport(true);
         let {startDate, endDate, value} = data;
         if(criteria === "date"){
             if(startDate === "" || endDate === ""){
@@ -216,7 +243,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 'authorization': `Bearer ${token}`
             }
         }
-        setIsLoading(true);
+        setIsGeneratingReport(true);
         try {
             let response = await fetch(url, requestOptions);
             if(response.status === 200){
@@ -233,7 +260,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
         } catch (error) {
             console.log(error)
         }finally{
-            setIsLoading(false);
+            setIsGeneratingReport(false);
         }
     }
 
@@ -243,7 +270,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
             if(response?.status === 200){
                 let formatedData = response?.data.map(item=>{
                     return {
-                      name:item?.name,
+                      name:item.title || item.name,
                       value: item?.id
                     }
                 });
@@ -259,32 +286,32 @@ const RapportMaintenanceForm = ({onSubmit}) => {
      */
     const handleDisplayFields=(criteria)=>{
         switch(criteria){
-            case "maintenanceId":
-                return <AutoComplete 
-                            dataList={maintenanceTypes}
-                            placeholder="Recherche type de maintenance"
-                            onSearch={async (value)=>{
-                                let url = `${URLS.INCIDENT_API}/maintenance-types?search=${value}`
-                                let result = await handleSearch(url);
-                                setMaintenanceTypes(result);
-                            }}
-                            onSelect={(value)=>{
-                                if(value){
-                                    setValue('value', value?.value)
-                                }else{
-                                    setValue('value', null)
-                                }
-                            }}
-                        />
+            case "maintenance":
+                return (
+                    <select className='w-full p-2 outline-[1px] text-xs outline-blue-200 border rounded-lg' {...register('value', {required:"Ce champ est requis"})}>
+                        <option value="">Choisir le type de maintenance</option>
+                        <option value="CORRECTION">CORRECTIF</option>
+                        <option value="PALLIATIVE">PALIATIF</option>
+                        <option value="CURATIVE">CURATIF</option>
+                        <option value="PROGRAMMED">PROGRAMMé</option>
+                    </select>
+                )
             break;
             case "siteId":
                 return <AutoComplete 
                             dataList={sites}
                             placeholder="Recherche site"
+                            isLoading={isLoadingSites}
                             onSearch={async (value)=>{
-                                let url = `${URLS.ENTITY_API}/sites?search=${value}`
-                                let result = await handleSearch(url);
-                                setSites(result);
+                                try {
+                                    let url = `${URLS.ENTITY_API}/sites?search=${value}`
+                                    let result = await handleSearch(url);
+                                    setSites(result);
+                                } catch (error) {
+                                    console.log(error);     
+                                }finally{
+
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -299,10 +326,18 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={equipements}
                             placeholder="Recherche equipement"
+                            isLoading={isLoadingEquiments}
                             onSearch={async (value)=>{
-                                let url = `${URLS.INCIDENT_API}/equipements?search=${value}`
-                                let result = await handleSearch(url);
-                                setEquipements(result);
+                                try {
+                                    setIsLoadingEquipments(true);
+                                    let url = `${URLS.INCIDENT_API}/equipements?search=${value}`
+                                    let result = await handleSearch(url);
+                                    setEquipements(result);
+                                } catch (error) {
+                                    console.log(error);
+                                }finally{
+                                    setIsLoadingEquipments(false);
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -317,10 +352,18 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={shifts}
                             placeholder="Recherche shift"
+                            isLoading={isLoadingShifts}
                             onSearch={async (value)=>{
-                                let url = `${URLS.INCIDENT_API}/shifts?search=${value}`
-                                let result = await handleSearch(url);
-                                setShifts(result);
+                                setIsLoadingShifts(true);
+                                try {
+                                    let url = `${URLS.INCIDENT_API}/shifts?search=${value}`
+                                    let result = await handleSearch(url);
+                                    setShifts(result);
+                                } catch (error) {
+                                    console.log(error);
+                                }finally{
+                                    setIsLoadingShifts(false);
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -335,10 +378,25 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={[...employees, ...suppliers]}
                             placeholder="Recherche maintenancier"
+                            isLoading={isLoadingSuppliers && isLoadingEmployees}
                             onSearch={async (value)=>{
-                                let url = `${URLS.ENTITY_API}/suppliers?search=${value}`
-                                let result = await handleSearch(url);
-                                setSuppliers(result);
+                                setIsLoadingSuppliers(true);
+                                setIsLoadingEmployees(true);
+                                try {
+                                    let url_employee = `${URLS.ENTITY_API}/employees?search=${value}`;
+                                    let result_employees = await handleSearch(url_employee);
+                                    setEmployees(result_employees);
+                                    
+                                    let url_suppliers = `${URLS.ENTITY_API}/suppliers?search=${value}`;
+                                    let result_suppliers = await handleSearch(url_suppliers);
+                                    setSuppliers(result_suppliers);
+
+                                } catch (error) {
+                                    console.log(error);
+                                }finally{
+                                    setIsLoadingEmployees(false);
+                                    setIsLoadingSuppliers(false);
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -353,10 +411,18 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={employees}
                             placeholder="Recherche Employee"
+                            isLoading={isLoadingEmployees}
                             onSearch={async (value)=>{
-                                let url = `${URLS.ENTITY_API}/employees?search=${value}`
-                                let result = await handleSearch(url);
-                                setEmployees(result);
+                                setIsLoadingEmployees(true);
+                                try {
+                                    let url = `${URLS.ENTITY_API}/employees?search=${value}`
+                                    let result = await handleSearch(url);
+                                    setEmployees(result);
+                                } catch (error) {
+                                    console.log(error);
+                                }finally{
+                                    setIsLoadingEmployees(false);
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -399,7 +465,7 @@ const RapportMaintenanceForm = ({onSubmit}) => {
                 }}
             >
                 <option value=""></option>
-                <option value="maintenanceId">Type de maintenance</option>
+                <option value="maintenance">Type de maintenance</option>
                 <option value="equipementId">Equipements</option>
                 <option value="date">Date</option>
                 <option value="siteId">Site</option>

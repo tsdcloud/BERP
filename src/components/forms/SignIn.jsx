@@ -15,20 +15,15 @@ import SignInLayout from '../layout/SignInLayout';
 
 import { useFetch } from '../../hooks/useFetch';
 import { AUTHCONTEXT } from '../../contexts/AuthProvider';
-
+import { usePermissions } from '../../contexts/PermissionsProvider';
+import { getEmployee } from '../../utils/entity.utils';
 
 // Définir un schéma Zod
 const formSignInSchema = z.object({
   login: z.string().nonempty("Ce champ est requis")
-    // .refine(
-    //   (value) => /\S+@\S+\.\S+/.test(value) || /^[a-zA-Z0-9_]{3,}$/.test(value),
-    //   "ce champ doit être un email valide ou un nom d'utilisateur valide. (minimum 3 caractères)"
-    // )
     ,
     password: z.string()
     .nonempty("Ce champs 'Mot de passe' est réquis."),
-    // .regex(/(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@]).{8,}/, 
-    // "Le mot de passe saisie doit avoir au moins une lettre majuscule, une minuscule, un caractère spécial (@), un chiffre et doit contenir au moins 8 caractères."),
 });
 
 export default function SignIn() {
@@ -36,45 +31,72 @@ export default function SignIn() {
   const { handlePost } = useFetch();
 
  const { setIsAuth, setUserData, setToken, setRefresh } = useContext(AUTHCONTEXT);
+ const { setPermissions, setRoles } = usePermissions();
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-      const {
-        register,
-        handleSubmit,
-        formState: { errors, isSubmitting },
-      } = useForm({
-        resolver: zodResolver(formSignInSchema),
-      });
+    const {
+      register,
+      handleSubmit,
+      formState: { errors, isSubmitting },
+    } = useForm({
+      resolver: zodResolver(formSignInSchema),
+    });
 
 
-  
-      const submitDataSignIn = async(data) => {
-        const urlToLogin = `${URLS.API_USER_ABILITY}/login/`;
-        try {
-              const response = await handlePost(urlToLogin, data, false);
 
-              if (response && response?.data && response?.data?.access) {
-                  const token = response?.data?.access;
-                  const refresh = response?.data?.refresh;
-                  setToken(token);
-                  setRefresh(refresh);
-                  const decoded = jwtDecode(token);
-                  setIsAuth(true);
-                  setUserData(decoded);
-                  
-                  navigateToDashboard("/");
-              }
-              else {
-                toast.error(response.message, { duration: 5000});
-              }
-              
-            } catch (error) {
-              console.error("Error during sign-in",error);
-              toast.error("Erreur lors de la connexion", { duration: 5000 });
+    const submitDataSignIn = async(data) => {
+      const urlToLogin = `${URLS.API_USER_ABILITY}/login/`;
+      try {
+            const response = await handlePost(urlToLogin, data, false);
+
+            if (response && response?.data && response?.data?.access) {
+                const token = response?.data?.access;
+                const refresh = response?.data?.refresh;
+                setToken(token);
+                setRefresh(refresh);
+                const decoded = jwtDecode(token);
+                setIsAuth(true);
+                setUserData(decoded);
+                fetchPermissionsAndRoles();
+                navigateToDashboard("/");
             }
-      };
+            else {
+              toast.error(response.message, { duration: 5000});
+            }
+            
+          } catch (error) {
+            console.error("Error during sign-in",error);
+            toast.error("Erreur lors de la connexion", { duration: 5000 });
+          }
+    };
+
+    // Fetch permissions and roles
+    const fetchPermissionsAndRoles = async () => {
+      try {
+        const employee = await getEmployee();
+        if(!employee){
+            setIsLoading(false);
+            return 
+        }
+        const employeeRoles = await handleFetch(`${URLS.ENTITY_API}/employees/${employee?.id}/roles`);
+        const employeePermissions = await handleFetch(`${URLS.ENTITY_API}/employees/${employee?.id}/permissions`);
+        
+        let empPerms = employeePermissions?.employeePermissions
+        let empRoles = employeeRoles?.employeeRoles
+
+        let formatedRoles = empRoles.map(role=>role?.role.roleName)
+        let formatedPerms = empPerms.map(perm=>perm?.permission.permissionName)
+
+        setRoles(formatedRoles);
+        setPermissions(formatedPerms);
+
+
+      } catch (error) {
+        console.error("Error during fetch permissions and roles",error);
+      }
+    }
 
   return (
    <SignInLayout>

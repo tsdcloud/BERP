@@ -103,7 +103,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       title:"Equipement",
       dataIndex:"equipement",
       width:"200px",
-      render:(value)=><p className='text-sm'>{highlightText(value?.name)}</p>
+      render:(value)=><p className='text-sm'>{highlightText(value?.title)}</p>
     },
     {
       title:"Site",
@@ -113,18 +113,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
         <p className='text-sm capitalize'>
           {sites.find(site => site.value === value)?.name || value}
         </p>
-    },
-    {
-      title:"Date previsionells",
-      dataIndex:"projectedDate",
-      width:"200px",
-      render:(value)=><p className='text-sm'>{value?.split("T")[0] || "--"}</p>
-    },
-    {
-      title:"Prochain maintenance",
-      dataIndex:"nextMaintenance",
-      width:"200px",
-      render:(value)=><p className='text-sm'>{value?.split("T")[0] || "--"}</p>
     },
     {
       title:"Utilisateur",
@@ -332,7 +320,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       setRoles(formatedRoles);
       setPermissions(formatedPerms);
       
-      setIsLoading(false);
+      // setIsLoading(false);
     }
     handleCheckPermissions();
   }, []);

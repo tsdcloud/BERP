@@ -66,7 +66,7 @@ const Dashboard = () =>{
         try {
            const response = await handleFetch(url);
            if(response.data){
-            setTotalIncidentPending(response.data?.length);
+            setTotalIncidentPending(response?.total);
            }
         } catch (error) {
             console.log(error);
@@ -78,7 +78,7 @@ const Dashboard = () =>{
         try {
            const response = await handleFetch(url);
            if(response.data){
-               setTotalIncidentClosed(response.data?.length);
+               setTotalIncidentClosed(response?.total);
            }
         } catch (error) {
             console.log(error)

@@ -24,6 +24,8 @@ import Equipement from './Pages/incidents/Equipement';
 import TypeMaintenance from './Pages/incidents/MaintenanceType';
 import IncidentCauses from './Pages/incidents/IncidentCauses';
 import IncidentType from './Pages/incidents/IncidentType';
+import Operation from './Pages/incidents/Operation';
+import Movement from './Pages/incidents/Movement';
 
 //user
 import User from './Pages/users/index';
@@ -64,13 +66,13 @@ import AsignEmpRole from './Pages/entity/AsignEmpRole';
 import AsignAppPerm from './Pages/entity/AsignAppPerm';
 import AsignRolePerm from './Pages/entity/AsignRolePerm';
 import AsignEmpPerm from './Pages/entity/AsignEmpPerm';
-
+import { usePermissions } from './contexts/PermissionsProvider';
+import EquipmentGroup from './Pages/incidents/EquipmentGroup';
 
 
 
 function App() {
   const { token } = useContext(AUTHCONTEXT);
-
 
   return (
     <>
@@ -119,15 +121,10 @@ function App() {
                <Route path="asign_app_perms" element={<AsignAppPerm/>} />
                <Route path="asign_role_perms" element={<AsignRolePerm/>} />
                <Route path="asign_emp_perms" element={<AsignEmpPerm/>} />
-
-
-
-
-                
             </Route>
 
             {/* Incident */}
-           <Route path="/incidents">
+           {/* <Route path="/incidents">
               <Route path="" element={<Incident />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="maintenance" element={<Maintenance />} />
@@ -144,8 +141,13 @@ function App() {
               <Route element={<IncidenSettingRoutes permissions={["incident__view_equipements"]}/>}>
                 <Route path="equipement" element={<Equipement />} />
               </Route>
+              <Route element={<IncidenSettingRoutes permissions={["incident__view_equipment-groups"]}/>}>
+                <Route path="equipment-groups" element={<EquipmentGroup />} />
+              </Route>
+              <Route path="operations" element={<Operation />} />
+              <Route path="movements" element={<Movement />} />
                 {/* <Route path="consommable" element={<Consommable />} /> */}
-           </Route>
+           </Route> */}
 
           </Route>
           

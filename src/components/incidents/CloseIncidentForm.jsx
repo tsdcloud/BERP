@@ -18,7 +18,12 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
     const [incidentCauses, setIncidentCauses] = useState([]);
     const [isSubmiting, setIsSubmiting] = useState(false);
 
+    const [isLoadingEmployees, setIsLoadingEmployees] = useState(true);
+    const [isLoadingSuppliers, setIsLoadingSuppliers] = useState(true);
+    const [isLoadingCauses, setIsLoadingCauses] = useState(true);
+
     const handleEmployees = async (url) =>{
+        setIsLoadingEmployees(true);
         try {
             let response = await handleFetch(url);
             if(response.error){
@@ -34,10 +39,13 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
             setEmployees(formattedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingEmployees(false);
         }
     }
 
     const handleEntities = async (url) =>{
+        setIsLoadingSuppliers(true);
         try {
             let response = await handleFetch(url);
             if(response.error){
@@ -53,10 +61,13 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
             setEntities(formattedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingSuppliers(false);
         }
     }
     
     const handleIncidentCauses = async (url) =>{
+        setIsLoadingCauses(true);
         try {
             let response = await handleFetch(url);
             if(response.error){
@@ -72,6 +83,8 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
             setIncidentCauses(formattedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingCauses(false);
         }
     }
 
@@ -116,6 +129,7 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
                     <AutoComplete 
                         dataList={[...employees, ...entities]}
                         placeholder="Choisir l'intervenant"
+                        isLoading={isLoadingSuppliers || isLoadingEmployees}
                         register={{...register("technician")}}
                         onSearch={(input)=>{
                             handleEmployees(`${URLS.ENTITY_API}/employees?search=${input}`);
@@ -137,6 +151,7 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
                     <AutoComplete 
                         dataList={[...incidentCauses]}
                         placeholder="Choisir la cause"
+                        isLoading={isLoadingCauses}
                         register={{...register("incidentCauseId", {required:'This field is required'})}}
                         onSearch={(input)=>{
                             handleIncidentCauses(`${URLS.INCIDENT_API}/incident-causes?search=${input}`);

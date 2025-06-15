@@ -132,6 +132,7 @@ const CloseMaintenanceForm = ({isOpen, setIsOpen, selectedMaintenance, onSubmit}
                 <div className='flex flex-col'>
                     <label htmlFor="" className='font-bold text-sm mx-2'>Cause d'incident <span className='text-red-500'>*</span></label>
                     <AutoComplete 
+                        isLoading={false}
                         placeholder={"Choisir la cause incident"}
                         dataList={incidentCauses}
                         register={{...register('incidentCauseId', {required:'Ce champs est requis'})}}
@@ -163,7 +164,8 @@ const CloseMaintenanceForm = ({isOpen, setIsOpen, selectedMaintenance, onSubmit}
                         <div className='flex flex-col'>
                             <label htmlFor="" className='font-bold text-sm mx-2'>{type === "SUPPLIER" ? "Choisir le prestataire" : "Choisir l'employé"} <span className='text-red-500'>*</span></label>
                             <AutoComplete 
-                                placeholder={type==="SUPPLIER" ? "Choisir le prestataire":"Choisir l'employé"}
+                            isLoading={false}
+                                placeholder={type === "SUPPLIER" ? "Choisir le prestataire":"Choisir l'employé"}
                                 dataList={type==="SUPPLIER" ? suppliers : employees}
                                 register={{...register('supplierId', {required:'Ce champs est requis'})}}
                                 onSearch={(input)=>{

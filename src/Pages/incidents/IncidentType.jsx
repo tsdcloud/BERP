@@ -70,7 +70,19 @@ const IncidentType = () => {
                 <div className='max-w-2/3 overflow-x-auto'>
                     <Tabs />
                 </div>
-                {/* Dialog */}
+                
+            </div>
+            {/* Table */}
+            <div className='w-full bg-white rounded-lg p-2'>
+                <div className='px-4 flex items-center justify-between'>
+                    <input 
+                        type="text"
+                        className='p-2 text-sm border rounded-lg' 
+                        placeholder='Recherche...' 
+                        value={searchValue}
+                        onChange={handleSearch}
+                    />
+                    {/* Dialog */}
                 <div className='flex gap-2 items-center'>
                     
                     <Dialogue 
@@ -83,17 +95,6 @@ const IncidentType = () => {
                         isOpenned={isOpenned}
                     />
                 </div>
-            </div>
-            {/* Table */}
-            <div className='w-full bg-white rounded-lg p-2'>
-                <div className='px-4'>
-                    <input 
-                        type="text"
-                        className='p-2 text-sm border rounded-lg' 
-                        placeholder='Recherche...' 
-                        value={searchValue}
-                        onChange={handleSearch}
-                    />
                 </div>
                 <Datalist 
                     dataList={incidentTypes}
@@ -101,10 +102,10 @@ const IncidentType = () => {
                     loading={isLoading}
                     pagination={
                         <div className='flex items-center px-6'>
-                            <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                            <p className='text-sm font-bold'>{total} ligne(s)</p>
                             <Pagination 
                                 total={total}
-                                pageSize={100}
+                                pageSize={totalPages}
                                 onChange={(page)=>{
                                     totalPages > page && fetchIncidents(`${URLS.INCIDENT_API}/incident-types?page=${page}`)
                                 }}

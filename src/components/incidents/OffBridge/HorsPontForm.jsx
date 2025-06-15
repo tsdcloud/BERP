@@ -20,6 +20,8 @@ const HorsPontForm = ({onSucess}) =>{
     const [products, setProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
+    const [isLoadingCauses, setIsLoadingCauses] = useState(true)
+
     const declarationType = watch("declarationType");
     const paymentMode = watch("paymentMode");
 
@@ -129,6 +131,7 @@ const HorsPontForm = ({onSucess}) =>{
                     <label htmlFor="incidentCausesid" className='text-sm font-semibold px-2'>Cause de l'incident <span className='text-red-500'>*</span></label>
                     <AutoComplete 
                         dataList={incidentCauses}
+                        isLoading={false}
                         onSearch={(value)=>fetchIncidentCauses(`${URLS.INCIDENT_API}/incident-causes?search=${value}`)}
                         onSelect={(value)=>{
                             if(value){
@@ -149,6 +152,7 @@ const HorsPontForm = ({onSucess}) =>{
                     <label htmlFor="incidentCausesid" className='text-sm font-semibold px-2'>Choisir le site <span className='text-red-500'>*</span></label>
                     <AutoComplete 
                         dataList={sites}
+                        isLoading={false}
                         onSearch={(value)=>fetchSites(`${URLS.ENTITY_API}/sites?search=${value}`)}
                         onSelect={(value)=>{
                             if(value){
@@ -169,6 +173,7 @@ const HorsPontForm = ({onSucess}) =>{
                     <label htmlFor="" className='text-sm font-semibold'>Tier <span className='text-red-500'>*</span></label>
                     <AutoComplete 
                         dataList={suppliers}
+                        isLoading={false}
                         onSearch={(value)=>fetchSuppliers(`${URLS.ENTITY_API}/suppliers?search=${value}`)}
                         onSelect={(value)=>{
                             if(value){
@@ -214,6 +219,7 @@ const HorsPontForm = ({onSucess}) =>{
                     <label htmlFor="" className='text-sm font-semibold'>Chargeur <span className='text-red-500'>*</span>:</label>
                     <AutoComplete 
                         dataList={suppliers}
+                        isLoading={false}
                         onSearch={(value)=>fetchSuppliers(`${URLS.ENTITY_API}/suppliers?search=${value}`)}
                         onSelect={(value)=>{
                             if(value){
@@ -234,6 +240,7 @@ const HorsPontForm = ({onSucess}) =>{
                     <label htmlFor="" className='text-sm font-semibold'>Produit <span className='text-red-500'>*</span>:</label>
                     <AutoComplete 
                         dataList={products}
+                        isLoading={false}
                         onSearch={(value)=>fetchProducts(`${URLS.ENTITY_API}/articles?search=${value}`)}
                         onSelect={(value)=>{
                             if(value){
@@ -254,6 +261,7 @@ const HorsPontForm = ({onSucess}) =>{
                     <label htmlFor="" className='text-sm font-semibold'>Transporteur <span className='text-red-500'>*</span>:</label>
                     <AutoComplete 
                         dataList={suppliers}
+                        isLoading={false}
                         onSearch={(value)=>fetchSites(`${URLS.ENTITY_API}/suppliers?search=${value}`)}
                         onSelect={(value)=>{
                             if(value){

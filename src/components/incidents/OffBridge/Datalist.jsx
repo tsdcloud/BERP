@@ -1,22 +1,12 @@
 import React, {useEffect, useState, useContext} from 'react';
 import { PERMISSION_CONTEXT } from '../../../contexts/PermissionsProvider';
 import { Button } from '../../ui/button';
-import { INCIDENT_STATUS } from '../../../utils/constant.utils';
-import { XMarkIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { TrashIcon } from '@heroicons/react/24/outline';
 import { Form, Table } from 'antd';
 import { useFetch } from '../../../hooks/useFetch';
-import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-import { ChevronDown, MoreHorizontal } from "lucide-react"
+import { MoreHorizontal } from "lucide-react"
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -55,7 +45,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
 
   const highlightText = (text) => {
     if (!searchValue) return text;
-
     const regex = new RegExp(searchValue, 'gi');
     return <span dangerouslySetInnerHTML={{ __html: text?.replace(
       new RegExp(searchValue, 'gi'),
@@ -64,8 +53,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   };
     
   const {roles, permissions} = useContext(PERMISSION_CONTEXT);
-  const [sorting, setSorting] = useState([]);
-  const [columnFilters, setColumnFilters] = useState([]);
   const [sites, setSites] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [products, setProducts] = useState([]);
@@ -83,6 +70,15 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
         editingRow == record.id ?
         <input />:
         <p className='text-sm'>{highlightText(value)}</p>
+    },
+    {
+      title:"Site",
+      dataIndex:"siteId",
+      width:"200px",
+      render:(value, record)=> 
+        editingRow == record.id ?
+        <input />:
+        <p className='text-sm'>{sites.find(site => site.value === value)?.name || value}</p>
     },
     {
       title:"Tier",

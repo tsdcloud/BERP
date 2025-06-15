@@ -27,6 +27,12 @@ const RapportOffBridgeForm = ({onSubmit}) => {
     const [products, setProducts] = useState([])
     const [employees, setEmployees] = useState([]);
 
+    const [isLoadingCauses, setIsLoadingCauses] = useState(true);
+    const [isLoadingSites, setIsLoadingSites] = useState(true);
+    const [isLoadingEmployees, setIsLoadingEmployees] = useState(true);
+    const [isLoadingEntities, setIsLoadingEntities] = useState(true);
+    const [isLoadingProducts, setIsLoadingProducts] = useState(true);
+
     // Criteria
     const [criteria, setCriteria] = useState("");
     const [condition, setCondition] = useState("EQUAL");
@@ -37,6 +43,7 @@ const RapportOffBridgeForm = ({onSubmit}) => {
     // Fetching data from various endpoints
     // Fetch incident causes 
     const fetchIncidentCauses = async()=>{
+        setIsLoadingCauses(true);
         let url = `${URLS.INCIDENT_API}/incident-causes`
         try {
             let response = await handleFetch(url);
@@ -53,12 +60,15 @@ const RapportOffBridgeForm = ({onSubmit}) => {
             setIncidentCauses(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingCauses(false);
         }
     }
 
     // Fetch sites 
     const fetchSites = async()=>{
-        let url = `${URLS.ENTITY_API}/sites`
+        let url = `${URLS.ENTITY_API}/sites`;
+        setIsLoadingSites(true);
         try {
             let response = await handleFetch(url);
             if(response.status !== 200){
@@ -74,12 +84,15 @@ const RapportOffBridgeForm = ({onSubmit}) => {
             setSites(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingSites(false);
         }
     }
 
     // Fetch Employes 
     const fetchEmployees = async()=>{
-        let url = `${URLS.ENTITY_API}/employees`
+        let url = `${URLS.ENTITY_API}/employees`;
+        setIsLoadingEmployees(true);
         try {
             let response = await handleFetch(url);
             if(response.status !== 200){
@@ -95,12 +108,15 @@ const RapportOffBridgeForm = ({onSubmit}) => {
             setEmployees(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingEmployees(false);
         }
     }
     
     // Fetch exteranl entities 
     const fetchExternalEntities = async()=>{
-        let url = `${URLS.ENTITY_API}/suppliers`
+        let url = `${URLS.ENTITY_API}/suppliers`;
+        setIsLoadingEntities(true)
         try {
             let response = await handleFetch(url);
             if(response.status !== 200){
@@ -116,12 +132,15 @@ const RapportOffBridgeForm = ({onSubmit}) => {
             setExternalEntities(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingEntities(false);
         }
     }
     
     // Fetch products 
     const fetchproducts = async()=>{
-        let url = `${URLS.ENTITY_API}/articles`
+        let url = `${URLS.ENTITY_API}/articles`;
+        setIsLoadingProducts(true);
         try {
             let response = await handleFetch(url);
             if(response.status !== 200){
@@ -137,6 +156,8 @@ const RapportOffBridgeForm = ({onSubmit}) => {
             setProducts(formatedData);
         } catch (error) {
             console.log(error);
+        }finally{
+            setIsLoadingProducts(false);
         }
     }
 
@@ -224,10 +245,18 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={sites}
                             placeholder="Recherche site"
+                            isLoading={isLoadingSites}
                             onSearch={async (value)=>{
-                                let url = `${URLS.ENTITY_API}/sites?search=${value}`
-                                let result = await handleSearch(url);
-                                setSites(result);
+                                try {
+                                    setIsLoadingSites(false);
+                                    let url = `${URLS.ENTITY_API}/sites?search=${value}`
+                                    let result = await handleSearch(url);
+                                    setSites(result);
+                                } catch (error) {
+                                    console.log(error);
+                                }finally{
+                                    setIsLoadingSites(false);
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -242,10 +271,18 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={externalEntities}
                             placeholder="Recherche de tier"
+                            isLoading={isLoadingEntities}
                             onSearch={async (value)=>{
-                                let url = `${URLS.ENTITY_API}/suppliers?search=${value}`
-                                let result = await handleSearch(url);
-                                setExternalEntities(result);
+                                try {
+                                    setIsLoadingEntities(true);
+                                    let url = `${URLS.ENTITY_API}/suppliers?search=${value}`
+                                    let result = await handleSearch(url);
+                                    setExternalEntities(result);
+                                } catch (error) {
+                                    console.log(error);
+                                }finally{
+                                    setIsLoadingEntities(false);
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -260,10 +297,18 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={externalEntities}
                             placeholder="Recherche de chargeur"
+                            isLoading={isLoadingEntities}
                             onSearch={async (value)=>{
-                                let url = `${URLS.ENTITY_API}/suppliers?search=${value}`
-                                let result = await handleSearch(url);
-                                setExternalEntities(result);
+                                try {
+                                    setIsLoadingEntities(true);
+                                    let url = `${URLS.ENTITY_API}/suppliers?search=${value}`
+                                    let result = await handleSearch(url);
+                                    setExternalEntities(result);
+                                } catch (error) {
+                                    console.log(error);
+                                }finally{
+                                    setIsLoadingEntities(false);
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -288,10 +333,18 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={externalEntities}
                             placeholder="Recherche de transporteur"
+                            isLoading={isLoadingEntities}
                             onSearch={async (value)=>{
-                                let url = `${URLS.ENTITY_API}/suppliers?search=${value}`
-                                let result = await handleSearch(url);
-                                setExternalEntities(result);
+                                try {
+                                    setIsLoadingEntities(true);
+                                    let url = `${URLS.ENTITY_API}/suppliers?search=${value}`
+                                    let result = await handleSearch(url);
+                                    setExternalEntities(result);
+                                } catch (error) {
+                                    console.log(error);
+                                }finally{
+                                    setIsLoadingEntities(false);
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -306,10 +359,18 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={products}
                             placeholder="Recherche de produit"
+                            isLoading={isLoadingProducts}
                             onSearch={async (value)=>{
-                                let url = `${URLS.ENTITY_API}/articles?search=${value}`
-                                let result = await handleSearch(url);
-                                setProducts(result);
+                                try {
+                                    setIsLoadingProducts(true);
+                                    let url = `${URLS.ENTITY_API}/articles?search=${value}`
+                                    let result = await handleSearch(url);
+                                    setProducts(result);
+                                } catch (error) {
+                                    console.log(error);
+                                }finally{
+                                    setIsLoadingProducts(false);
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){
@@ -324,10 +385,18 @@ const RapportOffBridgeForm = ({onSubmit}) => {
                 return <AutoComplete 
                             dataList={employees}
                             placeholder="Recherche Employee"
+                            isLoading={isLoadingEmployees}
                             onSearch={async (value)=>{
-                                let url = `${URLS.ENTITY_API}/employees?search=${value}`
-                                let result = await handleSearch(url);
-                                setEmployees(result);
+                                try {
+                                    setIsLoadingEmployees(true);
+                                    let url = `${URLS.ENTITY_API}/employees?search=${value}`
+                                    let result = await handleSearch(url);
+                                    setEmployees(result);
+                                } catch (error) {
+                                    console.log(error);
+                                }finally{
+                                    setIsLoadingEmployees(false);
+                                }
                             }}
                             onSelect={(value)=>{
                                 if(value){
