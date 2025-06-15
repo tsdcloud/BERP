@@ -124,7 +124,7 @@ function App() {
             </Route>
 
             {/* Incident */}
-           {/* <Route path="/incidents">
+           <Route path="/incidents">
               <Route path="" element={<Incident />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="maintenance" element={<Maintenance />} />
@@ -146,7 +146,7 @@ function App() {
               </Route>
               <Route path="operations" element={<Operation />} />
               <Route path="movements" element={<Movement />} />
-           </Route> */}
+           </Route>
 
           </Route>
           

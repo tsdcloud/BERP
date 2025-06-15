@@ -86,10 +86,10 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       render:(value)=><p className='text-sm'>{highlightText(value)}</p>
     },
     {
-      title:"Groupe",
-      dataIndex:"equipmentGroupId",
+      title:"Groupe equipement",
+      dataIndex:"equipmentGroup",
       width:"200px",
-      render:(value)=><p className='text-sm capitalize'>{groups.find(group => group.value === value)?.name || value || '--'}</p>
+      render:(value)=><p className='text-sm capitalize'>{ value?.name || '--'}</p>
     },
     {
       title:"Site",
