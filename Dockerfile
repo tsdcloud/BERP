@@ -3,6 +3,7 @@ FROM node:18 AS builder
 WORKDIR /App/BERP
 COPY package.json package-lock.json ./
 RUN npm install --legacy-peer-deps
+RUN npm install tinyglobby vite-plugin-pwa --legacy-peer-deps
 COPY . .
 RUN npm run build
 
