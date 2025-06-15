@@ -83,7 +83,7 @@ export default function Header() {
 
   return (
     <div className='mb-6'>
-        <div className='bg-blue-900 w-full min-h-24 flex justify-between'>
+        <div className='bg-blue-900 w-full max-h-24 flex justify-between'>
 
                 <h1 className='text-white text-xs font-console text-md p-5 flex items-center gap-2'>
                         <span className='text-xl'>BERP</span>
