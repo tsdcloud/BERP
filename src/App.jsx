@@ -69,6 +69,15 @@ import AsignEmpPerm from './Pages/entity/AsignEmpPerm';
 import { usePermissions } from './contexts/PermissionsProvider';
 import EquipmentGroup from './Pages/incidents/EquipmentGroup';
 
+//BudgetLineAdd commentMore actions
+import DashboardBudget from './Pages/budgetLine';
+import BreakdownBudgetLineOf from './Pages/budgetLine/BreakdownBudgetLineOf';
+import MajorBudgetLine from './Pages/budgetLine/MajorBudgetLine';
+import BudgetLIneOf from './Pages/budgetLine/BudgetLIneOf';
+import BudgetLineName from './Pages/budgetLine/BudgetLineName';
+import AppTable from './components/budgetLine/AppTable';
+import Derogations from './Pages/budgetLine/Derogations';
+
 
 
 function App() {
@@ -79,84 +88,94 @@ function App() {
       <Router>
         <Routes>
           <Route element={<ProtectedRoutes />}>
-            <Route path='/' element={<LuncherApp/>} exact/>
-            <Route path='/chooseEntity' element={<ChooseEntity/>} exact/>
+            <Route path='/' element={<LuncherApp />} exact />
+            <Route path='/chooseEntity' element={<ChooseEntity />} exact />
 
-              {/* User */}
+            {/* User */}
             <Route path="/utilisateurs">
-                <Route path="" element={<User />} />
-                <Route path="permission" element={<Permission />} />
-                <Route path="role" element={<Role />} />
-                <Route path="application" element={<Application />} />
-                <Route path="asign_perm_role" element={<AsignPermRole />} />
-                <Route path="asign_perm_app" element={<AsignPermApp />} />
-                <Route path="asign_perm_user" element={<AsignPermUser />} />
-                <Route path="asign_role_user" element={<AsignRoleUser />} />
+              <Route path="" element={<User />} />
+              <Route path="permission" element={<Permission />} />
+              <Route path="role" element={<Role />} />
+              <Route path="application" element={<Application />} />
+              <Route path="asign_perm_role" element={<AsignPermRole />} />
+              <Route path="asign_perm_app" element={<AsignPermApp />} />
+              <Route path="asign_perm_user" element={<AsignPermUser />} />
+              <Route path="asign_role_user" element={<AsignRoleUser />} />
             </Route>
 
-              {/* Entités */}
+            {/* Entités */}
             <Route path="/entities">
-                <Route path="" element={<Entity />} />
-               <Route path="departments" element={<Department />} />
-               <Route path="employees" element={<Employee />} />
-               <Route path="services" element={<Service />} />
-               <Route path="functions" element={<Function />} />
-               <Route path="grades" element={<Grade />} />
-               <Route path="echelons" element={<Echelon />} />
-               <Route path="categories" element={<Category />} />
-               <Route path="banks" element={<Bank />} />
-               <Route path="customers" element={<Customer />} />
-               <Route path="countries" element={<Country />} />
-               <Route path="roles" element={<RoleEntity/>} />
-               <Route path="applications" element={<ApplicationEntity/>} />
-               <Route path="permissions" element={<PermissionEntity/>} />
-               <Route path="districts" element={<District/>} />
-               <Route path="towns" element={<Town/>} />
-               <Route path="customer_bank_accounts" element={<CustomerBankAccount/>} />
-               <Route path="entity_bank_accounts" element={<EntityBankAccount/>} />
-               <Route path="sites" element={<Site/>} />
-               <Route path="suppliers" element={<Supplier/>} />
-               <Route path="shifts" element={<Shift/>} />
-               <Route path="asign_emp_roles" element={<AsignEmpRole/>} />
-               <Route path="asign_app_perms" element={<AsignAppPerm/>} />
-               <Route path="asign_role_perms" element={<AsignRolePerm/>} />
-               <Route path="asign_emp_perms" element={<AsignEmpPerm/>} />
+              <Route path="" element={<Entity />} />
+              <Route path="departments" element={<Department />} />
+              <Route path="employees" element={<Employee />} />
+              <Route path="services" element={<Service />} />
+              <Route path="functions" element={<Function />} />
+              <Route path="grades" element={<Grade />} />
+              <Route path="echelons" element={<Echelon />} />
+              <Route path="categories" element={<Category />} />
+              <Route path="banks" element={<Bank />} />
+              <Route path="customers" element={<Customer />} />
+              <Route path="countries" element={<Country />} />
+              <Route path="roles" element={<RoleEntity />} />
+              <Route path="applications" element={<ApplicationEntity />} />
+              <Route path="permissions" element={<PermissionEntity />} />
+              <Route path="districts" element={<District />} />
+              <Route path="towns" element={<Town />} />
+              <Route path="customer_bank_accounts" element={<CustomerBankAccount />} />
+              <Route path="entity_bank_accounts" element={<EntityBankAccount />} />
+              <Route path="sites" element={<Site />} />
+              <Route path="suppliers" element={<Supplier />} />
+              <Route path="shifts" element={<Shift />} />
+              <Route path="asign_emp_roles" element={<AsignEmpRole />} />
+              <Route path="asign_app_perms" element={<AsignAppPerm />} />
+              <Route path="asign_role_perms" element={<AsignRolePerm />} />
+              <Route path="asign_emp_perms" element={<AsignEmpPerm />} />
             </Route>
 
             {/* Incident */}
-           <Route path="/incidents">
+            <Route path="/incidents">
               <Route path="" element={<Incident />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="maintenance" element={<Maintenance />} />
               <Route path="off-bridge" element={<OffBridge />} />
-              <Route element={<IncidenSettingRoutes permissions={["incident__view_incident_types"]}/>}>
+              <Route element={<IncidenSettingRoutes permissions={["incident__view_incident_types"]} />}>
                 <Route path="incident-type" element={<IncidentType />} />
               </Route>
-              <Route element={<IncidenSettingRoutes permissions={["incident__view_incident_causes"]}/>}>
+              <Route element={<IncidenSettingRoutes permissions={["incident__view_incident_causes"]} />}>
                 <Route path="incident-cause" element={<IncidentCauses />} />
               </Route>
-              <Route element={<IncidenSettingRoutes permissions={["incident__view_maintenance-types"]}/>}>
+              <Route element={<IncidenSettingRoutes permissions={["incident__view_maintenance-types"]} />}>
                 <Route path="maintenance-type" element={<TypeMaintenance />} />
               </Route>
-              <Route element={<IncidenSettingRoutes permissions={["incident__view_equipements"]}/>}>
+              <Route element={<IncidenSettingRoutes permissions={["incident__view_equipements"]} />}>
                 <Route path="equipement" element={<Equipement />} />
               </Route>
-              <Route element={<IncidenSettingRoutes permissions={["incident__view_equipment-groups"]}/>}>
+              <Route element={<IncidenSettingRoutes permissions={["incident__view_equipment-groups"]} />}>
                 <Route path="equipment-groups" element={<EquipmentGroup />} />
               </Route>
               <Route path="operations" element={<Operation />} />
               <Route path="movements" element={<Movement />} />
-           </Route>
+            </Route>
+
+            {/* Budget Line */}
+            <Route path="/budgetLine">
+              <Route path="" element={<DashboardBudget />} />
+              <Route path="majorBudgetLine" element={<MajorBudgetLine />} />
+              <Route path="budgetLineName" element={<BudgetLineName />} />
+              <Route path="budgetLineOf" element={<BudgetLIneOf />} />
+              {/* <Route path="antDesign" element={<AppTable />} /> */}
+              <Route path="Derogations" element={<Derogations />} />
+            </Route>
 
           </Route>
-          
-          <Route path='/signIn' element={<SignIn/>}/>
-          <Route path='/forgetPassword' element={<ForgetPassword/>} exact/>
-          <Route path='/confirmPassword' element={<ConfirmPassword/>} exact/>
-          <Route path='*' element={<NotFoundPage/>} exact/>
+
+          <Route path='/signIn' element={<SignIn />} />
+          <Route path='/forgetPassword' element={<ForgetPassword />} exact />
+          <Route path='/confirmPassword' element={<ConfirmPassword />} exact />
+          <Route path='*' element={<NotFoundPage />} exact />
         </Routes>
       </Router>
-      <Toaster/>
+      <Toaster />
     </>
   );
 }
