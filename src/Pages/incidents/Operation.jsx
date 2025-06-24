@@ -26,8 +26,10 @@ const Operation = () => {
         try {
            const response = await handleFetch(url);
            if(response.data){
-            console.log(response)
-            setActionTypes(response.data);
+            console.log(response.data)
+            let generators = await response?.data
+            .filter(item => item?.equipement.title.includes('GROUPE ELECTROGENE'))
+            setActionTypes(generators);
             setTotalPages(response.totalPages);
             setTotal(response.total);
             setPage(response.page);
@@ -36,6 +38,8 @@ const Operation = () => {
             console.log(error);
         }
     }
+
+
     const searchOperations= async (url) => {
         try {
            const response = await handleFetch(url);

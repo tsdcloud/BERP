@@ -66,7 +66,7 @@ const ActionTypeForm = ({onSuccess}) => {
         if(data.description === ""){
           data.description = null
         }
-        
+
         let url = `${URLS.INCIDENT_API}/operations`
         try {
             let response = await handlePost(url, data, true);
@@ -91,7 +91,10 @@ const ActionTypeForm = ({onSuccess}) => {
         try {
           let response = await handleFetch(link);     
           if(response?.status === 200){
-            let formatedData = response?.data.map(item=>{
+            let formatedData = 
+            response?.data
+            .filter(item => item?.title.includes('GROUPE ELECTROGENE'))
+            .map(item=>{
               return {
                 name:item?.title,
                 value: item?.id
@@ -179,7 +182,7 @@ const ActionTypeForm = ({onSuccess}) => {
               watch("actionType") === 'REFUEL' &&
               <div className='flex flex-col mx-2 mt-2'>
                   <label htmlFor="" className='text-sm px-2 mx-1 font-semibold'>Contenu :</label>
-                  <input type="text" {...register("content", {required:"Ce champ est requis"})} className={`${errors.content ? 'outline-red-500 ring-red-500' : 'outline-none'} p-2 border text-sm rounded-lg mx-2`} placeholder='Contenu' />
+                  <input type="number" {...register("content", {required:"Ce champ est requis", valueAsNumber: true, min: {value: 1, message: 'La valeur minimale est 1'} })} className={`${errors.content ? 'outline-red-500 ring-red-500' : 'outline-none'} p-2 border text-sm rounded-lg mx-2`} placeholder='Contenu' />
                   {errors.content && <small className='text-xs my-2 text-red-500 mx-4'>{errors.content.message}</small>}
               </div>
             }

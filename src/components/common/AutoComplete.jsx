@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, forwardRef, useImperativeHandle } from "react";
 import { Skeleton } from "../ui/skeleton";
 import { Button } from '../ui/button';
-
+import Preloader from '../Preloader';
 
 const AutoComplete = forwardRef(({
   placeholder = "Type to search...",
@@ -76,40 +76,42 @@ const AutoComplete = forwardRef(({
     }
   }, [isLoading, isFocused]);
 
-  return isLoading ? (
-    <div className="w-full p-2 relative flex items-center">
-      <Skeleton className="w-full p-2 h-[40px] border" />
-      <p className="absolute text-sm text-gray-500 animated-fade animated-infinite mx-4">Chargement...</p>
-    </div>
-  ) : (
+  return (
     <div className="w-full">
         <div className="w-full p-2 bg-white relative" ref={autocompleteRef}>
-          <input
-              className={`w-full p-2 rounded-md border text-sm ${error ? "outline-[2px] outline-red-500 ring-2 ring-red-500" : "outline-[1px] outline-blue-300"}`}
-              placeholder={placeholder}
-              value={value}
-              ref={autocompleteInputRef}
-              onFocus={() => {
-                setShowOptions(true);
-                setIsFocused(true);
-              }}
-              onChange={handleOnChange}
-              register
-          />
-        {showOptions && (
-            <div className="bg-white shadow-xl border-[1px] rounded-sm p-2 absolute w-[97%] transition-all space-y-2 max-h-[100px] overflow-scroll z-[30] mr-3">
-            {dataList.map((item, index) => (
-                <div
-                key={index}
-                className="w-full hover:bg-slate-100 p-2 transition-all cursor-pointer text-xs font-semibold rounded-sm capitalize"
-                onClick={() => handleSelect(item)}
-                >
-                <span>{item.name}</span>
-                </div>
-            ))}
-            </div>
-        )}
-        {errorMessage}
+          <div className="relative">
+            <input
+                className={`w-full p-2 rounded-md border text-sm ${error ? "outline-[2px] outline-red-500 ring-2 ring-red-500" : "outline-[1px] outline-blue-300"}`}
+                placeholder={placeholder}
+                value={value}
+                ref={autocompleteInputRef}
+                onFocus={() => {
+                  setShowOptions(true);
+                  setIsFocused(true);
+                }}
+                onChange={handleOnChange}
+                register
+            />
+            {isLoading && (
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                <Preloader size={20} />
+              </div>
+            )}
+          </div>
+          {showOptions && (
+              <div className="bg-white shadow-xl border-[1px] rounded-sm p-2 absolute w-[97%] transition-all space-y-2 max-h-[100px] overflow-scroll z-[30] mr-3">
+              {dataList.map((item, index) => (
+                  <div
+                  key={index}
+                  className="w-full hover:bg-slate-100 p-2 transition-all cursor-pointer text-xs font-semibold rounded-sm capitalize"
+                  onClick={() => handleSelect(item)}
+                  >
+                  <span>{item.name}</span>
+                  </div>
+              ))}
+              </div>
+          )}
+          {errorMessage}
         </div>
     </div>
   );

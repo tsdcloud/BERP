@@ -77,6 +77,7 @@ import BudgetLIneOf from './Pages/budgetLine/BudgetLIneOf';
 import BudgetLineName from './Pages/budgetLine/BudgetLineName';
 import AppTable from './components/budgetLine/AppTable';
 import Derogations from './Pages/budgetLine/Derogations';
+import EquipmentGroupFamily from './Pages/incidents/EquipmentGroupFamily';
 
 
 
@@ -153,6 +154,9 @@ function App() {
               <Route element={<IncidenSettingRoutes permissions={["incident__view_equipment-groups"]} />}>
                 <Route path="equipment-groups" element={<EquipmentGroup />} />
               </Route>
+              {/* <Route element={<IncidenSettingRoutes permissions={["incident__view_equipment-families"]} />}>
+              </Route> */}
+                <Route path="equipment-group-families" element={<EquipmentGroupFamily />} />
               <Route path="operations" element={<Operation />} />
               <Route path="movements" element={<Movement />} />
             </Route>

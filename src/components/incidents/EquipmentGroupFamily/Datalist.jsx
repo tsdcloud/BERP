@@ -24,7 +24,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
   const handleDelete = async (id) =>{
     if (window.confirm("Voulez vous supprimer le group d'equipement ?")) {
       try {
-        let url = `${URLS.INCIDENT_API}/equipment-groups/${id}`;
+        let url = `${URLS.INCIDENT_API}/equipment-group-families/${id}`;
         let response = await fetch(url, {
           method:"DELETE",
           headers:{
@@ -84,12 +84,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       render:(value)=><p className='text-sm'>{highlightText(value)}</p>
     },
     {
-      title:"Famille d'equipement",
-      dataIndex:"equipmentGroupFamily",
-      width:"200px",
-      render:(value)=><p className='text-sm'>{value?.name ? highlightText(value?.name) : "--"}</p>
-    },
-    {
       title:"Cree par",
       dataIndex:"createdBy",
       width:"200px",
@@ -98,12 +92,6 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     {
       title:"Date de création",
       dataIndex:"createdAt",
-      width:"200px",
-      render:(value)=><p className='text-sm'>{highlightText(new Date(value).toLocaleString().toString())}</p>
-    },
-    {
-      title:"Dernière mise a jour",
-      dataIndex:"updatedAt",
       width:"200px",
       render:(value)=><p className='text-sm'>{highlightText(new Date(value).toLocaleString().toString())}</p>
     },

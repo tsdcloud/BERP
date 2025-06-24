@@ -163,9 +163,9 @@ const InitiateForm = ({onSucess}) => {
         </div>
         {/* Groupe selection */}
         <div className='flex flex-col'>
-          <label htmlFor="" className='text-sm px-2 mx-2 font-semibold'>Choisir le group <span className='text-red-500'>*</span> :</label>
+          <label htmlFor="" className='text-sm px-2 mx-2 font-semibold'>Choisir le groupe <span className='text-red-500'>*</span> :</label>
           <AutoComplete
-            placeholder="Choisir le group"
+            placeholder="Choisir le groupe"
             isLoading={isLoadingGroups}
             dataList={groups}
             onSearch={handleSearchGroups}

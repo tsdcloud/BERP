@@ -65,12 +65,20 @@ const Tabs = () => {
             requiredRoles:["maintenance technician", "HSE supervisor", "IT technician", "manager", "coordinator"]
         },
         {
-            name:"Group d'équipement",
+            name:"Groupe d'équipement",
             isActive:pathname.includes("equipment-groups") ? true : false,
             link: "/incidents/equipment-groups",
             icon:<ArchiveBoxIcon className='h-4 w-4' />,
             requiredPermissions:["incident__view_group_equipements"],
             requiredRoles:["IT technician"]
+        },
+        {
+            name:"Famille d'équipement",
+            isActive:pathname.includes("equipment-group-families") ? true : false,
+            link: "/incidents/equipment-group-families",
+            icon:<ArchiveBoxIcon className='h-4 w-4' />,
+            requiredPermissions:["incident__view_equipment-families"],
+            requiredRoles:["IT technician", "maintenance technician"]
         },
         {
             name:"Suivi de GE",

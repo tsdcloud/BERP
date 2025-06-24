@@ -166,7 +166,7 @@ const InitiateForm = ({onSucess}) => {
             <option value="CORRECTION">CORRECTIF</option>
             <option value="PALLIATIVE">PALIATIF</option>
             <option value="CURATIVE">CURATIF</option>
-            <option value="PROGRAMMED">PROGRAMMé</option>
+            <option value="PROGRAMMED">PROGRAMMéE</option>
           </select>
           {errors.maintenance && <small className='text-xs my-2 text-red-500 mx-4'>{errors.maintenance.message}</small>}
         </div>
