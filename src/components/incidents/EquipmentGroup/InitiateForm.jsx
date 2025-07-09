@@ -81,15 +81,15 @@ const InitiateForm = ({onSucess}) => {
   return (
     <form onSubmit={handleSubmit(submitForm)} className='space-y-2'>
         <div className='flex flex-col mx-4 space-y-2'>
-          <label htmlFor="" className='text-sm font-semibold'>Nom du groupe d'équipement <span className='text-red-500'>*</span> :</label>
+          <label htmlFor="" className='text-sm font-semibold'>Nom de l'équipement <span className='text-red-500'>*</span> :</label>
           <input {...register("name", {required:"Ce champs est requis"})} className={`${errors.name ? 'outline-red-500 ring-red-500' : 'outline-none'} p-2 border text-sm rounded-lg`} placeholder="Entrer le nom de l'equipement"/>
           {errors.name && <small className='text-xs my-2 text-red-500'>{errors.name.message}</small>}
         </div>
         {/* Groupe selection */}
         <div className='flex flex-col'>
-          <label htmlFor="" className='text-sm px-2 mx-2 font-semibold'>Choisir la famille d'équipement <span className='text-red-500'>*</span> :</label>
+          <label htmlFor="" className='text-sm px-2 mx-2 font-semibold'>Choisir le domaine <span className='text-red-500'>*</span> :</label>
           <AutoComplete
-            placeholder="Choisir la famille"
+            placeholder="Choisir le domaine"
             isLoading={isLoadingFamilies}
             dataList={families}
             onSearch={handleSearchGroupFamilies}

@@ -76,11 +76,11 @@ const Operation = () => {
             </div>
             {/* Table */}
             <div className='w-full bg-white rounded-lg p-2 h-[70vh] flex flex-col'>
-                <div className='px-2 flex justify-between mx-2'>
-                    <div className='flex items-center justify-between w-full px-4'>
+                <div className='px-2  w-full justify-between mx-2'>
+                    <div className='flex flex-col md:flex-row gap-2 items-center justify-between w-full px-4'>
                         <input 
                             type="text" 
-                            className='p-2 border rounded-lg' 
+                            className='p-2 border rounded-lg w-full md:w-auto' 
                             placeholder='Recherche...' 
                             value={searchValue}
                             onChange={(e)=>{
@@ -89,7 +89,7 @@ const Operation = () => {
                             }}
                         />
                         {/* Dialog */}
-                        <div className='flex gap-2 items-center'>
+                        <div className='flex gap-2 items-center w-full md:w-auto'>
                             {/* <Input placeholder="Recherche..." className="outline-primary"/> */}
                             <Dialogue 
                                 buttonText={"Nouveau suivi de GE"}
@@ -104,8 +104,8 @@ const Operation = () => {
                     dataList={actionTypes}
                     fetchData={fetchOperations}
                     pagination={
-                        <div className='flex items-center justify-end px-6 w-full'>
-                            <p className='text-sm font-bold'>{total} ligne(s)</p>
+                        <div className='flex flex-col md:flex-row items-center w-full justify-end px-6'>
+                            <p className='text-md text-black font-bold'>{actionTypes?.length} ligne(s)</p>
                             <Pagination 
                                 total={total}
                                 pageSize={100}

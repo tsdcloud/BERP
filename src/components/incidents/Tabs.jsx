@@ -57,7 +57,7 @@ const Tabs = () => {
             requiredRoles:["maintenance technician", "HSE supervisor", "IT technician", "manager", "coordinator"]
         },
         {
-            name:"Equipements",
+            name:"Systèmes",
             isActive:pathname.includes("equipement") ? true : false,
             link: "/incidents/equipement",
             icon:<ArchiveBoxIcon className='h-4 w-4' />,
@@ -65,20 +65,20 @@ const Tabs = () => {
             requiredRoles:["maintenance technician", "HSE supervisor", "IT technician", "manager", "coordinator"]
         },
         {
-            name:"Groupe d'équipement",
+            name:"Equipements",
             isActive:pathname.includes("equipment-groups") ? true : false,
             link: "/incidents/equipment-groups",
             icon:<ArchiveBoxIcon className='h-4 w-4' />,
             requiredPermissions:["incident__view_group_equipements"],
-            requiredRoles:["IT technician"]
+            requiredRoles:["IT technician", "maintenance technician","maintenance technician", "HSE supervisor", "IT technician", "manager", "coordinator"]
         },
         {
-            name:"Famille d'équipement",
+            name:"Domaines",
             isActive:pathname.includes("equipment-group-families") ? true : false,
             link: "/incidents/equipment-group-families",
             icon:<ArchiveBoxIcon className='h-4 w-4' />,
             requiredPermissions:["incident__view_equipment-families"],
-            requiredRoles:["IT technician", "maintenance technician"]
+            requiredRoles:["IT technician", "maintenance technician", "maintenance technician", "HSE supervisor", "IT technician", "manager", "coordinator"]
         },
         {
             name:"Suivi de GE",

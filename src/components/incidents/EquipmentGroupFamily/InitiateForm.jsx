@@ -38,8 +38,8 @@ const InitiateForm = ({onSucess}) => {
   return (
     <form onSubmit={handleSubmit(submitForm)} className='space-y-2'>
         <div className='flex flex-col mx-4 space-y-2'>
-          <label htmlFor="" className='text-sm font-semibold'>Nom de la famille d'équipement :</label>
-          <input {...register("name", {required:"Ce champs est requis"})} className={`${errors.name ? 'outline-red-500 ring-red-500' : 'outline-none'} p-2 border text-sm rounded-lg`} placeholder="Entrer le nom de l'equipement"/>
+          <label htmlFor="" className='text-sm font-semibold'>Nom du domaine :</label>
+          <input {...register("name", {required:"Ce champs est requis"})} className={`${errors.name ? 'outline-red-500 ring-red-500' : 'outline-none'} p-2 border text-sm rounded-lg`} placeholder="Entrer le nom du domaine"/>
           {errors.name && <small className='text-xs my-2 text-red-500'>{errors.name.message}</small>}
         </div>
         <div className='flex justify-end'>

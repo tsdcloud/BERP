@@ -72,10 +72,10 @@ const Movement = () => {
             {/* Table */}
             <div className='w-full bg-white rounded-lg p-2'>
                 <div className='px-2 flex justify-between mx-2'>
-                    <div className='flex items-center justify-between w-full'>
+                    <div className='flex flex-col md:flex-row gap-2 items-center justify-between w-full'>
                         <input 
                             type="text" 
-                            className='p-2 border rounded-lg' 
+                            className='p-2 border rounded-lg w-full md:w-auto' 
                             placeholder='Recherche...' 
                             value={searchValue}
                             onChange={(e)=>{
@@ -84,7 +84,7 @@ const Movement = () => {
                             }}
                         />
                         {/* Dialog */}
-                        <div className='flex gap-2 items-center'>
+                        <div className='flex gap-2 items-center w-full md:w-auto'>
                             {/* <Input placeholder="Recherche..." className="outline-primary"/> */}
                             <Dialogue 
                                 buttonText={"Nouveau deplacement"}

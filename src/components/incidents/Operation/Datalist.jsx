@@ -70,16 +70,19 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     {
       title:"Num ref",
       dataIndex:"equipement",
+      width:  "200px",
       render:(value)=><p className='text-sm'>{highlightText(value?.numRef) || "--"}</p>
     },
     {
       title:"Equipement",
       dataIndex:"equipement",
+      width:  "200px",
       render:(value)=><p>{value?.title ||"--"}</p>
     },
     {
       title:"Type d'action",
       dataIndex:"actionType",
+      width:  "200px",
       render:(value)=><p className='text-sm'>{
         value == "START" ? "Démarrage" : 
         value == "STOP" ? "Arrêt" :
@@ -89,21 +92,25 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     {
       title:"Site",
       dataIndex:"siteId",
+      width:  "200px",
       render:(value)=><p className='text-sm'>{sites.find(site => site.value === value)?.name ||"--"}</p>
     },
     {
       title:"Contenu",
       dataIndex:"content",
+      width:  "200px",
       render:(value)=><p className='text-sm'>{highlightText(value)||"--"}</p>
     },
     {
       title:"Date et création",
       dataIndex:"createdAt",
+      width:  "200px",
       render:(value)=><p className='text-sm'>{new Date(value).toLocaleString() ||"--"}</p>
     },
     {
       title:"Description",
       dataIndex:"description",
+      width:  "200px",
       render:(value)=><p className='text-sm'>{highlightText(value) || "--"}</p>
     },
     {

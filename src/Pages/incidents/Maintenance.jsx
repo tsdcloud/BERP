@@ -161,8 +161,8 @@ const Maintenance = () => {
                     searchValue={searchValue}
                     loading={isLoading}
                     pagination={
-                        <div className='flex items-center px-6'>
-                            <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                        <div className='flex flex-col md:flex-row items-center px-6'>
+                            <p className='text-md text-black font-bold'>{total} ligne(s)</p>
                             <Pagination 
                                 total={total}
                                 pageSize={100}

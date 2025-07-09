@@ -7,11 +7,12 @@ import { CheckCircle } from 'lucide-react';
 import { URLS } from '../../../../configUrl';
 import { useFetch } from '../../../hooks/useFetch';
 import AutoComplete from '../../common/AutoComplete';
-import { ACTION_TYPES } from '../../../utils/constant.utils';
+
 const MovementForm = ({onSuccess}) => {
     const {handleSubmit, formState:{errors}, register, setValue, watch} = useForm();
     const {handlePost, handleFetch} = useFetch();
     const [isLoading, setIsLoading] = useState(true);
+    const [isLoadingEquipements, setIsLoadingEquipements] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     
     const [sites, setSites] = useState([]);
@@ -96,7 +97,7 @@ const MovementForm = ({onSuccess}) => {
 
     // Equipements handlers
     const handleFetchEquipements = async (link) => {
-        setIsLoading(true)
+        setIsLoadingEquipements(true)
         try {
           let response = await handleFetch(link);     
           if(response?.status === 200){
@@ -112,7 +113,7 @@ const MovementForm = ({onSuccess}) => {
           console.error(error);
           toast.error("Échec de l'essai de récupération les equipements");
         }finally{
-          setIsLoading(false);
+            setIsLoadingEquipements(false);
         }
     }
 
@@ -162,7 +163,7 @@ const MovementForm = ({onSuccess}) => {
                     <label htmlFor="" className='text-sm px-2 mx-1 font-semibold'>Choisir l'equipement :</label>
                     <AutoComplete
                         placeholder="Choisir un equipment"
-                        isLoading={isLoading}
+                        isLoading={isLoadingEquipements}
                         dataList={equipements}
                         onSearch={handleSearchEquipements}
                         onSelect={handleSelectEquipement}

@@ -63,16 +63,16 @@ const OffBridge = () => {
             </div>
             {/* Table */}
             <div className='w-full bg-white rounded-lg p-2'>
-                <div className='px-4 flex items-center justify-between w-full'>
+                <div className='px-4 flex flex-col gap-2 sm:flex-row items-center justify-between w-full'>
                     <input 
                         type="text" 
-                        className='p-2 rounded-lg border'
+                        className='w-full md:w-auto p-2 text-sm border rounded-lg'
                         placeholder='Recherche...'
                         value={searchValue}
                         onChange={handleSearch} 
                     />
                     {/* Dialog */}
-                    <div className='flex gap-2 items-center'>
+                    <div className='flex gap-2 items-center w-full md:w-auto'>
                         <Dialogue 
                             buttonText={"Nouveau hors pont"}
                             header={<h2 className='text-xl font-semibold'>Nouveau hors pont</h2>}
@@ -91,8 +91,8 @@ const OffBridge = () => {
                     searchValue={searchValue}
                     loading={isLoading}
                     pagination={
-                        <div className='flex items-center px-6'>
-                            <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                        <div className='flex flex-col md:flex-row items-center px-6'>
+                            <p className='text-md text-black font-bold'>{total} ligne(s)</p>
                             <Pagination 
                                 total={total}
                                 pageSize={100}

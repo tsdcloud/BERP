@@ -77,16 +77,16 @@ const Equipement = () => {
 
             {/* Table */}
             <div className='w-full bg-white rounded-lg p-2 h-[70vh] flex flex-col'>
-                <div className='px-4 flex items-center justify-between w-full'>
+                <div className='px-4 flex flex-col gap-2 sm:flex-row items-center justify-between w-full'>
                     <input 
                         type="text"
-                        className='p-2 text-sm border rounded-lg' 
+                        className='w-full md:w-auto p-2 text-sm border rounded-lg' 
                         placeholder='Recherche...' 
                         value={searchValue}
                         onChange={handleSearch}
                     />
                     {/* Dialog */}
-                    <div className='flex gap-2 items-center'>
+                    <div className='flex gap-2 items-center w-full md:w-auto'>
                         <Dialogue 
                             buttonText={"Créer equipement"}
                             header={<h2 className='text-xl font-semibold'>Créer equipement</h2>}
@@ -104,8 +104,8 @@ const Equipement = () => {
                     searchValue={searchValue}
                     loading={isLoading}
                     pagination={
-                    <div className='flex items-center px-6 justify-end w-full'>
-                        <p className='text-xs text-gray-400'>{total} ligne(s)</p>
+                    <div className='flex flex-col md:flex-row w-full justify-end items-center px-6'>
+                        <p className='text-md text-black font-bold'>{total} ligne(s)</p>
                         <Pagination 
                             total={total}
                             pageSize={100}

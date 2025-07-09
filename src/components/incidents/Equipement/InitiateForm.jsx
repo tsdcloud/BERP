@@ -123,23 +123,23 @@ const InitiateForm = ({onSucess}) => {
   return (
     <form onSubmit={handleSubmit(submitForm)} className='flex flex-col space-y-2'>
 
-      <div className='overflow-y-scroll max-h-[300px] space-y-3'>
+      <div className='space-y-2 max-w-md'>
         {/* Titled */}
         <div className='flex flex-col mx-4 space-y-2'>
           <label htmlFor="" className='text-sm font-semibold'>Intitulé <span className='text-red-500'>*</span>:</label>
           <input {...register("title", {required:"Ce champs est requis"})} className={`${errors.title ? 'outline-red-500 ring-red-500' : 'outline-none'} p-2 border text-sm rounded-lg`} placeholder="Entrer le nom de l'equipement"/>
           {errors.title && <small className='text-xs my-2 text-red-500'>{errors.title.message}</small>}
         </div>
-        <div className='flex items-center justify-evenly'>
+        <div className='flex flex-col justify-center md:flex-row items-center md:justify-evenly max-w-[300px] mx-auto md:mx-0'>
           {/* operatingMode */}
-          <div className='flex flex-col mx-4 space-y-2'>
+          <div className='flex flex-col mx-4 space-y-2 w-full md:w-auto'>
             <label htmlFor="" className='text-sm font-semibold'>Alimentation <span className='text-red-500'>*</span> :</label>
             <input type='number' {...register("operatingMode", {required:"Ce champs est requis"})} className={`${errors.operatingMode ? 'outline-red-500 ring-red-500' : 'outline-none'} p-2 border text-sm rounded-lg`} placeholder="Alimentation"/>
             {errors.operatingMode && <small className='text-xs my-2 text-red-500'>{errors.operatingMode.message}</small>}
           </div>
 
           {/* Lifespan in days */}
-          <div className='flex flex-col mx-4 space-y-2'>
+          <div className='flex flex-col mx-4 space-y-2 w-full md:w-auto'>
             <label htmlFor="" className='text-sm font-semibold'>Durée de vie (en jour) <span className='text-red-500'>*</span> :</label>
             <input type='number'{...register("lifeSpan", {required:"Ce champs est requis"})} className={`${errors.lifeSpan ? 'outline-red-500 ring-red-500' : 'outline-none'} p-2 border text-sm rounded-lg`} placeholder="Durée de vie"/>
             {errors.lifeSpan && <small className='text-xs my-2 text-red-500'>{errors.lifeSpan.message}</small>}

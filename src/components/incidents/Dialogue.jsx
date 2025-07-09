@@ -22,7 +22,7 @@ const Dialogue = ({header, content, footer, buttonText, isOpenned}) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-            <Button className="bg-primary hover:bg-secondary text-white font-semibold outline-none text-sm" onClick={() => setIsOpen(!isOpenned)} id="close-dialog">
+            <Button className="bg-primary hover:bg-secondary text-white font-semibold outline-none text-sm w-full md:w-auto" onClick={() => setIsOpen(!isOpenned)} id="close-dialog">
               <PlusIcon className='h-3' />
               <span>{buttonText}</span>
             </Button>

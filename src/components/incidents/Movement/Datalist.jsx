@@ -70,26 +70,31 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
     {
       title:"Equipement",
       dataIndex:"equipement",
+      width:  "200px",
       render:(value)=><p className='text-sm'>{highlightText(value.title) || "--"}</p>
     },
     {
       title:"Site d'origine",
       dataIndex:"originSite",
+      width:  "200px",
       render:(value)=><p className='text-sm'>{sites.find(site => site.value === value)?.name ||"--"}</p>
     },
     {
       title:"Site de destination",
       dataIndex:"destinationSite",
+      width:  "200px",
       render:(value)=><p className='text-sm'>{sites.find(site => site.value === value)?.name ||"--"}</p>
     },
     {
       title:"Description",
       dataIndex:"description",
+      width:  "200px",
       render:(value)=><p className='text-sm'>{highlightText(value) || "--"}</p>
     },
     {
       title:"Date de deplacement",
       dataIndex:"createdAt",
+      width:  "200px",
       render:(value)=><p className='text-sm'>{new Date(value).toLocaleString() || "--"}</p>
     },
     {
