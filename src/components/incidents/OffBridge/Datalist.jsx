@@ -102,7 +102,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       title:"Type de facturation",
       dataIndex:"paymentMode",
       width:"150px",
-      render:(value)=><p className='text-sm capitalize'>{value === "CASH" ? "ESPECE" :  highlightText(value) || "--"}</p>
+      render:(value)=><p className='text-sm capitalize'>{value === "CASH" ? "ESPECE" : value === "BILLABLE" ? "A FACTURER" : highlightText(value) || "--"}</p>
     },
     {
       title:"Plomb 1",
