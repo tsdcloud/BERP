@@ -100,5 +100,13 @@ export const links = [
         name:"Prestataire(s)",
         link: "/entities/suppliers"
     },
-   
+    {
+        name:"Famille(s) Article(s)",
+        link: "/entities/article_families"
+    },
+    {
+        name:"Article(s)",
+        link: "/entities/articles"
+    },
+
 ];

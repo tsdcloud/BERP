@@ -138,8 +138,15 @@ const Incident = () =>{
         setIsLoading(true);
         try {
            const response = await handleFetch(url);
+           console.log(response);
            if(response.status === 200){
-            setIncidents(response.data);
+            // setIncidents(response.data);
+            // Ajouter une key unique à chaque élément
+            const dataWithKeys = response.data.map(item => ({
+                ...item,
+                key: item.id // Utilisez l'id comme clé unique
+            }));
+            setIncidents(dataWithKeys);
             setTotalPages(response?.totalPages);
             setTotal(response?.total);
             setPage(response?.page);
@@ -172,6 +179,7 @@ const Incident = () =>{
         {value:"shift", name:"Quart"},
         {value:"createdBy", name:"Initiateur"},
         {value:"description", name:"Description"},
+        {value:"hasStoppedOperations", name:"Arrêt opération"},
         {value:"intervener", name:"Intervenant"},
         {value:"closedBy", name:"Cloturer par"},
         {value:"equipmentId", name:"Equipement"},
@@ -215,11 +223,21 @@ const Incident = () =>{
                         pagination={
                             <div className='flex items-center px-6'>
                                 <p className='text-sm text-black font-bold'>{total} ligne(s)</p>
-                                <Pagination 
+                                {/* <Pagination 
                                     total={total}
                                     pageSize={100}
                                     onChange={(page)=>{
                                         totalPages > page && fetchIncidents(`${URLS.INCIDENT_API}/incidents?page=${page}`)
+                                    }}
+                                /> */}
+                                <Pagination 
+                                    total={total}
+                                    pageSize={100}
+                                    current={page} // Ajoute ça pour suivre la page active
+                                    onChange={(newPage)=>{
+                                        if (newPage <= totalPages) {
+                                        fetchIncidents(`${URLS.INCIDENT_API}/incidents?page=${newPage}`);
+                                        }
                                     }}
                                 />
                             </div>

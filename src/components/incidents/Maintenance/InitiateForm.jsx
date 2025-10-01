@@ -142,10 +142,11 @@ const InitiateForm = ({onSucess}) => {
         response?.error_list?.froEach(error => toast.error(error.msg));
         return
       }
+      toast.success("Opération éffectuée avec succès");
       onSucess();
     } catch (error) {
       console.log(error);
-      toast.error("Une erreur inattendue s'est produite, veuillez réessayer plus tard.");
+      // toast.error("Une erreur inattendue s'est produite, veuillez réessayer plus tard.");
     }
   }
 

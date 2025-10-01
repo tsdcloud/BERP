@@ -68,6 +68,8 @@ import AsignRolePerm from './Pages/entity/AsignRolePerm';
 import AsignEmpPerm from './Pages/entity/AsignEmpPerm';
 import { usePermissions } from './contexts/PermissionsProvider';
 import EquipmentGroup from './Pages/incidents/EquipmentGroup';
+import ArticleFamily from './Pages/entity/ArticleFamily';
+import Article from './Pages/entity/Article';
 
 //BudgetLineAdd commentMore actions
 import DashboardBudget from './Pages/budgetLine';
@@ -131,6 +133,8 @@ function App() {
               <Route path="asign_app_perms" element={<AsignAppPerm />} />
               <Route path="asign_role_perms" element={<AsignRolePerm />} />
               <Route path="asign_emp_perms" element={<AsignEmpPerm />} />
+              <Route path="article_families" element={<ArticleFamily />} />
+              <Route path="articles" element={<Article />} />
             </Route>
 
             {/* Incident */}

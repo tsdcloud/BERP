@@ -86,10 +86,11 @@ const MovementForm = ({onSuccess}) => {
                 });
                 return
             }
+            toast.success("Opération éffectuée avec succès");
             onSuccess();
         } catch (error) {
             console.log(error);
-            toast.error("La création a échoué, vérifiez votre connexion");
+            // toast.error("La création a échoué, vérifiez votre connexion");
         }finally{
             setIsSubmitting(false);
         }

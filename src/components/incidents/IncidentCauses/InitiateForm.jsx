@@ -24,7 +24,7 @@ const InitiateForm = ({onSucess}) => {
       onSucess();
     } catch (error) {
       console.log(error);
-      alert("Erreur. Une erreur est survenue lors de la création.");
+      // alert("Erreur. Une erreur est survenue lors de la création.");
     }
   }
   return (

@@ -129,6 +129,11 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
           {employees.find(employee => employee.value === value)?.name || value || "--"}
         </p>
     },
+    { 
+      title: "Date de clôture Utilisateur",
+      dataIndex: "closedManuDate",
+      width: "200px",
+       render: v => <p className='text-sm capitalize'>{v ? new Date(v).toLocaleString() : "--"}</p> },
     {
       title:"Maintenancier",
       dataIndex:"supplierId",

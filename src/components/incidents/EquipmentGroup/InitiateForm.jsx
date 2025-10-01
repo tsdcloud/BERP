@@ -30,7 +30,7 @@ const InitiateForm = ({onSucess}) => {
       onSucess();
     } catch (error) {
       console.log(error);
-      toast.error("La création a échoué, vérifiez votre connexion");
+      // toast.error("La création a échoué, vérifiez votre connexion");
     }finally{
       setIsSubmitting(false);
     }

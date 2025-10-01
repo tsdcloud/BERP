@@ -26,7 +26,7 @@ export default function Index () {
                     </div>
                     {/* users */}
                     <div className='flex gap-2 items-center'>
-                     <Entity/>
+                        <Entity/>
                     </div>
                 </div>
                 <Footer className="flex flex-col sm:flex-row items-center justify-center"/>

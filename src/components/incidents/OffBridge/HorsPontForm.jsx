@@ -79,6 +79,7 @@ const HorsPontForm = ({onSucess}) =>{
             alert("Echec de creation du hors pont");
         } catch (error) {
             console.error(error)
+            toast.error("Erreur lors de la déclaration de l'incident");
         }finally{
             setIsLoading(false)
         }

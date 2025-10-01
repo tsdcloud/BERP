@@ -49,38 +49,6 @@ const Tabs = () => {
             requiredRoles:[]
         },
         {
-            name:"Maintenances",
-            isActive:(pathname.includes("maintenance") && !pathname.includes("type")) ? true : false,
-            link: "/incidents/maintenance",
-            icon:<WrenchScrewdriverIcon className='h-4 w-4' />,
-            requiredPermissions:["incident__view_maintenance"],
-            requiredRoles:["maintenance technician", "HSE supervisor", "IT technician", "manager", "coordinator"]
-        },
-        {
-            name:"Systèmes",
-            isActive:pathname.includes("equipement") ? true : false,
-            link: "/incidents/equipement",
-            icon:<ArchiveBoxIcon className='h-4 w-4' />,
-            requiredPermissions:["incident__view_equipements"],
-            requiredRoles:["maintenance technician", "HSE supervisor", "IT technician", "manager", "coordinator"]
-        },
-        {
-            name:"Equipements",
-            isActive:pathname.includes("equipment-groups") ? true : false,
-            link: "/incidents/equipment-groups",
-            icon:<ArchiveBoxIcon className='h-4 w-4' />,
-            requiredPermissions:["incident__view_group_equipements"],
-            requiredRoles:["IT technician", "maintenance technician","maintenance technician", "HSE supervisor", "IT technician", "manager", "coordinator"]
-        },
-        {
-            name:"Domaines",
-            isActive:pathname.includes("equipment-group-families") ? true : false,
-            link: "/incidents/equipment-group-families",
-            icon:<ArchiveBoxIcon className='h-4 w-4' />,
-            requiredPermissions:["incident__view_equipment-families"],
-            requiredRoles:["IT technician", "maintenance technician", "maintenance technician", "HSE supervisor", "IT technician", "manager", "coordinator"]
-        },
-        {
             name:"Suivi de GE",
             isActive:pathname.includes("operations") ? true : false,
             link: "/incidents/operations",
@@ -97,12 +65,46 @@ const Tabs = () => {
             requiredRoles:[]
         },
         {
+            name:"Maintenances",
+            isActive:(pathname.includes("maintenance") && !pathname.includes("type")) ? true : false,
+            link: "/incidents/maintenance",
+            icon:<WrenchScrewdriverIcon className='h-4 w-4' />,
+            requiredPermissions:["incident__view_maintenance"],
+            requiredRoles:["maintenance technician", "HSE supervisor", "IT technician", "manager", "coordinator"]
+        },
+        {
+            name:"Equipements",
+            isActive:pathname.includes("equipement") ? true : false,
+            link: "/incidents/equipement",
+            icon:<ArchiveBoxIcon className='h-4 w-4' />,
+            requiredPermissions:[],
+            requiredRoles:[]
+            // requiredPermissions:["incident__view_equipements"],
+            // requiredRoles:["maintenance technician", "HSE supervisor", "IT technician", "manager", "coordinator"]
+        },
+        {
+            name:"Type Equipements",
+            isActive:pathname.includes("equipment-groups") ? true : false,
+            link: "/incidents/equipment-groups",
+            icon:<ArchiveBoxIcon className='h-4 w-4' />,
+            requiredPermissions:["incident__view_group_equipements"],
+            requiredRoles:["IT technician", "maintenance technician","maintenance technician", "HSE supervisor", "IT technician", "manager", "coordinator"]
+        },
+        {
+            name:"Domaines Equipements",
+            isActive:pathname.includes("equipment-group-families") ? true : false,
+            link: "/incidents/equipment-group-families",
+            icon:<ArchiveBoxIcon className='h-4 w-4' />,
+            requiredPermissions:["incident__view_equipment-families"],
+            requiredRoles:["IT technician", "maintenance technician", "maintenance technician", "HSE supervisor", "IT technician", "manager", "coordinator"]
+        },
+        {
             name:"Causes d'incidents",
             isActive:pathname.includes("incident-cause") ? true : false,
             link: "/incidents/incident-cause",
             icon:<Cog6ToothIcon className='h-4 w-4' />,
             requiredPermissions:["incident__view_incident_causes"],
-            requiredRoles:["IT technician"]
+            requiredRoles:["IT technician", "maintenance technician", "maintenance technician", "manager", "coordinator"]
         },
         {
             name:"Types d'incidents",
@@ -110,7 +112,7 @@ const Tabs = () => {
             link: "/incidents/incident-type",
             icon:<Cog6ToothIcon className='h-4 w-4' />,
             requiredPermissions:["incident__view_incident_types"],
-            requiredRoles:["IT technician"]
+            requiredRoles:["IT technician", "maintenance technician", "maintenance technician", "manager","coordinator"]
         },
         // {
         //     name:"Type de Maintenances",
@@ -246,16 +248,16 @@ const Tabs = () => {
                                 link.requiredPermissions.length === 0 &&
                                 link.requiredRoles.length === 0
                             )
-                         ) &&
-                         <div 
-                         key={index} 
-                         ref={link.isActive ? activeTabRef : null}
-                         className={`px-2 ${link.icon && "flex items-center gap-2"} p-1 shadow-md ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold flex justify-center`} 
-                         onClick={()=>navigate(link?.link)}
-                     >
-                         {link?.icon}
-                         <span>{link?.name}</span>
-                     </div>
+                        ) &&
+                        <div 
+                        key={index} 
+                        ref={link.isActive ? activeTabRef : null}
+                        className={`px-2 ${link.icon && "flex items-center gap-2"} p-1 shadow-md ${link?.isActive ? "bg-secondary text-white" : "border-[1px] border-gray-300"} rounded-full cursor-pointer text-sm font-semibold flex justify-center`} 
+                        onClick={()=>navigate(link?.link)}
+                        >
+                            {link?.icon}
+                            <span>{link?.name}</span>
+                        </div>
                     )
                 }
             </div>

@@ -26,7 +26,7 @@ export default function IncidentEntryPoint() {
                                 >
                                     <TrafficConeIcon className='h-10 w-10 text-white' />
                                 </a>
-                                <p className='font-semibold text-xs text-center max-w-[70px]'>Gestion des incidents</p>
+                                <p className='font-semibold text-xs text-center max-w-[70px]'>GMSI</p>
                     </div>
                 )
             }
