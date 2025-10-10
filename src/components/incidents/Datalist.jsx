@@ -685,12 +685,10 @@
 
 // export default Datalist
 
-
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Button } from '../ui/button';
 import { useForm } from 'react-hook-form';
 import { INCIDENT_STATUS } from '../../utils/constant.utils';
-// import { XMarkIcon, TrashIcon, ExclamationTriangleIcon, EyeIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import { Form, Table } from 'antd';
 import { useFetch } from '../../hooks/useFetch';
 import { URLS } from '../../../configUrl';
@@ -711,8 +709,8 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogTitle, // AJOUTEZ CET IMPORT
-  DialogDescription // AJOUTEZ CET IMPORT
+  DialogTitle,
+  DialogDescription
 } from "../ui/dialog";
 import {
   DropdownMenu,
@@ -728,6 +726,97 @@ import { Cog6ToothIcon } from '@heroicons/react/24/solid';
 import Preloader from '../Preloader';
 import { getEmployee } from '../../utils/entity.utils';
 import CloseIncidentForm from './CloseIncidentForm';
+
+
+const SecureImage = ({ src, alt, className }) => {
+  const [imageUrl, setImageUrl] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const blobUrlRef = useRef(null);
+
+  const defaultImageSVG = `image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="%23f7fafc"/><path d="M100 50C89.5228 50 81 58.5228 81 69C81 79.4772 89.5228 88 100 88C110.477 88 119 79.4772 119 69C119 58.5228 110.477 50 100 50ZM100 125C80.1109 125 64 141.111 64 161V75C64 65.4772 72.4772 57 82 57H118C127.523 57 136 65.4772 136 75V161C136 141.111 119.889 125 100 125Z" fill="%23a0aec0"/><text x="100" y="120" text-anchor="middle" font-family="Arial" font-size="14" fill="%234a5568">Image non disponible</text></svg>`;
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    const loadImageWithAuth = async () => {
+      try {
+        setIsLoading(true);
+        setHasError(false);
+        const token = localStorage.getItem('token');
+        if (!token) {
+          if (!isCancelled) setHasError(true);
+          return;
+        }
+
+        const response = await fetch(src, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok && !isCancelled) {
+          const blob = await response.blob();
+          const objectUrl = URL.createObjectURL(blob);
+          setImageUrl(objectUrl);
+          blobUrlRef.current = objectUrl;
+        } else if (!isCancelled) {
+          setHasError(true);
+        }
+      } catch (error) {
+        if (!isCancelled) {
+          console.error('Erreur chargement image:', error);
+          setHasError(true);
+        }
+      } finally {
+        if (!isCancelled) setIsLoading(false);
+      }
+    };
+
+    loadImageWithAuth();
+
+    return () => {
+      isCancelled = true;
+      if (blobUrlRef.current) {
+        URL.revokeObjectURL(blobUrlRef.current);
+        blobUrlRef.current = null;
+      }
+    };
+  }, [src]);
+
+  const handleClick = () => {
+    console.log("Clic détecté, imageUrl =", imageUrl);
+    if (imageUrl && imageUrl.startsWith('blob:')) {
+      const win = window.open(imageUrl, '_blank');
+      if (!win) {
+        alert('Popup bloquée. Veuillez autoriser les popups.');
+      }
+    } else {
+      console.warn("imageUrl non valide ou non chargée");
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className={`${className} bg-gray-100 flex items-center justify-center`}>
+        <div className="animate-pulse text-gray-400 text-sm">Chargement...</div>
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return <img src={defaultImageSVG} alt={alt} className={className} />;
+  }
+
+  return (
+    <img
+      src={imageUrl}
+      alt={alt}
+      className={className}
+      onClick={handleClick}
+      onError={() => setHasError(true)}
+    />
+  );
+};
+
 
 const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => {
   const [sitesMap, setSitesMap] = useState(new Map());
@@ -755,6 +844,7 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
   const [equipments, setEquipments] = useState([]); // Nouvel état pour les équipements
   const [isEquipementLoading, setIsEquipementLoading] = useState(false);
   const [isLoadingTypes, setIsLoadingTypes] = useState(false); // Ajoutez cet état
+  
   
 
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm();
@@ -969,21 +1059,14 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
   }
 
   // Nouvelle fonction pour récupérer les types d'incident
-  // const handleFetchIncidentTypes = async (link) => {
-  //   try {
-  //     let response = await handleFetch(link);
-  //     if (response?.status === 200) setIncidentTypes(response?.data.map(item => ({ name: item?.name, value: item?.id })));
-  //   } catch (error) { console.error(error); }
-  // }
-  // Nouvelle fonction pour récupérer les types d'incident
   const handleFetchIncidentTypes = async (link) => {
     try {
-      setIsLoadingTypes(true); // AJOUTEZ CETTE LIGNE
+      setIsLoadingTypes(true);
       let response = await handleFetch(link);
       if (response?.status === 200) setIncidentTypes(response?.data.map(item => ({ name: item?.name, value: item?.id })));
     } catch (error) { console.error(error); }
     finally {
-      setIsLoadingTypes(false); // AJOUTEZ CETTE LIGNE
+      setIsLoadingTypes(false);
     }
   }
 
@@ -994,7 +1077,6 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
       if (response?.status === 200) setEquipments(response?.data.map(item => ({ name: item?.title, value: item?.id })));
     } catch (error) { console.error(error); }
   }
-
 
   // Fonction pour ouvrir la modal de détails avec les données complètes
   const handleOpenDetails = (record) => {
@@ -1062,71 +1144,6 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
     setIsOpen(true);
   }
 
-  // Fonction submitMaintenance corrigée
-  // const submitMaintenance = async(data) =>{
-  //   if (!selectedIncident) {
-  //     alert("Aucun incident sélectionné pour la maintenance");
-  //     return;
-  //   }
-
-  //   setIsSubmitting(true);
-  //   Object.keys(data).forEach(key => {
-  //     if (data[key] === null || data[key] === undefined || data[key] === '') {
-  //         delete data[key];
-  //     }
-  //   });
-
-  //   const maintenanceData = {
-  //     description: description,
-  //     siteId: selectedSite,
-  //     equipementId: selectedEquipement,
-  //     maintenance: data.maintenance, // ← CORRECTION ICI
-  //     incidentId: selectedIncident
-  //   };
-    
-  //   try {
-  //     let response = await handlePost(
-  //       `${import.meta.env.VITE_INCIDENT_API}/maintenances`, 
-  //       maintenanceData
-  //     );
-      
-  //     if(response.status !== 201){
-  //       alert("Échec de la création de la maintenance");
-  //       return;
-  //     }
-
-  //     // Mettre à jour le statut de l'incident
-  //     let incidentUrl = `${import.meta.env.VITE_INCIDENT_API}/incidents/${selectedIncident}`;
-  //     let res = await fetch(incidentUrl, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         'authorization': `Bearer ${localStorage.getItem('token')}` || ''
-  //       },
-  //       method: "PATCH",
-  //       body: JSON.stringify({
-  //         status: "UNDER_MAINTENANCE",
-  //         incidentId: data.incidentId,
-  //         hasStoppedOperations: data.hasStoppedOperations
-  //       })
-  //     });
-      
-  //     if(res.status !== 200){
-  //       alert("Échec de la mise à jour du statut");
-  //       return;
-  //     }
-      
-  //     fetchData();
-  //     setIsOpen(false);
-  //     setDescription("");
-      
-  //   } catch (error) {
-  //     console.error("Erreur lors de la mise en maintenance:", error);
-  //     alert("Erreur lors de la mise en maintenance");
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // }
-  // Fonction submitMaintenance corrigée
   const submitMaintenance = async(data) =>{
     if (!selectedIncident) {
       alert("Aucun incident sélectionné pour la maintenance");
@@ -1215,6 +1232,7 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
       setIsSubmitting(false);
     }
   }
+
   // Composant helper pour afficher les informations
   const InfoItem = ({ label, value }) => (
     <div className="flex flex-col">
@@ -1337,16 +1355,7 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
               <EyeIcon className='h-4 w-6' />
               <span>Voir détails</span>
             </DropdownMenuItem>
-
             <DropdownMenuSeparator />
-            <DropdownMenuItem 
-              className="flex gap-2 items-center cursor-pointer"
-              onClick={() => handleOpenEdit(record)}
-            >
-              <PencilSquareIcon className='h-4 w-6' />
-              <span>Modifier</span>
-            </DropdownMenuItem>
-
             <DropdownMenuSeparator />
             <VerifyPermission functions={permissions} roles={roles} expected={['incident__can_delete_incident']}>
               <DropdownMenuItem 
@@ -1383,7 +1392,7 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
         scroll={{ x: 2500 }}
       />
 
-      {/* Modal Mettre en maintenance CORRIGÉE */}
+      {/* Modal Mettre en maintenance */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -1494,15 +1503,14 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
       </Dialog>
 
       {/* Modal Clôturer l'incident */}
-
       <CloseIncidentForm
         isOpen={modalIsOpen}
         setIsOpen={setModalIsOpen}
         fetchData={fetchData}
-        selectedRow={rowSelection} // Changez incidentId par selectedRow
+        selectedRow={rowSelection}
       />
 
-      {/* Modal Voir détails AMÉLIORÉ */}
+      {/* Modal Voir détails avec SecureImage */}
       <Dialog open={isOpenDetails} onOpenChange={setIsOpenDetails}>
         <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
           <DialogHeader className="flex flex-row items-center justify-between border-b pb-4">
@@ -1515,14 +1523,6 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
                 Informations complètes sur l'incident #{selectedIncidentData?.numRef}
               </DialogDescription>
             </div>
-            {/* <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsOpenDetails(false)}
-              className="h-8 w-8 rounded-full hover:bg-gray-100"
-            >
-              <XMarkIcon className="h-4 w-4" />
-            </Button> */}
           </DialogHeader>
 
           <div className="space-y-6 py-4">
@@ -1545,19 +1545,19 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
                     </span>
                   } />
                   <InfoItem label="Arrêt opération" value={
-                    editFields.hasStoppedOperations ? 
+                    selectedIncidentData?.hasStoppedOperations ? 
                       <span className="text-red-600 font-medium">Oui</span> : 
                       <span className="text-green-600">Non</span>
                   } />
                 </div>
                 <div className="space-y-2">
-                  <InfoItem label="Site" value={sitesMap.get(editFields.siteId) || "--"} />
-                  <InfoItem label="Quart" value={shifts.find(s => s.value === editFields.shiftId)?.name || "--"} />
+                  <InfoItem label="Site" value={sitesMap.get(selectedIncidentData?.siteId) || "--"} />
+                  <InfoItem label="Quart" value={shifts.find(s => s.value === selectedIncidentData?.shiftId)?.name || "--"} />
                   <InfoItem label="Équipement" value={selectedIncidentData?.equipement?.title || "--"} />
                 </div>
                 <div className="space-y-2">
                   <InfoItem label="Type incident" value={selectedIncidentData?.incident?.name || "--"} />
-                  <InfoItem label="Cause incident" value={incidentCauses.find(c => c.value === editFields.incidentCauseId)?.name || "--"} />
+                  <InfoItem label="Cause incident" value={incidentCauses.find(c => c.value === selectedIncidentData?.incidentCauseId)?.name || "--"} />
                 </div>
               </div>
             </div>
@@ -1570,7 +1570,7 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
               </h3>
               <div className="bg-gray-50 rounded p-3 min-h-[80px]">
                 <p className="text-gray-700 whitespace-pre-wrap">
-                  {editFields.description || "Aucune description fournie"}
+                  {selectedIncidentData?.description || "Aucune description fournie"}
                 </p>
               </div>
             </div>
@@ -1633,7 +1633,7 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
               </div>
             </div>
 
-            {/* Section Photos */}
+            {/* Section Photos avec SecureImage */}
             {selectedIncidentData?.photos && selectedIncidentData.photos.length > 0 ? (
               <div className="bg-white border rounded-lg p-4">
                 <div className="flex justify-between items-center mb-4">
@@ -1647,40 +1647,59 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {selectedIncidentData.photos.map((photo, index) => {
-                    const defaultImageSVG = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="%23f7fafc"/><path d="M100 50C89.5228 50 81 58.5228 81 69C81 79.4772 89.5228 88 100 88C110.477 88 119 79.4772 119 69C119 58.5228 110.477 50 100 50ZM100 125C80.1109 125 64 141.111 64 161V75C64 65.4772 72.4772 57 82 57H118C127.523 57 136 65.4772 136 75V161C136 141.111 119.889 125 100 125Z" fill="%23a0aec0"/><text x="100" y="120" text-anchor="middle" font-family="Arial" font-size="14" fill="%234a5568">Prévisualisation non disponible</text></svg>`;
-
-                    return (
-                      <div key={photo.id} className="group relative border rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow">
-                        <img 
-                          src={photo.url} 
-                          alt={`Photo ${index + 1} de l'incident ${selectedIncidentData?.numRef}`}
-                          className="w-full h-32 object-cover cursor-pointer group-hover:opacity-90 transition-opacity"
-                          onClick={() => window.open(photo.url, '_blank')}
-                          onError={(e) => {
-                            e.target.src = defaultImageSVG;
-                            e.target.alt = 'Prévisualisation non disponible';
-                            e.target.className = 'w-full h-32 object-contain cursor-pointer bg-gray-100';
-                          }}
-                        />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all flex items-center justify-center">
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                            <EyeIcon className="h-6 w-6 text-white drop-shadow-lg" />
-                          </div>
-                        </div>
-                        <div className="p-2 text-xs text-center bg-white border-t">
-                          <p className="font-medium">Photo {index + 1}</p>
-                          <p className="text-gray-500 text-xs">{new Date(photo.createdAt || photo.creationDate).toLocaleDateString('fr-FR')}</p>
+                  {selectedIncidentData.photos.map((photo, index) => (
+                    <div key={photo.id} className="group relative border rounded-lg overflow-hidden bg-gray-50 hover:shadow-md transition-shadow">
+                      <SecureImage
+                        src={photo.url}
+                        alt={`Photo ${index + 1} de l'incident ${selectedIncidentData?.numRef}`}
+                        className="w-full h-32 object-cover cursor-pointer group-hover:opacity-90 transition-opacity"
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all flex items-center justify-center pointer-events-none">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                          <EyeIcon className="h-6 w-6 text-white drop-shadow-lg" />
                         </div>
                       </div>
-                    );
-                  })}
+                      <div className="p-2 text-xs text-center bg-white border-t">
+                        <p className="font-medium">Photo {index + 1}</p>
+                        <p className="text-gray-500 text-xs">
+                          {new Date(photo.createdAt || photo.creationDate).toLocaleDateString('fr-FR')}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             ) : (
               <div className="bg-gray-50 rounded-lg p-6 text-center">
                 <CameraIcon className="h-8 w-8 text-gray-400 mx-auto mb-2" />
                 <p className="text-gray-500">Aucune photo associée à cet incident</p>
+              </div>
+            )}
+
+            {/* Section Maintenance (si applicable) */}
+            {selectedIncidentData?.status === "UNDER_MAINTENANCE" && selectedIncidentData?.maintenances && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <h3 className="font-semibold text-yellow-800 mb-3 flex items-center gap-2">
+                  <Cog6ToothIcon className="h-4 w-4" />
+                  Informations de maintenance
+                </h3>
+                <div className="space-y-3">
+                  {selectedIncidentData.maintenances.map((maintenance, index) => (
+                    <div key={maintenance.id} className="bg-white rounded p-3 border">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <InfoItem label="Type de maintenance" value={maintenance.maintenance} />
+                        <InfoItem label="Date de début" value={new Date(maintenance.creationDate).toLocaleString('fr-FR')} />
+                        <InfoItem 
+                          label="Description" 
+                          value={<span className="whitespace-pre-wrap">{maintenance.description}</span>} 
+                        />
+                        {maintenance.closedDate && (
+                          <InfoItem label="Date de fin" value={new Date(maintenance.closedDate).toLocaleString('fr-FR')} />
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -1702,7 +1721,7 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
                   <XMarkIcon className="h-4 w-4" />
                   Fermer
                 </Button>
-                <Button 
+                {/* <Button 
                   onClick={() => {
                     setIsOpenDetails(false);
                     handleOpenEdit(selectedIncidentData);
@@ -1711,7 +1730,7 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
                 >
                   <PencilSquareIcon className="h-4 w-4" />
                   Modifier
-                </Button>
+                </Button> */}
               </div>
             </div>
           </DialogFooter>
@@ -1819,18 +1838,6 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
               />
             </div>
 
-            {/* Clôturé par avec AutoComplete */}
-            {/* <div>
-              <label className="block text-sm font-medium mb-1">Clôturé par :</label>
-              <AutoComplete
-                placeholder="Rechercher un employé..."
-                isLoading={false}
-                dataList={employees}
-                onSearch={handleSearchEmployees}
-                onSelect={handleSelectClosedBy}
-                register={{...register('closedBy')}}
-              />
-            </div> */}
             {/* Intervenant avec AutoComplete */}
             <div>
               <label className="block text-sm font-medium mb-1">Intervenant :</label>
@@ -1845,8 +1852,22 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
             </div>
 
             <DialogFooter>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Enregistrement..." : "Enregistrer les modifications"}
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="flex items-center gap-2"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Preloader size={16} />
+                    Enregistrement...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-4 w-4" />
+                    Enregistrer les modifications
+                  </>
+                )}
               </Button>
             </DialogFooter>
           </form>
@@ -1857,499 +1878,3 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
 }
 
 export default Datalist;
-
-// import React, { useEffect, useState, useCallback } from 'react';
-// import { Button } from '../ui/button';
-// import { useForm } from 'react-hook-form';
-// import { INCIDENT_STATUS } from '../../utils/constant.utils';
-// import { XMarkIcon, TrashIcon, ExclamationTriangleIcon, EyeIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
-// import { Form, Table } from 'antd';
-// import { useFetch } from '../../hooks/useFetch';
-// import { URLS } from '../../../configUrl';
-// import AutoComplete from '../common/AutoComplete';
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogFooter,
-//   DialogHeader,
-// } from "../ui/dialog";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuLabel,
-//   DropdownMenuSeparator,
-//   DropdownMenuTrigger,
-// } from "../../components/ui/dropdown-menu";
-// import { CheckCircle, MoreHorizontal } from "lucide-react";
-// import VerifyPermission from '../../utils/verifyPermission';
-// import { Cog6ToothIcon } from '@heroicons/react/24/solid';
-// import Preloader from '../Preloader';
-// import { getEmployee } from '../../utils/entity.utils';
-// import CloseIncidentForm from './CloseIncidentForm';
-
-// const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => {
-//   const [sitesMap, setSitesMap] = useState(new Map());
-//   const [sites, setSites] = useState([]);
-//   const [shifts, setShifts] = useState([]);
-//   const [employees, setEmployees] = useState([]);
-//   const [roles, setRoles] = useState([]);
-//   const [permissions, setPermissions] = useState([]);
-//   const [externalEntities, setExternalEntities] = useState([]);
-//   const [maintenanceTypes, setMaintenanceTypes] = useState([]);
-//   const [incidentCauses, setIncidentCauses] = useState([]);
-//   const [rowSelection, setRowSelection] = useState({});
-//   const [selectedSite, setSelectedSite] = useState("");
-//   const [selectedIncident, setSelectedIncident] = useState("");
-//   const [selectedEquipement, setSelectedEquipement] = useState("");
-//   const [isOpen, setIsOpen] = useState(false); // modal maintenance
-//   const [modalIsOpen, setModalIsOpen] = useState(false); // modal clôture
-//   const [description, setDescription] = useState("");
-//   const [isOpenDetails, setIsOpenDetails] = useState(false); // modal détails
-//   const [isOpenEdit, setIsOpenEdit] = useState(false); // modal édition
-//   const [editFields, setEditFields] = useState({});
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [selectedIncidentData, setSelectedIncidentData] = useState(null); // Stocker les données complètes de l'incident
-
-//   const { register, handleSubmit, formState: { errors }, setValue } = useForm();
-
-//   const { handleFetch, handlePost } = useFetch();
-
-//   // Highlight texte recherche
-//   const highlightText = useCallback((text) => {
-//     if (!searchValue || !text) return text || "--";
-//     const regex = new RegExp(searchValue, 'gi');
-//     const parts = text.split(regex);
-//     const matches = text.match(regex);
-//     if (!matches) return text;
-//     return parts.reduce((acc, part, i) => [
-//       ...acc,
-//       part,
-//       matches[i] && <mark key={i} style={{ backgroundColor: 'yellow' }}>{matches[i]}</mark>
-//     ], []);
-//   }, [searchValue]);
-
-//   // Fetch datas
-//   const handleFetchSites = async (link) => {
-//     try {
-//       let response = await handleFetch(link);
-//       if (response?.status === 200) {
-//         let formatedData = response?.data.map(item => ({ name: item?.name, value: item?.id }));
-//         setSites(formatedData);
-//         const newMap = new Map();
-//         formatedData.forEach(site => newMap.set(site.value, site.name));
-//         setSitesMap(newMap);
-//       }
-//     } catch (error) { console.error(error); }
-//   }
-
-//   const handleFetchShifts = async (link) => {
-//     try {
-//       let response = await handleFetch(link);
-//       if (response?.status === 200) setShifts(response?.data.map(item => ({ name: item?.name, value: item?.id })));
-//     } catch (error) { console.error(error); }
-//   }
-
-//   const handleFetchEmployees = async (link) => {
-//     try {
-//       let response = await handleFetch(link);
-//       if (response?.status === 200) setEmployees(response?.data.map(item => ({ name: item?.name, value: item?.id })));
-//     } catch (error) { console.error(error); }
-//   }
-
-//   const handleFetchExternalEntities = async (link) => {
-//     try {
-//       let response = await handleFetch(link);
-//       if (response?.status === 200) setExternalEntities(response?.data.map(item => ({ name: item?.name, value: item?.id })));
-//     } catch (error) { console.error(error); }
-//   }
-
-//   const handleFetchMaintenanceTypes = async (link) => {
-//     try {
-//       let response = await handleFetch(link);
-//       if (response?.status === 200) setMaintenanceTypes(response?.data.map(item => ({ name: item?.name, value: item?.id })));
-//     } catch (error) { console.error(error); }
-//   }
-
-//   const handleFetchIncidentCauses = async (link) => {
-//     try {
-//       let response = await handleFetch(link);
-//       if (response?.status === 200) setIncidentCauses(response?.data.map(item => ({ name: item?.name, value: item?.id })));
-//     } catch (error) { console.error(error); }
-//   }
-
-//   // Maintenance submit
-//   const submitMaintenance = async (data) => {
-//     setIsSubmitting(true);
-//     data.description = description;
-//     data.siteId = selectedSite;
-//     data.equipementId = selectedEquipement;
-//     try {
-//       let response = await handlePost(`${import.meta.env.VITE_INCIDENT_API}/maintenances`, { ...data, incidentId: selectedIncident });
-//       if (response.status !== 201) { alert("Echec de la creation de la maintenance"); return; }
-//       await fetch(`${import.meta.env.VITE_INCIDENT_API}/incidents/${selectedIncident}`, {
-//         method: "PATCH",
-//         headers: { "Content-Type": "application/json", authorization: `Bearer ${localStorage.getItem('token')}` },
-//         body: JSON.stringify({ status: "UNDER_MAINTENANCE" })
-//       });
-//       fetchData(); setIsOpen(false);
-//     } catch (error) { console.log(error); }
-//     finally { setIsSubmitting(false); }
-//   }
-
-//   // Load user roles & permissions
-//   useEffect(() => {
-//     handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/sites`);
-//     handleFetchShifts(`${import.meta.env.VITE_ENTITY_API}/shifts`);
-//     handleFetchIncidentCauses(`${import.meta.env.VITE_INCIDENT_API}/incident-causes`);
-//     handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types?hasIncident=true`);
-//     handleFetchEmployees(`${import.meta.env.VITE_ENTITY_API}/employees`);
-//     handleFetchExternalEntities(`${import.meta.env.VITE_ENTITY_API}/suppliers`);
-
-//     const handleCheckPermissions = async () => {
-//       const employee = await getEmployee();
-//       if (!employee) return;
-//       const employeeRoles = await handleFetch(`${URLS.ENTITY_API}/employees/${employee?.id}/roles`);
-//       const employeePermissions = await handleFetch(`${URLS.ENTITY_API}/employees/${employee?.id}/permissions`);
-//       setRoles(employeeRoles?.employeeRoles?.map(r => r.role.roleName) || []);
-//       setPermissions(employeePermissions?.employeePermissions?.map(p => p.permission.permissionName) || []);
-//     }
-//     handleCheckPermissions();
-//   }, []);
-
-//   // Fonction pour ouvrir la modal de détails avec les données complètes
-//   const handleOpenDetails = (record) => {
-//     setSelectedIncident(record.id);
-//     setSelectedIncidentData(record); // Stocker les données complètes de l'incident
-//     setEditFields({
-//       description: record.description,
-//       hasStoppedOperations: record.hasStoppedOperations,
-//       siteId: record.siteId,
-//       shiftId: record.shiftId,
-//       incidentCauseId: record.incidentCauseId
-//     });
-//     setIsOpenDetails(true);
-//   }
-
-//   // Columns
-//   const columns = [
-//     { title: "No ref", dataIndex: "numRef", width: "100px", render: v => <p className='text-sm'>{highlightText(v)}</p> },
-//     { title: "Equipement", dataIndex: "equipement", width: "200px", render: v => <p className='text-sm capitalize'>{v?.title}</p> },
-//     { title: "Description", dataIndex: "description", width: "200px", render: v => <p className='text-sm'>{highlightText(v) || "--"}</p> },
-//     { title: "Arrêt opération", dataIndex: "hasStoppedOperations", width: "150px", render: v => <p className='text-sm'>{v === true ? "Oui" : v === false ? "Non" : "--"}</p> },
-//     { title: "Site", dataIndex: "siteId", width: "150px", render: v => <p className='text-sm capitalize'>{sitesMap.get(v) || v}</p> },
-//     { title: "Quart", dataIndex: "shiftId", width: "150px", render: v => <p className='text-sm capitalize'>{shifts.find(s => s.value === v)?.name || v || "--"}</p> },
-//     { title: "Initiateur", dataIndex: "createdBy", width: "200px", render: v => <p className='text-sm capitalize'>{employees.find(e => e.value === v)?.name || v}</p> },
-//     { title: "Intervenant", dataIndex: "technician", width: "200px", render: v => <p className='text-sm capitalize'>{employees.find(e => e.value === v)?.name || externalEntities.find(e => e.value === v)?.name || v || "--"}</p> },
-//     { title: "Clôturé par", dataIndex: "closedBy", width: "200px", render: v => <p className='text-sm capitalize'>{employees.find(e => e.value === v)?.name || v || "--"}</p> },
-//     { title: "Type incident", dataIndex: "incident", width: "200px", render: v => <p className='text-sm'>{highlightText(v?.name) || v}</p> },
-//     { title: "Cause incident", dataIndex: "incidentCauseId", width: "200px", render: v => <p className='text-sm capitalize'>{incidentCauses.find(c => c.value === v)?.name || v || "--"}</p> },
-//     { title: "Date de création", dataIndex: "creationDate", width: "200px", render: v => <p className='text-sm capitalize'>{new Date(v).toLocaleString() || "--"}</p> },
-//     { title: "Date de clôture Utilisateur", dataIndex: "closedManuDate", width: "200px", render: v => <p className='text-sm capitalize'>{v ? new Date(v).toLocaleString() : "--"}</p> },
-//     { title: "Date de clôture Système", dataIndex: "closedDate", width: "200px", render: v => <p className='text-sm capitalize'>{v ? new Date(v).toLocaleString() : "--"}</p> },
-//     {
-//       title: "Durée", dataIndex: "duration", width: "120px", render: (_, record) => {
-//         const startDate = new Date(record.creationDate);
-//         let endDate = record.closedManuDate ? new Date(record.closedManuDate) : record.status === "CLOSED" && record.closedDate ? new Date(record.closedDate) : null;
-//         if (!endDate) return <p className='text-sm'>--</p>;
-//         const durationMs = endDate - startDate;
-//         const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
-//         const durationMinutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
-//         return <p className='text-sm'>{durationHours > 0 ? `${durationHours}h ` : ''}{durationMinutes > 0 ? `${durationMinutes}min` : '0min'}</p>
-//       }
-//     },
-//     {
-//       title: "Statut", dataIndex: "status", fixed: "right", width: "150px", render: v => (
-//         <div className={`${v === "UNDER_MAINTENANCE" ? "border-yellow-500 bg-yellow-300" : v === "CLOSED" ? "border-green-500 bg-green-300" : ""} p-2 rounded-lg border`}>
-//           {INCIDENT_STATUS[v] || "Unknown Status"}
-//         </div>
-//       )
-//     },
-//     {
-//       title: "Action", dataIndex: "", fixed: "right", width: "75px", render: (_, record) => (
-//         <DropdownMenu>
-//           <DropdownMenuTrigger asChild>
-//             <Button variant="ghost" className="h-8 w-8 p-0">
-//               <span className="sr-only">Open menu</span>
-//               <MoreHorizontal />
-//             </Button>
-//           </DropdownMenuTrigger>
-//           <DropdownMenuContent align="end">
-//             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-//             <DropdownMenuSeparator />
-
-//             {record.status === "PENDING" && (
-//               <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_send_to_maintenance_incident", "manager", "DEX", "maintenance technician"]}>
-//                 <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
-//                   <button 
-//                     className='flex items-center space-x-2'
-//                     onClick={() => {
-//                       setSelectedSite(record.siteId);
-//                       setSelectedIncident(record.id);
-//                       setSelectedEquipement(record.equipementId);
-//                       setIsOpen(true);
-//                     }}
-//                   >
-//                     <ExclamationTriangleIcon />
-//                     <span>Mettre en maintenance</span>
-//                   </button>
-//                 </DropdownMenuItem>
-//               </VerifyPermission>
-//             )}
-
-//             {record.status === "PENDING" && (
-//               <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_close_incident", "head guard", "HSE supervisor", "manager", "DEX", "IT technician"]}>
-//                 <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
-//                   <button 
-//                     className='flex items-center space-x-2'
-//                     onClick={() => {
-//                       setModalIsOpen(true);
-//                       setSelectedIncident(record.id);
-//                       setRowSelection(record);
-//                     }}
-//                   >
-//                     <XMarkIcon />
-//                     <span>Cloturer l'incident</span>
-//                   </button>
-//                 </DropdownMenuItem>
-//               </VerifyPermission>
-//             )}
-
-//             <DropdownMenuSeparator />
-//             <DropdownMenuItem 
-//               className="flex gap-2 items-center cursor-pointer"
-//               onClick={() => handleOpenDetails(record)}
-//             >
-//               <EyeIcon className='h-4 w-6' />
-//               <span>Voir détails</span>
-//             </DropdownMenuItem>
-
-//             <DropdownMenuSeparator />
-//             <DropdownMenuItem 
-//               className="flex gap-2 items-center cursor-pointer"
-//               onClick={() => {
-//                 setSelectedIncident(record.id);
-//                 setEditFields({
-//                   description: record.description,
-//                   hasStoppedOperations: record.hasStoppedOperations,
-//                   siteId: record.siteId,
-//                   shiftId: record.shiftId,
-//                   incidentCauseId: record.incidentCauseId
-//                 });
-//                 setIsOpenEdit(true);
-//               }}
-//             >
-//               <PencilSquareIcon className='h-4 w-6' />
-//               <span>Modifier</span>
-//             </DropdownMenuItem>
-
-//             <DropdownMenuSeparator />
-//             <VerifyPermission functions={permissions} roles={roles} expected={['incident__can_delete_incident']}>
-//               <DropdownMenuItem 
-//                 className="flex gap-2 items-center cursor-pointer"
-//                 onClick={async () => {
-//                   if (!window.confirm("Voulez-vous vraiment supprimer cet incident ?")) return;
-//                   try {
-//                     await handlePost(`${import.meta.env.VITE_INCIDENT_API}/incidents/${record.id}`, { method: "DELETE" });
-//                     fetchData();
-//                   } catch (error) {
-//                     console.error(error);
-//                     alert("Erreur lors de la suppression");
-//                   }
-//                 }}
-//               >
-//                 <TrashIcon className='h-4 w-6' />
-//                 <span>Supprimer</span>
-//               </DropdownMenuItem>
-//             </VerifyPermission>
-//           </DropdownMenuContent>
-//         </DropdownMenu>
-//       ),
-//     },
-//   ];
-
-//   return (
-//     <div>
-//       {loading && <Preloader />}
-//       <Table
-//         columns={columns}
-//         dataSource={dataList}
-//         pagination={pagination}
-//         rowKey="id"
-//         scroll={{ x: 2500 }}
-//       />
-
-//       {/* Modal Mettre en maintenance */}
-//       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-//         <DialogContent>
-//           <DialogHeader>
-//             <h3 className="text-lg font-medium">Mettre en maintenance</h3>
-//           </DialogHeader>
-//           <form onSubmit={handleSubmit(submitMaintenance)} className="space-y-4">
-//             <div>
-//               <label>Description :</label>
-//               <textarea
-//                 value={description}
-//                 onChange={e => setDescription(e.target.value)}
-//                 className="w-full border rounded p-2"
-//                 required
-//               />
-//             </div>
-//             <DialogFooter>
-//               <Button type="submit" disabled={isSubmitting}>
-//                 {isSubmitting ? "En cours..." : "Valider"}
-//               </Button>
-//             </DialogFooter>
-//           </form>
-//         </DialogContent>
-//       </Dialog>
-
-//       {/* Modal Clôturer l'incident */}
-//       <CloseIncidentForm
-//         isOpen={modalIsOpen}
-//         setIsOpen={setModalIsOpen}
-//         fetchData={fetchData}
-//         incidentId={selectedIncident}
-//       />
-
-//       {/* Modal Voir détails */}
-//       <Dialog open={isOpenDetails} onOpenChange={setIsOpenDetails}>
-//         <DialogContent className="max-w-4xl">
-//           <DialogHeader>
-//             <h3 className="text-lg font-medium">Détails de l'incident</h3>
-//           </DialogHeader>
-//           <div className="space-y-4">
-//             <div className="grid grid-cols-2 gap-4">
-//               <div>
-//                 <p><strong>No Ref :</strong> {selectedIncidentData?.numRef}</p>
-//                 <p><strong>Description :</strong> {editFields.description}</p>
-//                 <p><strong>Arrêt opération :</strong> {editFields.hasStoppedOperations ? "Oui" : "Non"}</p>
-//                 <p><strong>Site :</strong> {sitesMap.get(editFields.siteId)}</p>
-//                 <p><strong>Quart :</strong> {shifts.find(s => s.value === editFields.shiftId)?.name}</p>
-//                 <p><strong>Cause :</strong> {incidentCauses.find(c => c.value === editFields.incidentCauseId)?.name}</p>
-//                 <p><strong>Équipement :</strong> {selectedIncidentData?.equipement?.title}</p>
-//                 <p><strong>Type incident :</strong> {selectedIncidentData?.incident?.name || "--"}</p>
-//                 <p><strong>Statut :</strong> {INCIDENT_STATUS[selectedIncidentData?.status] || "Unknown"}</p>
-//                 <p><strong>Date de création :</strong> {selectedIncidentData?.creationDate ? new Date(selectedIncidentData.creationDate).toLocaleString() : "--"}</p>
-//                 {selectedIncidentData?.closedManuDate && (
-//                   <p><strong>Date de clôture manuelle :</strong> {new Date(selectedIncidentData.closedManuDate).toLocaleString()}</p>
-//                 )}
-//                 {selectedIncidentData?.closedDate && (
-//                   <p><strong>Date de clôture système :</strong> {new Date(selectedIncidentData.closedDate).toLocaleString()}</p>
-//                 )}
-//               </div>
-//             </div>
-
-//             {selectedIncidentData?.photos && selectedIncidentData.photos.length > 0 && (
-//               <div className="mt-4">
-//                 <h4 className="font-medium mb-3">Photos associées :</h4>
-//                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-//                   {selectedIncidentData.photos.map((photo, index) => {
-//                     const defaultImageSVG = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect width="200" height="200" fill="%23f7fafc"/><path d="M100 50C89.5228 50 81 58.5228 81 69C81 79.4772 89.5228 88 100 88C110.477 88 119 79.4772 119 69C119 58.5228 110.477 50 100 50ZM100 125C80.1109 125 64 141.111 64 161V75C64 65.4772 72.4772 57 82 57H118C127.523 57 136 65.4772 136 75V161C136 141.111 119.889 125 100 125Z" fill="%23a0aec0"/><text x="100" y="120" text-anchor="middle" font-family="Arial" font-size="14" fill="%234a5568">Prévisualisation non disponible</text></svg>`;
-
-//                     return (
-//                       <div key={photo.id} className="border rounded-lg overflow-hidden">
-//                         <img 
-//                           src={photo.url} 
-//                           alt={`Photo ${index + 1} de l'incident`}
-//                           className="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity"
-//                           onClick={() => window.open(photo.url, '_blank')}
-//                           onError={(e) => {
-//                             e.target.src = defaultImageSVG;
-//                             e.target.alt = 'Prévisualisation non disponible';
-//                             e.target.className = 'w-full h-48 object-contain cursor-pointer bg-gray-100';
-//                           }}
-//                         />
-//                         <div className="p-2 text-xs text-center bg-gray-50">
-//                           Photo {index + 1}
-//                         </div>
-//                       </div>
-//                     );
-//                   })}
-//                 </div>
-//                 <p className="text-sm text-gray-600 mt-2">
-//                   Cliquez sur une photo pour l'ouvrir dans un nouvel onglet
-//                 </p>
-//               </div>
-//             )}
-//             {/* Section des images */}
-//             {/* {selectedIncidentData?.photos && selectedIncidentData.photos.length > 0 && (
-//               <div className="mt-4">
-//                 <h4 className="font-medium mb-3">Photos associées :</h4>
-//                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-//                   {selectedIncidentData.photos.map((photo, index) => (
-//                     <div key={photo.id} className="border rounded-lg overflow-hidden">
-//                       <img 
-//                         src={photo.url} 
-//                         alt={`Photo ${index + 1} de l'incident`}
-//                         className="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity"
-//                         onClick={() => window.open(photo.url, '_blank')}
-//                       />
-//                       <div className="p-2 text-xs text-center bg-gray-50">
-//                         Photo {index + 1}
-//                       </div>
-//                     </div>
-//                   ))}
-//                 </div>
-//                 <p className="text-sm text-gray-600 mt-2">
-//                   Cliquez sur une photo pour l'ouvrir dans un nouvel onglet
-//                 </p>
-//               </div>
-//             )} */}
-
-//             {(!selectedIncidentData?.photos || selectedIncidentData.photos.length === 0) && (
-//               <div className="text-center py-4 text-gray-500">
-//                 Aucune photo associée à cet incident
-//               </div>
-//             )}
-//           </div>
-//           <DialogFooter className="mt-6">
-//             <Button onClick={() => setIsOpenDetails(false)}>Fermer</Button>
-//           </DialogFooter>
-//         </DialogContent>
-//       </Dialog>
-
-//       {/* Modal Modifier incident */}
-//       <Dialog open={isOpenEdit} onOpenChange={setIsOpenEdit}>
-//         <DialogContent>
-//           <DialogHeader>
-//             <h3 className="text-lg font-medium">Modifier l'incident</h3>
-//           </DialogHeader>
-//           <form className="space-y-4" onSubmit={handleSubmit(async (data) => {
-//             try {
-//               await handlePost(`${import.meta.env.VITE_INCIDENT_API}/incidents/${selectedIncident}`, {
-//                 method: "PATCH",
-//                 body: JSON.stringify(data)
-//               });
-//               fetchData();
-//               setIsOpenEdit(false);
-//             } catch (error) {
-//               console.error(error);
-//             }
-//           })}>
-//             <div>
-//               <label>Description :</label>
-//               <textarea
-//                 {...register("description")}
-//                 defaultValue={editFields.description}
-//                 className="w-full border rounded p-2"
-//               />
-//             </div>
-//             <div>
-//               <label>Arrêt opération :</label>
-//               <select {...register("hasStoppedOperations")} defaultValue={editFields.hasStoppedOperations ? "true" : "false"} className="w-full border rounded p-2">
-//                 <option value="true">Oui</option>
-//                 <option value="false">Non</option>
-//               </select>
-//             </div>
-//             <DialogFooter>
-//               <Button type="submit">Enregistrer</Button>
-//             </DialogFooter>
-//           </form>
-//         </DialogContent>
-//       </Dialog>
-//     </div>
-//   );
-// }
-
-// export default Datalist;
