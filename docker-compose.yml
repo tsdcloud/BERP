@@ -1,61 +1,28 @@
+version: '3.8'
+
 networks:
   web:
     external: true
-  internal:
+  traefik_internal:  # ← Utilise le même réseau que MySQL
     external: true
-
 
 services:
   berp:
     build:
-      context: .
+      context: /home/yvan/DockerRun/BERP  # ← Chemin vers votre code source
       dockerfile: Dockerfile
-    image: nodejs
+    image: berp_image:latest
     container_name: berp
     restart: unless-stopped
-    env_file: .env
+    # Supprimez le volume .env, mieux de copier le fichier dans l'image
     environment:
-      - USER_GATEWAY_API_URL=$USER_GATEWAY_API_URL
-      - INCIDENT_API_URL=$INCIDENT_API_URL
-      - ENTITY_API_URL=$ENTITY_API_URL
-
+      - NODE_ENV=production
     labels:
-      - traefik.http.routers.blog.rule=Host(`berp.bfcgroupsa.com`)
-      - traefik.http.routers.blog.tls=true
-      - traefik.http.routers.blog.tls.certresolver=lets-encrypt
-      - traefik.port=80
-
+      - traefik.http.routers.berp.rule=Host(`berp.bfcgroupsa.com`)
+      - traefik.http.routers.berp.tls=true
+      - traefik.http.routers.berp.tls.certresolver=lets-encrypt
+      - traefik.http.services.berp.loadbalancer.server.port=3000  # ← CORRIGÉ : port de l'app
     networks:
-      - internal
+      - traefik_internal  # ← Pour communiquer avec MySQL
       - web
-
-  webserver:
-    image: nginx:mainline-alpine
-    container_name: webserver
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - web-root:/var/www/html
-      - .:/home/node/app
-      - node_modules:/home/node/app/node_modules
-      - ./nginx-conf:/etc/nginx/conf.d
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-    depends_on:
-      - berp
-    networks:
-      - app-network
-
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-      - web-root:/var/www/html
-    depends_on:
-      - webserver
-    command: certonly --webroot --webroot-path=/var/www/html --email ysiaka@bfclimited.com --agree-tos --no-eff-email --staging -d berp.bfcgroupsa.com  -d www.berp.bfcgroupsa.com
-
+    # depends_on supprimé car mysql et memcached sont dans d'autres projets
