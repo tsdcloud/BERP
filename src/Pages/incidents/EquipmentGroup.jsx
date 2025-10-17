@@ -24,14 +24,14 @@ const EquipmentGroup = () => {
     const fetchEquipmentGroups= async (url) => {
         setIsLoading(true)
         try {
-           const response = await handleFetch(url);
-           if(response.data){
-            setEquipementGroups(response.data);
-            setTotal(response.total);
-            setTotalPages(response.totalPages);
-            setPage(response.page);
-           }
-        } catch (error) {
+            const response = await handleFetch(url);
+            if(response.data){
+                setEquipementGroups(response.data);
+                setTotal(response.total);
+                setTotalPages(response.totalPages);
+                setPage(response.page);
+            }
+            } catch (error) {
             console.log(error)
         }finally{
             setIsLoading(false);
@@ -47,13 +47,13 @@ const EquipmentGroup = () => {
         setSearchValue(e.target.value)
         let url = `${URLS.INCIDENT_API}/equipment-groups?search=${e.target.value}`;
         try {
-           const response = await handleFetch(url);
-           console.log(response)
-           if(response.data){
-            setEquipementGroups(response.data.data);
-            setTotalPages(response.totalPages);
-            setPage(response.page);
-           }
+            const response = await handleFetch(url);
+            console.log(response)
+            if(response.data){
+                setEquipementGroups(response.data.data);
+                setTotalPages(response.totalPages);
+                setPage(response.page);
+            }
         } catch (error) {
             console.log(error)
         }
@@ -89,8 +89,8 @@ const EquipmentGroup = () => {
                     {/* Dialog */}
                     <div className='flex gap-2 items-center w-full md:w-auto'>
                         <Dialogue 
-                            buttonText={"Créer un nouvelle equipement"}
-                            header={<h2 className='text-xl font-semibold'>Créer un nouvelle equipement</h2>}
+                            buttonText={"Créer type equipement"}
+                            header={<h2 className='text-xl font-semibold'>Créer un nouveau type d'equipement</h2>}
                             content={
                             <InitiateForm 
                                 onSucess={handleSubmit}

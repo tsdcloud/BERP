@@ -1,3 +1,4 @@
+// export default InitiateForm
 import React, {useEffect, useState} from 'react'
 import {useForm} from 'react-hook-form';
 import { useFetch } from '../../../hooks/useFetch';
@@ -10,7 +11,7 @@ import { CheckCircle } from 'lucide-react';
 
 const InitiateForm = ({onSucess}) => {
   
-  const { register, handleSubmit, formState:{errors} } = useForm();
+  const { register, handleSubmit, formState:{errors}, reset } = useForm();
   const { handlePost } = useFetch();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -25,10 +26,12 @@ const InitiateForm = ({onSucess}) => {
         });
         return
       }
+      toast.success("Crée avec succès");
+      reset(); // Réinitialise le formulaire
       onSucess();
     } catch (error) {
       console.log(error);
-      // toast.error("La création a échoué, vérifiez votre connexion");
+      // toast.error("La création a échoué, vérifiez votre connexion ou contactez un IT");
     }finally{
       setIsSubmitting(false);
     }

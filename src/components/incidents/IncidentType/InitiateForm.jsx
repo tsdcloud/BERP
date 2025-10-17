@@ -4,10 +4,11 @@ import { useFetch } from '../../../hooks/useFetch';
 import { Input } from '../../ui/input';
 import { Button } from '../../ui/button';
 import { URLS } from '../../../../configUrl';
+import toast from 'react-hot-toast';
 
 const InitiateForm = ({onSucess}) => {
   
-  const { register, handleSubmit, formState:{errors} } = useForm();
+  const { register, handleSubmit, formState:{errors}, reset } = useForm();
   const { handlePost } = useFetch();
 
   const submitForm = async (data) =>{
@@ -16,14 +17,17 @@ const InitiateForm = ({onSucess}) => {
     try {
       let response = await handlePost(url, data, true);
       if(response.error){
-        alert("Erreur. Une erreur est survenue lors de la création.");
+        // alert("Erreur. Une erreur est survenue lors de la création.");
+        toast.error("Cette enregistrement existe déja dans la base de donnée");
         console.log(response)
         return
       }
+      toast.success("Crée avec succès");
+      reset();
       onSucess();
     } catch (error) {
       console.log(error);
-      // alert("Erreur. Une erreur est survenue lors de la création.");
+      // toast.error("La création a échoué, vérifiez votre connexion ou contactez un IT");
     }
   }
   return (

@@ -86,6 +86,13 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       render:(value)=><p className='text-sm'>{highlightText(value)}</p>
     },
     {
+      title:"Statut d'équipement",
+      dataIndex:"status",
+      width:"200px",
+      // render:(value)=><p className='text-sm'>{highlightText(value)}</p>
+      render:(value)=><p className='text-sm'>{value === "NEW" ? "NEUF" : value === "SECOND_HAND" ? "SECONDE MAIN" : "--"}</p>
+    },
+    {
       title:"Groupe equipement",
       dataIndex:"equipmentGroup",
       width:"200px",

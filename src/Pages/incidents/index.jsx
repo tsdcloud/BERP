@@ -116,13 +116,13 @@ const Incident = () =>{
     const handleSearch=async(url, callback)=>{
         setIsLoading(true);
         try {
-           const response = await handleFetch(url);
-           if(response.status === 200){
-            callback(response.data);
-            setTotalPages(response.totalPages);
-            setTotal(response.total);
-            setPage(response.page);
-           }
+            const response = await handleFetch(url);
+            if(response.status === 200){
+                callback(response.data);
+                setTotalPages(response.totalPages);
+                setTotal(response.total);
+                setPage(response.page);
+            }
         } catch (error) {
             console.log(error)
         }finally{
@@ -137,20 +137,20 @@ const Incident = () =>{
     const fetchIncidents= async (url) => {
         setIsLoading(true);
         try {
-           const response = await handleFetch(url);
-           console.log(response);
-           if(response.status === 200){
-            // setIncidents(response.data);
-            // Ajouter une key unique à chaque élément
-            const dataWithKeys = response.data.map(item => ({
-                ...item,
-                key: item.id // Utilisez l'id comme clé unique
-            }));
-            setIncidents(dataWithKeys);
-            setTotalPages(response?.totalPages);
-            setTotal(response?.total);
-            setPage(response?.page);
-           }
+            const response = await handleFetch(url);
+            console.log(response);
+            if(response.status === 200){
+                // setIncidents(response.data);
+                // Ajouter une key unique à chaque élément
+                const dataWithKeys = response.data.map(item => ({
+                    ...item,
+                    key: item.id // Utilisez l'id comme clé unique
+                }));
+                setIncidents(dataWithKeys);
+                setTotalPages(response?.totalPages);
+                setTotal(response?.total);
+                setPage(response?.page);
+            }
         } catch (error) {
             console.log(error)
         }finally{

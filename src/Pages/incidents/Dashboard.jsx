@@ -64,10 +64,10 @@ const Dashboard = () =>{
     const fetchIncidentsPending= async () => {
         let url = `${URLS.INCIDENT_API}/incidents?status=PENDING`;
         try {
-           const response = await handleFetch(url);
-           if(response.data){
-            setTotalIncidentPending(response?.total);
-           }
+            const response = await handleFetch(url);
+            if(response.data){
+                setTotalIncidentPending(response?.total);
+            }
         } catch (error) {
             console.log(error);
         }
@@ -76,10 +76,10 @@ const Dashboard = () =>{
     const fetchIncidentsClosed= async () => {
         let url = `${URLS.INCIDENT_API}/incidents?status=CLOSED`;
         try {
-           const response = await handleFetch(url);
-           if(response.data){
-               setTotalIncidentClosed(response?.total);
-           }
+            const response = await handleFetch(url);
+            if(response.data){
+                setTotalIncidentClosed(response?.total);
+            }
         } catch (error) {
             console.log(error)
         }
@@ -88,10 +88,10 @@ const Dashboard = () =>{
     const fetchIncidentsInMaintenance= async () => {
         let url = `${URLS.INCIDENT_API}/incidents?status=UNDER_MAINTENANCE`;
         try {
-           const response = await handleFetch(url);
-           if(response.data){
-            setTotalIncidentUnderMaintenance(response.data?.length);
-           }
+            const response = await handleFetch(url);
+            if(response.data){
+                setTotalIncidentUnderMaintenance(response.data?.length);
+            }
         } catch (error) {
             console.log(error)
         }
@@ -100,12 +100,12 @@ const Dashboard = () =>{
     const fetchIncidents= async () => {
         let url = `${URLS.INCIDENT_API}/incidents`;
         try {
-           const response = await handleFetch(url);
-           if(response.data){
-            setIncidents(response.data);
-            setTotalIncident(response.total);
-            setPage(response.page);
-           }
+            const response = await handleFetch(url);
+            if(response.data){
+                setIncidents(response.data);
+                setTotalIncident(response.total);
+                setPage(response.page);
+            }
         } catch (error) {
             console.log(error);
         }
@@ -116,10 +116,10 @@ const Dashboard = () =>{
     const fetchMaintenancesPending= async () => {
         let url = `${URLS.INCIDENT_API}/maintenances?status=PENDING`;
         try {
-           const response = await handleFetch(url);
-           if(response.data){
-            setTotalMaintenancePending(response.data?.length);
-           }
+            const response = await handleFetch(url);
+            if(response.data){
+                setTotalMaintenancePending(response.data?.length);
+            }
         } catch (error) {
             console.log(error)
         }
@@ -127,10 +127,10 @@ const Dashboard = () =>{
     const fetchMaintenances= async () => {
         let url = `${URLS.INCIDENT_API}/maintenances`;
         try {
-           const response = await handleFetch(url);
-           if(response.data){
-            setTotalMaintenance(response.data?.length);
-           }
+            const response = await handleFetch(url);
+            if(response.data){
+                setTotalMaintenance(response.data?.length);
+            }
         } catch (error) {
             console.log(error)
         }
@@ -138,10 +138,10 @@ const Dashboard = () =>{
     const fetchMaintenancesClosed= async () => {
         let url = `${URLS.INCIDENT_API}/maintenances?status=CLOSED`;
         try {
-           const response = await handleFetch(url);
-           if(response.data){
-            setTotalMaintenanceClosed(response.data?.length);
-           }
+            const response = await handleFetch(url);
+            if(response.data){
+                setTotalMaintenanceClosed(response.data?.length);
+            }
         } catch (error) {
             console.log(error)
         }
@@ -150,12 +150,12 @@ const Dashboard = () =>{
     const fetchStats= async () => {
         let url = `${URLS.INCIDENT_API}/incidents/stats`;
         try {
-           const response = await handleFetch(url);
-            console.log(response);  
-           if(response.status === 200){
-            setIncidentStats(response?.byIncidentType)
-            // setTotalMaintenanceClosed(response.data?.length);
-           }
+            const response = await handleFetch(url);
+                console.log(response);  
+            if(response.status === 200){
+                setIncidentStats(response?.byIncidentType)
+                // setTotalMaintenanceClosed(response.data?.length);
+            }
         } catch (error) {
             console.log(error)
         }
@@ -163,10 +163,10 @@ const Dashboard = () =>{
     const fetchOffBridges= async () => {
         let url = `${URLS.INCIDENT_API}/off-bridges`;
         try {
-           const response = await handleFetch(url);
-           if(response.data){
-            setTotalOffBridge(response.total);
-           }
+            const response = await handleFetch(url);
+            if(response.data){
+                setTotalOffBridge(response.total);
+            }
         } catch (error) {
             console.log(error)
         }
@@ -200,16 +200,15 @@ const Dashboard = () =>{
     const items = [
         { key: '1', icon: <PieChartOutlined />, label: 'Vue \'ensemble' },
         {
-          key: '2',
-          label: 'Opérations',
-          icon: <CursorArrowRaysIcon className='h-5' />,
-          children: [
-            { key: '5', label: 'Génerer rapport', icon:<PrinterIcon className='h-4 text-gray-500'/>},
-            // { key: '6', label: 'Option 6' }
-          ],
-        },
-      ];
-      
+            key: '2',
+            label: 'Opérations',
+            icon: <CursorArrowRaysIcon className='h-5' />,
+            children: [
+                { key: '5', label: 'Génerer rapport', icon:<PrinterIcon className='h-4 text-gray-500'/>},
+                // { key: '6', label: 'Option 6' }
+            ],
+            },
+        ];
 
 
     return(
@@ -278,8 +277,8 @@ const Dashboard = () =>{
             <Dialog open={isOpenned} onOpenChange={setIsOpenned}>
                 <DialogContent>
                     <DialogHeader>{dialogType === "INCIDENT" && "Extraction des incidents" || 
-                                 dialogType === "MAINTENANCE" &&"Extraction des maintenances"||
-                                 dialogType === "OFF_BRIDGE"&& "Extraction des hors ponts"}</DialogHeader>
+                        dialogType === "MAINTENANCE" &&"Extraction des maintenances"||
+                        dialogType === "OFF_BRIDGE"&& "Extraction des hors ponts"}</DialogHeader>
                     {
                         dialogType === "INCIDENT" &&
                         <RapportIncidentForm onSubmit={()=>setIsOpenned(false)}/>

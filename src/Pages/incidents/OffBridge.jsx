@@ -24,17 +24,17 @@ const OffBridge = () => {
     const fetchOffBridges= async (url) => {
         setIsLoading(true)
         try {
-           const response = await handleFetch(url);
-           if(response.data){
-            setOffBridges(response.data);
-            setTotalPages(response.totalPages);
-            setPage(response.page);
-            setTotal(response.total)
-           }
+            const response = await handleFetch(url);
+            if(response.data){
+                setOffBridges(response.data);
+                setTotalPages(response.totalPages);
+                setPage(response.page);
+                setTotal(response.total)
+            }
         } catch (error) {
             console.log(error)
         }finally{
-          setIsLoading(false)
+            setIsLoading(false)
         }
     }
 
