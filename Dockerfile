@@ -30,6 +30,6 @@ FROM node:18-alpine  # ← Plus léger
 WORKDIR /App/BERP
 RUN npm install -g serve
 COPY --from=builder /App/BERP/dist .
-COPY --from=builder /App/BERP/.env .  # ← Copie le .env si nécessaire
+COPY --from=builder /App/BERP/.env .
 EXPOSE 3000
-CMD ["serve", "-s", ".", "-l", "3000"]  # ← Syntaxe corrigée
+CMD ["serve", "-s", ".", "-l", "3000"]

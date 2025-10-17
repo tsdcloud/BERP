@@ -9,7 +9,7 @@ networks:
 services:
   berp:
     build:
-      context: /home/yvan/DockerRun/BERP  # ← Chemin vers votre code source
+      context:  . # ← Chemin vers votre code source
       dockerfile: Dockerfile
     image: berp_image:latest
     container_name: berp
