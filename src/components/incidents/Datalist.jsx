@@ -691,6 +691,7 @@ import { useForm } from 'react-hook-form';
 import { INCIDENT_STATUS } from '../../utils/constant.utils';
 import { Form, Table } from 'antd';
 import { useFetch } from '../../hooks/useFetch';
+import toast from 'react-hot-toast'
 import { URLS } from '../../../configUrl';
 import AutoComplete from '../common/AutoComplete';
 import { 
@@ -844,13 +845,25 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
   const [equipments, setEquipments] = useState([]); // Nouvel état pour les équipements
   const [isEquipementLoading, setIsEquipementLoading] = useState(false);
   const [isLoadingTypes, setIsLoadingTypes] = useState(false); // Ajoutez cet état
+  const [isOpenReclassify, setIsOpenReclassify] = useState(false); // modal reclassify
+  const [reclassifyFields, setReclassifyFields] = useState({});
   
   
 
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm();
+  // Au début de votre composant, ajoutez un useForm dédié
+  const { 
+    register: registerReclassify, 
+    handleSubmit: handleSubmitReclassify, 
+    formState: { errors: errorsReclassify }, 
+    setValue: setValueReclassify, 
+    watch: watchReclassify,
+    reset: resetReclassify
+  } = useForm();
+
   const hasStoppedOperationsValue = watch("hasStoppedOperations");
 
-  const { handleFetch, handlePost } = useFetch();
+  const { handleFetch, handlePost, handlePatch} = useFetch();
 
   // Highlight texte recherche
   const highlightText = useCallback((text) => {
@@ -875,20 +888,58 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
     }
   }
 
+  // const handleSearchEquipements = async (searchInput) => {
+  //   try {
+  //     setIsEquipementLoading(true);
+  //     const siteId = watch("siteId");
+      
+  //     if (siteId) {
+  //       // Rechercher les équipements du site spécifique
+  //       await handleFetchIncidentEquipement(`${import.meta.env.VITE_INCIDENT_API}/equipements/site/${siteId}?search=${searchInput}`);
+  //     } else {
+  //       // Si aucun site sélectionné, charger tous les équipements
+  //       await handleFetchIncidentEquipement(`${import.meta.env.VITE_INCIDENT_API}/equipements?search=${searchInput}`);
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   } finally {
+  //     setIsEquipementLoading(false);
+  //   }
+  // }
+  // ✅ Recherche équipement
   const handleSearchEquipements = async (searchInput) => {
     try {
       setIsEquipementLoading(true);
-      const siteId = watch("siteId");
       
+      // Déterminer le site ID selon le contexte
+      let siteId = "";
+      
+      if (isOpenReclassify && selectedIncidentData?.siteId) {
+        // En mode reclassement, utiliser le site de l'incident
+        siteId = selectedIncidentData.siteId;
+      } else if (watch("siteId")) {
+        // En mode création/édition, utiliser le site sélectionné
+        siteId = watch("siteId");
+      }
+      
+      let url = "";
       if (siteId) {
-        // Rechercher les équipements du site spécifique
-        await handleFetchIncidentEquipement(`${import.meta.env.VITE_INCIDENT_API}/equipements/site/${siteId}?search=${searchInput}`);
+        // Rechercher les équipements du site spécifique - CORRECTION ICI
+        url = `${import.meta.env.VITE_INCIDENT_API}/equipements/site/${siteId}`;
+        if (searchInput) {
+          url += `?search=${searchInput}`;
+        }
       } else {
         // Si aucun site sélectionné, charger tous les équipements
-        await handleFetchIncidentEquipement(`${import.meta.env.VITE_INCIDENT_API}/equipements?search=${searchInput}`);
+        url = `${import.meta.env.VITE_INCIDENT_API}/equipements`;
+        if (searchInput) {
+          url += `?search=${searchInput}`;
+        }
       }
+      
+      await handleFetchIncidentEquipement(url);
     } catch (error) {
-      console.error(error);
+      console.error("❌ Erreur recherche équipements:", error);
     } finally {
       setIsEquipementLoading(false);
     }
@@ -985,11 +1036,33 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
     }
   }
 
+  // const handleSelectIncidentType = (item) => {
+  //   if (item) {
+  //     setValue("incidentId", item.value);
+  //   } else {
+  //     setValue("incidentId", "");
+  //   }
+  // }
   const handleSelectIncidentType = (item) => {
+    console.log("🔧 handleSelectIncidentType appelé avec:", item);
+    
     if (item) {
       setValue("incidentId", item.value);
+      
+      // Mettre à jour aussi le champ caché du formulaire manuel
+      const hiddenInput = document.getElementById('incidentId');
+      if (hiddenInput) {
+        hiddenInput.value = item.value;
+        console.log("✅ Champ caché mis à jour avec:", item.value);
+      }
     } else {
       setValue("incidentId", "");
+      
+      // Vider aussi le champ caché
+      const hiddenInput = document.getElementById('incidentId');
+      if (hiddenInput) {
+        hiddenInput.value = "";
+      }
     }
   }
 
@@ -1074,8 +1147,21 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
   const handleFetchIncidentEquipement = async (link) => {
     try {
       let response = await handleFetch(link);
-      if (response?.status === 200) setEquipments(response?.data.map(item => ({ name: item?.title, value: item?.id })));
-    } catch (error) { console.error(error); }
+      
+      if (response?.status === 200) {
+        const equipmentsData = response?.data.map(item => ({ 
+          name: item?.title || item?.name, 
+          value: item?.id 
+        }));
+        setEquipments(equipmentsData);
+      } else {
+        // console.error("❌ Erreur fetch équipements - Statut:", response?.status);
+        setEquipments([]);
+      }
+    } catch (error) { 
+      // console.error("❌ Erreur fetch équipements:", error);
+      setEquipments([]);
+    }
   }
 
   // Fonction pour ouvrir la modal de détails avec les données complètes
@@ -1133,71 +1219,182 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
   }
 
   // Fonction pour ouvrir la maintenance
+  // const handleOpenMaintenance = (record) => {
+  //   if (!record?.id) {
+  //     return;
+  //   }
+  //   setSelectedSite(record.siteId);
+  //   setSelectedIncident(record.id);
+  //   setSelectedEquipement(record.equipementId);
+  //   setIsOpen(true);
+  // }
+  // Fonction pour ouvrir la maintenance - CORRECTION
   const handleOpenMaintenance = (record) => {
     if (!record?.id) {
       console.error("Aucun ID d'incident trouvé");
       return;
     }
+    
+    console.log("🔍 Debug IDs:", {
+      incidentId: record.id, // ID de l'incident
+      incidentTypeId: record.incidentId, // ID du type d'incident (si disponible)
+      record: record
+    });
+    
+    // Réinitialiser d'abord les valeurs du formulaire
+    setValue("maintenance", "");
+    setValue("incidentId", "");
+    setValue("hasStoppedOperations", false);
+    setDescription("");
+    
+    // Mettre à jour les états
     setSelectedSite(record.siteId);
     setSelectedIncident(record.id);
     setSelectedEquipement(record.equipementId);
+    
+    // Pré-remplir les valeurs du formulaire si disponibles
+    setTimeout(() => {
+      if (record.incidentId) {
+        setValue("incidentId", record.incidentId);
+      }
+      if (record.hasStoppedOperations !== undefined) {
+        setValue("hasStoppedOperations", record.hasStoppedOperations);
+      }
+    }, 100);
+    
     setIsOpen(true);
   }
 
+  // const submitMaintenance = async(data) =>{
+  //   if (!selectedIncident) {
+  //     alert("Aucun incident sélectionné pour la maintenance");
+  //     return;
+  //   }
+
+  //   setIsSubmitting(true);
+
+  //   const maintenanceData = {
+  //     description: description,
+  //     siteId: selectedSite,
+  //     equipementId: selectedEquipement,
+  //     maintenance: data.maintenance,
+  //     incidentId: selectedIncident
+  //   };
+    
+  //   try {
+  //     let response = await handlePost(
+  //       `${import.meta.env.VITE_INCIDENT_API}/maintenances`, 
+  //       maintenanceData
+  //     );
+      
+  //     if(response.status !== 201){
+  //       alert("Échec de la création de la maintenance");
+  //       return;
+  //     }
+
+  //     // Mettre à jour le statut de l'incident avec les nouvelles données
+  //     let incidentUrl = `${import.meta.env.VITE_INCIDENT_API}/incidents/put_into_maintenance/${selectedIncident}`;
+  //     let res = await fetch(incidentUrl, {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         'authorization': `Bearer ${localStorage.getItem('token')}` || ''
+  //       },
+  //       method: "PATCH",
+  //       body: JSON.stringify({
+  //         status: "UNDER_MAINTENANCE",
+  //         incidentId: data.incidentId, // Type d'incident
+  //         hasStoppedOperations: data.hasStoppedOperations // Arrêt des opérations
+  //       })
+  //     });
+      
+  //     if(res.status !== 200){
+  //       alert("Échec de la mise à jour du statut");
+  //       return;
+  //     }
+      
+  //     fetchData();
+  //     setIsOpen(false);
+  //     setDescription("");
+      
+  //   } catch (error) {
+  //     console.error("Erreur lors de la mise en maintenance:", error);
+  //     alert("Erreur lors de la mise en maintenance");
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // }
   const submitMaintenance = async(data) =>{
+    console.log("🔧 DEBUT submitMaintenance", data);
+    
     if (!selectedIncident) {
-      alert("Aucun incident sélectionné pour la maintenance");
+      toast.error("Aucun incident sélectionné pour la maintenance");
       return;
     }
-
+  
+    // VÉRIFICATION CRITIQUE - Assurez-vous que incidentId est présent
+    if (!data.incidentId) {
+      console.error("❌ incidentId manquant dans data:", data);
+      toast.error("Veuillez sélectionner un type d'incident");
+      return;
+    }
+  
     setIsSubmitting(true);
-
-    const maintenanceData = {
-      description: description,
-      siteId: selectedSite,
-      equipementId: selectedEquipement,
-      maintenance: data.maintenance,
-      incidentId: selectedIncident
-    };
-    
+  
     try {
+      // 1. Créer la maintenance
+      const maintenanceData = {
+        description: description,
+        siteId: selectedSite,
+        equipementId: selectedEquipement,
+        maintenance: data.maintenance,
+        incidentId: selectedIncident
+      };
+      
+      console.log("📦 Création maintenance:", maintenanceData);
+      
       let response = await handlePost(
         `${import.meta.env.VITE_INCIDENT_API}/maintenances`, 
         maintenanceData
       );
       
       if(response.status !== 201){
-        alert("Échec de la création de la maintenance");
+        console.error("❌ Échec création maintenance:", response);
+        toast.error("Échec de la création de la maintenance");
         return;
       }
-
-      // Mettre à jour le statut de l'incident avec les nouvelles données
-      let incidentUrl = `${import.meta.env.VITE_INCIDENT_API}/incidents/${selectedIncident}`;
-      let res = await fetch(incidentUrl, {
-        headers: {
-          "Content-Type": "application/json",
-          'authorization': `Bearer ${localStorage.getItem('token')}` || ''
-        },
-        method: "PATCH",
-        body: JSON.stringify({
-          status: "UNDER_MAINTENANCE",
-          incidentId: data.incidentId, // Type d'incident
-          hasStoppedOperations: data.hasStoppedOperations // Arrêt des opérations
-        })
-      });
+  
+      // 2. Mettre à jour le statut de l'incident
+      console.log("🔄 Mise à jour statut incident");
       
-      if(res.status !== 200){
-        alert("Échec de la mise à jour du statut");
+      const updateData = {
+        status: "UNDER_MAINTENANCE",
+        incidentId: data.incidentId, // ID du TYPE d'incident
+        hasStoppedOperations: data.hasStoppedOperations || false
+      };
+      
+      console.log("📦 Données mise à jour:", updateData);
+      
+      const updateResponse = await handlePatch(
+        `${import.meta.env.VITE_INCIDENT_API}/incidents/put_into_maintenance/${selectedIncident}`,
+        updateData
+      );
+      
+      console.log("📊 Réponse mise à jour:", updateResponse);
+      
+      if (updateResponse && updateResponse.error) {
+        console.error("❌ Erreur API:", updateResponse.error);
+        toast.error("Échec de la mise à jour: " + updateResponse.error);
         return;
       }
       
+      toast.success("Incident mis en maintenance avec succès");
       fetchData();
       setIsOpen(false);
       setDescription("");
       
     } catch (error) {
-      console.error("Erreur lors de la mise en maintenance:", error);
-      alert("Erreur lors de la mise en maintenance");
+      console.error("❌ Erreur complète:", error);
+      toast.error("Erreur lors de la mise en maintenance: " + error.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -1240,6 +1437,77 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
       <span className="text-gray-900 mt-1">{value || "--"}</span>
     </div>
   );
+
+  // Fonction pour ouvrir la modal de reclassification
+const handleOpenReclassify = (record) => {
+  console.log("🔧 Ouvrir modal reclassify pour:", record);
+  
+  setSelectedIncident(record.id);
+  setSelectedIncidentData(record);
+  
+  // Pré-remplir les champs avec les données actuelles de l'incident
+  const fields = {
+    description: record.description,
+    equipementId: record.equipementId,
+    incidentId: record.incidentId,
+    incidentCauseId: record.incidentCauseId
+  };
+  
+  setReclassifyFields(fields);
+  
+  // Pré-remplir les valeurs pour react-hook-form
+  setTimeout(() => {
+    Object.keys(fields).forEach(key => {
+      if (fields[key] !== undefined && fields[key] !== null) {
+        setValue(key, fields[key]);
+      }
+    });
+
+    // Charger les équipements du site si un site est disponible
+    if (record.siteId) {
+      setIsEquipementLoading(true);
+      handleFetchIncidentEquipement(`${import.meta.env.VITE_INCIDENT_API}/equipements/site/${record.siteId}`)
+        .finally(() => setIsEquipementLoading(false));
+    }
+  }, 100);
+  
+  setIsOpenReclassify(true);
+}
+
+// Ajoutez aussi la fonction pour soumettre la reclassification
+const submitReclassify = async (data) => {
+  try {
+    setIsSubmitting(true);
+    console.log("📤 Données reclassification:", data);
+    
+    const updateData = {
+      equipementId: data.equipementId,
+      incidentId: data.incidentId,
+      incidentCauseId: data.incidentCauseId
+    };
+
+    // Utiliser handlePatch ou handlePost selon votre API
+    const response = await handlePatch(
+      `${import.meta.env.VITE_INCIDENT_API}/incidents/reclassify/${selectedIncident}`,
+      updateData
+    );
+
+    if (response && response.error) {
+      toast.error("Erreur lors du reclassement: " + response.error);
+      return;
+    }
+
+    toast.success("Incident reclassé avec succès");
+    fetchData();
+    setIsOpenReclassify(false);
+    
+  } catch (error) {
+    console.error("❌ Erreur reclassification:", error);
+    toast.error("Erreur lors du reclassement");
+  } finally {
+    setIsSubmitting(false);
+  }
+}
 
   // Load user roles & permissions
   useEffect(() => {
@@ -1290,6 +1558,7 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
         return <p className='text-sm'>{durationHours > 0 ? `${durationHours}h ` : ''}{durationMinutes > 0 ? `${durationMinutes}min` : '0min'}</p>
       }
     },
+    { title: "Reclassé par", dataIndex: "reclassifiedBy", width: "200px", render: v => <p className='text-sm capitalize'>{employees.find(e => e.value === v)?.name || v || "--"}</p> },
     {
       title: "Statut", dataIndex: "status", fixed: "right", width: "150px", render: v => (
         <div className={`${v === "UNDER_MAINTENANCE" ? "border-yellow-500 bg-yellow-300" : v === "CLOSED" ? "border-green-500 bg-green-300" : ""} p-2 rounded-lg border`}>
@@ -1306,48 +1575,11 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
               <MoreHorizontal />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-
-            {record.status === "PENDING" && (
-              <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_send_to_maintenance_incident", "manager", "DEX", "maintenance technician"]}>
-                <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
-                  <button 
-                    className='flex items-center space-x-2'
-                    onClick={() => {
-                      setSelectedSite(record.siteId);
-                      setSelectedIncident(record.id);
-                      setSelectedEquipement(record.equipementId);
-                      setIsOpen(true);
-                    }}
-                  >
-                    <ExclamationTriangleIcon />
-                    <span>Mettre en maintenance</span>
-                  </button>
-                </DropdownMenuItem>
-              </VerifyPermission>
-            )}
-
-            {record.status === "PENDING" && (
-              <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_close_incident", "head guard", "HSE supervisor", "manager", "DEX", "IT technician"]}>
-                <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
-                  <button 
-                    className='flex items-center space-x-2'
-                    onClick={() => {
-                      setModalIsOpen(true);
-                      setSelectedIncident(record.id);
-                      setRowSelection(record);
-                    }}
-                  >
-                    <XMarkIcon />
-                    <span>Cloturer l'incident</span>
-                  </button>
-                </DropdownMenuItem>
-              </VerifyPermission>
-            )}
-
-            <DropdownMenuSeparator />
+            
+            {/* Actions principales */}
             <DropdownMenuItem 
               className="flex gap-2 items-center cursor-pointer"
               onClick={() => handleOpenDetails(record)}
@@ -1355,11 +1587,66 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
               <EyeIcon className='h-4 w-6' />
               <span>Voir détails</span>
             </DropdownMenuItem>
+            
+            {/* Actions conditionnelles */}
+            {record.status === "CLOSED" && (
+              <>
+                <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_edit_incident", "manager", "DEX", "ROP"]}>
+                  {/* Option Reclasser */}
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    className="flex gap-2 items-center cursor-pointer"
+                    onClick={() => handleOpenReclassify(record)}
+                  >
+                    <PencilSquareIcon className='h-4 w-6'/>
+                    <span>Reclasser</span>
+                  </DropdownMenuItem>
+                </VerifyPermission>
+              </>
+            )}
+
+            
+            {/* Actions conditionnelles */}
+            {record.status === "PENDING" && (
+              <>
+                <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_send_to_maintenance_incident", "manager", "DEX", "maintenance technician"]}>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
+                    <button 
+                      className='flex items-center space-x-2'
+                      onClick={() => handleOpenMaintenance(record)}
+                    >
+                      <ExclamationTriangleIcon />
+                      <span>Mettre en maintenance</span>
+                    </button>
+                  </DropdownMenuItem>
+                </VerifyPermission>
+
+                <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_close_incident", "head guard", "HSE supervisor", "manager", "DEX", "IT technician"]}>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
+                    <button 
+                      className='flex items-center space-x-2'
+                      onClick={() => {
+                        setModalIsOpen(true);
+                        setSelectedIncident(record.id);
+                        setRowSelection(record);
+                      }}
+                    >
+                      <XMarkIcon />
+                      <span>Cloturer l'incident</span>
+                    </button>
+                  </DropdownMenuItem>
+                </VerifyPermission>
+              </>
+            )}
+
             <DropdownMenuSeparator />
-            <DropdownMenuSeparator />
+            
+            {/* Action dangereuse */}
             <VerifyPermission functions={permissions} roles={roles} expected={['incident__can_delete_incident']}>
               <DropdownMenuItem 
-                className="flex gap-2 items-center cursor-pointer"
+                className="flex gap-2 items-center cursor-pointer text-red-600"
                 onClick={async () => {
                   if (!window.confirm("Voulez-vous vraiment supprimer cet incident ?")) return;
                   try {
@@ -1393,7 +1680,7 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
       />
 
       {/* Modal Mettre en maintenance */}
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      {/* <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -1406,7 +1693,6 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
           </DialogHeader>
           
           <form onSubmit={handleSubmit(submitMaintenance)} className="space-y-4">
-            {/* Type maintenance selection */}
             <div className='flex flex-col'>
               <label htmlFor="maintenance-type" className='text-sm font-semibold mb-2'>
                 Type de maintenance <span className='text-red-500'>*</span>
@@ -1428,7 +1714,6 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
               )}
             </div>
 
-            {/* Type d'incident */}
             <div>
               <label className="block text-sm font-semibold mb-2">Type d'incident :</label>
               <AutoComplete
@@ -1444,7 +1729,6 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
               )}
             </div>
 
-            {/* Arrêt opération */}
             <div className='bg-gray-50 rounded-lg p-4'>
               <label className='flex items-center space-x-2 cursor-pointer'>
                 <input
@@ -1457,6 +1741,120 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
               <p className='text-xs text-gray-500 mt-1'>
                 {hasStoppedOperationsValue ? "✓ Arrêt opération enregistré" : "Aucun arrêt opération"}
               </p>
+            </div>
+
+            <div className='flex flex-col'>
+              <label htmlFor="maintenance-description" className='text-sm font-semibold mb-2'>
+                Description des travaux <span className='text-red-500'>*</span>
+              </label>
+              <textarea 
+                id="maintenance-description"
+                className='border rounded-lg p-2 w-full' 
+                placeholder='Décrivez en détail les travaux de maintenance à effectuer...'
+                value={description}
+                onChange={(e)=>setDescription(e.target.value)}
+                required
+                rows={4}
+              />
+              {!description && (
+                <p className='text-xs text-red-500 mt-1'>La description est obligatoire</p>
+              )}
+            </div>
+
+            <DialogFooter className="flex gap-2 pt-4">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => setIsOpen(false)}
+                disabled={isSubmitting}
+              >
+                Annuler
+              </Button>
+              <Button 
+                type="submit" 
+                className={`flex gap-2 text-white hover:bg-secondary ${
+                  isSubmitting ? "bg-blue-300 cursor-not-allowed" : "bg-primary"
+                }`}
+                disabled={isSubmitting || !description}
+              >
+                {isSubmitting ? <Preloader size={20}/> : <CheckCircle />}
+                <span>{isSubmitting ? "En cours..." : "Démarrer la maintenance"}</span>
+              </Button>  
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog> */}
+      {/* Modal Mettre en maintenance - VERSION SECOURS */}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Cog6ToothIcon className='h-5 w-5'/>
+              <span>Mettre en maintenance</span>
+            </DialogTitle>
+            <DialogDescription>
+              Sélectionnez le type de maintenance et décrivez les travaux à effectuer
+            </DialogDescription>
+          </DialogHeader>
+          
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = {
+              maintenance: formData.get('maintenance'),
+              incidentId: formData.get('incidentId'),
+              hasStoppedOperations: formData.get('hasStoppedOperations') === 'on'
+            };
+            submitMaintenance(data);
+          }} className="space-y-4">
+            
+            {/* Type maintenance */}
+            <div className='flex flex-col'>
+              <label htmlFor="maintenance-type" className='text-sm font-semibold mb-2'>
+                Type de maintenance <span className='text-red-500'>*</span>
+              </label>
+              <select 
+                id="maintenance-type"
+                name="maintenance"
+                className='border rounded-lg w-full p-2' 
+                required
+              >
+                <option value="">Choisir le type de maintenance</option>
+                <option value="CORRECTION">CORRECTIF</option>
+                <option value="PALLIATIVE">PALIATIF</option>
+                <option value="CURATIVE">CURATIF</option>
+              </select>
+            </div>
+
+            {/* Type d'incident */}
+            <div>
+              <label className="block text-sm font-semibold mb-2">
+                Type d'incident <span className='text-red-500'>*</span>
+              </label>
+              <AutoComplete
+                placeholder="Rechercher un type d'incident..."
+                isLoading={isLoadingTypes}
+                dataList={incidentTypes}
+                onSearch={handleSearchIncidentTypes}
+                onSelect={handleSelectIncidentType}
+              />
+              <input
+                type="hidden"
+                name="incidentId"
+                id="incidentId"
+              />
+            </div>
+
+            {/* Arrêt opération */}
+            <div className='bg-gray-50 rounded-lg p-4'>
+              <label className='flex items-center space-x-2 cursor-pointer'>
+                <input
+                  type="checkbox"
+                  name="hasStoppedOperations"
+                  className='w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500'
+                />
+                <span className='font-semibold text-sm'>L'incident a causé un arrêt des opérations</span>
+              </label>
             </div>
 
             {/* Description */}
@@ -1628,6 +2026,12 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
                   <InfoItem 
                     label="Clôturé par" 
                     value={employees.find(e => e.value === selectedIncidentData?.closedBy)?.name || selectedIncidentData?.closedBy || "--"} 
+                  />
+                )}
+                {selectedIncidentData?.closedBy && (
+                  <InfoItem 
+                    label="Reclassé par" 
+                    value={employees.find(e => e.value === selectedIncidentData?.reclassifiedBy)?.name || selectedIncidentData?.reclassifiedBy || "--"} 
                   />
                 )}
               </div>
@@ -1871,6 +2275,250 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
               </Button>
             </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal Reclasser incident */}
+      {/* <Dialog open={isOpenReclassify} onOpenChange={setIsOpenReclassify}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader className="flex-shrink-0">
+            <DialogTitle className="flex items-center gap-2">
+              <PencilSquareIcon className="h-5 w-5" />
+              Reclasser de l'incident #{selectedIncidentData?.numRef} 
+            </DialogTitle>
+            <DialogDescription>
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-y-auto pr-2 -mr-2">
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                
+                // Récupérer les valeurs manuellement
+                const formData = {
+                  equipementId: watch("equipementId"),
+                  incidentId: watch("incidentId"), 
+                  incidentCauseId: watch("incidentCauseId")
+                };
+                // Valider manuellement
+                if (!formData.equipementId || !formData.incidentId || !formData.incidentCauseId) {
+                  alert("Veuillez remplir tous les champs obligatoires");
+                  return;
+                }
+                // Appeler directement submitReclassify
+                submitReclassify(formData);
+              }} 
+              className="space-y-6 pb-4"
+            >
+              {selectedIncidentData?.siteId && (
+                <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                  <div className="flex items-center gap-2">
+                    <InformationCircleIcon className="h-4 w-4 text-blue-600" />
+                    <span className="text-sm font-medium text-blue-800">Site :</span>
+                    <span className="text-sm text-blue-700">
+                      {sitesMap.get(selectedIncidentData.siteId) || selectedIncidentData.siteId}
+                    </span>
+                  </div>
+                  <p className="text-xs text-blue-600 mt-1">
+                    Les équipements sont restreints à ce site
+                  </p>
+                </div>
+              )}
+
+              <div className="bg-gray-50 rounded-lg p-2">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Description (En lecture)
+                </label>
+                <div className="bg-white border rounded p-3 min-h-[80px]">
+                  <p className="text-gray-600 whitespace-pre-wrap text-sm">
+                    {reclassifyFields.description || "Aucune description"}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2">
+                  Équipement <span className="text-red-500">*</span>
+                </label>
+                <AutoComplete
+                  placeholder="Rechercher un équipement du site..."
+                  isLoading={isEquipementLoading}
+                  dataList={equipments}
+                  onSearch={handleSearchEquipements}
+                  onSelect={handleSelectEquipement}
+                  register={{...register('equipementId', { required: "L'équipement est requis" })}}
+                />
+                {errors.equipementId && (
+                  <p className="text-red-500 text-sm mt-1">{errors.equipementId.message}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-semibold mb-2">
+                  Type d'incident <span className="text-red-500">*</span>
+                </label>
+                <AutoComplete
+                  placeholder="Rechercher un type d'incident..."
+                  isLoading={isLoadingTypes}
+                  dataList={incidentTypes}
+                  onSearch={handleSearchIncidentTypes}
+                  onSelect={handleSelectIncidentType}
+                  register={{...register('incidentId', { required: "Le type d'incident est requis" })}}
+                />
+                {errors.incidentId && (
+                  <p className="text-red-500 text-sm mt-1">{errors.incidentId.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2">
+                  Cause incident <span className="text-red-500">*</span>
+                </label>
+                <AutoComplete
+                  placeholder="Rechercher une cause..."
+                  isLoading={false}
+                  dataList={incidentCauses}
+                  onSearch={handleSearchIncidentCauses}
+                  onSelect={handleSelectIncidentCause}
+                  register={{...register('incidentCauseId', { required: "La cause est requise" })}}
+                />
+                {errors.incidentCauseId && (
+                  <p className="text-red-500 text-sm mt-1">{errors.incidentCauseId.message}</p>
+                )}
+              </div>
+
+              <div className="flex gap-2 pt-6 border-t">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsOpenReclassify(false)}
+                  disabled={isSubmitting}
+                  className="flex-1"
+                >
+                  Annuler
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="flex gap-2 text-white hover:bg-secondary bg-primary flex-1"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Preloader size={16} />
+                      Reclassement...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="h-4 w-4" />
+                      Confirmer le reclassement
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </DialogContent>
+      </Dialog> */}
+      {/* Modal Reclasser incident - CORRIGÉ */}
+      <Dialog open={isOpenReclassify} onOpenChange={setIsOpenReclassify}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader className="flex-shrink-0">
+            <DialogTitle className="flex items-center gap-2">
+              <PencilSquareIcon className="h-5 w-5" />
+              Reclasser l'incident #{selectedIncidentData?.numRef} 
+            </DialogTitle>
+            <DialogDescription>
+              Modifier la classification de cet incident
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-y-auto pr-2 -mr-2">
+            <form 
+              onSubmit={handleSubmit(submitReclassify)} 
+              className="space-y-6 pb-4"
+            >
+              {/* Vos champs AutoComplete existants */}
+              <div>
+                <label className="block text-sm font-semibold mb-2">
+                  Équipement <span className="text-red-500">*</span>
+                </label>
+                <AutoComplete
+                  placeholder="Rechercher un équipement..."
+                  isLoading={isEquipementLoading}
+                  dataList={equipments}
+                  onSearch={handleSearchEquipements}
+                  onSelect={handleSelectEquipement}
+                  register={{...register('equipementId', { required: "L'équipement est requis" })}}
+                />
+                {errors.equipementId && (
+                  <p className="text-red-500 text-sm mt-1">{errors.equipementId.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2">
+                  Type d'incident <span className="text-red-500">*</span>
+                </label>
+                <AutoComplete
+                  placeholder="Rechercher un type d'incident..."
+                  isLoading={isLoadingTypes}
+                  dataList={incidentTypes}
+                  onSearch={handleSearchIncidentTypes}
+                  onSelect={handleSelectIncidentType}
+                  register={{...register('incidentId', { required: "Le type d'incident est requis" })}}
+                />
+                {errors.incidentId && (
+                  <p className="text-red-500 text-sm mt-1">{errors.incidentId.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2">
+                  Cause incident <span className="text-red-500">*</span>
+                </label>
+                <AutoComplete
+                  placeholder="Rechercher une cause..."
+                  isLoading={false}
+                  dataList={incidentCauses}
+                  onSearch={handleSearchIncidentCauses}
+                  onSelect={handleSelectIncidentCause}
+                  register={{...register('incidentCauseId', { required: "La cause est requise" })}}
+                />
+                {errors.incidentCauseId && (
+                  <p className="text-red-500 text-sm mt-1">{errors.incidentCauseId.message}</p>
+                )}
+              </div>
+
+              <div className="flex gap-2 pt-6 border-t">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => setIsOpenReclassify(false)}
+                  disabled={isSubmitting}
+                  className="flex-1"
+                >
+                  Annuler
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="flex gap-2 text-white hover:bg-secondary bg-primary flex-1"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Preloader size={16} />
+                      Reclassement...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="h-4 w-4" />
+                      Confirmer le reclassement
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

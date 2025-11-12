@@ -223,13 +223,6 @@ const Incident = () =>{
                         pagination={
                             <div className='flex items-center px-6'>
                                 <p className='text-sm text-black font-bold'>{total} ligne(s)</p>
-                                {/* <Pagination 
-                                    total={total}
-                                    pageSize={100}
-                                    onChange={(page)=>{
-                                        totalPages > page && fetchIncidents(`${URLS.INCIDENT_API}/incidents?page=${page}`)
-                                    }}
-                                /> */}
                                 <Pagination 
                                     total={total}
                                     pageSize={100}
