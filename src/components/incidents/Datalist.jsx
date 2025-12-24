@@ -1622,7 +1622,8 @@ const submitReclassify = async (data) => {
                   </DropdownMenuItem>
                 </VerifyPermission>
 
-                <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_close_incident", "head guard", "HSE supervisor", "manager", "DEX", "IT technician"]}>
+                {/* <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_close_incident", "head guard", "HSE supervisor", "manager", "DEX", "IT technician"]}> */}
+                <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_close_incident", "HSE supervisor", "manager", "DEX", "IT technician"]}>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
                     <button 
