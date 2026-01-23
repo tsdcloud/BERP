@@ -1060,7 +1060,7 @@ const InitiateForm = ({onSucess}) => {
                         dataList={sites}
                         onSearch={handleSearchSites}
                         onSelect={handleSelectSites}
-                        register={{...register('siteId', {required:'Ce champ est requis'})}}
+                        // register={{...register('siteId', {required:'Ce champ est requis'})}}
                         error={errors.siteId}
                     />
                     {errors.siteId && <small className='text-xs my-2 text-red-500 mx-4'>{errors.siteId.message}</small>}
@@ -1076,7 +1076,7 @@ const InitiateForm = ({onSucess}) => {
                             dataList={equipements}
                             onSearch={handleSearchEquipements}
                             onSelect={handleSelectEquipement}
-                            register={{...register('equipementId', {required:'Ce champ est requis'})}}
+                            // register={{...register('equipementId', {required:'Ce champ est requis'})}}
                             error={errors.equipementId}
                         />
                         {errors.equipementId && <small className='text-xs text-red-500 mx-4'>{errors.equipementId.message}</small>}
@@ -1097,7 +1097,7 @@ const InitiateForm = ({onSucess}) => {
                         dataList={shifts}
                         onSearch={handleSearchShifts}
                         onSelect={handleSelectShifts}
-                        register={{...register('shiftId', {required:'Ce champ est requis'})}}
+                        // register={{...register('shiftId', {required:'Ce champ est requis'})}}
                         error={errors.shiftId}
                     />
                     {errors.shiftId && <small className='text-xs my-2 text-red-500 mx-4'>{errors.shiftId.message}</small>}

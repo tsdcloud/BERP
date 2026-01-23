@@ -1,0 +1,69 @@
+/* Datalist.css */
+.datalist-container {
+    position: relative;
+    height: 100%;
+}
+
+/* Fixer l'entête du tableau */
+.sticky-header-table .ant-table-thead > tr > th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: white;
+    box-shadow: 0 1px 0 #f0f0f0;
+}
+
+/* Assurer que l'entête reste au-dessus du contenu */
+.sticky-header-table .ant-table-thead > tr > th::before {
+    display: none !important;
+}
+
+/* Style pour les colonnes fixes */
+.sticky-header-table .ant-table-cell-fix-left,
+.sticky-header-table .ant-table-cell-fix-right {
+    z-index: 4;
+}
+
+.sticky-header-table .ant-table-cell-fix-left-first,
+.sticky-header-table .ant-table-cell-fix-left-last {
+    box-shadow: 6px 0 6px -4px rgba(0, 0, 0, 0.15);
+}
+
+.sticky-header-table .ant-table-cell-fix-right-first,
+.sticky-header-table .ant-table-cell-fix-right-last {
+    box-shadow: -6px 0 6px -4px rgba(0, 0, 0, 0.15);
+}
+
+/* Style de défilement */
+.sticky-header-table .ant-table-body {
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+.sticky-header-table .ant-table-body::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.sticky-header-table .ant-table-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.sticky-header-table .ant-table-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.sticky-header-table .ant-table-body::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Style pour les lignes */
+.sticky-header-table .ant-table-tbody > tr > td {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sticky-header-table .ant-table-tbody > tr:hover > td {
+    background: #fafafa;
+}

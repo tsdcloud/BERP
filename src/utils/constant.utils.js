@@ -103,3 +103,22 @@ export const ACTION_TYPES = [
     label: "Ravitaillement"
   },
 ]
+
+export const EQUIPMENT_DOMAIN = [
+  {
+    value: "IT",
+    label: "IT"
+  },
+  {
+    value: "HSE",
+    label: "HSE"
+  },
+  {
+    value: "OPERATIONS",
+    label: "Opérations"
+  },
+  {
+    value: "MAINTENANCE",
+    label: "Maintenances"
+  },
+]

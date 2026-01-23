@@ -432,7 +432,7 @@ const InitiateForm = ({onSucess}) => {
             dataList={groups}
             onSearch={handleSearchGroups}
             onSelect={handleSelectGroups}
-            register={{...register('equipmentGroupId', {required:'Ce champ est requis'})}}
+            // register={{...register('equipmentGroupId', {required:'Ce champ est requis'})}}
           />
           {errors.equipmentGroupId && <small className='text-xs mx-2 text-red-500'>{errors.equipmentGroupId.message}</small>}
         </div>
@@ -445,7 +445,7 @@ const InitiateForm = ({onSucess}) => {
             dataList={sites}
             onSearch={handleSearchSites}
             onSelect={handleSelectSites}
-            register={{...register('siteId', {required:'Ce champ est requis'})}}
+            // register={{...register('siteId', {required:'Ce champ est requis'})}}
           />
           {errors.siteId && <small className='text-xs mx-2 text-red-500'>{errors.siteId.message}</small>}
         </div>

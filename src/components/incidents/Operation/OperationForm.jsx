@@ -387,8 +387,7 @@ const ActionTypeForm = ({onSuccess}) => {
                     dataList={sites}
                     onSearch={handleSearchSites}
                     onSelect={handleSelectSites}
-                    // register={{...register('siteId', {required:'Ce champ est requis'})}}
-                    register={register('siteId', { required: 'Ce champ est requis' })}
+                    // register={register('siteId', { required: 'Ce champ est requis' })}
                     error={errors.siteId}
                 />
                 {errors.siteId && <small className='text-xs my-2 text-red-500 mx-4'>{errors.siteId.message}</small>}
@@ -401,8 +400,7 @@ const ActionTypeForm = ({onSuccess}) => {
                     dataList={equipements}
                     onSearch={handleSearchEquipements}
                     onSelect={handleSelectEquipement}
-                    // register={{...register('equipementId', {required:'Ce champ est requis'})}}
-                    register={register('equipementId', { required: 'Ce champ est requis' })}
+                    // register={register('equipementId', { required: 'Ce champ est requis' })}
                     error={errors.equipementId}
                 />
                 {errors.equipementId && <small className='text-xs text-red-500 mx-4'>{errors.equipementId.message}</small>}

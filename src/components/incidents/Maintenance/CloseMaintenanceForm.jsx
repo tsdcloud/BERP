@@ -416,7 +416,7 @@ const CloseMaintenanceForm = ({isOpen, setIsOpen, selectedMaintenance, onSubmit}
                             isLoading={false}
                             placeholder={"Choisir la cause incident"}
                             dataList={incidentCauses}
-                            register={{...register('incidentCauseId', {required:'Ce champs est requis'})}}
+                            // register={{...register('incidentCauseId', {required:'Ce champs est requis'})}}
                             onSearch={(input)=>{
                                 handleFetchIncidentCauses(`${URLS.INCIDENT_API}/incident-causes?search=${input}`);
                             }}

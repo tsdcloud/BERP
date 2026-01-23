@@ -42,26 +42,6 @@ const InitiateForm = ({onSucess}) => {
     }
   }
   
-  // const handleFetchFamilies = async (link) =>{
-  //   setIsLoadingFamilies(true)
-  //   try {
-  //     let response = await handleFetch(link);     
-  //     if(response?.status === 200){
-  //       let formatedData = response?.data.map(item=>{
-  //         return {
-  //           name:item?.name,
-  //           value: item?.id
-  //         }
-  //       });
-  //       setFamilies(formatedData);
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error("Failed to get groups");
-  //   }finally{
-  //     setIsLoadingFamilies(false);
-  //   }
-  // }
   const handleFetchFamilies = async (link) =>{
     setIsLoadingFamilies(true)
     try {
@@ -134,7 +114,7 @@ const InitiateForm = ({onSucess}) => {
             dataList={families}
             onSearch={handleSearchGroupFamilies}
             onSelect={handleSelectGroupFamilies}
-            register={{...register('equipmentGroupFamilyId', {required:'Ce champ est requis'})}}
+            // register={{...register('equipmentGroupFamilyId', {required:'Ce champ est requis'})}}
             error={errors.equipmentGroupFamilyId}
             errorMessage={errors.equipmentGroupFamilyId && <small className='text-xs mx-2 text-red-500'>{errors.equipmentGroupFamilyId.message}</small>}
           />

@@ -504,7 +504,7 @@ const HorsPontForm = ({onSucess}) => {
                                 setValue("incidentCauseId", null);
                             }
                         }}
-                        register={{...register("incidentCauseId", {required:"Ce champ est requis"})}}
+                        // register={{...register("incidentCauseId", {required:"Ce champ est requis"})}}
                         validation={{required:"Ce champs est requis"}}
                         placeholder="Cause de l'incident"
                         name={"incidentCauseId"}
@@ -526,7 +526,7 @@ const HorsPontForm = ({onSucess}) => {
                                 setValue("siteId", null);
                             }
                         }}
-                        register={{...register("siteId", {required:"Ce champ est requis"})}}
+                        // register={{...register("siteId", {required:"Ce champ est requis"})}}
                         validation={{required:"Ce champs est requis"}}
                         placeholder="Sites"
                         name={"siteId"}
@@ -548,7 +548,7 @@ const HorsPontForm = ({onSucess}) => {
                                 setValue("tier", null);
                             }
                         }}
-                        register={{...register("tier", {required:"Ce champ est requis"})}}
+                        // register={{...register("tier", {required:"Ce champ est requis"})}}
                         validation={{required:"Ce champs est requis"}}
                         placeholder="Tier"
                         name={"tier"}
@@ -599,7 +599,7 @@ const HorsPontForm = ({onSucess}) => {
                                 setValue("loader", null);
                             }
                         }}
-                        register={{...register("loader", {required:"Ce champ est requis"})}}
+                        // register={{...register("loader", {required:"Ce champ est requis"})}}
                         validation={{required:"Ce champs est requis"}}
                         placeholder="Chargeur"
                         name={"loader"}
@@ -622,7 +622,7 @@ const HorsPontForm = ({onSucess}) => {
                                 setValue("product", null);
                             }
                         }}
-                        register={{...register("product", {required:"Ce champ est requis"})}}
+                        // register={{...register("product", {required:"Ce champ est requis"})}}
                         validation={{required:"Ce champs est requis"}}
                         placeholder="Produit"
                         name={"product"}
@@ -645,7 +645,7 @@ const HorsPontForm = ({onSucess}) => {
                                 setValue("transporter", null);
                             }
                         }}
-                        register={{...register("transporter", {required:"Ce champ est requis"})}}
+                        // register={{...register("transporter", {required:"Ce champ est requis"})}}
                         validation={{required:"Ce champs est requis"}}
                         placeholder="Transporteur"
                         name={"transporter"}

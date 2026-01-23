@@ -155,7 +155,7 @@ const MovementForm = ({onSuccess}) => {
                         dataList={sites}
                         onSearch={handleSearchSites}
                         onSelect={handleSelectOriginSite}
-                        register={{...register('originSite', {required:'Ce champ est requis'})}}
+                        // register={{...register('originSite', {required:'Ce champ est requis'})}}
                         error={errors.originSite}
                     />
                     {errors.originSite && <small className='text-xs my-2 text-red-500 mx-4'>{errors.originSite.message}</small>}
@@ -168,7 +168,7 @@ const MovementForm = ({onSuccess}) => {
                         dataList={equipements}
                         onSearch={handleSearchEquipements}
                         onSelect={handleSelectEquipement}
-                        register={{...register('equipementId', {required:'Ce champ est requis'})}}
+                        // register={{...register('equipementId', {required:'Ce champ est requis'})}}
                         error={errors.equipementId}
                     />
                     {errors.equipementId && <small className='text-xs text-red-500 mx-4'>{errors.equipementId.message}</small>}
@@ -181,7 +181,7 @@ const MovementForm = ({onSuccess}) => {
                         dataList={sites}
                         onSearch={handleSearchSites}
                         onSelect={handleSelectDestinationSite}
-                        register={{...register('destinationSite', {required:'Ce champ est requis'})}}
+                        // register={{...register('destinationSite', {required:'Ce champ est requis'})}}
                         error={errors.destinationSite}
                     />
                     {errors.destinationSite && <small className='text-xs my-2 text-red-500 mx-4'>{errors.destinationSite.message}</small>}
