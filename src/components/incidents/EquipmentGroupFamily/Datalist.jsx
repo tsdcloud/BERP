@@ -357,10 +357,10 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading, userDo
     }
 
     // Vérifier la permission d'édition
-    if (!canEditFamily(record)) {
-      toast.error("Vous n'avez pas la permission de modifier cette famille");
-      return;
-    }
+    // if (!canEditFamily(record)) {
+    //   toast.error("Vous n'avez pas la permission de modifier cette famille");
+    //   return;
+    // }
 
     setIsSaving(true);
     try {
