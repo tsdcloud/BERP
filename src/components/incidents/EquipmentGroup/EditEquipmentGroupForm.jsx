@@ -138,7 +138,7 @@ const EditEquipmentGroupForm = ({ isOpen, onClose, group, onSuccess }) => {
           <DialogTitle className="flex items-center justify-between">
             <span>Modifier le groupe d'équipement</span>
             <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
+              {/* <X className="h-4 w-4" /> */}
             </Button>
           </DialogTitle>
         </DialogHeader>

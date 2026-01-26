@@ -429,7 +429,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading, userDo
                 <DropdownMenuSeparator />
                 
                 {/* Bouton Éditer */}
-                {canEdit && (
+                {/* {canEdit && ( */}
                   <DropdownMenuItem 
                     className="flex gap-2 items-center cursor-pointer py-2 text-sm"
                     onClick={(e) => {
@@ -442,7 +442,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading, userDo
                     <PencilIcon className='h-4 w-4'/>
                     <span>Éditer</span>
                   </DropdownMenuItem>
-                )}
+                {/* )} */}
                 
                 {/* Bouton Supprimer */}
                 {canDelete && (
@@ -455,8 +455,8 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading, userDo
                         handleDeleteGroup(record.id);
                       }}
                     >
-                      <TrashIcon className='text-red-500 h-4 w-4'/>
-                      <span className='text-red-600'>Supprimer</span>
+                      {/* <TrashIcon className='text-red-500 h-4 w-4'/> */}
+                      {/* <span className='text-red-600'>Supprimer</span> */}
                     </DropdownMenuItem>
                   </>
                 )}

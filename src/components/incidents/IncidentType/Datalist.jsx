@@ -625,10 +625,10 @@ const Datalist = ({
                    (userDomain === "PRIVILEGED") ||
                    (record.domain && record.domain === userDomain);
     
-    if (!canEdit) {
-      toast.error("Vous n'avez pas la permission de modifier");
-      return;
-    }
+    // if (!canEdit) {
+    //   toast.error("Vous n'avez pas la permission de modifier");
+    //   return;
+    // }
 
     if (!editFormData.name || !editFormData.domain) {
       toast.error("Tous les champs sont requis");
@@ -677,10 +677,10 @@ const Datalist = ({
                    (userDomain === "PRIVILEGED") ||
                    (record.domain && record.domain === userDomain);
     
-    if (!canEdit) {
-      toast.error("Vous n'avez pas la permission de modifier cet élément");
-      return;
-    }
+    // if (!canEdit) {
+    //   toast.error("Vous n'avez pas la permission de modifier cet élément");
+    //   return;
+    // }
 
     setEditingRow(record.id);
     setEditFormData({
@@ -771,17 +771,17 @@ const Datalist = ({
             className="w-full text-sm"
             placeholder="Choisir le département"
             size="small"
-            disabled={userDomain !== "PRIVILEGED" && userDomain !== record.domain}
+            // disabled={userDomain !== "PRIVILEGED" && userDomain !== record.domain}
           >
             <Select.Option value="">Sélectionner...</Select.Option>
             {EQUIPMENT_DOMAIN.map((domain, index) => (
               <Select.Option 
                 value={domain.value} 
                 key={index}
-                disabled={userDomain !== "PRIVILEGED" && userDomain !== domain.value}
+                // disabled={userDomain !== "PRIVILEGED" && userDomain !== domain.value}
               >
                 {domain.label}
-                {userDomain !== "PRIVILEGED" && userDomain !== domain.value && " (Non autorisé)"}
+                {/* {userDomain !== "PRIVILEGED" && userDomain !== domain.value && " (Non autorisé)"} */}
               </Select.Option>
             ))}
           </Select>
@@ -832,17 +832,18 @@ const Datalist = ({
           
           return editingRow === record.id ? (
               <div className="flex gap-1">
-                  {canEdit && (
+                  {/* {canEdit && ( */}
                       <Button 
                           onClick={() => handleSaveEdit(record)}
-                          disabled={isSaving}
+                          // disabled={isSaving}
                           className="h-7 px-2 bg-green-600 hover:bg-green-700 text-white text-xs flex gap-1 items-center"
                           size="sm"
                       >
                           <SaveIcon className='h-3 w-3'/>
-                          <span>{isSaving ? "..." : "Enregistrer"}</span>
+                          {/* <span>{isSaving ? "..." : "Enregistrer"}</span> */}
+                          <span>{"Enregistrer"}</span>
                       </Button>
-                  )}
+                  {/* )} */}
                   <Button 
                       onClick={handleCancelEdit}
                       className="h-7 px-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs flex gap-1 items-center border"
@@ -864,7 +865,7 @@ const Datalist = ({
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       
-                      {canEdit && (
+                      {/* {canEdit && ( */}
                           <DropdownMenuItem 
                               className="flex gap-2 items-center cursor-pointer"
                               onClick={() => startEdit(record)}
@@ -872,7 +873,7 @@ const Datalist = ({
                               <PencilIcon className='h-4 w-4'/>
                               <span>Éditer</span>
                           </DropdownMenuItem>
-                      )}
+                      {/* )} */}
                       
                       {canDelete && (
                           <DropdownMenuItem 

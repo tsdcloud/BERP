@@ -480,7 +480,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading, userDo
             onChange={(e) => handleEditChange('name', e.target.value)}
             className="w-full text-sm"
             placeholder="Nom de la famille"
-            disabled={!canEditFamily(record)}
+            // disabled={!canEditFamily(record)}
           />
         ) : (
           <p className='text-sm'>{highlightText(value)}</p>
@@ -497,7 +497,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading, userDo
             onChange={(val) => handleEditChange('domain', val)}
             className="w-full"
             placeholder="Choisir le département"
-            disabled={!canEditFamily(record)}
+            // disabled={!canEditFamily(record)}
           >
             <Select.Option value="">Choisir le département</Select.Option>
             {EQUIPMENT_DOMAIN.map((domain, index) => (
@@ -542,11 +542,11 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading, userDo
         
         return editingRow === record.id ? (
           <div className="flex gap-2">
-            {canEdit && (
+            {/* {canEdit && ( */}
               <>
                 <Button 
                   onClick={() => handleSaveEdit(record)}
-                  disabled={isSaving}
+                  // disabled={isSaving}
                   className="text-xs p-2 bg-green-600 hover:bg-green-700 rounded-lg text-white shadow flex gap-2"
                 >
                   <DatabaseBackupIcon className='h-4 w-4'/>
@@ -560,7 +560,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading, userDo
                   <span>Annuler</span>
                 </Button>
               </>
-            )}
+            {/* )} */}
           </div>
         ) : (
           <div className="flex justify-center">
@@ -569,7 +569,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading, userDo
                 <Button 
                   variant="ghost" 
                   className="h-8 w-8 p-0 hover:bg-gray-100"
-                  disabled={!canEdit && !canDelete}
+                  // disabled={!canEdit && !canDelete}
                 >
                   <span className="sr-only">Open menu</span>
                   <MoreHorizontal className="h-4 w-4" />
@@ -582,7 +582,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading, userDo
                 <DropdownMenuSeparator />
                 
                 {/* Bouton Éditer */}
-                {canEdit && (
+                {/* {canEdit && ( */}
                   <DropdownMenuItem 
                     className="flex gap-2 items-center cursor-pointer py-2 text-sm"
                     onClick={() => {
@@ -596,7 +596,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading, userDo
                     <PencilIcon className='h-4 w-4'/>
                     <span>Éditer</span>
                   </DropdownMenuItem>
-                )}
+                {/* )} */}
                 
                 {/* Bouton Supprimer */}
                 {canDelete && (

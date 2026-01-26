@@ -385,7 +385,7 @@ const Datalist = ({
             fixed: 'right',
             render: (_, record) => (
                 <div className="flex gap-2">
-                    {canEdit(record) && (
+                    {/* {canEdit(record) && ( */}
                         <Button
                             variant="ghost"
                             size="sm"
@@ -395,7 +395,7 @@ const Datalist = ({
                         >
                             <PencilIcon className='h-4 w-4' />
                         </Button>
-                    )}
+                    {/* )} */}
                     
                     {canDelete(record) && (
                         <Button

@@ -351,10 +351,10 @@ const EditForm = ({ cause, onSucess, onCancel, userDomain = "PRIVILEGED" }) => {
                 setValue('incidentTypeId', cause.incidentType.id);
                 
                 // Vérifier si l'utilisateur peut modifier ce type d'incident
-                if (userDomain !== "PRIVILEGED" && cause.incidentType.domain !== userDomain) {
-                    setIsReadOnly(true);
-                    toast.error("Vous ne pouvez modifier que les causes de votre domaine");
-                }
+                // if (userDomain !== "PRIVILEGED" && cause.incidentType.domain !== userDomain) {
+                //     setIsReadOnly(true);
+                //     toast.error("Vous ne pouvez modifier que les causes de votre domaine");
+                // }
             } else {
                 // Si pas de type d'incident, effacer la valeur
                 setValue('incidentTypeId', '');
@@ -364,16 +364,16 @@ const EditForm = ({ cause, onSucess, onCancel, userDomain = "PRIVILEGED" }) => {
 
     // Recherche des types d'incident avec filtrage par domaine
     const handleSearchIncidentTypes = useCallback(async (searchInput) => {
-        if (!searchInput || isReadOnly) return;
+        // if (!searchInput || isReadOnly) return;
         
         setIsLoadingTypes(true);
         try {
             let url = `${URLS.INCIDENT_API}/incident-types?search=${encodeURIComponent(searchInput)}`;
             
             // Ajouter le filtre par domaine si l'utilisateur n'est pas privilégié
-            if (userDomain && userDomain !== "PRIVILEGED") {
-                url += `&domain=${userDomain}`;
-            }
+            // if (userDomain && userDomain !== "PRIVILEGED") {
+            //     url += `&domain=${userDomain}`;
+            // }
             
             const response = await fetch(url, {
                 headers: {
@@ -406,20 +406,20 @@ const EditForm = ({ cause, onSucess, onCancel, userDomain = "PRIVILEGED" }) => {
         if (isReadOnly) return;
         
         // Vérifier si le type sélectionné est autorisé
-        if (item && userDomain !== "PRIVILEGED" && item.domain !== userDomain) {
-            toast.error("Vous ne pouvez sélectionner que des types d'incident de votre domaine");
-            return;
-        }
+        // if (item && userDomain !== "PRIVILEGED" && item.domain !== userDomain) {
+        //     toast.error("Vous ne pouvez sélectionner que des types d'incident de votre domaine");
+        //     return;
+        // }
         
         setValue('incidentTypeId', item ? item.value : '');
         console.log("Type d'incident sélectionné:", item ? item.value : 'null');
     };
 
     const submitForm = async (data) => {
-        if (isReadOnly) {
-            toast.error("Vous n'avez pas la permission de modifier cette cause");
-            return;
-        }
+        // if (isReadOnly) {
+        //     toast.error("Vous n'avez pas la permission de modifier cette cause");
+        //     return;
+        // }
 
         setIsSubmitting(true);
         try {
@@ -433,14 +433,14 @@ const EditForm = ({ cause, onSucess, onCancel, userDomain = "PRIVILEGED" }) => {
             }
             
             // Vérifier si l'utilisateur a sélectionné un type d'incident d'un domaine non autorisé
-            if (data.incidentTypeId && data.incidentTypeId.trim() !== '') {
-                const selectedType = incidentTypes.find(type => type.value === data.incidentTypeId);
-                if (selectedType && userDomain !== "PRIVILEGED" && selectedType.domain !== userDomain) {
-                    toast.error("Vous ne pouvez sélectionner que des types d'incident de votre domaine");
-                    setIsSubmitting(false);
-                    return;
-                }
-            }
+            // if (data.incidentTypeId && data.incidentTypeId.trim() !== '') {
+            //     const selectedType = incidentTypes.find(type => type.value === data.incidentTypeId);
+            //     if (selectedType && userDomain !== "PRIVILEGED" && selectedType.domain !== userDomain) {
+            //         toast.error("Vous ne pouvez sélectionner que des types d'incident de votre domaine");
+            //         setIsSubmitting(false);
+            //         return;
+            //     }
+            // }
 
             // Préparer les données pour l'API
             const payload = {
@@ -532,7 +532,7 @@ const EditForm = ({ cause, onSucess, onCancel, userDomain = "PRIVILEGED" }) => {
                     onSearch={handleSearchIncidentTypes}
                     onSelect={handleSelectIncidentType}
                     initialValue={initialIncidentType}
-                    disabled={isReadOnly}
+                    // disabled={isReadOnly}
                     allowClear={true}
                 />
                 
