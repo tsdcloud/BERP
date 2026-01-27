@@ -406,6 +406,7 @@ const EditForm = ({ cause, onSucess, onCancel, userDomain = "PRIVILEGED" }) => {
         if (isReadOnly) return;
         
         // Vérifier si le type sélectionné est autorisé
+
         // if (item && userDomain !== "PRIVILEGED" && item.domain !== userDomain) {
         //     toast.error("Vous ne pouvez sélectionner que des types d'incident de votre domaine");
         //     return;
@@ -433,6 +434,7 @@ const EditForm = ({ cause, onSucess, onCancel, userDomain = "PRIVILEGED" }) => {
             }
             
             // Vérifier si l'utilisateur a sélectionné un type d'incident d'un domaine non autorisé
+            
             // if (data.incidentTypeId && data.incidentTypeId.trim() !== '') {
             //     const selectedType = incidentTypes.find(type => type.value === data.incidentTypeId);
             //     if (selectedType && userDomain !== "PRIVILEGED" && selectedType.domain !== userDomain) {
