@@ -407,6 +407,7 @@ const HorsPontForm = ({onSucess}) => {
             declarationType: "",
             paymentMode: "",
             incidentCauseId: "",
+            blNumber: "",
             siteId: savedSiteId, // Garder la valeur du site
             tier: "",
             container1: "",
@@ -673,6 +674,18 @@ const HorsPontForm = ({onSucess}) => {
                     <label className='text-sm font-semibold'>Remorque <span className='text-red-500'>*</span>:</label>
                     <input type="text" className='border rounded-lg p-2 text-sm' {...register("trailer", {required:"Ce champ est requis"})}/>
                     {errors.trailer && <small className='text-xs text-red-500'>{errors.trailer.message}</small>}
+                </div>
+
+                {/* CHAMP DESCRIPTION (Enregistré en tant que blNumber) */}
+                <div className='flex flex-col px-2'>
+                    <label htmlFor="blNumber" className='text-sm px-2 font-semibold'>Description :</label>
+                    <textarea 
+                        {...register("blNumber", { required: false })} 
+                        id="blNumber"
+                        className='p-2 rounded-lg text-sm w-full border' 
+                        placeholder='Saisissez la description ici...'
+                        rows={3}
+                    ></textarea>
                 </div>
             </div>
 

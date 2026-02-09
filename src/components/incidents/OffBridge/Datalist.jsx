@@ -141,7 +141,7 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       render:(value)=><p className='text-sm capitalize'>{highlightText(value) || "--"}</p>
     },
     {
-      title:"Numero de BL",
+      title:"Description",
       dataIndex:"blNumber",
       width:"150px",
       render:(value)=><p className='text-sm capitalize'>{highlightText(value) || "--"}</p>
