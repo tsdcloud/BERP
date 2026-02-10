@@ -3099,6 +3099,45 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
   }, [userDomain, roles, permissions, getEquipmentDomain, canPerformActionBasedOnRole]);
 
   // Fonction pour vérifier si l'utilisateur peut mettre en maintenance un incident
+  // const canPutIntoMaintenance = useCallback((record) => {
+  //   // Seuls les incidents en attente peuvent être mis en maintenance
+  //   if (record.status !== "PENDING") return false;
+    
+  //   // Vérifier si l'incident a un équipement
+  //   if (!record.equipement) return false;
+    
+  //   // Obtenir le domaine de l'incident
+  //   const incidentDomain = getEquipmentDomain(record.equipement);
+    
+  //   // Normaliser les rôles pour la comparaison
+  //   const normalizedRoles = roles.map(role => role.toLowerCase());
+    
+  //   // Vérifier les rôles privilégiés (Admin, Manager, DEX) - peuvent toujours mettre en maintenance
+  //   const privilegedRoles = ['admin', 'manager', 'dex'];
+  //   const isPrivilegedUser = privilegedRoles.some(privilegedRole => 
+  //     normalizedRoles.some(role => role.includes(privilegedRole))
+  //   );
+    
+  //   // Les rôles privilégiés peuvent TOUJOURS mettre en maintenance
+  //   if (isPrivilegedUser) {
+  //     return true;
+  //   }
+    
+  //   // Vérifier les rôles spécifiques pour la maintenance
+  //   if (incidentDomain && canPerformActionBasedOnRole('MAINTENANCE', normalizedRoles, incidentDomain)) {
+  //     return true;
+  //   }
+    
+  //   // Vérifier la permission explicite
+  //   const hasExplicitPermission = permissions.includes("incident__can_send_to_maintenance_incident");
+  //   if (!hasExplicitPermission) return false;
+    
+  //   // Seuls IT et MAINTENANCE peuvent mettre en maintenance
+  //   if (!(userDomain === "IT" || userDomain === "MAINTENANCE")) return false;
+    
+  //   return incidentDomain === userDomain;
+  // }, [userDomain, roles, permissions, getEquipmentDomain, canPerformActionBasedOnRole]);
+  // Fonction pour vérifier si l'utilisateur peut mettre en maintenance un incident
   const canPutIntoMaintenance = useCallback((record) => {
     // Seuls les incidents en attente peuvent être mis en maintenance
     if (record.status !== "PENDING") return false;
@@ -3123,19 +3162,36 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
       return true;
     }
     
-    // Vérifier les rôles spécifiques pour la maintenance
-    if (incidentDomain && canPerformActionBasedOnRole('MAINTENANCE', normalizedRoles, incidentDomain)) {
+    // IMPORTANT: Seuls IT et MAINTENANCE peuvent mettre en maintenance (en plus des privilégiés)
+    if (!(userDomain === "IT" || userDomain === "MAINTENANCE")) {
+      return false;
+    }
+    
+    // Si pas de domaine sur l'incident, ne peut pas mettre en maintenance
+    if (!incidentDomain) {
+      return false;
+    }
+    
+    // Vérifier si l'utilisateur a un rôle qui lui donne automatiquement la permission
+    if (canPerformActionBasedOnRole('MAINTENANCE', normalizedRoles, incidentDomain)) {
       return true;
     }
     
-    // Vérifier la permission explicite
+    // MODIFICATION ICI: Vérifier la permission explicite OU vérifier simplement la correspondance des domaines
+    // Si l'utilisateur est IT et l'incident est IT, il peut mettre en maintenance (même sans permission explicite)
+    // Si l'utilisateur est MAINTENANCE et l'incident est MAINTENANCE, il peut mettre en maintenance
     const hasExplicitPermission = permissions.includes("incident__can_send_to_maintenance_incident");
-    if (!hasExplicitPermission) return false;
     
-    // Seuls IT et MAINTENANCE peuvent mettre en maintenance
-    if (!(userDomain === "IT" || userDomain === "MAINTENANCE")) return false;
+    // Accepter si: 
+    // 1. L'utilisateur a la permission explicite ET les domaines correspondent
+    // 2. OU l'utilisateur est IT/MAINTENANCE et les domaines correspondent (basé sur le rôle)
+    if (hasExplicitPermission) {
+      return incidentDomain === userDomain;
+    }
     
+    // Même sans permission explicite, si le domaine correspond, autoriser (basé sur le rôle)
     return incidentDomain === userDomain;
+    
   }, [userDomain, roles, permissions, getEquipmentDomain, canPerformActionBasedOnRole]);
 
   // Highlight texte recherche
@@ -4098,8 +4154,8 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
       
       {/* Indicateur de domaine utilisateur avec informations détaillées */}
       {userDomain && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-          <div className="p-2 bg-white rounded border">
+        <div className="mb-4 p-4 bg-gray-50 rounded-lg border">
+          <div className="flex items-center gap-2 mb-2">
             <span className="text-sm font-medium">Statut utilisateur :</span>
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${
               userDomain === "PRIVILEGED" ? "bg-purple-100 text-purple-800 border border-purple-200" :
@@ -4112,37 +4168,45 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
               {userDomain === "PRIVILEGED" ? "Privilégié (Admin/Manager/DEX)" : userDomain}
             </span>
           </div>
-          <div className="p-2 bg-white rounded border">
-            <p className="font-medium mb-1">Clôture incidents :</p>
-            <p className="text-green-600">
-              {userDomain === "PRIVILEGED" 
-                ? "✓ Tous domaines" 
-                : "✓ Domaine " + userDomain}
-            </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+            <div className="p-2 bg-white rounded border">
+              <p className="font-medium mb-1">Clôture incidents :</p>
+              <p className="text-green-600">
+                {userDomain === "PRIVILEGED" 
+                  ? "✓ Tous domaines" 
+                  : `✓ Domaine ${userDomain}`}
+              </p>
+            </div>
+            
+            <div className="p-2 bg-white rounded border">
+              <p className="font-medium mb-1">Reclassement incidents :</p>
+              <p className="text-green-600">
+                {userDomain === "PRIVILEGED" 
+                  ? "✓ Tous domaines" 
+                  : `✓ Domaine ${userDomain}`}
+              </p>
+            </div>
+            
+            <div className="p-2 bg-white rounded border">
+              <p className="font-medium mb-1">Mise en maintenance :</p>
+              <p className={
+                userDomain === "PRIVILEGED" || userDomain === "IT" || userDomain === "MAINTENANCE" 
+                  ? "text-green-600" 
+                  : "text-gray-600"
+              }>
+                {userDomain === "PRIVILEGED" 
+                  ? "✓ Tous domaines" 
+                  : userDomain === "IT" || userDomain === "MAINTENANCE"
+                    ? `✓ Domaine ${userDomain}`
+                    : "✗ IT/Maintenance uniquement"}
+              </p>
+            </div>
           </div>
           
-          <div className="p-2 bg-white rounded border">
-            <p className="font-medium mb-1">Reclassement incidents :</p>
-            <p className="text-green-600">
-              {userDomain === "PRIVILEGED" 
-                ? "✓ Tous domaines" 
-                : "✓ Domaine " + userDomain}
-            </p>
-          </div>
-          
-          <div className="p-2 bg-white rounded border">
-            <p className="font-medium mb-1">Mise en maintenance :</p>
-            <p className={
-              userDomain === "PRIVILEGED" || userDomain === "IT" || userDomain === "MAINTENANCE" 
-                ? "text-green-600" 
-                : "text-gray-600"
-            }>
-              {userDomain === "PRIVILEGED" 
-                ? "✓ Tous domaines" 
-                : userDomain === "IT" || userDomain === "MAINTENANCE"
-                  ? `✓ Domaine ${userDomain}`
-                  : "✗ IT/Maintenance uniquement"}
-            </p>
+          <div className="mt-2 text-xs text-gray-500">
+            <p>Rôles détectés: {roles.join(', ') || 'Aucun rôle'}</p>
+            <p>Permissions: {permissions.filter(p => p.includes('incident')).join(', ') || 'Aucune permission incident'}</p>
           </div>
         </div>
       )}

@@ -530,8 +530,9 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
     const incidentTypeRef = useRef(null);
     const incidentCauseRef = useRef(null);
     
-    // Flag pour éviter les chargements multiples
+    // Flag pour éviter les chargements multiples - CRITIQUE
     const isInitializedRef = useRef(false);
+    const previousIncidentTypeRef = useRef(null);
 
     // Enregistrer manuellement les champs pour react-hook-form
     useEffect(() => {
@@ -540,17 +541,21 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
         register("incidentCauseId", { required: "La cause est requise" });
     }, [register]);
 
-    // Fonctions de chargement - stabilisées avec useCallback
+    // ====================================================================
+    // FONCTIONS DE CHARGEMENT - STABILISÉES
+    // ====================================================================
+    
     const handleEmployees = useCallback(async (searchInput = "") => {
         setIsLoadingEmployees(true);
         try {
             let url = `${URLS.ENTITY_API}/employees`;
-            if (searchInput) {
-                url += `?search=${encodeURIComponent(searchInput)}`;
-            }
-            url += `${searchInput ? '&' : '?'}limit=50`;
+            const params = new URLSearchParams();
+            if (searchInput) params.append('search', searchInput);
+            params.append('limit', '50');
             
-            let response = await handleFetch(url);
+            const fullUrl = `${url}?${params.toString()}`;
+            
+            let response = await handleFetch(fullUrl);
             if(response?.status === 200) {
                 let formattedData = response.data.map(employee => ({
                     name: employee?.name || "",
@@ -572,12 +577,13 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
         setIsLoadingSuppliers(true);
         try {
             let url = `${URLS.ENTITY_API}/suppliers`;
-            if (searchInput) {
-                url += `?search=${encodeURIComponent(searchInput)}`;
-            }
-            url += `${searchInput ? '&' : '?'}limit=50`;
+            const params = new URLSearchParams();
+            if (searchInput) params.append('search', searchInput);
+            params.append('limit', '50');
             
-            let response = await handleFetch(url);
+            const fullUrl = `${url}?${params.toString()}`;
+            
+            let response = await handleFetch(fullUrl);
             if(response?.status === 200) {
                 let formattedData = response.data.map(entity => ({
                     name: entity?.name || "",
@@ -598,16 +604,16 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
     const handleIncidentTypes = useCallback(async (searchInput = "", equipmentDomain = null) => {
         setIsLoadingTypes(true);
         try {
-            let url = `${URLS.INCIDENT_API}/incident-types?`;
-            let queryParams = [];
+            let url = `${URLS.INCIDENT_API}/incident-types`;
+            const params = new URLSearchParams();
             
-            if (searchInput) queryParams.push(`search=${encodeURIComponent(searchInput)}`);
-            if (equipmentDomain) queryParams.push(`domain=${equipmentDomain}`);
-            queryParams.push('limit=50');
+            if (searchInput) params.append('search', searchInput);
+            if (equipmentDomain) params.append('domain', equipmentDomain);
+            params.append('limit', '50');
             
-            url += queryParams.join('&');
+            const fullUrl = `${url}?${params.toString()}`;
             
-            let response = await handleFetch(url);
+            let response = await handleFetch(fullUrl);
             if(response?.status === 200) {
                 let formattedData = response.data.map(entity => ({
                     name: entity?.name || "",
@@ -628,16 +634,16 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
     const handleIncidentCauses = useCallback(async (searchInput = "", incidentTypeId = null) => {
         setIsLoadingCauses(true);
         try {
-            let url = `${URLS.INCIDENT_API}/incident-causes?`;
-            let queryParams = [];
+            let url = `${URLS.INCIDENT_API}/incident-causes`;
+            const params = new URLSearchParams();
             
-            if (searchInput) queryParams.push(`search=${encodeURIComponent(searchInput)}`);
-            if (incidentTypeId) queryParams.push(`incidentTypeId=${incidentTypeId}`);
-            queryParams.push('limit=50');
+            if (searchInput) params.append('search', searchInput);
+            if (incidentTypeId) params.append('incidentTypeId', incidentTypeId);
+            params.append('limit', '50');
             
-            url += queryParams.join('&');
+            const fullUrl = `${url}?${params.toString()}`;
             
-            let response = await handleFetch(url);
+            let response = await handleFetch(fullUrl);
             if(response?.status === 200) {
                 let formattedData = response.data.map(entity => ({
                     name: entity?.name || "",
@@ -655,7 +661,10 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
         }
     }, [handleFetch]);
 
-    // Handlers de sélection
+    // ====================================================================
+    // HANDLERS DE SÉLECTION
+    // ====================================================================
+    
     const handleIncidentTypeSelect = useCallback((item) => {
         const value = item ? item.value : "";
         setValue("incidentId", value, { shouldValidate: true });
@@ -666,13 +675,9 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
             incidentCauseRef.current.clear();
         }
         
-        // Recharger les causes filtrées par le nouveau type
-        if (value) {
-            handleIncidentCauses("", value);
-        } else {
-            handleIncidentCauses();
-        }
-    }, [setValue, handleIncidentCauses]);
+        // Mettre à jour la référence pour déclencher le rechargement des causes
+        previousIncidentTypeRef.current = value;
+    }, [setValue]);
 
     const handleIntervenantSelect = useCallback((item) => {
         setValue("technician", item ? item.value : "", { shouldValidate: false });
@@ -691,18 +696,26 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
         return [...employeesData, ...entitiesData];
     }, [handleEmployees, handleEntities]);
 
-    // Effet principal - chargement initial et pré-remplissage
+    // ====================================================================
+    // EFFET PRINCIPAL - CHARGEMENT INITIAL
+    // ====================================================================
+    
     useEffect(() => {
         if (!isOpen) {
+            // Réinitialiser quand le modal se ferme
             isInitializedRef.current = false;
+            previousIncidentTypeRef.current = null;
             return;
         }
 
+        // Éviter les chargements multiples
         if (isInitializedRef.current) return;
         isInitializedRef.current = true;
 
         const equipmentDomain = selectedRow?.equipement ? 
             getEquipmentDomain(selectedRow.equipement) : null;
+
+        console.log("🔄 Chargement initial des données...");
 
         // Charger toutes les données en parallèle
         const loadData = async () => {
@@ -715,6 +728,11 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
                         ? handleIncidentCauses("", selectedRow.incidentId)
                         : handleIncidentCauses()
                 ]);
+
+                // Sauvegarder le type d'incident actuel
+                if (selectedRow?.incidentId) {
+                    previousIncidentTypeRef.current = selectedRow.incidentId;
+                }
 
                 // Pré-remplir les valeurs après chargement
                 if (selectedRow) {
@@ -760,30 +778,48 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
                         }
                     }, 150);
                 }
+
+                console.log("✅ Données chargées avec succès");
             } catch (error) {
-                console.error("Erreur chargement données:", error);
+                console.error("❌ Erreur chargement données:", error);
                 toast.error("Erreur lors du chargement des données");
             }
         };
 
         loadData();
-    }, [
-        isOpen, 
-        selectedRow, 
-        handleEmployees, 
-        handleEntities, 
-        handleIncidentTypes, 
-        handleIncidentCauses,
-        setValue
-    ]);
+    }, [isOpen]); // ⚠️ SEULEMENT isOpen - pas selectedRow ni les fonctions
 
-    // Recharger les causes quand le type d'incident change
+    // ====================================================================
+    // EFFET POUR RECHARGER LES CAUSES QUAND LE TYPE CHANGE
+    // ====================================================================
+    
     useEffect(() => {
-        if (selectedIncidentTypeId && isOpen) {
+        // Ne rien faire si le modal n'est pas ouvert
+        if (!isOpen) return;
+        
+        // Ne rien faire si pas encore initialisé
+        if (!isInitializedRef.current) return;
+
+        // Ne rien faire si le type n'a pas changé
+        if (selectedIncidentTypeId === previousIncidentTypeRef.current) return;
+
+        // Mettre à jour la référence
+        previousIncidentTypeRef.current = selectedIncidentTypeId;
+
+        console.log("🔄 Rechargement des causes pour le type:", selectedIncidentTypeId);
+
+        // Recharger les causes avec le nouveau filtre
+        if (selectedIncidentTypeId) {
             handleIncidentCauses("", selectedIncidentTypeId);
+        } else {
+            handleIncidentCauses();
         }
     }, [selectedIncidentTypeId, isOpen, handleIncidentCauses]);
 
+    // ====================================================================
+    // SOUMISSION DU FORMULAIRE
+    // ====================================================================
+    
     const onSubmit = async (data) => {
         if (!selectedRow?.id) {
             toast.error("Aucun incident sélectionné");
@@ -809,6 +845,8 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
                 }
             }
 
+            console.log("📤 Envoi du payload:", payload);
+
             const response = await handlePatch(
                 `${URLS.INCIDENT_API}/incidents/${selectedRow.id}`,
                 payload
@@ -824,7 +862,7 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
             handleClose();
             
         } catch (error) {
-            console.error("Erreur clôture:", error);
+            console.error("❌ Erreur clôture:", error);
             toast.error("Erreur lors de la clôture de l'incident");
             setError(error.message || "Une erreur est survenue");
         } finally {
@@ -832,6 +870,10 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
         }
     };
 
+    // ====================================================================
+    // FERMETURE DU MODAL
+    // ====================================================================
+    
     const handleClose = useCallback(() => {
         setIsOpen(false);
         
@@ -856,6 +898,7 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
         setIncidentCauses([]);
         setError("");
         isInitializedRef.current = false;
+        previousIncidentTypeRef.current = null;
     }, [setIsOpen, reset]);
 
     return ( 
@@ -925,8 +968,7 @@ const CloseIncidentForm = ({isOpen, setIsOpen, fetchData, selectedRow}) => {
                             placeholder="Sélectionner une cause..."
                             isLoading={isLoadingCauses}
                             onSearch={(input) => {
-                                const incidentId = watch("incidentId");
-                                handleIncidentCauses(input, incidentId);
+                                handleIncidentCauses(input, selectedIncidentTypeId);
                             }}
                             onSelect={handleCauseSelect}
                         />
