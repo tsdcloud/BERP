@@ -4204,10 +4204,10 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
             </div>
           </div>
           
-          <div className="mt-2 text-xs text-gray-500">
+          {/* <div className="mt-2 text-xs text-gray-500">
             <p>Rôles détectés: {roles.join(', ') || 'Aucun rôle'}</p>
             <p>Permissions: {permissions.filter(p => p.includes('incident')).join(', ') || 'Aucune permission incident'}</p>
-          </div>
+          </div> */}
         </div>
       )}
       
