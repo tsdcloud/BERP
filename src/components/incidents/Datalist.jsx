@@ -1,691 +1,3 @@
-// import React, {useEffect, useState} from 'react';
-// import { Button } from '../ui/button';
-// import { useForm } from 'react-hook-form';
-// import { INCIDENT_STATUS } from '../../utils/constant.utils';
-// import { XMarkIcon, TrashIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
-// import { Form, Table } from 'antd';
-// import { useFetch } from '../../hooks/useFetch';
-// import { URLS } from '../../../configUrl';
-// import AutoComplete from '../common/AutoComplete';
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogFooter,
-//   DialogHeader,
-// } from "../ui/dialog"
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuLabel,
-//   DropdownMenuSeparator,
-//   DropdownMenuTrigger,
-// } from "../../components/ui/dropdown-menu";
-// import { CheckCircle, MoreHorizontal } from "lucide-react";
-// import VerifyPermission from '../../utils/verifyPermission';
-// import { Cog6ToothIcon } from '@heroicons/react/24/solid';
-// import Preloader from '../Preloader';
-// import { getEmployee } from '../../utils/entity.utils';
-// import CloseIncidentForm from './CloseIncidentForm';
- 
-
-
-
-
-// const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
-
-//   // const {roles, permissions} = useContext(PERMISSION_CONTEXT);
-//   const [sitesMap, setSitesMap] = useState(new Map());
-
-//   const handleDelete = async (id) =>{
-//     if (window.confirm("Voulez vous supprimer l'incident ?")) {
-//       try {
-//         let url = `${URLS.INCIDENT_API}/incidents/${id}`;
-//         let response = await fetch(url, {
-//           method:"DELETE",
-//           headers:{
-//             "Content-Type":"application/json",
-//             'authorization': `Bearer ${localStorage.getItem('token')}` || ''
-//           },
-//         });
-//         if(response.status === 200){
-//           alert("Deleted successfully");
-//           fetchData();
-//         }
-//       } catch (error) {
-//         console.log(error);
-//       }
-//     }
-//   }
-
-//   // const highlightText = (text) => {
-//   //   if (!searchValue) return text;
-
-//   //   const regex = new RegExp(searchValue, 'gi');
-//   //   return <span dangerouslySetInnerHTML={{ __html: text?.replace(
-//   //     new RegExp(searchValue, 'gi'),
-//   //     (match) => `<mark style="background-color: yellow;">${match}</mark>`
-//   //   )}} />
-//   // };
-//   const highlightText = React.useCallback((text) => {
-//     if (!searchValue || !text) return text || "--";
-
-//     const regex = new RegExp(searchValue, 'gi');
-//     const parts = text.split(regex);
-//     const matches = text.match(regex);
-    
-//     if (!matches) return text;
-    
-//     return parts.reduce((acc, part, i) => [
-//         ...acc,
-//         part,
-//         matches[i] && <mark key={i} style={{backgroundColor: 'yellow'}}>{matches[i]}</mark>
-//     ], []);
-//   }, [searchValue]);
-          
-//   const [sites, setSites] = useState([]);
-//   const [isLoading, setIsLoading] = useState(true);
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [shifts, setShifts] = useState([]);
-//   const [employees, setEmployees] = useState([]);
-//   const [roles, setRoles] = useState([]);
-//   const [permissions, setPermissions] = useState([]);
-//   const [externalEntities, setExternalEntities] = useState([]);
-//   const [maintenanceTypes, setMaintenanceTypes] = useState([]);
-//   const [incidentCauses, setIncidentCauses] = useState([]);
-//   const [rowSelection, setRowSelection] = useState({});
-//   const [selectedSite, setSelectedSite] = useState("");
-//   const [selectedIncident, setSelectedIncident] = useState("");
-//   const [selectedEquipement, setSelectedEquipement] = useState("");
-
-//   const [isOpen, setIsOpen] = useState(false);
-//   const [modalIsOpen, setModalIsOpen] = useState(false);
-//   const [description, setDescription] = useState("");
-
-//   const {register, handleSubmit, formState:{errors}, setValue} = useForm();
-
-
-//   const columns=[
-//     {
-//       title:"No ref",
-//       dataIndex:"numRef",
-//       width:"100px",
-//       render:(value, record)=>
-//         <p className='text-sm'>{highlightText(value)}</p>
-//     },
-//     {
-//       title:"Equipement",
-//       dataIndex:"equipement",
-//       width:"200px",
-//       render:(value)=>
-//         <p className='text-sm capitalize'>
-//           {value?.title}
-//         </p>
-//     },
-//     {
-//       title:"Description",
-//       dataIndex:"description",
-//       width:"200px",
-//       render:(value)=><p className='text-sm'>{highlightText(value) || "--"}</p>
-//     },
-//     {
-//       title: "Arrêt opération",
-//       dataIndex: "hasStoppedOperations",
-//       width: "150px",
-//       render: (value) => (
-//         <p className='text-sm'>
-//           {value === true ? "Oui" : value === false ? "Non" : "--"}
-//         </p>
-//       )
-//     },
-//     {
-//       title: "Site",
-//       dataIndex: "siteId",
-//       width: "150px",
-//       render: (value) =>
-//           <p className='text-sm capitalize'>
-//               {sitesMap.get(value) || value}
-//           </p>
-//     },
-//     {
-//       title:"Quart",
-//       dataIndex:"shiftId",
-//       width:"150px",
-//       render:(value)=>
-//         <p className='text-sm capitalize'>
-//           {shifts.find(shift => shift.value === value)?.name || value || "--"}
-//         </p>
-//     },
-//     {
-//       title:"Initiateur",
-//       dataIndex:"createdBy",
-//       width:"200px",
-//       render:(value)=>
-//         <p className='text-sm capitalize'>
-//           {employees.find(employee => employee.value === value)?.name || value}
-//         </p>
-//     },
-//     {
-//       title:"Intervenant",
-//       dataIndex:"technician",
-//       width:"200px",
-//       render:(value)=>
-//         <p className='text-sm capitalize'>
-//           {employees.find(employee => employee.value === value)?.name || externalEntities.find(entity => entity.value === value)?.name ||  value || "--"}
-//         </p>
-//     },
-//     {
-//       title:"Clôturé par",
-//       dataIndex:"closedBy",
-//       width:"200px",
-//       render:(value)=>
-//         <p className='text-sm capitalize'>
-//           {employees.find(employee => employee.value === value)?.name || value || "--"}
-//         </p>
-//     },
-//     {
-//       title:"Type incident",
-//       dataIndex:"incident",
-//       width:"200px",
-//       render:(value)=><p className='text-sm'>{highlightText(value?.name) || value}</p>
-//     },
-//     {
-//       title:"Cause incident",
-//       dataIndex:"incidentCauseId",
-//       width:"200px",
-//       render:(value)=>
-//         <p className='text-sm capitalize'>
-//           {incidentCauses.find(cause => cause.value === value)?.name || value || "--"}
-//         </p>
-//     },
-//     {
-//       title:"Date de création",
-//       dataIndex:"creationDate",
-//       width:"200px",
-//       render:(value)=>
-//         <p className='text-sm capitalize'>
-//           {new Date(value).toLocaleString() || "--"}
-//         </p>
-//     },
-//     {
-//       title:"Date de clôture Utilisateur",
-//       dataIndex:"closedManuDate",
-//       width:"200px",
-//       render:(value)=>
-//         <p className='text-sm capitalize'>
-//           {value ? new Date(value).toLocaleString() : "--"}
-//         </p>
-//     },
-//     {
-//       title:"Date de clôture Système",
-//       dataIndex:"closedDate",
-//       width:"200px",
-//       render:(value)=>
-//         <p className='text-sm capitalize'>
-//           {value ? new Date(value).toLocaleString() : "--"}
-//         </p>
-//     },
-//     {
-//       title: "Durée",
-//       dataIndex: "duration",
-//       width: "120px",
-//       render: (_, record) => {
-//           let startDate = new Date(record.creationDate);
-//           let endDate = null;
-  
-//           // Déterminer la date de fin
-//           if (record.closedManuDate) {
-//               endDate = new Date(record.closedManuDate);
-//           } else if (record.status === "CLOSED" && record.closedDate) {
-//               endDate = new Date(record.closedDate);
-//           }
-  
-//           // Calculer la durée si on a une date de fin
-//           if (endDate) {
-//               const durationMs = endDate - startDate;
-//               const durationHours = Math.floor(durationMs / (1000 * 60 * 60));
-//               const durationMinutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
-              
-//               return (
-//                   <p className='text-sm'>
-//                       {durationHours > 0 ? `${durationHours}h ` : ''}
-//                       {durationMinutes > 0 ? `${durationMinutes}min` : '0min'}
-//                   </p>
-//               );
-//           }
-  
-//           return <p className='text-sm'>--</p>;
-//       }
-//     },
-//     {
-//       title:"Statut",
-//       dataIndex:"status",
-//       fixed:"right",
-//       width:"150px",
-//       render:(value)=>
-//         <div className={`${
-//           value === "UNDER_MAINTENANCE"?"border-yellow-500 bg-yellow-300":
-//           value === "CLOSED" ? "border-green-500 bg-green-300" :""
-//         } p-2 rounded-lg border`}>{INCIDENT_STATUS[value] || "Unknown Status"}</div>
-//     },
-//     {
-//       title:"Action",
-//       dataIndex:"",
-//       fixed:"right",
-//       width:"75px",
-//       render:(value, record)=>
-//         <DropdownMenu>
-//             <DropdownMenuTrigger asChild>
-//               <Button variant="ghost" className="h-8 w-8 p-0">
-//                 <span className="sr-only">Open menu</span>
-//                 <MoreHorizontal />
-//               </Button>
-//             </DropdownMenuTrigger>
-//             <DropdownMenuContent align="end">
-//               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-//               {/* <DropdownMenuItem
-//                 onClick={() => navigator.clipboard.writeText(payment.id)}
-//               >
-//                 Copy payment ID
-//               </DropdownMenuItem> */}
-//               <DropdownMenuSeparator />
-//               {/* <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
-//                 <PencilIcon className='h-4 w-6'/>
-//                 <span className=''>Editer</span>
-//               </DropdownMenuItem> */}
-//               {
-//                 record.status === "PENDING" &&
-//                 <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_send_to_maintenance_incident", "manager", "DEX", "maintenance technician"]}>
-//                   <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
-//                     <button className='flex items-center space-x-2'
-//                       onClick={()=>{
-//                         setSelectedSite(record.siteId);
-//                         setSelectedIncident(record.id);
-//                         setSelectedEquipement(record.equipementId);
-//                         setIsOpen(true);
-//                       }}
-//                     >
-//                       <ExclamationTriangleIcon />
-//                       <span>Mettre en maintenance</span>
-//                     </button>
-//                   </DropdownMenuItem>
-//                 </VerifyPermission>
-//               }
-//               {
-//                 record.status === "PENDING" &&
-//                 <VerifyPermission roles={roles} functions={permissions} expected={["incident__can_close_incident", "head guard", "HSE supervisor", "manager", "DEX", "IT technician"]}>
-//                   <DropdownMenuItem className="flex gap-2 items-center cursor-pointer">
-//                     <button className='flex items-center space-x-2'
-//                       onClick={async ()=>{
-//                         setModalIsOpen(true);
-//                         setSelectedIncident(record.id);
-//                         setRowSelection(record);
-//                       }}
-//                     >
-//                       <XMarkIcon />
-//                       <span>Cloturer l'incident</span>
-//                     </button>
-//                   </DropdownMenuItem>
-//                 </VerifyPermission>
-//               }
-//               <VerifyPermission functions={permissions} roles={roles} expected={['incident__can_delete_incident']}>
-//                 <DropdownMenuItem className="flex gap-2 items-center hover:bg-red-200 cursor-pointer" onClick={()=>handleDelete(record.id)}>
-//                   <TrashIcon className='text-red-500 h-4 w-6'/>
-//                   <span className='text-red-500'>Supprimer</span>
-//                 </DropdownMenuItem>
-//               </VerifyPermission>
-//             </DropdownMenuContent>
-//           </DropdownMenu>
-//       },
-//   ]
-    
-//   const {handleFetch, handlePost} = useFetch();
-
-//   // const handleFetchSites = async (link) =>{
-//   //   try {
-//   //     let response = await handleFetch(link);     
-//   //     if(response?.status === 200){
-//   //       let formatedData = response?.data.map(item=>{
-//   //         return {
-//   //           name:item?.name,
-//   //           value: item?.id
-//   //         }
-//   //       });
-//   //       setSites(formatedData);
-//   //     }
-//   //   } catch (error) {
-//   //     console.error(error);
-//   //   }
-//   // }
-//   const handleFetchSites = async (link) => {
-//     try {
-//         let response = await handleFetch(link);     
-//         if(response?.status === 200){
-//             let formatedData = response?.data.map(item => ({
-//                 name: item?.name,
-//                 value: item?.id
-//             }));
-//             setSites(formatedData);
-            
-//             // Créer un Map pour des recherches rapides
-//             const newMap = new Map();
-//             formatedData.forEach(site => {
-//                 newMap.set(site.value, site.name);
-//             });
-//             setSitesMap(newMap);
-//         }
-//     } catch (error) {
-//         console.error(error);
-//     }
-//   }
-
-//   const handleFetchShifts = async (link) =>{
-//     try {
-//       let response = await handleFetch(link);     
-//       if(response?.status === 200){
-//         let formatedData = response?.data.map(item=>{
-//           return {
-//             name:item?.name,
-//             value: item?.id
-//           }
-//         });
-//         setShifts(formatedData);
-//       }
-//     } catch (error) {
-//       console.error(error);
-//     } finally{
-//       setIsLoading(false);
-//     }
-//   }
-
-//   const handleFetchEmployees = async (link) =>{
-//     try {
-//       let response = await handleFetch(link);
-//       if(response?.status === 200){
-//         let formatedData = response?.data.map(item=>{
-//           return {
-//             name:item?.name,
-//             value: item?.id
-//           }
-//         });
-//         setEmployees(formatedData);
-//       }
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   }
-  
-
-//   const handleFetchExternalEntities = async (link) =>{
-//     try {
-//       let response = await handleFetch(link);     
-//       if(response?.status === 200){
-//         let formatedData = response?.data.map(item=>{
-//           return {
-//             name:item?.name,
-//             value: item?.id
-//           }
-//         });
-//         setExternalEntities(formatedData);
-//       }
-//     } catch (error) {
-//       console.error(error);
-//     }
-//   }
-
-//   const submitMaintenance = async(data) =>{
-//     setIsSubmitting(true);
-
-//     data.description = description;
-//     data.siteId = selectedSite;
-//     data.equipementId = selectedEquipement;
-    
-//     let url = `${import.meta.env.VITE_INCIDENT_API}/maintenances`
-//     try {
-//       let response = await handlePost(url, {...data, incidentId: selectedIncident});
-//       if(response.status !== 201){
-//         alert("Echec de la creation de la maintenance");
-//         return;
-//       }
-//       let incidentUrl = `${import.meta.env.VITE_INCIDENT_API}/incidents/${selectedIncident}`;
-//       let res = await fetch(incidentUrl,{
-//         headers:{
-//           "Content-Type":"application/json",
-//           'authorization': `Bearer ${localStorage.getItem('token')}` || ''
-//         },
-//         method:"PATCH",
-//         body: JSON.stringify({status:"UNDER_MAINTENANCE"})
-//       })
-//       if(res.status !== 200){
-//         alert("Echec de la mis a jour");
-//         return
-//       }
-//       fetchData();
-//       setIsOpen(false);
-//     } catch (error) {
-//       console.log(error)
-//     }finally{
-//       setIsSubmitting(false);
-//     }
-//   }
-
-//   const handleFetchMaintenanceTypes = async (link) =>{
-//     try {
-//       let response = await handleFetch(link);     
-//       if(response?.status === 200){
-//         let formatedData = response?.data.map(item=>{
-//           return {
-//             name:item?.name,
-//             value: item?.id
-//           }
-//         });
-//         setMaintenanceTypes(formatedData);
-//       }
-//     } catch (error) {
-//       console.error(error);
-//     } finally{
-//       setIsLoading(false);
-//     }
-//   }
-
-//   const handleSelectMaintenanceType=(item)=>{
-//     if(item){
-//       setValue("maintenanceId", item.value);
-//     }else{
-//       setValue("maintenanceId", null);
-
-//     }
-//   }
-
-//   const handleSelectSupplier=(item)=>{
-//     setValue("supplierId", item.value)
-//   }
-
-//   const handleSearchMaintenanceType=async(searchInput)=>{
-//     try{
-//       handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types?search=${searchInput}`);
-//     }catch(error){
-//       console.log(error);
-//     }
-//   }
-
-
-//   const handleFetchIncidentCauses = async (link) =>{
-//     try {
-//       let response = await handleFetch(link);     
-//       if(response?.status === 200){
-//         let formatedData = response?.data.map(item=>{
-//           return {
-//             name:item?.name,
-//             value: item?.id
-//           }
-//         });
-//         setIncidentCauses(formatedData);
-//       }
-//     } catch (error) {
-//       console.error(error);
-//     } finally{
-//       setIsLoading(false);
-//     }
-//   }
-//   useEffect(()=>{
-//     handleFetchSites(`${import.meta.env.VITE_ENTITY_API}/sites`);
-//     handleFetchShifts(`${import.meta.env.VITE_ENTITY_API}/shifts`);
-//     handleFetchIncidentCauses(`${import.meta.env.VITE_INCIDENT_API}/incident-causes`);
-//     handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types?hasIncident=${true}`);
-//     handleFetchEmployees(`${import.meta.env.VITE_ENTITY_API}/employees`);
-//     handleFetchExternalEntities(`${import.meta.env.VITE_ENTITY_API}/suppliers`);
-
-//     const handleCheckPermissions = async () =>{
-//       const employee = await getEmployee();
-//       if(!employee){
-//          setIsLoading(false);
-//          return 
-//       }
-
-//       const employeeRoles = await handleFetch(`${URLS.ENTITY_API}/employees/${employee?.id}/roles`);
-//       const employeePermissions = await handleFetch(`${URLS.ENTITY_API}/employees/${employee?.id}/permissions`);
-      
-      
-//       let empPerms = employeePermissions?.employeePermissions
-//       let empRoles = employeeRoles?.employeeRoles
-
-//       let formatedRoles = empRoles.map(role=>role?.role.roleName)
-//       let formatedPerms = empPerms.map(perm=>perm?.permission.permissionName)
-
-
-//       setRoles(formatedRoles);
-//       setPermissions(formatedPerms);
-      
-//       setIsLoading(false);
-//     }
-//     handleCheckPermissions();
-//   }, []);
-
-//   useEffect(()=>{
-//     handleFetchMaintenanceTypes(`${import.meta.env.VITE_INCIDENT_API}/maintenance-types?hasIncident=${false}`);
-//   }, [isOpen])
-  
-//   return (
-//     <div className="w-full">
-//       <div className="py-2 md:px-4 w-full max-h-[60vh] h-[60vh]">
-//         <Form>
-//           <Table 
-//             footer={() => <div className='flex w-full justify-end'>{pagination}</div>}
-//             dataSource={dataList}
-//             columns={columns}
-//             bordered={true}
-//             scroll={{
-//                 x: 500,
-//                 y: "40vh"
-//             }}
-//             pagination={false}
-//             loading={loading}
-//           />
-//         </Form>
-//       </div>
-
-//       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-//             <DialogContent>
-//                 <DialogHeader className={"font-poppins mx-2 text-lg"}>
-//                   <div className='flex items-center gap-2'>
-//                     <Cog6ToothIcon className='h-5 w-5'/>
-//                     <span>{"Mettre en maintenance"}</span>
-//                   </div>
-//                 </DialogHeader>
-//                 <form onSubmit={handleSubmit(submitMaintenance)}>
-//                   {/* Type maintenance selection */}
-//                   <div className='flex flex-col mx-4'>
-//                     <label htmlFor="" className='text-xs font-semibold px-2'>Choisir le type de maintenance <span className='text-red-500'>*</span></label>
-//                     <select className='border rounded-lg w-full p-2' {...register('maintenance', {required:'Ce champ est requis'})}>
-//                       <option value="">Choisir le type de maintenance</option>
-//                       <option value="CORRECTION">CORRECTIF</option>
-//                       <option value="PALLIATIVE">PALIATIF</option>
-//                       <option value="CURATIVE">CURATIF</option>
-//                     </select>
-//                     {errors.maintenance && <small className='text-xs my-2 text-red-500 mx-4'>{errors.maintenance.message}</small>}
-//                   </div>
-                  
-//                   {/* type selection */}
-//                   {/* <label htmlFor="" className='text-xs px-2'>Choisir le type d'intervenant*:</label>
-//                   <div 
-//                     className='flex flex-col mx-2'
-//                     onChange={(e)=>setSupplierType(e.target.value)}
-//                   >
-//                     <select name="" id="" className='border rounded-lg p-2' placeholder="Choisir le type d'intervenant">
-//                       <option value="">Choisir le type d'intervenant</option>
-//                       <option value="EMPLOYEE">Employer</option>
-//                       <option value="SUPPLIER">Prestataire</option>
-//                     </select> */}
-//                     {/* {errors.equipementId && <small className='text-xs my-2 text-red-500'>{errors.equipementId.message}</small>} */}
-//                   {/* </div> */}
-
-
-//                   {/* Supplier selection */}
-//                   {/* {
-//                     supplierType === "SUPPLIER" &&
-//                     <div className='flex flex-col'>
-//                     <label htmlFor="" className='text-sm font-semibold px-2'>Choisir le prestataire:</label>
-//                     <AutoComplete
-//                       placeholder="Choisir le prestataire"
-//                       isLoading={isLoading}
-//                       dataList={externalEntities}
-//                       onSearch={()=>{}}
-//                       onSelect={handleSelectSupplier}
-//                       register={{...register('maintenanceId', {required:'Ce champ est requis'})}}
-//                     />
-//                     {errors.maintenanceId && <small className='text-xs my-2 text-red-500 mx-2'>{errors.maintenanceId.message}</small>}
-//                     </div>
-//                   } */}
-
-//                   {/* Employer selection */}
-//                   {/* {
-//                     supplierType === "EMPLOYEE" &&
-//                     <div className='flex flex-col'>
-//                       <label htmlFor="" className='text-xs px-2'>Choisir un employer:</label>
-//                       <AutoComplete
-//                         placeholder="Choisir un employer"
-//                         isLoading={isLoading}
-//                         dataList={employees}
-//                         onSearch={()=>{}}
-//                         onSelect={handleSelectSupplier}
-//                         register={register}
-//                       />
-//                       {errors.equipementId && <small className='text-xs my-2 text-red-500'>{errors.equipementId.message}</small>}
-//                     </div>
-//                   } */}
-
-//                   {/* Description */}
-//                   <div className='mx-4 mt-3'>
-//                     <label htmlFor="" className='text-sm font-semibold'>Description</label>
-//                     <textarea 
-//                       name="" 
-//                       id="" 
-//                       className='border rounded-lg p-2 w-full' 
-//                       placeholder='Description'
-//                       value={description}
-//                       onChange={(e)=>setDescription(e.target.value)}
-//                     ></textarea>
-//                   </div>
-//                   <div className='flex justify-end p-4'>
-//                     <Button className={` flex gap-2 text-white hover:bg-secondary ${isSubmitting ? "bg-blue-300" :""}`}>
-//                       {isSubmitting ? <Preloader size={20}/> : <CheckCircle />}
-//                       <span>{isSubmitting ? "Encours..." : "Mettre en maintenance"}</span>
-//                     </Button>  
-//                   </div>
-//                 </form>
-//                 <DialogFooter>{""}</DialogFooter>
-//             </DialogContent>
-//         </Dialog>
-
-//         <CloseIncidentForm selectedRow={rowSelection} isOpen={modalIsOpen} setIsOpen={setModalIsOpen} fetchData={fetchData}/>
-//     </div>
-//   )
-// }
-
-// export default Datalist
-
-
 // // Datalist.jsx - Version avec règles de domaine corrigées
 // import { useEffect, useState, useCallback, useRef, useContext } from 'react';
 // import { Button } from '../ui/button';
@@ -853,6 +165,18 @@
   
 //   const { handleFetch, handlePost, handlePatch } = useFetch();
 
+//   const getEquipmentDomainFromRecord = (record) => {
+//     if (!record?.equipement) return null;
+    
+//     const equipmentObj = Array.isArray(record.equipement) ? record.equipement[0] : record.equipement;
+    
+//     if (equipmentObj && equipmentObj.equipmentGroup && equipmentObj.equipmentGroup.equipmentGroupFamily) {
+//       return equipmentObj.equipmentGroup.equipmentGroupFamily.domain;
+//     }
+    
+//     return null;
+//   };
+
 //   // Fonction pour extraire le domaine d'un équipement
 //   const getEquipmentDomain = useCallback((equipement) => {
 //     if (!equipement) {
@@ -899,7 +223,10 @@
 //   const getUserDomainFromRoles = useCallback((rolesArray) => {
 //     if (!rolesArray || !Array.isArray(rolesArray)) return null;
     
-//     const normalizedRoles = rolesArray.map(role => role.toLowerCase());
+//     // Normaliser : minuscules + retirer espaces/underscores pour comparaison
+//     const normalizedRoles = rolesArray.map(role => 
+//       role.toLowerCase().replace(/[\s_-]/g, '')
+//     );
     
 //     // Vérifier d'abord les rôles privilégiés (Admin, Manager, DEX)
 //     const privilegedRoles = ['admin', 'manager', 'dex'];
@@ -912,12 +239,60 @@
 //     }
     
 //     // Vérifier les domaines spécifiques (ordre d'importance)
-//     if (normalizedRoles.some(role => role.includes('maintenancier'))) return "MAINTENANCE";
-//     if (normalizedRoles.some(role => role.includes('it'))) return "IT";
-//     if (normalizedRoles.some(role => ['rop', 'customer manager'].some(r => role.includes(r)))) return "OPERATIONS";
-//     if (normalizedRoles.some(role => role.includes('hse'))) return "HSE";
+//     const maintenanceKeywords = ['responsabletechnique', 'maintenancetechnician', 'maintenancier', 'technicienmaintenance'];
+//     if (normalizedRoles.some(role => maintenanceKeywords.some(keyword => role.includes(keyword)))) {
+//       return "MAINTENANCE";
+//     }
+    
+//     const itKeywords = ['responsableit', 'ittechnician', 'technicienit','it'];
+//     if (normalizedRoles.some(role => itKeywords.some(keyword => role.includes(keyword)))) {
+//       return "IT";
+//     }
+    
+//     const operationsKeywords = ['rop', 'customermanager'];
+//     if (normalizedRoles.some(role => operationsKeywords.some(keyword => role.includes(keyword)))) {
+//       return "OPERATIONS";
+//     }
+    
+//     const hseKeywords = ['hsesupervisor', 'coordonnateurhse', 'responsablehse', 'hse'];
+//     if (normalizedRoles.some(role => hseKeywords.some(keyword => role.includes(keyword)))) {
+//       return "HSE";
+//     }
     
 //     return null;
+// }, []);
+
+//   // NOUVELLE FONCTION : Vérifier si un rôle donne la permission automatique
+//   const canPerformActionBasedOnRole = useCallback((action, normalizedRoles, incidentDomain) => {
+//     if (!incidentDomain) return false;
+    
+//     // Matrice des rôles par domaine et action
+//     const roleMatrix = {
+//       CLOSE: {
+//         MAINTENANCE: ['responsable technique', 'maintenance technician', 'maintenancier', 'technicien maintenance'],
+//         IT: ['responsable it', 'it technician', 'technicien it', 'it', 'administrateur système'],
+//         HSE: ['hse supervisor', 'coordonnateur hse', 'responsable hse', 'hse'],
+//         OPERATIONS: ['rop', 'coordo', 'coordinator', 'customer manager', 'responsable opérations']
+//       },
+//       RECLASSIFY: {
+//         MAINTENANCE: ['responsable technique', 'maintenance technician', 'maintenancier', 'technicien maintenance'],
+//         IT: ['responsable it', 'it technician', 'technicien it', 'it', 'administrateur système'],
+//         HSE: ['hse supervisor', 'coordonnateur hse', 'responsable hse', 'hse'],
+//         OPERATIONS: ['rop', 'coordo', 'coordinator', 'customer manager', 'responsable opérations']
+//       },
+//       MAINTENANCE: {
+//         MAINTENANCE: ['responsable technique', 'maintenance technician', 'it', 'maintenancier', 'technicien maintenance'],
+//         IT: ['responsable it', 'it technician', 'technicien it', 'administrateur système']
+//       }
+//     };
+    
+//     const rolesForAction = roleMatrix[action]?.[incidentDomain];
+//     if (!rolesForAction) return false;
+    
+//     // Vérifier si l'utilisateur a un de ces rôles
+//     return rolesForAction.some(role => 
+//       normalizedRoles.some(userRole => userRole.includes(role))
+//     );
 //   }, []);
 
 //   // Fonction pour vérifier si l'utilisateur peut clôturer un incident
@@ -934,7 +309,7 @@
 //     // 4. Normaliser les rôles pour la comparaison
 //     const normalizedRoles = roles.map(role => role.toLowerCase());
     
-//     // 5. Vérifier les rôles privilégiés (Admin, Manager, DEX)
+//     // 5. Vérifier les rôles privilégiés (Admin, Manager, DEX) - peuvent TOUJOURS clôturer
 //     const privilegedRoles = ['admin', 'manager', 'dex'];
 //     const isPrivilegedUser = privilegedRoles.some(privilegedRole => 
 //       normalizedRoles.some(role => role.includes(privilegedRole))
@@ -945,24 +320,19 @@
 //       return true;
 //     }
     
-//     // 7. Pour les autres utilisateurs, ils doivent avoir la permission spécifique
-//     const hasPermission = permissions.includes("incident__can_close_incident");
-    
-//     // 8. Si pas de permission, ne peut pas clôturer
-//     if (!hasPermission) return false;
-    
-//     // 9. Si pas de domaine sur l'incident, ne peut pas clôturer
-//     if (!incidentDomain) {
-//       return false;
+//     // 7. Vérifier si l'utilisateur a un rôle qui lui donne automatiquement la permission
+//     if (incidentDomain && canPerformActionBasedOnRole('CLOSE', normalizedRoles, incidentDomain)) {
+//       return true;
 //     }
     
-//     // 10. Si utilisateur n'a pas de domaine spécifique, ne peut pas clôturer
-//     if (!userDomain) return false;
+//     // 8. Sinon, vérifier la permission spécifique
+//     const hasExplicitPermission = permissions.includes("incident__can_close_incident");
+//     if (!hasExplicitPermission) return false;
     
-//     // 11. Vérifier la correspondance des domaines
+//     // 9. Vérifier la correspondance des domaines
+//     if (!incidentDomain || !userDomain) return false;
 //     return incidentDomain === userDomain;
-//   }, [userDomain, roles, permissions, getEquipmentDomain]);
-  
+//   }, [userDomain, roles, permissions, getEquipmentDomain, canPerformActionBasedOnRole]);
 
 //   // Fonction pour vérifier si l'utilisateur peut reclasser un incident
 //   const canReclassifyIncident = useCallback((record) => {
@@ -989,21 +359,59 @@
 //       return true;
 //     }
     
-//     // Tous les utilisateurs peuvent reclasser les incidents de leur domaine
-//     // L'utilisateur doit avoir la permission de reclasser
-//     const hasPermission = permissions.includes("incident__can_edit_incident");
+//     // Vérifier si l'utilisateur a un rôle qui lui donne automatiquement la permission
+//     if (incidentDomain && canPerformActionBasedOnRole('RECLASSIFY', normalizedRoles, incidentDomain)) {
+//       return true;
+//     }
     
-//     // Si pas de permission, ne peut pas reclasser
-//     if (!hasPermission) return false;
-    
-//     // Si utilisateur n'a pas de domaine spécifique, ne peut pas reclasser
-//     if (!userDomain) return false;
+//     // Sinon, vérifier la permission spécifique
+//     const hasExplicitPermission = permissions.includes("incident__can_edit_incident");
+//     if (!hasExplicitPermission) return false;
     
 //     // Vérifier la correspondance des domaines
+//     if (!incidentDomain || !userDomain) return false;
 //     return incidentDomain === userDomain;
-//   }, [userDomain, roles, permissions, getEquipmentDomain]);
+//   }, [userDomain, roles, permissions, getEquipmentDomain, canPerformActionBasedOnRole]);
 
-
+//   // Fonction pour vérifier si l'utilisateur peut mettre en maintenance un incident
+//   // const canPutIntoMaintenance = useCallback((record) => {
+//   //   // Seuls les incidents en attente peuvent être mis en maintenance
+//   //   if (record.status !== "PENDING") return false;
+    
+//   //   // Vérifier si l'incident a un équipement
+//   //   if (!record.equipement) return false;
+    
+//   //   // Obtenir le domaine de l'incident
+//   //   const incidentDomain = getEquipmentDomain(record.equipement);
+    
+//   //   // Normaliser les rôles pour la comparaison
+//   //   const normalizedRoles = roles.map(role => role.toLowerCase());
+    
+//   //   // Vérifier les rôles privilégiés (Admin, Manager, DEX) - peuvent toujours mettre en maintenance
+//   //   const privilegedRoles = ['admin', 'manager', 'dex'];
+//   //   const isPrivilegedUser = privilegedRoles.some(privilegedRole => 
+//   //     normalizedRoles.some(role => role.includes(privilegedRole))
+//   //   );
+    
+//   //   // Les rôles privilégiés peuvent TOUJOURS mettre en maintenance
+//   //   if (isPrivilegedUser) {
+//   //     return true;
+//   //   }
+    
+//   //   // Vérifier les rôles spécifiques pour la maintenance
+//   //   if (incidentDomain && canPerformActionBasedOnRole('MAINTENANCE', normalizedRoles, incidentDomain)) {
+//   //     return true;
+//   //   }
+    
+//   //   // Vérifier la permission explicite
+//   //   const hasExplicitPermission = permissions.includes("incident__can_send_to_maintenance_incident");
+//   //   if (!hasExplicitPermission) return false;
+    
+//   //   // Seuls IT et MAINTENANCE peuvent mettre en maintenance
+//   //   if (!(userDomain === "IT" || userDomain === "MAINTENANCE")) return false;
+    
+//   //   return incidentDomain === userDomain;
+//   // }, [userDomain, roles, permissions, getEquipmentDomain, canPerformActionBasedOnRole]);
 //   // Fonction pour vérifier si l'utilisateur peut mettre en maintenance un incident
 //   const canPutIntoMaintenance = useCallback((record) => {
 //     // Seuls les incidents en attente peuvent être mis en maintenance
@@ -1029,21 +437,37 @@
 //       return true;
 //     }
     
-//     // Seuls les utilisateurs IT et Maintenance peuvent mettre en maintenance leurs incidents respectifs
-//     if (userDomain === "IT" || userDomain === "MAINTENANCE") {
-//       // L'utilisateur doit avoir la permission de mettre en maintenance
-//       const hasPermission = permissions.includes("incident__can_send_to_maintenance_incident");
-      
-//       // Si pas de permission, ne peut pas mettre en maintenance
-//       if (!hasPermission) return false;
-      
-//       // Vérifier la correspondance des domaines
+//     // IMPORTANT: Seuls IT et MAINTENANCE peuvent mettre en maintenance (en plus des privilégiés)
+//     if (!(userDomain === "IT" || userDomain === "MAINTENANCE")) {
+//       return false;
+//     }
+    
+//     // Si pas de domaine sur l'incident, ne peut pas mettre en maintenance
+//     if (!incidentDomain) {
+//       return false;
+//     }
+    
+//     // Vérifier si l'utilisateur a un rôle qui lui donne automatiquement la permission
+//     if (canPerformActionBasedOnRole('MAINTENANCE', normalizedRoles, incidentDomain)) {
+//       return true;
+//     }
+    
+//     // MODIFICATION ICI: Vérifier la permission explicite OU vérifier simplement la correspondance des domaines
+//     // Si l'utilisateur est IT et l'incident est IT, il peut mettre en maintenance (même sans permission explicite)
+//     // Si l'utilisateur est MAINTENANCE et l'incident est MAINTENANCE, il peut mettre en maintenance
+//     const hasExplicitPermission = permissions.includes("incident__can_send_to_maintenance_incident");
+    
+//     // Accepter si: 
+//     // 1. L'utilisateur a la permission explicite ET les domaines correspondent
+//     // 2. OU l'utilisateur est IT/MAINTENANCE et les domaines correspondent (basé sur le rôle)
+//     if (hasExplicitPermission) {
 //       return incidentDomain === userDomain;
 //     }
     
-//     // Pour les autres domaines (HSE, OPERATIONS), pas de mise en maintenance
-//     return false;
-//   }, [userDomain, roles, permissions, getEquipmentDomain]);
+//     // Même sans permission explicite, si le domaine correspond, autoriser (basé sur le rôle)
+//     return incidentDomain === userDomain;
+    
+//   }, [userDomain, roles, permissions, getEquipmentDomain, canPerformActionBasedOnRole]);
 
 //   // Highlight texte recherche
 //   const highlightText = useCallback((text) => {
@@ -1312,6 +736,35 @@
 //     }
 //   }, [handleFetch]);
 
+//   // const handleFetchIncidentTypes = useCallback(async (searchInput = "", equipmentDomain = null) => {
+//   //   setIsLoadingTypes(true);
+//   //   try {
+//   //     let baseUrl = `${URLS.INCIDENT_API}/incident-types`;
+//   //     let queryParams = [];
+      
+//   //     if (searchInput) queryParams.push(`search=${searchInput}`);
+//   //     if (equipmentDomain) queryParams.push(`domain=${equipmentDomain}`);
+      
+//   //     const url = queryParams.length > 0 
+//   //       ? `${baseUrl}?${queryParams.join('&')}`
+//   //       : baseUrl;
+      
+//   //     console.log("URL appelée pour types d'incident:", url);
+      
+//   //     let response = await handleFetch(url);
+//   //     if(response?.status === 200) {
+//   //       let formattedData = response.data.map(entity => ({
+//   //         name: entity?.name || "",
+//   //         value: entity?.id
+//   //       }));
+//   //       setIncidentTypes(formattedData);
+//   //     }
+//   //   } catch (error) {
+//   //     console.error("Erreur chargement types:", error);
+//   //   } finally {
+//   //     setIsLoadingTypes(false);
+//   //   }
+//   // }, [handleFetch]);
 //   const handleFetchIncidentTypes = useCallback(async (searchInput = "", equipmentDomain = null) => {
 //     setIsLoadingTypes(true);
 //     try {
@@ -1325,7 +778,7 @@
 //         ? `${baseUrl}?${queryParams.join('&')}`
 //         : baseUrl;
       
-//       console.log("URL appelée pour types d'incident:", url);
+//       console.log("URL chargement types pour maintenance:", url);
       
 //       let response = await handleFetch(url);
 //       if(response?.status === 200) {
@@ -1336,7 +789,7 @@
 //         setIncidentTypes(formattedData);
 //       }
 //     } catch (error) {
-//       console.error("Erreur chargement types:", error);
+//       console.error("Erreur chargement types pour maintenance:", error);
 //     } finally {
 //       setIsLoadingTypes(false);
 //     }
@@ -1404,7 +857,38 @@
 //     setIsOpenEdit(true);
 //   };
 
-//   const handleOpenMaintenance = (record) => {
+//   // const handleOpenMaintenance = (record) => {
+//   //   // Vérifier si l'utilisateur peut mettre en maintenance cet incident
+//   //   if (!canPutIntoMaintenance(record)) {
+//   //     const incidentDomain = getEquipmentDomain(record.equipement);
+//   //     toast.error(`Vous n'avez pas accès aux incidents de domaine ${incidentDomain} pour la maintenance`);
+//   //     return;
+//   //   }
+    
+//   //   if (!record?.id) {
+//   //     console.error("Aucun ID d'incident trouvé");
+//   //     return;
+//   //   }
+    
+//   //   setValue("maintenance", "");
+//   //   setValue("incidentId", "");
+//   //   setValue("hasStoppedOperations", false);
+//   //   setDescription("");
+    
+//   //   setSelectedSite(record.siteId);
+//   //   setSelectedIncident(record.id);
+//   //   setSelectedEquipement(record.equipementId);
+    
+//   //   if (record.incidentId) {
+//   //     setValue("incidentId", record.incidentId);
+//   //   }
+//   //   if (record.hasStoppedOperations !== undefined) {
+//   //     setValue("hasStoppedOperations", record.hasStoppedOperations);
+//   //   }
+    
+//   //   setIsOpen(true);
+//   // };
+//   const handleOpenMaintenance = async (record) => {
 //     // Vérifier si l'utilisateur peut mettre en maintenance cet incident
 //     if (!canPutIntoMaintenance(record)) {
 //       const incidentDomain = getEquipmentDomain(record.equipement);
@@ -1431,6 +915,20 @@
 //     }
 //     if (record.hasStoppedOperations !== undefined) {
 //       setValue("hasStoppedOperations", record.hasStoppedOperations);
+//     }
+    
+//     // IMPORTANT: Obtenir le domaine de l'équipement et charger les types d'incident correspondants
+//     const equipmentDomain = getEquipmentDomain(record.equipement);
+//     console.log("Domaine équipement pour maintenance:", equipmentDomain);
+    
+//     // Charger les types d'incident en fonction du domaine
+//     setIsLoadingTypes(true);
+//     try {
+//       await handleFetchIncidentTypes("", equipmentDomain);
+//     } catch (error) {
+//       console.error("Erreur chargement types incident pour maintenance:", error);
+//     } finally {
+//       setIsLoadingTypes(false);
 //     }
     
 //     setIsOpen(true);
@@ -1949,29 +1447,29 @@
 //           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
 //             <div className="p-2 bg-white rounded border">
 //               <p className="font-medium mb-1">Clôture incidents :</p>
-//               <p className={canCloseIncident({ status: "PENDING", equipement: [] }) ? "text-green-600" : "text-gray-600"}>
+//               <p className="text-green-600">
 //                 {userDomain === "PRIVILEGED" 
 //                   ? "✓ Tous domaines" 
-//                   : canCloseIncident({ status: "PENDING", equipement: [] }) 
-//                     ? `✓ Domaine ${userDomain}` 
-//                     : "✗ Non autorisé"}
+//                   : `✓ Domaine ${userDomain}`}
 //               </p>
 //             </div>
             
 //             <div className="p-2 bg-white rounded border">
 //               <p className="font-medium mb-1">Reclassement incidents :</p>
-//               <p className={canReclassifyIncident({ status: "CLOSED", equipement: [] }) ? "text-green-600" : "text-gray-600"}>
+//               <p className="text-green-600">
 //                 {userDomain === "PRIVILEGED" 
 //                   ? "✓ Tous domaines" 
-//                   : canReclassifyIncident({ status: "CLOSED", equipement: [] }) 
-//                     ? `✓ Domaine ${userDomain}` 
-//                     : "✗ Non autorisé"}
+//                   : `✓ Domaine ${userDomain}`}
 //               </p>
 //             </div>
             
 //             <div className="p-2 bg-white rounded border">
 //               <p className="font-medium mb-1">Mise en maintenance :</p>
-//               <p className={canPutIntoMaintenance({ status: "PENDING", equipement: [] }) ? "text-green-600" : "text-gray-600"}>
+//               <p className={
+//                 userDomain === "PRIVILEGED" || userDomain === "IT" || userDomain === "MAINTENANCE" 
+//                   ? "text-green-600" 
+//                   : "text-gray-600"
+//               }>
 //                 {userDomain === "PRIVILEGED" 
 //                   ? "✓ Tous domaines" 
 //                   : userDomain === "IT" || userDomain === "MAINTENANCE"
@@ -1981,10 +1479,10 @@
 //             </div>
 //           </div>
           
-//           <div className="mt-2 text-xs text-gray-500">
+//           {/* <div className="mt-2 text-xs text-gray-500">
 //             <p>Rôles détectés: {roles.join(', ') || 'Aucun rôle'}</p>
 //             <p>Permissions: {permissions.filter(p => p.includes('incident')).join(', ') || 'Aucune permission incident'}</p>
-//           </div>
+//           </div> */}
 //         </div>
 //       )}
       
@@ -2042,12 +1540,27 @@
 //               <label className="block text-sm font-semibold mb-2">
 //                 Type d'incident <span className='text-red-500'>*</span>
 //               </label>
-//               <AutoComplete
+//               {/* <AutoComplete
 //                 placeholder="Rechercher un type d'incident..."
 //                 isLoading={isLoadingTypes}
 //                 dataList={incidentTypes}
 //                 onSearch={handleSearchIncidentTypes}
 //                 onSelect={handleSelectIncidentType}
+//               /> */}
+//               <AutoComplete
+//                 placeholder="Rechercher un type d'incident..."
+//                 isLoading={isLoadingTypes}
+//                 dataList={incidentTypes}
+//                 onSearch={(input) => {
+//                   // Obtenir le domaine de l'équipement de l'incident
+//                   const equipmentDomain = getEquipmentDomain(selectedIncidentData?.equipement);
+//                   console.log("Recherche types pour maintenance avec domaine:", equipmentDomain);
+//                   return handleFetchIncidentTypes(input, equipmentDomain);
+//                 }}
+//                 onSelect={handleSelectIncidentType}
+//                 // Optionnel: pré-sélectionner le type si déjà défini
+//                 initialValue={selectedIncidentData?.incidentId ? 
+//                   incidentTypes.find(t => t.value === selectedIncidentData?.incidentId) : null}
 //               />
 //               <input
 //                 type="hidden"
@@ -2322,7 +1835,9 @@
 //         </DialogContent>
 //       </Dialog>
 
-//       {/* Modal Modifier incident */}
+//       {/* Modal Modifier incident (vous l'aviez appelé isOpenEdit mais il n'est pas utilisé, je l'ai supprimé car vous n'avez pas de fonction pour l'ouvrir) */}
+
+//       {/* Modal Reclasser incident - UNE SEULE MODAL */}
 //       <Dialog open={isOpenReclassify} onOpenChange={setIsOpenReclassify}>
 //         <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
 //           <DialogHeader className="flex-shrink-0">
@@ -2463,201 +1978,6 @@
 //                     if (item) {
 //                       setValue("incidentCauseId", item.value, { shouldValidate: true });
 //                       console.log("Cause sélectionnée:", item.value);
-//                     } else {
-//                       setValue("incidentCauseId", "");
-//                     }
-//                   }}
-//                   initialValue={reclassifyFields.incidentCauseId ? 
-//                     incidentCauses.find(c => c.value === reclassifyFields.incidentCauseId) : null}
-//                 />
-//                 {errors.incidentCauseId && (
-//                   <p className="text-red-500 text-sm mt-1">{errors.incidentCauseId.message}</p>
-//                 )}
-//               </div>
-
-//               {/* Description - Lecture seule */}
-//               <div>
-//                 <label className="block text-sm font-semibold mb-2">
-//                   Description originale
-//                 </label>
-//                 <div className="p-3 border border-gray-300 rounded-md bg-gray-50">
-//                   <p className="text-gray-700 whitespace-pre-wrap">
-//                     {selectedIncidentData?.description || "Aucune description"}
-//                   </p>
-//                 </div>
-//                 <p className="text-xs text-gray-500 mt-1">
-//                   La description originale est conservée
-//                 </p>
-//               </div>
-
-//               <div className="flex gap-2 pt-6 border-t">
-//                 <Button 
-//                   type="button" 
-//                   variant="outline" 
-//                   onClick={() => setIsOpenReclassify(false)}
-//                   disabled={isSubmitting}
-//                   className="flex-1"
-//                 >
-//                   Annuler
-//                 </Button>
-//                 <Button 
-//                   type="submit" 
-//                   className="flex gap-2 text-white hover:bg-secondary bg-primary flex-1"
-//                   disabled={isSubmitting || !watch("equipementId") || !watch("incidentId") || !watch("incidentCauseId")}
-//                 >
-//                   {isSubmitting ? (
-//                     <>
-//                       <Preloader size={16} />
-//                       Reclassement...
-//                     </>
-//                   ) : (
-//                     <>
-//                       <CheckCircle className="h-4 w-4" />
-//                       Confirmer le reclassement
-//                     </>
-//                   )}
-//                 </Button>
-//               </div>
-//             </form>
-//           </div>
-//         </DialogContent>
-//       </Dialog>
-
-//       {/* Modal Reclasser incident */}
-//       <Dialog open={isOpenReclassify} onOpenChange={setIsOpenReclassify}>
-//         <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-//           <DialogHeader className="flex-shrink-0">
-//             <DialogTitle className="flex items-center gap-2">
-//               <PencilSquareIcon className="h-5 w-5" />
-//               Reclasser l'incident #{selectedIncidentData?.numRef} 
-//             </DialogTitle>
-//             <DialogDescription>
-//               Modifier la classification de cet incident
-//             </DialogDescription>
-//           </DialogHeader>
-          
-//           <div className="flex-1 overflow-y-auto pr-2 -mr-2">
-//             <form 
-//               onSubmit={handleSubmit(submitReclassify)} 
-//               className="space-y-6 pb-4"
-//             >
-//               {/* Site - Lecture seule */}
-//               <div>
-//                 <label className="block text-sm font-semibold mb-2">
-//                   Site
-//                 </label>
-//                 <div className="p-2 border border-gray-300 rounded-md bg-gray-50">
-//                   <p className="text-gray-700">
-//                     {sitesMap.get(selectedIncidentData?.siteId) || "Site non spécifié"}
-//                   </p>
-//                 </div>
-//                 <p className="text-xs text-gray-500 mt-1">
-//                   Le site ne peut pas être modifié lors du reclassement
-//                 </p>
-//               </div>
-
-//               {/* Équipement */}
-//               <div>
-//                 <label className="block text-sm font-semibold mb-2">
-//                   Équipement <span className="text-red-500">*</span>
-//                 </label>
-//                 <AutoComplete
-//                   placeholder="Rechercher un équipement..."
-//                   isLoading={isEquipementLoading}
-//                   dataList={equipments}
-//                   onSearch={(input) => {
-//                     handleSearchEquipements(input);
-//                   }}
-//                   onSelect={(item) => {
-//                     if (item) {
-//                       setValue("equipementId", item.value, { shouldValidate: true });
-                      
-//                       // Obtenir le domaine du nouvel équipement et charger les types d'incident correspondants
-//                       getEquipmentDomainFromId(item.value).then(equipmentDomain => {
-//                         handleFetchIncidentTypes("", equipmentDomain);
-//                       });
-                      
-//                       // Réinitialiser le type d'incident et la cause
-//                       setValue("incidentId", "");
-//                       setValue("incidentCauseId", "");
-//                     } else {
-//                       setValue("equipementId", "");
-//                       // Si pas d'équipement, charger tous les types d'incident
-//                       handleFetchIncidentTypes("", null);
-//                       setValue("incidentId", "");
-//                       setValue("incidentCauseId", "");
-//                     }
-//                   }}
-//                   initialValue={reclassifyFields.equipementId ? 
-//                     equipments.find(e => e.value === reclassifyFields.equipementId) : null}
-//                 />
-//                 {errors.equipementId && (
-//                   <p className="text-red-500 text-sm mt-1">{errors.equipementId.message}</p>
-//                 )}
-//               </div>
-
-//               {/* Type d'incident */}
-//               <div>
-//                 <label className="block text-sm font-semibold mb-2">
-//                   Type d'incident <span className="text-red-500">*</span>
-//                 </label>
-//                 <AutoComplete
-//                   placeholder="Rechercher un type d'incident..."
-//                   isLoading={isLoadingTypes}
-//                   dataList={incidentTypes}
-//                   onSearch={(input) => {
-//                     // Obtenir le domaine de l'équipement sélectionné
-//                     const selectedEquipementId = watch("equipementId");
-//                     let equipmentDomain = null;
-                    
-//                     if (selectedEquipementId) {
-//                       // Obtenir le domaine de l'équipement sélectionné
-//                       return getEquipmentDomainFromId(selectedEquipementId).then(domain => {
-//                         return handleFetchIncidentTypes(input, domain);
-//                       });
-//                     } else {
-//                       // Si aucun équipement sélectionné, charger tous les types
-//                       return handleFetchIncidentTypes(input, null);
-//                     }
-//                   }}
-//                   onSelect={(item) => {
-//                     if (item) {
-//                       setValue("incidentId", item.value, { shouldValidate: true });
-//                       // Recharger les causes avec le filtre du type sélectionné
-//                       handleFetchIncidentCauses("", item.value);
-//                       // Réinitialiser la cause sélectionnée
-//                       setValue("incidentCauseId", "");
-//                     } else {
-//                       setValue("incidentId", "");
-//                       // Si pas de type d'incident, charger toutes les causes
-//                       handleFetchIncidentCauses();
-//                     }
-//                   }}
-//                   initialValue={reclassifyFields.incidentId ? 
-//                     incidentTypes.find(t => t.value === reclassifyFields.incidentId) : null}
-//                 />
-//                 {errors.incidentId && (
-//                   <p className="text-red-500 text-sm mt-1">{errors.incidentId.message}</p>
-//                 )}
-//               </div>
-
-//               {/* Cause d'incident */}
-//               <div>
-//                 <label className="block text-sm font-semibold mb-2">
-//                   Cause d'incident <span className="text-red-500">*</span>
-//                 </label>
-//                 <AutoComplete
-//                   placeholder="Rechercher une cause..."
-//                   isLoading={false}
-//                   dataList={incidentCauses}
-//                   onSearch={(input) => {
-//                     // Filtrer par type d'incident si sélectionné
-//                     const incidentId = watch("incidentId");
-//                     return handleFetchIncidentCauses(input, incidentId);
-//                   }}
-//                   onSelect={(item) => {
-//                     if (item) {
-//                       setValue("incidentCauseId", item.value, { shouldValidate: true });
 //                     } else {
 //                       setValue("incidentCauseId", "");
 //                     }
@@ -3099,45 +2419,6 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
   }, [userDomain, roles, permissions, getEquipmentDomain, canPerformActionBasedOnRole]);
 
   // Fonction pour vérifier si l'utilisateur peut mettre en maintenance un incident
-  // const canPutIntoMaintenance = useCallback((record) => {
-  //   // Seuls les incidents en attente peuvent être mis en maintenance
-  //   if (record.status !== "PENDING") return false;
-    
-  //   // Vérifier si l'incident a un équipement
-  //   if (!record.equipement) return false;
-    
-  //   // Obtenir le domaine de l'incident
-  //   const incidentDomain = getEquipmentDomain(record.equipement);
-    
-  //   // Normaliser les rôles pour la comparaison
-  //   const normalizedRoles = roles.map(role => role.toLowerCase());
-    
-  //   // Vérifier les rôles privilégiés (Admin, Manager, DEX) - peuvent toujours mettre en maintenance
-  //   const privilegedRoles = ['admin', 'manager', 'dex'];
-  //   const isPrivilegedUser = privilegedRoles.some(privilegedRole => 
-  //     normalizedRoles.some(role => role.includes(privilegedRole))
-  //   );
-    
-  //   // Les rôles privilégiés peuvent TOUJOURS mettre en maintenance
-  //   if (isPrivilegedUser) {
-  //     return true;
-  //   }
-    
-  //   // Vérifier les rôles spécifiques pour la maintenance
-  //   if (incidentDomain && canPerformActionBasedOnRole('MAINTENANCE', normalizedRoles, incidentDomain)) {
-  //     return true;
-  //   }
-    
-  //   // Vérifier la permission explicite
-  //   const hasExplicitPermission = permissions.includes("incident__can_send_to_maintenance_incident");
-  //   if (!hasExplicitPermission) return false;
-    
-  //   // Seuls IT et MAINTENANCE peuvent mettre en maintenance
-  //   if (!(userDomain === "IT" || userDomain === "MAINTENANCE")) return false;
-    
-  //   return incidentDomain === userDomain;
-  // }, [userDomain, roles, permissions, getEquipmentDomain, canPerformActionBasedOnRole]);
-  // Fonction pour vérifier si l'utilisateur peut mettre en maintenance un incident
   const canPutIntoMaintenance = useCallback((record) => {
     // Seuls les incidents en attente peuvent être mis en maintenance
     if (record.status !== "PENDING") return false;
@@ -3461,35 +2742,6 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
     }
   }, [handleFetch]);
 
-  // const handleFetchIncidentTypes = useCallback(async (searchInput = "", equipmentDomain = null) => {
-  //   setIsLoadingTypes(true);
-  //   try {
-  //     let baseUrl = `${URLS.INCIDENT_API}/incident-types`;
-  //     let queryParams = [];
-      
-  //     if (searchInput) queryParams.push(`search=${searchInput}`);
-  //     if (equipmentDomain) queryParams.push(`domain=${equipmentDomain}`);
-      
-  //     const url = queryParams.length > 0 
-  //       ? `${baseUrl}?${queryParams.join('&')}`
-  //       : baseUrl;
-      
-  //     console.log("URL appelée pour types d'incident:", url);
-      
-  //     let response = await handleFetch(url);
-  //     if(response?.status === 200) {
-  //       let formattedData = response.data.map(entity => ({
-  //         name: entity?.name || "",
-  //         value: entity?.id
-  //       }));
-  //       setIncidentTypes(formattedData);
-  //     }
-  //   } catch (error) {
-  //     console.error("Erreur chargement types:", error);
-  //   } finally {
-  //     setIsLoadingTypes(false);
-  //   }
-  // }, [handleFetch]);
   const handleFetchIncidentTypes = useCallback(async (searchInput = "", equipmentDomain = null) => {
     setIsLoadingTypes(true);
     try {
@@ -3582,37 +2834,7 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
     setIsOpenEdit(true);
   };
 
-  // const handleOpenMaintenance = (record) => {
-  //   // Vérifier si l'utilisateur peut mettre en maintenance cet incident
-  //   if (!canPutIntoMaintenance(record)) {
-  //     const incidentDomain = getEquipmentDomain(record.equipement);
-  //     toast.error(`Vous n'avez pas accès aux incidents de domaine ${incidentDomain} pour la maintenance`);
-  //     return;
-  //   }
-    
-  //   if (!record?.id) {
-  //     console.error("Aucun ID d'incident trouvé");
-  //     return;
-  //   }
-    
-  //   setValue("maintenance", "");
-  //   setValue("incidentId", "");
-  //   setValue("hasStoppedOperations", false);
-  //   setDescription("");
-    
-  //   setSelectedSite(record.siteId);
-  //   setSelectedIncident(record.id);
-  //   setSelectedEquipement(record.equipementId);
-    
-  //   if (record.incidentId) {
-  //     setValue("incidentId", record.incidentId);
-  //   }
-  //   if (record.hasStoppedOperations !== undefined) {
-  //     setValue("hasStoppedOperations", record.hasStoppedOperations);
-  //   }
-    
-  //   setIsOpen(true);
-  // };
+
   const handleOpenMaintenance = async (record) => {
     // Vérifier si l'utilisateur peut mettre en maintenance cet incident
     if (!canPutIntoMaintenance(record)) {
@@ -3674,7 +2896,9 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
       description: record.description,
       equipementId: record.equipementId,
       incidentId: record.incidentId,
-      incidentCauseId: record.incidentCauseId
+      incidentCauseId: record.incidentCauseId,
+      hasStoppedOperations: record.hasStoppedOperations || false,
+      closedManuDate: record.closedManuDate || ""
     };
     
     setReclassifyFields(fields);
@@ -3808,6 +3032,16 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
         incidentId: data.incidentId,
         incidentCauseId: data.incidentCauseId
       };
+
+      // Add hasStoppedOperations if it was modified
+      if (data.hasStoppedOperations !== selectedIncidentData?.hasStoppedOperations) {
+        updateData.hasStoppedOperations = data.hasStoppedOperations;
+      }
+      
+      // Add closedManuDate if it was modified
+      if (data.closedManuDate !== selectedIncidentData?.closedManuDate) {
+        updateData.closedManuDate = data.closedManuDate;
+      }
   
       // Vérifier que tous les champs requis sont présents
       if (!updateData.equipementId || !updateData.incidentId || !updateData.incidentCauseId) {
@@ -4563,6 +3797,7 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
       {/* Modal Modifier incident (vous l'aviez appelé isOpenEdit mais il n'est pas utilisé, je l'ai supprimé car vous n'avez pas de fonction pour l'ouvrir) */}
 
       {/* Modal Reclasser incident - UNE SEULE MODAL */}
+      {/* Modal Reclasser incident - AVEC CHAMPS SUPPLÉMENTAIRES */}
       <Dialog open={isOpenReclassify} onOpenChange={setIsOpenReclassify}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
           <DialogHeader className="flex-shrink-0">
@@ -4727,6 +3962,41 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading }) => 
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
                   La description originale est conservée
+                </p>
+              </div>
+
+              {/* NOUVEAUX CHAMPS - Arrêt opération */}
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <label className="flex items-center space-x-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    {...register("hasStoppedOperations")}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <span className="font-medium text-sm">
+                    L'incident a causé un arrêt des opérations
+                  </span>
+                </label>
+                <p className="text-xs text-gray-500 mt-1">
+                  {watch("hasStoppedOperations") ? 
+                    "✓ Arrêt opération enregistré" : 
+                    "Aucun arrêt opération"}
+                </p>
+              </div>
+
+              {/* NOUVEAUX CHAMPS - Date de clôture optionnelle */}
+              <div>
+                <label htmlFor="closedManuDate" className="block text-sm font-semibold mb-2">
+                  Date de clôture (optionnel)
+                </label>
+                <input
+                  type="datetime-local"
+                  id="closedManuDate"
+                  {...register("closedManuDate")}
+                  className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Modifiez la date de clôture si nécessaire
                 </p>
               </div>
 

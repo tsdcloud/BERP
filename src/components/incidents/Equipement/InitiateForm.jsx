@@ -304,6 +304,7 @@ const InitiateForm = ({ onSucess }) => {
         try {
           const equipmentData = {
             ...data,
+            title: `${data.title}_${site.name}`,
             siteId: site.value
           };
 

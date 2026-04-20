@@ -973,7 +973,8 @@ const InitiateForm = ({onSucess}) => {
                 }
                 
                 if (Array.isArray(dataArray)) {
-                    let formatedData = dataArray.map(item => {
+                    const activeShifts = dataArray.filter(item => item?.isActive === true);
+                    let formatedData = activeShifts.map(item => {
                         return {
                             name: item?.name,
                             value: item?.id
@@ -999,6 +1000,8 @@ const InitiateForm = ({onSucess}) => {
     const handleSearchShifts = async (searchInput) => {
         try {
             handleFetchShifts(`${import.meta.env.VITE_ENTITY_API}/shifts?search=${searchInput}`);
+            // handleFetchShifts(`${import.meta.env.VITE_ENTITY_API}/shifts?isActive=true`);
+            // `${import.meta.env.VITE_ENTITY_API}/shifts?search=${searchInput}&isActive=true`
         } catch (error) {
             console.log(error);
         }

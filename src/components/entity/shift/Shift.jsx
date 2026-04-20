@@ -38,7 +38,7 @@ export default function Shift() {
                         setShift(filteredShift);
                 }
                 else{
-                    throw new Error('Erreur lors de la récupération des departements');
+                    throw new Error('Erreur lors de la récupération des shifts');
                     
                 }
         } catch (error) {
