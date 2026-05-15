@@ -76,6 +76,7 @@
 //                 });
 //                 return
 //             }
+//             toast.success("Opération éffectuée avec succès");
 //             onSuccess();
 //         } catch (error) {
 //             console.log(error);
@@ -86,29 +87,49 @@
 //     }
 
 //     // Equipements handlers
-//     const handleFetchEquipements = async (link) => {
-//         setIsLoadingEquipments(true)
-//         try {
-//           let response = await handleFetch(link);     
-//           if(response?.status === 200){
-//             let formatedData = 
-//             response?.data
-//             .filter(item => item?.title.includes('GROUPE ELECTROGENE'))
-//             .map(item=>{
-//               return {
-//                 name:item?.title,
-//                 value: item?.id
-//               }
-//             });
-//             setEquipements(formatedData);
-//           }
-//         } catch (error) {
-//           console.error(error);
-//           toast.error("Échec de l'essai de récupération les equipements");
-//         }finally{
-//           setIsLoadingEquipments(false);
-//         }
+//   const handleFetchEquipements = async (link) => {
+//     setIsLoadingEquipments(true);
+//     try {
+//       // 1️⃣ Récupération du groupe d’équipement
+//       let response_ge = await handleFetch(
+//         // `http://127.0.0.1:5000/api/equipment-groups/?search=GROUPE+ELECTROGENE`
+//         `${import.meta.env.VITE_INCIDENT_API}/equipment-groups?search=GROUPE%20ELECTROGENE`
+//       );
+//       console.log("response_ge :", response_ge);
+
+//       // 2️⃣ On récupère l'id du groupe d'équipement
+//       const equipmentGroupId =
+//         response_ge?.data?.data?.[0]?.id || null; // "996cc6ae-6fac-4343-8f0c-34ed7b8d884b"
+//         console.log("equipmentGroupId :", equipmentGroupId);
+
+//       // 3️⃣ Deuxième requête
+//       let response = await handleFetch(link);
+
+//       if (response?.status === 200) {
+//         let formatedData = response?.data
+//           .filter(
+//             (item) =>
+//               // on garde soit ceux dont le title contient le nom
+//               item?.title?.includes("GROUPE ELECTROGENE") ||
+//               // soit ceux dont l'equipmentGroupId correspond
+//               item?.equipmentGroupId === equipmentGroupId
+//           )
+//           .map((item) => {
+//             return {
+//               name: item?.title,
+//               value: item?.id,
+//             };
+//           });
+
+//         setEquipements(formatedData);
+//       }
+//     } catch (error) {
+//       console.error(error);
+//       toast.error("Échec de l'essai de récupération les equipements");
+//     } finally {
+//       setIsLoadingEquipments(false);
 //     }
+//   };
 
 //     const handleSearchEquipements = async(searchInput) => {
 //         const siteId = watch("siteId");
@@ -160,7 +181,7 @@
 //                     dataList={sites}
 //                     onSearch={handleSearchSites}
 //                     onSelect={handleSelectSites}
-//                     register={{...register('siteId', {required:'Ce champ est requis'})}}
+//                     // register={register('siteId', { required: 'Ce champ est requis' })}
 //                     error={errors.siteId}
 //                 />
 //                 {errors.siteId && <small className='text-xs my-2 text-red-500 mx-4'>{errors.siteId.message}</small>}
@@ -173,7 +194,7 @@
 //                     dataList={equipements}
 //                     onSearch={handleSearchEquipements}
 //                     onSelect={handleSelectEquipement}
-//                     register={{...register('equipementId', {required:'Ce champ est requis'})}}
+//                     // register={register('equipementId', { required: 'Ce champ est requis' })}
 //                     error={errors.equipementId}
 //                 />
 //                 {errors.equipementId && <small className='text-xs text-red-500 mx-4'>{errors.equipementId.message}</small>}
@@ -271,6 +292,17 @@ const ActionTypeForm = ({onSuccess}) => {
 
         if(data.description === ""){
           data.description = null
+        }
+        // Conversion de la date si renseignée
+        if (data.operationDate) {
+            const date = new Date(data.operationDate);
+            if (!isNaN(date.getTime())) {
+                data.operationDate = date.toISOString();
+            } else {
+                data.operationDate = null;
+            }
+        } else {
+            data.operationDate = null;
         }
 
         let url = `${URLS.INCIDENT_API}/operations`
@@ -417,6 +449,17 @@ const ActionTypeForm = ({onSuccess}) => {
                 <label htmlFor="" className='text-sm px-2 mx-1 font-semibold'>Description :</label>
                 <textarea placeholder={"Description"} {...register("description", {required:false})} className={`${errors.description ? 'outline-red-500 ring-red-500' : 'outline-none'} p-2 border text-sm rounded-lg mx-2`}></textarea>
                 {errors.description && <small className='text-xs my-2 text-red-500 mx-4'>{errors.description.message}</small>}
+            </div>
+            <div className='flex flex-col mx-2 mt-2'>
+                <label htmlFor="operationDate" className='text-sm px-2 mx-1 font-semibold'>
+                    Date de l'opération (optionnel) :
+                </label>
+                <input
+                    type="datetime-local"
+                    id="operationDate"
+                    {...register("operationDate")}
+                    className="p-2 border text-sm rounded-lg mx-2"
+                />
             </div>
             <div className='flex justify-end'>
                 <Button disabled={isSubmitting} className={`${isSubmitting ? 'bg-blue-300' :'bg-primary hover:bg-secondary'} text-white font-semibold my-2 py-1 text-sm flex`}>

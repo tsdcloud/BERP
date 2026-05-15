@@ -102,7 +102,14 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       render:(value)=><p className='text-sm'>{highlightText(value)||"--"}</p>
     },
     {
-      title:"Date et création",
+      title: "Date de l'opération",
+      dataIndex: "operationDate",
+      width: "200px",
+      render: (value) => (<p className='text-sm'>{value ? new Date(value).toLocaleString() : "--"}</p>
+      )
+    },
+    {
+      title:"Date de création",
       dataIndex:"createdAt",
       width:  "200px",
       render:(value)=><p className='text-sm'>{new Date(value).toLocaleString() ||"--"}</p>
