@@ -109,6 +109,12 @@ const Datalist = ({dataList, fetchData, searchValue, pagination, loading}) => {
       )
     },
     {
+      title:"Créé par",
+      dataIndex:"createdBy",
+      width:"200px",
+      render:(value)=><p className='text-sm'>{employees.find(employee => employee.value === value)?.name || "N/A"}</p>
+    },
+    {
       title:"Date de création",
       dataIndex:"createdAt",
       width:  "200px",

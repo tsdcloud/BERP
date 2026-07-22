@@ -26,6 +26,12 @@ import IncidentCauses from './Pages/incidents/IncidentCauses';
 import IncidentType from './Pages/incidents/IncidentType';
 import Operation from './Pages/incidents/Operation';
 import Movement from './Pages/incidents/Movement';
+import Product from './Pages/incidents/Product';
+import Consumable from './Pages/incidents/Consumable';
+import WeighingPrice from './Pages/incidents/WeighingPrice';
+import Ship from './Pages/incidents/Ship';
+import ReportingCg from './Pages/incidents/ReportingCg';
+import ReportingSupervisory from './Pages/incidents/ReportingSupervisory';
 
 //user
 import User from './Pages/users/index';
@@ -80,6 +86,7 @@ import BudgetLineName from './Pages/budgetLine/BudgetLineName';
 import AppTable from './components/budgetLine/AppTable';
 import Derogations from './Pages/budgetLine/Derogations';
 import EquipmentGroupFamily from './Pages/incidents/EquipmentGroupFamily';
+
 
 
 
@@ -143,6 +150,8 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="maintenance" element={<Maintenance />} />
               <Route path="off-bridge" element={<OffBridge />} />
+              <Route path="reporting-cgs" element={<ReportingCg />} />
+              <Route path="reporting-supervisories" element={<ReportingSupervisory />} />
               <Route element={<IncidenSettingRoutes permissions={["incident__view_incident_types"]} />}>
                 <Route path="incident-type" element={<IncidentType />} />
               </Route>
@@ -160,7 +169,11 @@ function App() {
               </Route>
               {/* <Route element={<IncidenSettingRoutes permissions={["incident__view_equipment-families"]} />}>
               </Route> */}
-                <Route path="equipment-group-families" element={<EquipmentGroupFamily />} />
+              <Route path="equipment-group-families" element={<EquipmentGroupFamily />} />
+              <Route path="products" element={<Product />} />
+              <Route path="consumables" element={<Consumable />} />
+              <Route path="weighing-prices" element={<WeighingPrice />} />
+              <Route path="ships" element={<Ship />} />
               <Route path="operations" element={<Operation />} />
               <Route path="movements" element={<Movement />} />
             </Route>
