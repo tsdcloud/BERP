@@ -1,31 +1,60 @@
+# version: '3.8'
+
+# networks:
+#   web:
+#     external: true
+#   traefik_internal:  # ← Utilise le même réseau que MySQL
+#     external: true
+
+# services:
+#   berp:
+#     build:
+#       context:  . # ← Chemin vers votre code source
+#       dockerfile: Dockerfile
+#     image: berp_image:latest
+#     container_name: berp
+#     restart: unless-stopped
+#     # AJOUT : Redirection du port vers Nginx Ubuntu (127.0.0.1)
+#     # ports:
+#     #   - "127.0.0.1:3000:3000"
+#     # Supprimez le volume .env, mieux de copier le fichier dans l'image
+#     environment:
+#       - NODE_ENV=production
+#     labels:
+#       - traefik.http.routers.berp.rule=Host(`berp.bfcgroupsa.com`)
+#       - traefik.http.routers.berp.tls=true
+#       - traefik.http.routers.berp.tls.certresolver=lets-encrypt
+#       - traefik.http.services.berp.loadbalancer.server.port=3000  # ← CORRIGÉ : port de l'app
+#     networks:
+#       - traefik_internal  # ← Pour communiquer avec MySQL
+#       - web
+#     # depends_on supprimé car mysql et memcached sont dans d'autres projets
+
 version: '3.8'
 
 networks:
   web:
     external: true
-  traefik_internal:  # ← Utilise le même réseau que MySQL
+  traefik_internal:
     external: true
 
 services:
   berp:
     build:
-      context:  . # ← Chemin vers votre code source
+      context: .
       dockerfile: Dockerfile
     image: berp_image:latest
     container_name: berp
     restart: unless-stopped
-    # AJOUT : Redirection du port vers Nginx Ubuntu (127.0.0.1)
-    ports:
-      - "127.0.0.1:3000:3000"
-    # Supprimez le volume .env, mieux de copier le fichier dans l'image
     environment:
       - NODE_ENV=production
     labels:
-      - traefik.http.routers.berp.rule=Host(`berp.bfcgroupsa.com`)
-      - traefik.http.routers.berp.tls=true
-      - traefik.http.routers.berp.tls.certresolver=lets-encrypt
-      - traefik.http.services.berp.loadbalancer.server.port=3000  # ← CORRIGÉ : port de l'app
+      - "traefik.enable=true"
+      - "traefik.docker.network=web"
+      - "traefik.http.routers.berp.rule=Host(`berp.bfcgroupsa.com`)"
+      - "traefik.http.routers.berp.tls=true"
+      - "traefik.http.routers.berp.tls.certresolver=lets-encrypt"
+      - "traefik.http.services.berp.loadbalancer.server.port=3000"
     networks:
-      - traefik_internal  # ← Pour communiquer avec MySQL
+      - traefik_internal
       - web
-    # depends_on supprimé car mysql et memcached sont dans d'autres projets
