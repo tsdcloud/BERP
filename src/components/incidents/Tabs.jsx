@@ -367,7 +367,7 @@ const Tabs = () => {
       link: '/incidents/maintenance',
       icon: <WrenchScrewdriverIcon className="h-4 w-4" />,
       requiredPermissions: ['incident__view_maintenance'],
-      requiredRoles: ['maintenance technician', 'HSE supervisor', 'IT technician', 'manager', 'coordinator'],
+      requiredRoles: ['maintenance technician', 'HSE supervisor', 'IT technician','IT','DEX', 'manager', 'coordinator'],
     },
     {
       name: 'Equipements',
@@ -383,7 +383,7 @@ const Tabs = () => {
       link: '/incidents/reporting-cgs',
       icon: <BookOpenIcon className="h-4 w-4" />,
       requiredPermissions: ['incident__view_reporting_cgs'],
-      requiredRoles: ['DEX', 'OP', 'customer manager', 'manager', 'coordinator', 'head guard', 'RESPONSIBLE', 'CORDO', 'ROP'],
+      requiredRoles: ['DEX', 'OP', 'customer manager', 'manager', 'coordinator', 'head guard', 'RESPONSIBLE', 'CORDO', 'ROP', 'IT technician','IT'],
     },
     {
       name: 'Consommables',
@@ -391,7 +391,7 @@ const Tabs = () => {
       link: '/incidents/consumables',
       icon: <SwatchIcon className="h-4 w-4" />,
       requiredPermissions: ['incident__view_consumables'],
-      requiredRoles: ['DEX', 'customer manager', 'manager', 'coordinator', 'RESPONSIBLE', 'CORDO', 'ROP'],
+      requiredRoles: ['DEX', 'customer manager', 'manager', 'coordinator', 'RESPONSIBLE', 'CORDO', 'ROP', 'IT technician','IT'],
     },
     {
       name: 'Prix de pesée',
@@ -399,7 +399,7 @@ const Tabs = () => {
       link: '/incidents/weighing-prices',
       icon: <CurrencyDollarIcon className="h-4 w-4" />,
       requiredPermissions: ['incident__view_weighing_prices'],
-      requiredRoles: ['DEX', 'customer manager', 'manager', 'coordinator', 'RESPONSIBLE', 'CORDO', 'ROP'],
+      requiredRoles: ['DEX', 'customer manager', 'manager', 'coordinator', 'RESPONSIBLE', 'CORDO', 'ROP',, 'IT technician','IT'],
     },
     // {
     //   name: 'Reporting Superviseur',
@@ -407,7 +407,7 @@ const Tabs = () => {
     //   link: '/incidents/reporting-supervisories',
     //   icon: <DocumentCheckIcon className="h-4 w-4" />,
     //   requiredPermissions: ['incident__view_supervisor_report'],
-    //   requiredRoles: ['DEX', 'customer manager', 'manager', 'coordinator', 'RESPONSIBLE', 'CORDO', 'ROP'],
+    //   requiredRoles: ['DEX', 'customer manager', 'manager', 'coordinator', 'RESPONSIBLE', 'CORDO', 'ROP',, 'IT technician','IT'],
     // },
     // {
     //   name: 'Produits',
@@ -415,7 +415,7 @@ const Tabs = () => {
     //   link: '/incidents/products',
     //   icon: <CpuChipIcon className="h-4 w-4" />,
     //   requiredPermissions: ['incident__view_products'],
-    //   requiredRoles: ['DEX', 'customer manager', 'manager', 'coordinator', 'RESPONSIBLE', 'CORDO', 'ROP'],
+    //   requiredRoles: ['DEX', 'customer manager', 'manager', 'coordinator', 'RESPONSIBLE', 'CORDO', 'ROP',, 'IT technician','IT'],
     // },
     // {
     //   name: 'Navires',
@@ -423,7 +423,7 @@ const Tabs = () => {
     //   link: '/incidents/ships',
     //   icon: <LifebuoyIcon className="h-4 w-4" />,
     //   requiredPermissions: ['incident__view_ships'],
-    //   requiredRoles: ['DEX', 'customer manager', 'manager', 'coordinator', 'RESPONSIBLE', 'CORDO', 'ROP'],
+    //   requiredRoles: ['DEX', 'customer manager', 'manager', 'coordinator', 'RESPONSIBLE', 'CORDO', 'ROP',, 'IT technician','IT'],
     // },
     {
       name: 'Type Equipements',
@@ -431,7 +431,7 @@ const Tabs = () => {
       link: '/incidents/equipment-groups',
       icon: <TicketIcon className="h-4 w-4" />,
       requiredPermissions: ['incident__view_group_equipements'],
-      requiredRoles: ['IT technician', 'maintenance technician', 'HSE supervisor', 'manager', 'coordinator'],
+      requiredRoles: ['IT technician', 'maintenance technician', 'HSE supervisor', 'manager', 'coordinator', 'IT', 'DEX'],
     },
     {
       name: 'Domaines Equipements',
@@ -439,7 +439,7 @@ const Tabs = () => {
       link: '/incidents/equipment-group-families',
       icon: <ArchiveBoxIcon className="h-4 w-4" />,
       requiredPermissions: ['incident__view_equipment-families'],
-      requiredRoles: ['IT technician', 'maintenance technician', 'HSE supervisor', 'manager', 'coordinator'],
+      requiredRoles: ['IT technician', 'maintenance technician', 'HSE supervisor', 'manager', 'coordinator', 'IT', 'DEX'],
     },
     {
       name: "Causes d'incidents",
@@ -447,7 +447,7 @@ const Tabs = () => {
       link: '/incidents/incident-cause',
       icon: <Cog6ToothIcon className="h-4 w-4" />,
       requiredPermissions: ['incident__view_incident_causes'],
-      requiredRoles: ['IT technician', 'maintenance technician', 'manager', 'coordinator'],
+      requiredRoles: ['IT technician', 'maintenance technician', 'manager', 'coordinator', 'IT', 'DEX'],
     },
     {
       name: "Types d'incidents",
@@ -455,7 +455,7 @@ const Tabs = () => {
       link: '/incidents/incident-type',
       icon: <Cog6ToothIcon className="h-4 w-4" />,
       requiredPermissions: ['incident__view_incident_types'],
-      requiredRoles: ['IT technician', 'maintenance technician', 'manager', 'coordinator'],
+      requiredRoles: ['IT technician', 'maintenance technician', 'manager', 'coordinator', 'IT', 'DEX'],
     },
   ];
 
