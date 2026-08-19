@@ -57,4 +57,4 @@ services:
       - "traefik.http.services.berp.loadbalancer.server.port=3000"
     networks:
       - traefik_internal
-      - web
+      - web 
