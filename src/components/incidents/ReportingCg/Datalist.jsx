@@ -16,7 +16,7 @@ import { useFetch } from '../../../hooks/useFetch';
 import toast from 'react-hot-toast';
 import ReportingCgDetails from './ReportingCgDetails';
 
-const Datalist = ({ dataList, fetchData, searchValue, pagination, loading, onEdit, references = {} }) => {
+const Datalist = ({ dataList, fetchData, searchValue, pagination, loading, onEdit,canEdit, references = {} }) => {
     const { handleFetch } = useFetch();
     const [detailsOpen, setDetailsOpen] = useState(false);
     const [selectedRecord, setSelectedRecord] = useState(null);
@@ -74,6 +74,33 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading, onEdi
         { title: "Incidents", dataIndex: "numberIncidents", width: 90 },
         { title: "Mis à jour par", dataIndex: "updatedBy", width: 150, render: (v) => getEmployeeName(v) },
         { title: "Mis à jour le", dataIndex: "updatedAt", width: 150, render: (v) => new Date(v).toLocaleDateString() },
+        // {
+        //     title: "Actions", width: 100, fixed: 'right',
+        //     render: (_, record) => (
+        //         <div onClick={(e) => e.stopPropagation()}>
+        //             <DropdownMenu>
+        //                 <DropdownMenuTrigger asChild>
+        //                     <Button variant="ghost" className="h-8 w-8 p-0">
+        //                         <MoreHorizontal />
+        //                     </Button>
+        //                 </DropdownMenuTrigger>
+        //                 <DropdownMenuContent align="end">
+        //                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        //                     <DropdownMenuSeparator />
+        //                     <DropdownMenuItem onClick={() => openDetails(record)}>
+        //                         <EyeIcon className="h-4 w-4 mr-2" /> Voir détails
+        //                     </DropdownMenuItem>
+        //                     <DropdownMenuItem onClick={() => onEdit(record)}>
+        //                         <PencilIcon className="h-4 w-4 mr-2" /> Éditer
+        //                     </DropdownMenuItem>
+        //                     <DropdownMenuItem onClick={() => handleDelete(record.id)} className="text-red-600">
+        //                         <TrashIcon className="h-4 w-4 mr-2" /> Supprimer
+        //                     </DropdownMenuItem>
+        //                 </DropdownMenuContent>
+        //             </DropdownMenu>
+        //         </div>
+        //     )
+        // }
         {
             title: "Actions", width: 100, fixed: 'right',
             render: (_, record) => (
@@ -90,12 +117,16 @@ const Datalist = ({ dataList, fetchData, searchValue, pagination, loading, onEdi
                             <DropdownMenuItem onClick={() => openDetails(record)}>
                                 <EyeIcon className="h-4 w-4 mr-2" /> Voir détails
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => onEdit(record)}>
-                                <PencilIcon className="h-4 w-4 mr-2" /> Éditer
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleDelete(record.id)} className="text-red-600">
-                                <TrashIcon className="h-4 w-4 mr-2" /> Supprimer
-                            </DropdownMenuItem>
+                            {canEdit && (
+                                <>
+                                    <DropdownMenuItem onClick={() => onEdit(record)}>
+                                        <PencilIcon className="h-4 w-4 mr-2" /> Éditer
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => handleDelete(record.id)} className="text-red-600">
+                                        <TrashIcon className="h-4 w-4 mr-2" /> Supprimer
+                                    </DropdownMenuItem>
+                                </>
+                            )}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

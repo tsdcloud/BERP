@@ -39,10 +39,12 @@ const ReportingCg = () => {
 
     // ✅ Restreint SI ET SEULEMENT SI tous les rôles de l'employé sont dans RESTRICTED_ROLES
     // (et qu'il en a au moins un). S'il possède un rôle supplémentaire ou différent → accès total.
-    const isRestricted =
-        currentUserRoles !== null &&
-        currentUserRoles.length > 0 &&
-        currentUserRoles.every(r => RESTRICTED_ROLES.includes(r));
+    // const isRestricted =
+    //     currentUserRoles !== null &&
+    //     currentUserRoles.length > 0 &&
+    //     currentUserRoles.every(r => RESTRICTED_ROLES.includes(r));
+
+    const canEdit = currentUserRoles?.some(r => ['ADMIN','DEX', 'ROP'].includes(r)) ?? false;
 
     // ── États filtres ──────────────────────────────────────────────────────────
     const [selectValue, setSelectValue] = useState('');
@@ -63,9 +65,10 @@ const ReportingCg = () => {
         { value: "updatedAt",    name: "Date de modification" },
     ];
 
-    const filterOptions = isRestricted
-        ? allFilterOptions.filter(f => f.value !== 'createdBy')
-        : allFilterOptions;
+    // const filterOptions = isRestricted
+    const filterOptions = allFilterOptions; // plus de restriction, tous les filtres sont visibles
+    //     ? allFilterOptions.filter(f => f.value !== 'createdBy')
+    //     : allFilterOptions;
 
     const DATE_FILTERS = ['createdAt', 'updatedAt'];
 
@@ -153,9 +156,9 @@ const ReportingCg = () => {
                 // ✅ Filtrage défensif côté frontend pour OP / head guard :
                 // on ne conserve que les rapports dont createdBy === id de l'employé connecté.
                 // Le backend le fait déjà ; ceci est une sécurité d'affichage supplémentaire.
-                if (isRestricted && currentUserId) {
-                    data = data.filter(r => r.createdBy === currentUserId);
-                }
+                // if (isRestricted && currentUserId) {
+                //     data = data.filter(r => r.createdBy === currentUserId);
+                // }
 
                 setReportingCgs(data);
                 setTotal(payload.total      ?? data.length);
@@ -167,7 +170,8 @@ const ReportingCg = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [handleFetch, isRestricted, currentUserId]);
+    // }, [handleFetch, isRestricted, currentUserId]);
+    }, [handleFetch]); // ← plus que handleFetch
 
     // ── Handlers filtres ───────────────────────────────────────────────────────
     const handleOnSelectChange = (evt) => {
@@ -455,6 +459,7 @@ const ReportingCg = () => {
                         onEditSuccess={() => fetchReportingCgs(currentFilter || {})}
                         onEdit={handleEdit}
                         references={references}
+                        canEdit={canEdit}
                         // ✅ Passer les rôles pour conditionner les actions (edit/delete)
                         currentUserRoles={currentUserRoles}
                         pagination={
