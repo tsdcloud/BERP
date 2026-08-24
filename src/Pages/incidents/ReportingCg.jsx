@@ -55,6 +55,7 @@ const ReportingCg = () => {
         { value: "siteId",       name: "Site" },
         { value: "shiftId",      name: "Quart" },
         { value: "incomingCgId", name: "CG entrant" },
+        { value: "numRef",       name: "N° Réf" },
         { value: "createdBy",    name: "Créé par" },   // masqué si OP / head guard
         { value: "updatedBy",    name: "Modifié par" },
         { value: "isActive",     name: "Statut" },
@@ -255,6 +256,20 @@ const ReportingCg = () => {
                             <option key={s.id} value={s.id}>{s.name}</option>
                         ))}
                     </select>
+                </div>
+            );
+        }
+
+        if (criteria === 'numRef') {
+            return (
+                <div className={wrapClass}>
+                    <MagnifyingGlassIcon className='h-4 text-gray-400 px-2' />
+                    <input
+                        placeholder="Rechercher par N° Réf"
+                        className={baseClass}
+                        value={inputValue}
+                        onChange={handleInputChange}
+                    />
                 </div>
             );
         }

@@ -541,7 +541,7 @@ const ReportingCgDetails = ({ open, setOpen, reporting, references = {} }) => {
                             </div>
                         </section>
 
-                        {/* SECTION 2: SUIVI PESEES (tableau unique) */}
+                        {/* SECTION 2: SUIVI PESEES (tableau unique)
                         <section className="bg-white border rounded-xl p-4 shadow-sm print:p-section print:p-mb-1 print-compact print-break-inside">
                             <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2 border-b pb-2 print:p-section-title">
                                 <Calendar size={16} className="text-teal-600" />
@@ -571,7 +571,70 @@ const ReportingCgDetails = ({ open, setOpen, reporting, references = {} }) => {
                                     </tr>
                                 </tbody>
                             </table>
-                        </section>
+                        </section> */}
+                        {/* SECTION 2: SUIVI PESEES */}
+                            <section className="bg-white border rounded-xl p-4 shadow-sm print:p-section print:p-mb-1 print-compact print-break-inside">
+                                <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2 border-b pb-2 print:p-section-title">
+                                    <Calendar size={16} className="text-teal-600" />
+                                    Suivi des pesees
+                                </h2>
+
+                                <table className="w-full table-fixed text-sm print:p-table print-table">
+                                    <colgroup>
+                                        <col className="w-[32%]" />
+                                        <col className="w-[22%]" />
+                                        <col className="w-[23%]" />
+                                        <col className="w-[23%]" />
+                                    </colgroup>
+
+                                    <thead>
+                                        <tr>
+                                            <th className="bg-gray-50 px-3 py-2 text-left align-middle"></th>
+                                            <th className="bg-gray-50 px-3 py-2 text-center align-middle">
+                                                DATE
+                                            </th>
+                                            <th className="bg-gray-50 px-3 py-2 text-center align-middle">
+                                                N° PESÉE
+                                            </th>
+                                            <th className="bg-gray-50 px-3 py-2 text-center align-middle">
+                                                N° TRACTEUR
+                                            </th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        <tr>
+                                            <td className="px-3 py-2 font-semibold align-middle">
+                                                PREMIÈRE PESÉE
+                                            </td>
+                                            <td className="px-3 py-2 text-center align-middle whitespace-nowrap">
+                                                {formatDateShort(reporting.firstWeighDate)}
+                                            </td>
+                                            <td className="px-3 py-2 text-center align-middle">
+                                                {reporting.firstWeighNumber || '-'}
+                                            </td>
+                                            <td className="px-3 py-2 text-center align-middle">
+                                                {reporting.firstWeighTractorNumber || '-'}
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td className="px-3 py-2 font-semibold align-middle">
+                                                DERNIÈRE PESÉE
+                                            </td>
+                                            <td className="px-3 py-2 text-center align-middle whitespace-nowrap">
+                                                {formatDateShort(reporting.lastWeighDate)}
+                                            </td>
+                                            <td className="px-3 py-2 text-center align-middle">
+                                                {reporting.lastWeighNumber || '-'}
+                                            </td>
+                                            <td className="px-3 py-2 text-center align-middle">
+                                                {reporting.lastWeighTractorNumber || '-'}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </section>
 
                         {/* SECTION 3: RECAPITULATIF PESEES (tableau + stats) */}
                         <section className="bg-white border rounded-xl p-4 shadow-sm print:p-section print:p-mb-1 print-compact print-break-inside">
