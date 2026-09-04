@@ -353,6 +353,7 @@ import RapportMaintenanceForm from '../../components/incidents/Dashboard/Rapport
 import RapportOffBridgeForm from '../../components/incidents/Dashboard/RapportOffBridgeForm';
 import RapportOffOperatioGeForm from '../../components/incidents/Dashboard/RapportOffOperatioGeForm';
 import RapportReportingCgForm from '../../components/incidents/Dashboard/RapportReportingCgForm';
+import RapportWatchReportForm from '../../components/incidents/Dashboard/RapportWatchReportForm';
 
 import { FloatButton } from 'antd';
 import Card from '../../components/incidents/Dashboard/Card';
@@ -528,6 +529,7 @@ const Dashboard = () =>{
                         onClickOffBridge={()=>handleOpenDialog("OFF_BRIDGE")}
                         onClickOperationGe={()=>handleOpenDialog("OPERATION_GE")}
                         onClickReportingCg={()=>handleOpenDialog("REPORTING_CG")}
+                        onClickWatchReport={()=>handleOpenDialog("RAPPORT_DE_QUART")}
                     />
                 </div>
                 
@@ -587,6 +589,7 @@ const Dashboard = () =>{
                         {dialogType === "OFF_BRIDGE" && "Extraction des hors ponts"}
                         {dialogType === "OPERATION_GE" && "Extraction des opération GE"}
                         {dialogType === "REPORTING_CG" && "Extraction des rapports CG"}
+                        {dialogType === "RAPPORT_DE_QUART" && "Extraction des rapports de quart"}
                     </DialogHeader>
                     
                     {dialogType === "INCIDENT" && (
@@ -606,6 +609,9 @@ const Dashboard = () =>{
                     )}
                     {dialogType === "REPORTING_CG" && (
                         <RapportReportingCgForm onSubmit={()=>setIsOpenned(false)}/>
+                    )}
+                    {dialogType === "RAPPORT_DE_QUART" && (
+                        <RapportWatchReportForm onSubmit={()=>setIsOpenned(false)}/>
                     )}
                     
                     <DialogFooter>{""}</DialogFooter>
@@ -655,6 +661,13 @@ const Dashboard = () =>{
                         onClick={()=>{
                             setOpenFloatBtn(false);
                             handleOpenDialog("REPORTING_CG");
+                        }}
+                        icon={<BuildingOfficeIcon />}
+                    />
+                    <FloatButton 
+                        onClick={()=>{
+                            setOpenFloatBtn(false);
+                            handleOpenDialog("REPtWatchReportORTING_CG");
                         }}
                         icon={<BuildingOfficeIcon />}
                     />
