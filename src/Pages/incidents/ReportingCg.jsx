@@ -683,7 +683,8 @@ const ReportingCg = () => {
   // Permission d'édition
   const canEdit =
     currentUserRoles?.some((role) =>
-      ['ADMIN', 'DEX', 'ROP'].includes(role)
+      // ['ADMIN', 'DEX', 'ROP'].includes(role)
+      ['ADMIN'].includes(role)
     ) ?? false;
 
   // États des filtres
