@@ -2370,7 +2370,7 @@ const ReportingCgDetails = ({
               <div>
                 <DrawerTitle className="text-2xl font-bold text-gray-900">
                   {type === 'watch' ? 'Rapport de Quart' : 'Rapport du CG'} :{' '}
-                  {getEmployeeName(reporting.createdBy)}
+                  {type === 'watch' ? getEmployeeName(reporting.guardhouseSupervisorId) : getEmployeeName(reporting.createdBy)}{' '}
                 </DrawerTitle>
                 <DrawerDescription className="text-gray-500 mt-1">
                   {type === 'watch' ? 'Détails du Rapport de Quart' : 'Détails du rapport'} —{' '}
